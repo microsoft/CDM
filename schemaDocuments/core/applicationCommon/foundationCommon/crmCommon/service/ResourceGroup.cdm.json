@@ -1,0 +1,285 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "ResourceGroup",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "46db2a96-a2b5-d304-de14-61fb557eba2e"
+			}
+		},
+		"description": "Resource group or team whose members can be scheduled for a service.",
+		"displayName": "Scheduling Group",
+		"attributes": [
+			{
+				"name": "resourcegroupid",
+				"dataType": "Guid",
+				"displayName": "Scheduling Group",
+				"description": "Unique identifier of the scheduling group.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"displayName": "Business Unit Id",
+				"description": "Business Unit Id",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the scheduling group.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "grouptypecode",
+				"dataType": "String",
+				"displayName": "Group Type Code",
+				"description": "Scheduling group type code.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "resourcegroup_grouptypecode",
+						"displayName": "resourcegroup_grouptypecode",
+						"description": "Scheduling group type code.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Static"
+							},
+							{
+								"value": 1,
+								"displayName": "Dynamic"
+							},
+							{
+								"value": 2,
+								"displayName": "Hidden"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "objecttypecode",
+				"dataType": "String",
+				"displayName": "Entity",
+				"description": "Type of entity with which the scheduling group is associated.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "resourcegroup_objecttypecode",
+						"displayName": "resourcegroup_objecttypecode",
+						"description": "Type of entity with which the scheduling group is associated.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization",
+				"description": "Unique identifier of the organization associated with the scheduling group.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "constraintbasedgroup_resource_groups",
+			"referencing": {
+				"entity": {
+					"type": "ResourceGroup",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "46db2a96-a2b5-d304-de14-61fb557eba2e"
+				},
+				"attributes": [
+					{
+						"name": "resourcegroupid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ConstraintBasedGroup",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8bf9dffe-4e2f-dcd3-c675-d582e5d22bb1"
+				},
+				"attributes": [
+					{
+						"name": "constraintbasedgroupid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "team_resource_groups",
+			"referencing": {
+				"entity": {
+					"type": "ResourceGroup",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "46db2a96-a2b5-d304-de14-61fb557eba2e"
+				},
+				"attributes": [
+					{
+						"name": "resourcegroupid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_resource_groups",
+			"referencing": {
+				"entity": {
+					"type": "ResourceGroup",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "46db2a96-a2b5-d304-de14-61fb557eba2e"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_resource_groups",
+			"referencing": {
+				"entity": {
+					"type": "ResourceGroup",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "46db2a96-a2b5-d304-de14-61fb557eba2e"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

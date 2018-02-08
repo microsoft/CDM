@@ -1,0 +1,169 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "EntitlementTemplateProducts",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "6c52ab5d-1711-0904-feb3-0e4cf2f74d47"
+			}
+		},
+		"displayName": "Entitlement Template Product",
+		"attributes": [
+			{
+				"name": "entitlementtemplateproductid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the contacts for the EntitlementTemplates.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "name",
+				"description": "name",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "productid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "entitlementtemplateid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "entitlementtemplate_entitlementtemplateproducts",
+			"referencing": {
+				"entity": {
+					"type": "EntitlementTemplateProducts",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6c52ab5d-1711-0904-feb3-0e4cf2f74d47"
+				},
+				"attributes": [
+					{
+						"name": "entitlementtemplateid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "EntitlementTemplate",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "27b2c278-f860-4e97-fc0b-a1dd0bebe978"
+				},
+				"attributes": [
+					{
+						"name": "entitlementtemplateid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "product_entitlementtemplateproducts",
+			"referencing": {
+				"entity": {
+					"type": "EntitlementTemplateProducts",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6c52ab5d-1711-0904-feb3-0e4cf2f74d47"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

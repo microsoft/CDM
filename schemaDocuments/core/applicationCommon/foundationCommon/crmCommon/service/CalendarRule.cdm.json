@@ -1,0 +1,478 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "CalendarRule",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "e3fd56f6-0158-e2c4-c0a9-290382291eaa"
+			},
+			"extends": {
+				"type": "CalendarRule",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "c07617db-c761-7534-db19-d7060bcb6cdf"
+			}
+		},
+		"description": "Defines free/busy times for a service and for resources or resource groups, such as working, non-working, vacation, and blocked.",
+		"displayName": "Calendar Rule",
+		"attributes": [
+			{
+				"name": "isvaried",
+				"dataType": "Boolean",
+				"displayName": "Is Varied",
+				"description": "Flag used in leaf nonrecurring rules.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "rank",
+				"dataType": "Int32",
+				"displayName": "Rank",
+				"description": "Rank of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the calendar rule was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Defines free/busy times for a service and for resources or resource groups, such as working, non-working, vacation, and blocked.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "calendarruleid",
+				"dataType": "Guid",
+				"displayName": "Calendar Rule",
+				"description": "Unique identifier of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "effort",
+				"dataType": "Double",
+				"displayName": "Effort",
+				"description": "Effort available for a resource during the time described by the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "endtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "End",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "timecode",
+				"dataType": "Int32",
+				"displayName": "Type",
+				"description": "Type of calendar rule such as working hours, break, holiday, or time off.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "starttime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Start",
+				"description": "Start time for the rule.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"displayName": "Business Unit",
+				"description": "Unique identifier of the business unit with which the calendar rule is associated.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "offset",
+				"dataType": "Int32",
+				"displayName": "Offset",
+				"description": "Start offset for leaf nonrecurring rules.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "issimple",
+				"dataType": "Boolean",
+				"displayName": "Is Simple",
+				"description": "Flag used in vary-by-day calendar rules.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "timezonecode",
+				"dataType": "Int32",
+				"displayName": "Time Zone",
+				"description": "Local time zone for the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization ",
+				"description": "Unique identifier of the organization with which the calendar rule is associated.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isselected",
+				"dataType": "Boolean",
+				"displayName": "Is Selected",
+				"description": "Flag used in vary-by-day calendar rules.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "extentcode",
+				"dataType": "Int32",
+				"displayName": "Extent Code",
+				"description": "Extent of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "effectiveintervalend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Effective Interval End",
+				"description": "Effective interval end of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the calendar rule was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify",
+					"inherited": true
+				}
+			},
+			{
+				"name": "calendarid",
+				"dataType": "Guid",
+				"displayName": "Calendar",
+				"description": "Unique identifier of the calendar with which the calendar rule is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "innercalendarid",
+				"dataType": "Guid",
+				"displayName": "Inner Calendar",
+				"description": "Unique identifier of the inner calendar for non-leaf calendar rules.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "pattern",
+				"dataType": "String",
+				"displayName": "Recurrence Pattern",
+				"description": "Pattern of the rule recurrence.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256,
+					"inherited": true
+				}
+			},
+			{
+				"name": "groupdesignator",
+				"dataType": "String",
+				"displayName": "Group Designator",
+				"description": "Unique identifier of the group.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 36,
+					"inherited": true
+				}
+			},
+			{
+				"name": "ismodified",
+				"dataType": "Boolean",
+				"displayName": "Is Modified",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "subcode",
+				"dataType": "Int32",
+				"displayName": "Sub Code",
+				"description": "Sub-type of calendar rule.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "duration",
+				"dataType": "Int32",
+				"displayName": "Duration",
+				"description": "Duration of the calendar rule in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "effectiveintervalstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Effective Interval Start",
+				"description": "Effective interval start of the calendar rule.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the calendarrule.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the calendarrule.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "serviceid",
+				"dataType": "Guid",
+				"displayName": "Service",
+				"description": "Unique identifier of the service with which the calendar rule is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "service_calendar_rules",
+			"referencing": {
+				"entity": {
+					"type": "CalendarRule",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e3fd56f6-0158-e2c4-c0a9-290382291eaa"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "inner_calendar_calendar_rules",
+			"referencing": {
+				"entity": {
+					"type": "CalendarRule",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e3fd56f6-0158-e2c4-c0a9-290382291eaa"
+				},
+				"attributes": [
+					{
+						"name": "innercalendarid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Calendar",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6b63df25-daad-9c73-cd61-79dd38dab8eb"
+				},
+				"attributes": [
+					{
+						"name": "calendarid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lk_calendarrule_modifiedonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "CalendarRule",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e3fd56f6-0158-e2c4-c0a9-290382291eaa"
+				},
+				"attributes": [
+					{
+						"name": "modifiedonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

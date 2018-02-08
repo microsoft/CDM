@@ -1,0 +1,800 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "ActivityParty",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+			},
+			"extends": {
+				"type": "ActivityParty",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "78b5eedc-c741-a2f2-89a8-80b102ba671d"
+			}
+		},
+		"description": "Person or group associated with an activity. An activity can have multiple activity parties.",
+		"displayName": "Activity Party",
+		"attributes": [
+			{
+				"name": "activityid",
+				"dataType": "Guid",
+				"displayName": "Activity",
+				"description": "Unique identifier of the activity associated with the activity party. (A \"party\" is any person who is associated with an activity.)",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "activitypartyid",
+				"dataType": "Guid",
+				"displayName": "Activity Party",
+				"description": "Unique identifier of the activity party.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "partyid",
+				"dataType": "Guid",
+				"displayName": "Party",
+				"description": "Unique identifier of the party associated with the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "participationtypemask",
+				"dataType": "String",
+				"displayName": "Participation Type",
+				"description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "activityparty_participationtypemask",
+						"displayName": "Participation Type",
+						"description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Sender"
+							},
+							{
+								"value": 2,
+								"displayName": "To Recipient"
+							},
+							{
+								"value": 3,
+								"displayName": "CC Recipient"
+							},
+							{
+								"value": 4,
+								"displayName": "BCC Recipient"
+							},
+							{
+								"value": 5,
+								"displayName": "Required attendee"
+							},
+							{
+								"value": 6,
+								"displayName": "Optional attendee"
+							},
+							{
+								"value": 7,
+								"displayName": "Organizer"
+							},
+							{
+								"value": 8,
+								"displayName": "Regarding"
+							},
+							{
+								"value": 9,
+								"displayName": "Owner"
+							},
+							{
+								"value": 10,
+								"displayName": "Resource"
+							},
+							{
+								"value": 11,
+								"displayName": "Customer"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "addressused",
+				"dataType": "String",
+				"displayName": "Address ",
+				"description": "Email address to which an email is delivered, and which is associated with the target entity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "donotfax",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Faxes",
+				"description": "Information about whether to allow sending faxes to the activity party.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "scheduledstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Scheduled Start",
+				"description": "Scheduled start time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "scheduledend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Scheduled End",
+				"description": "Scheduled end time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "effort",
+				"dataType": "Double",
+				"displayName": "Effort",
+				"description": "Amount of effort used by the resource in a service appointment activity.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "donotemail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Emails",
+				"description": "Information about whether to allow sending email to the activity party.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "exchangeentryid",
+				"dataType": "String",
+				"displayName": "Exchange Entry",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1024,
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "donotpostalmail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Postal Mails",
+				"description": "Information about whether to allow sending postal mail to the lead.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "donotphone",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Phone Calls",
+				"description": "Information about whether to allow phone calls to the lead.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the activity_party.",
+				"semanticDomain": {
+					"structuralType": "owner",
+					"inherited": true
+				}
+			},
+			{
+				"name": "instancetypecode",
+				"dataType": "String",
+				"displayName": "Appointment Type",
+				"description": "Type of instance of a recurring series.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "activityparty_instancetypecode",
+						"displayName": "Appointment Type",
+						"description": "Type of instance of a recurring series.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Recurring"
+							},
+							{
+								"value": 1,
+								"displayName": "Recurring Master"
+							},
+							{
+								"value": 2,
+								"displayName": "Recurring Instance"
+							},
+							{
+								"value": 3,
+								"displayName": "Recurring Exception"
+							},
+							{
+								"value": 4,
+								"displayName": "Recurring Future Exception"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "ispartydeleted",
+				"dataType": "Boolean",
+				"displayName": "Is Party Deleted",
+				"description": "Information about whether the underlying entity record is deleted.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "addressusedemailcolumnnumber",
+				"dataType": "Int32",
+				"displayName": "Email column number of party",
+				"description": "Email address column number from associated party.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 1,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "resourcespecid",
+				"dataType": "Guid",
+				"displayName": "Resource Specification",
+				"description": "Unique identifier of the resource specification for the activity party.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "ActivityPartyResourceSpec",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "resourcespecid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ResourceSpec",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b5bfad07-4a9b-b5f7-5524-6706370ecaf0"
+				},
+				"attributes": [
+					{
+						"name": "resourcespecid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "recurringappointmentmaster_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "RecurringAppointmentMaster",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c05d303e-bd45-6edd-804e-f70480a06720"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "fax_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Fax",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a5bb8322-6632-6f83-2c89-9537b195c778"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "email_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Email",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ccf6d1d9-b418-ef81-2952-7216b80fcac2"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "activitypointer_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f8933236-f276-4bb5-ffb1-d31fd98f6199"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "letter_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4ddf6414-3ed0-2276-4cf0-d92a46503a89"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "appointment_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Appointment",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "537e0344-518e-ede2-6178-f4ba75853411"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "socialactivity_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "task_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Task",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "d7557a7b-740a-4dc5-793f-70ad343c51be"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "phonecall_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "PhoneCall",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "account_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "partyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contact_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "partyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "knowledgearticle_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "partyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				},
+				"attributes": [
+					{
+						"name": "knowledgearticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "queue_activity_parties",
+			"referencing": {
+				"entity": {
+					"type": "ActivityParty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "82627567-a8b5-bb50-2f59-b9bd3a091203"
+				},
+				"attributes": [
+					{
+						"name": "partyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "queueid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

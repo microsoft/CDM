@@ -1,0 +1,364 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Resource",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+			}
+		},
+		"description": "User or facility/equipment that can be scheduled for a service.",
+		"displayName": "Resource",
+		"attributes": [
+			{
+				"name": "resourceid",
+				"dataType": "Guid",
+				"displayName": "Resource",
+				"description": "Unique identifier of the resource.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"displayName": "Business Unit Id",
+				"description": "Business Unit Id",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the resource.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "calendarid",
+				"dataType": "Guid",
+				"displayName": "Calendar",
+				"description": "Unique identifier of the calendar for the resource.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "displayinserviceviews",
+				"dataType": "Boolean",
+				"displayName": "Display in Service Views",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isdisabled",
+				"dataType": "Boolean",
+				"displayName": "Is Disabled",
+				"description": "Information about whether the resource is enabled.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "objecttypecode",
+				"dataType": "String",
+				"displayName": "Object Type ",
+				"description": "Type of entity with which the resource is associated.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "resource_objecttypecode",
+						"displayName": "Object Type ",
+						"description": "Type of entity with which the resource is associated.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization",
+				"description": "Unique identifier of the organization with which the resource is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "siteid",
+				"dataType": "Guid",
+				"displayName": "Site",
+				"description": "Unique identifier of the site at which the resource is located.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "equipment_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "resourceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Equipment",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "691d9503-725d-367c-3e91-bf5afde744af"
+				},
+				"attributes": [
+					{
+						"name": "equipmentid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "resourcespec_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "resourceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ResourceSpec",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b5bfad07-4a9b-b5f7-5524-6706370ecaf0"
+				},
+				"attributes": [
+					{
+						"name": "resourcespecid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "systemuser_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "resourceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "site_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "siteid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Site",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+				},
+				"attributes": [
+					{
+						"name": "siteid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_resources",
+			"referencing": {
+				"entity": {
+					"type": "Resource",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bd4bff47-a6c2-3091-2490-84c6bd90a14b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

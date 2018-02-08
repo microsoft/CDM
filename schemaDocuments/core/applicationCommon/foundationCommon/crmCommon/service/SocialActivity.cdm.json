@@ -1,0 +1,1283 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "SocialActivity",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+			},
+			"extends": {
+				"type": "SocialActivity",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+			}
+		},
+		"description": "For internal use only.",
+		"displayName": "Social Activity",
+		"attributes": [
+			{
+				"name": "activityid",
+				"dataType": "Guid",
+				"displayName": "Activity",
+				"description": "Unique identifier of the activity.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "activitytypecode",
+				"dataType": "String",
+				"displayName": "Activity Type",
+				"description": "Type of activity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "activitypointer_activitytypecode",
+						"displayName": "Activity Type",
+						"description": "Type of activity.",
+						"items": [
+							{
+								"value": 4204,
+								"displayName": "Fax"
+							},
+							{
+								"value": 4210,
+								"displayName": "Phone Call"
+							},
+							{
+								"value": 4202,
+								"displayName": "Email"
+							},
+							{
+								"value": 4207,
+								"displayName": "Letter"
+							},
+							{
+								"value": 4201,
+								"displayName": "Appointment"
+							},
+							{
+								"value": 4212,
+								"displayName": "Task"
+							},
+							{
+								"value": 4251,
+								"displayName": "Recurring Appointment"
+							},
+							{
+								"value": 4406,
+								"displayName": "Quick Campaign"
+							},
+							{
+								"value": 4402,
+								"displayName": "Campaign Activity"
+							},
+							{
+								"value": 4401,
+								"displayName": "Campaign Response"
+							},
+							{
+								"value": 4206,
+								"displayName": "Case Resolution"
+							},
+							{
+								"value": 4214,
+								"displayName": "Service Activity"
+							},
+							{
+								"value": 4208,
+								"displayName": "Opportunity Close"
+							},
+							{
+								"value": 4209,
+								"displayName": "Order Close"
+							},
+							{
+								"value": 4211,
+								"displayName": "Quote Close"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "actualdurationminutes",
+				"dataType": "Int32",
+				"displayName": "Actual Duration",
+				"description": "Actual duration of the activity in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Measurement.Duration",
+					"minValue": 0,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "actualend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Actual End",
+				"description": "Actual end time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "actualstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Actual Start",
+				"description": "Actual start time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created Date",
+				"description": "Date and time when the activity was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the activitypointer.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Post Description",
+				"description": "Shows information about the social post content. This field is read-only.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "from",
+				"dataType": "Guid",
+				"displayName": "From",
+				"description": "Person who the activity is from.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party",
+					"inherited": true
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250,
+					"inherited": true
+				}
+			},
+			{
+				"name": "isbilled",
+				"dataType": "Boolean",
+				"displayName": "Is Billed",
+				"description": "Information regarding whether the activity was billed as part of resolving a case.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isregularactivity",
+				"dataType": "Boolean",
+				"displayName": "Is Regular Activity",
+				"description": "Information regarding whether the activity is a regular activity type or event type.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isworkflowcreated",
+				"dataType": "Boolean",
+				"displayName": "Is Workflow Created",
+				"description": "Information regarding whether the activity was created from a workflow rule.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Updated",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the activity.",
+				"semanticDomain": {
+					"structuralType": "owner",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user who owns the Activity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team that owns the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "prioritycode",
+				"dataType": "String",
+				"displayName": "Priority",
+				"description": "Shows the priority so that preferred customers or critical issues are handled quickly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "socialactivity_prioritycode",
+						"displayName": "Priority",
+						"description": "Priority of the activity.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Low"
+							},
+							{
+								"value": 1,
+								"displayName": "Normal"
+							},
+							{
+								"value": 2,
+								"displayName": "High"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process",
+				"description": "Unique identifier of the Process.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "resources",
+				"dataType": "Guid",
+				"displayName": "Resources",
+				"description": "Users or facility/equipment that are required for the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party",
+					"inherited": true
+				}
+			},
+			{
+				"name": "scheduleddurationminutes",
+				"dataType": "Int32",
+				"displayName": "Scheduled Duration",
+				"description": "Scheduled duration of the activity, specified in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Measurement.Duration",
+					"minValue": 0,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "scheduledend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Due Date",
+				"description": "Scheduled end time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "scheduledstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Start Date",
+				"description": "Scheduled start time of the activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Process Stage",
+				"description": "Unique identifier of the Stage.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the social activity completed. This field is read-only.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"inherited": true,
+					"constrainedList": {
+						"name": "socialactivity_statecode",
+						"displayName": "Activity Status",
+						"description": "Status of the activity.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Open"
+							},
+							{
+								"value": 1,
+								"displayName": "Completed"
+							},
+							{
+								"value": 2,
+								"displayName": "Canceled"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Shows whether the social activity is completed, failed, or processing. This field is read-only.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"inherited": true,
+					"constrainedList": {
+						"name": "socialactivity_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the activity.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Completed",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Failed",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Processing",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 4,
+								"displayName": "Open",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 5,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "subject",
+				"dataType": "String",
+				"displayName": "Subject",
+				"description": "Subject associated with the activity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "to",
+				"dataType": "Guid",
+				"displayName": "To",
+				"description": "Person who is the receiver of the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party",
+					"inherited": true
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the social activity.",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type",
+					"inherited": true
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Shows the record that the social activity relates to.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Reference.Regarding",
+					"inherited": true
+				}
+			},
+			{
+				"name": "community",
+				"dataType": "String",
+				"displayName": "Social Channel",
+				"description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "socialprofile_community",
+						"displayName": "Social Channel",
+						"description": "Identifies where the social profile originated from, such as Twitter, or FaceBook.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Facebook"
+							},
+							{
+								"value": 2,
+								"displayName": "Twitter"
+							},
+							{
+								"value": 0,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "sentimentvalue",
+				"dataType": "Double",
+				"displayName": "Sentiment Value",
+				"description": "Value derived after assessing words commonly associated with a negative, neutral, or positive sentiment that occurs in a social post. Sentiment information can also be reported as numeric values.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -100000000000,
+					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "postedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "posturl",
+				"dataType": "String",
+				"displayName": "Post URL",
+				"description": "Shows the URL of the post.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "inresponseto",
+				"dataType": "String",
+				"displayName": "In Response To",
+				"description": "Unique identifier for the responses to a post. For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "postmessagetype",
+				"dataType": "String",
+				"displayName": "Received As",
+				"description": "Shows if the social post originated as a private or public message.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "socialactivity_postmessagetype",
+						"displayName": "Post Message type",
+						"description": "Post message type private or direct.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Public Message"
+							},
+							{
+								"value": 1,
+								"displayName": "Private Message"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "postid",
+				"dataType": "String",
+				"displayName": "Post ID",
+				"description": "Unique identifier of the post. For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "threadid",
+				"dataType": "String",
+				"displayName": "Thread ID",
+				"description": "Unique identifier of the social conversation. For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "slainvokedid",
+				"dataType": "Guid",
+				"displayName": "Last SLA applied",
+				"description": "Last SLA that was applied to this Social Activity. This field is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "directioncode",
+				"dataType": "Boolean",
+				"displayName": "Direction",
+				"description": "Select the direction of the post as incoming or outbound.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "postfromprofileid",
+				"dataType": "Guid",
+				"displayName": "Posted By",
+				"description": "Shows the author of the post on the corresponding social channel.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "posttoprofileid",
+				"dataType": "String",
+				"displayName": "Posted To",
+				"description": "Shows the recipients of the social post.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "postauthoraccount",
+				"dataType": "Guid",
+				"displayName": "Post Author Account",
+				"description": "Shows the parent account of the author of the post.",
+				"semanticDomain": {
+					"structuralType": "customer",
+					"semanticType": "Idea.Customer",
+					"inherited": true
+				}
+			},
+			{
+				"name": "postauthor",
+				"dataType": "Guid",
+				"displayName": "Post Author",
+				"description": "Shows the contact or account that authored the post.",
+				"semanticDomain": {
+					"structuralType": "customer",
+					"semanticType": "Idea.Customer",
+					"inherited": true
+				}
+			},
+			{
+				"name": "socialadditionalparams",
+				"dataType": "String",
+				"displayName": "Social Additional Parameters",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 8192,
+					"inherited": true
+				}
+			},
+			{
+				"name": "activityadditionalparams",
+				"dataType": "String",
+				"displayName": "Additional Parameters",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 8192,
+					"inherited": true
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) that you want to apply to the Social Activity record.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "onholdtime",
+				"dataType": "Int32",
+				"displayName": "On Hold Time (Minutes)",
+				"description": "Shows how long, in minutes, that the record was on hold.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "lastonholdtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last On Hold Time",
+				"description": "Contains the date and time stamp of the last on hold time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "sortdate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Sort Date",
+				"description": "Shows the date and time by which the activities are sorted.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence",
+					"inherited": true
+				}
+			},
+			{
+				"name": "serviceid",
+				"dataType": "Guid",
+				"displayName": "Service",
+				"description": "Unique identifier for the associated service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "service_socialactivities",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_customer",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "postauthoraccount",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Customer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "SocialActivity_PostAuthorAccount_accounts",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "postauthoraccount",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "socialactivity_postauthoraccount_contacts",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "postauthoraccount",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Socialprofile_SocialActivities",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "postfromprofileid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SocialProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+				},
+				"attributes": [
+					{
+						"name": "socialprofileid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "activity_pointer_socialactivity",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f8933236-f276-4bb5-ffb1-d31fd98f6199"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_socialactivity",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "manualsla_socialactivity",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "KnowledgeArticle_SocialActivities",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				},
+				"attributes": [
+					{
+						"name": "knowledgearticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "KnowledgeBaseRecord_SocialActivities",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeBaseRecord",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+				},
+				"attributes": [
+					{
+						"name": "knowledgebaserecordid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_socialactivity",
+			"referencing": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,353 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "TopicModelConfiguration",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "63553abd-0366-c187-d221-b1ee3b1a5eb9"
+			}
+		},
+		"description": "Configuration settings for identification of topics using text analytics.",
+		"displayName": "Topic Model Configuration",
+		"attributes": [
+			{
+				"name": "topicmodelconfigurationid",
+				"dataType": "Guid",
+				"displayName": "TopicModelConfiguration",
+				"description": "Unique identifier for entity instances",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier for the organization",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type a logical name for the model.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Enter a description for the model",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "ngramsize",
+				"dataType": "Int32",
+				"displayName": "Maximum Key Phrase Words",
+				"description": "Enter the maximum number of key phrase words to use in a topic.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 1,
+					"maxValue": 3
+				}
+			},
+			{
+				"name": "minrelevancescore",
+				"dataType": "Decimal",
+				"displayName": "Minimum Relevance Score",
+				"description": "Enter the minimum relevance score of a topic.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 1
+				}
+			},
+			{
+				"name": "stopwords",
+				"dataType": "String",
+				"displayName": "Stop Words",
+				"description": "Stop words.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "topicmodelid",
+				"dataType": "Guid",
+				"displayName": "TopicModelId",
+				"description": "Unique identifier for Model associated with Topic Model Configuration.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "timefilter",
+				"dataType": "String",
+				"displayName": "Time Window Filter",
+				"description": "Select the time window to filter on for the last number of days or weeks.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "topicmodelconfiguration_timefilter",
+						"displayName": "Time Window Filter",
+						"description": "Select the time window to filter on for the last number of days or weeks.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Last N Days"
+							},
+							{
+								"value": 2,
+								"displayName": "Last N Weeks"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "timefilterduration",
+				"dataType": "Int32",
+				"displayName": "Time Filter Duration",
+				"description": "Time Filter Duration",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "datafilter",
+				"dataType": "String",
+				"displayName": "Data Filter",
+				"description": "Specify the data filter configured to filter records.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "sourceentity",
+				"dataType": "String",
+				"displayName": "Source Entity",
+				"description": "Type of entity with which the topic model configuration is associated.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "topicmodelconfiguration_sourceentity",
+						"displayName": "Source Entity",
+						"description": "Shows the entity whose records are used for topic analysis.",
+						"items": [
+							{
+								"value": 112,
+								"displayName": "Incident"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "fetchxmllist",
+				"dataType": "String",
+				"displayName": "Fetch Xml",
+				"description": "Fetch Xml",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 500000
+				}
+			},
+			{
+				"name": "solutionid",
+				"dataType": "Guid",
+				"displayName": "Solution",
+				"description": "Unique identifier of the associated solution.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate",
+				"dataType": "String",
+				"displayName": "Component State",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "overwritetime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "ismanaged",
+				"dataType": "Boolean",
+				"displayName": "State",
+				"description": "Is Manageed",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "topicmodelconfigurationidunique",
+				"dataType": "Guid",
+				"displayName": "Topic Model Configuration Unique Id",
+				"description": "Unique identifier of the Topic Model Configuration used when synchronizing customizations for the Microsoft Dynamics 365 client for Outlook",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "topicmodel_topicmodelconfiguration",
+			"referencing": {
+				"entity": {
+					"type": "TopicModelConfiguration",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "63553abd-0366-c187-d221-b1ee3b1a5eb9"
+				},
+				"attributes": [
+					{
+						"name": "topicmodelid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TopicModel",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "dec179b8-61ac-15ac-80fd-a66a23c6905b"
+				},
+				"attributes": [
+					{
+						"name": "topicmodelid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_topicmodelconfiguration",
+			"referencing": {
+				"entity": {
+					"type": "TopicModelConfiguration",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "63553abd-0366-c187-d221-b1ee3b1a5eb9"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

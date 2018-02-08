@@ -1,0 +1,846 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Entitlement",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+			}
+		},
+		"description": "Defines the amount and type of support a customer should receive.",
+		"displayName": "Entitlement",
+		"attributes": [
+			{
+				"name": "entitlementid",
+				"dataType": "Guid",
+				"displayName": "Entitlement",
+				"description": "Unique identifier for entity instances",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the entitlement.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "emailaddress",
+				"dataType": "String",
+				"displayName": "Email Address",
+				"description": "The primary email address for the entity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Entitlement Name",
+				"description": "Type a meaningful name for the entitlement.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process Id",
+				"description": "Contains the id of the process associated with the entity.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Stage Id",
+				"description": "Contains the id of the stage where the entity is located.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "allocationtypecode",
+				"dataType": "String",
+				"displayName": "Allocation Type",
+				"description": "Select the type of entitlement terms.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "entitlement_allocationtype",
+						"displayName": "Allocation Type",
+						"description": "Allocation Type",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Number of cases"
+							},
+							{
+								"value": 1,
+								"displayName": "Number of hours"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the Entitlement",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "customerid",
+				"dataType": "Guid",
+				"displayName": "Customer",
+				"description": "Choose a contact or account for which this entitlement has been defined.",
+				"semanticDomain": {
+					"structuralType": "customer",
+					"semanticType": "Idea.Customer"
+				}
+			},
+			{
+				"name": "decreaseremainingon",
+				"dataType": "String",
+				"displayName": "Decrease Remaining On",
+				"description": "Select whether to decrease the remaining terms when the case is created or when it is resolved.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "entitlement_decreaseremainingon",
+						"displayName": "Decrease Remaining On",
+						"description": "Information about whether to decrease the remaining terms when the case is created or when it is resolved",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Case Resolution"
+							},
+							{
+								"value": 1,
+								"displayName": "Case Creation"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "enddate",
+				"dataType": "DateTimeOffset",
+				"displayName": "End Date",
+				"description": "Enter the date when the entitlement ends.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "entitlementtemplateid",
+				"dataType": "Guid",
+				"displayName": "Entitlement Template",
+				"description": "Unique identifier for Entitlement Template associated with Entitlement.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "kbaccesslevel",
+				"dataType": "String",
+				"displayName": "KB Access Level",
+				"description": "Select the access someone will have to the knowledge base on the portal.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "entitlement_kbaccesslevel",
+						"displayName": "KB Access Level",
+						"description": "KB Access Level",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Standard"
+							},
+							{
+								"value": 1,
+								"displayName": "Premium"
+							},
+							{
+								"value": 2,
+								"displayName": "None"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "remainingterms",
+				"dataType": "Decimal",
+				"displayName": "Remaining Terms",
+				"description": "Type the total number of entitlement terms that are left.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": -100000000000,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "restrictcasecreation",
+				"dataType": "Boolean",
+				"displayName": "Restrict based on entitlement terms",
+				"description": "Tells whether case creation is restricted based on entitlement terms.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) associated with the entitlement.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "startdate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Start Date",
+				"description": "Enter the date when the entitlement starts.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "entitlement_statecode",
+						"displayName": "State Code",
+						"description": "State Code of the Entitlement",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Draft"
+							},
+							{
+								"value": 1,
+								"displayName": "Active"
+							},
+							{
+								"value": 2,
+								"displayName": "Cancelled"
+							},
+							{
+								"value": 3,
+								"displayName": "Expired"
+							},
+							{
+								"value": 4,
+								"displayName": "Waiting"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Code",
+				"description": "Select the reason code that explains the status of the entitlement.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "entitlement_statuscode",
+						"displayName": "Status",
+						"description": "Status of the entitlement.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Draft",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Cancelled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Expired",
+								"annotations": [
+									"whenStateIs:3"
+								]
+							},
+							{
+								"value": 1200,
+								"displayName": "Waiting",
+								"annotations": [
+									"whenStateIs:4"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "totalterms",
+				"dataType": "Decimal",
+				"displayName": "Total Terms",
+				"description": "Type the total number of entitlement terms.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "isdefault",
+				"dataType": "Boolean",
+				"displayName": "Is Default",
+				"description": "Shows whether this entitlement is the default one for the specified customer.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "accountid",
+				"dataType": "Guid",
+				"displayName": "Account",
+				"description": "Unique identifier for Account associated with Entitlement.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Account"
+				}
+			},
+			{
+				"name": "contactid",
+				"dataType": "Guid",
+				"displayName": "Contact",
+				"description": "Unique identifier for Contact associated with Entitlement.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Exchange rate for the currency associated with the contact with respect to the base currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Unique identifier of the currency associated with the contact.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_customer",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Customer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "sla_entitlement",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contact_entitlement_ContactId",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_entitlement",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "account_entitlement_Account",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "entitlementtemplateid_RelationShip",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "entitlementtemplateid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "EntitlementTemplate",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "27b2c278-f860-4e97-fc0b-a1dd0bebe978"
+				},
+				"attributes": [
+					{
+						"name": "entitlementtemplateid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_entitlement",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_Entitlement",
+			"referencing": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}
