@@ -1,0 +1,1332 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Mailbox",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+			}
+		},
+		"description": "",
+		"displayName": "Mailbox",
+		"attributes": [
+			{
+				"name": "mailboxid",
+				"dataType": "Guid",
+				"displayName": "Mailbox",
+				"description": "Unique identifier of the mailbox.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Select the business unit that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the mailbox is active or inactive.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "mailbox_statecode",
+						"displayName": "Status",
+						"description": "Status of the Mailbox",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Inactive"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the mailbox's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "mailbox_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the Mailbox",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Inactive",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "exchangesyncstatexml",
+				"dataType": "String",
+				"displayName": "Exchange Sync State",
+				"description": "Contains the exchange synchronization state in XML format.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type the name of the mailbox.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "emailaddress",
+				"dataType": "String",
+				"displayName": "Email Address",
+				"description": "Type the email address of the mailbox.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "incomingemaildeliverymethod",
+				"dataType": "String",
+				"displayName": "Incoming Email",
+				"description": "Select how incoming email will be delivered to the mailbox.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_incomingemaildeliverymethod",
+						"displayName": "Incoming Email Delivery Method",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 1,
+								"displayName": "Microsoft Dynamics 365 for Outlook"
+							},
+							{
+								"value": 2,
+								"displayName": "Server-Side Synchronization or Email Router"
+							},
+							{
+								"value": 3,
+								"displayName": "Forward Mailbox"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "outgoingemaildeliverymethod",
+				"dataType": "String",
+				"displayName": "Outgoing Email",
+				"description": "Select how outgoing email will be sent from the mailbox.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_outgoingemaildeliverymethod",
+						"displayName": "Outgoing Email Delivery Method",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 1,
+								"displayName": "Microsoft Dynamics 365 for Outlook"
+							},
+							{
+								"value": 2,
+								"displayName": "Server-Side Synchronization or Email Router"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "processanddeleteemails",
+				"dataType": "Boolean",
+				"displayName": "Delete Emails after Processing",
+				"description": "Select whether to delete emails from the mailbox after processing.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "allowemailconnectortousecredentials",
+				"dataType": "Boolean",
+				"displayName": "Allow to Use Credentials for Email Processing",
+				"description": "Choose whether to allow the email connector to use credentials.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "username",
+				"dataType": "String",
+				"displayName": "User Name",
+				"description": "Type a user name used for mailbox authentication.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Choose the user associated to the mailbox.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "emailserverprofile",
+				"dataType": "Guid",
+				"displayName": "Server Profile",
+				"description": "Select the email server profile of the mailbox.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "isforwardmailbox",
+				"dataType": "Boolean",
+				"displayName": "Is Forward Mailbox",
+				"description": "Select whether the mailbox is a forward mailbox.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization",
+				"description": "Unique identifier of the organization associated with the record.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "emailrouteraccessapproval",
+				"dataType": "String",
+				"displayName": "Email Address Status",
+				"description": "Shows the status of the email address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_emailrouteraccessapproval",
+						"displayName": "Shows whether the email address is approved for each mailbox for processing email through server-side synchronization or the Email Router.",
+						"description": "Indicates the approval options for server-side synchronization or Email Router access.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Empty"
+							},
+							{
+								"value": 1,
+								"displayName": "Approved"
+							},
+							{
+								"value": 2,
+								"displayName": "Pending Approval"
+							},
+							{
+								"value": 3,
+								"displayName": "Rejected"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "hostid",
+				"dataType": "String",
+				"displayName": "Host",
+				"description": "Unique identifier of the async host that is processing this mailbox.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256
+				}
+			},
+			{
+				"name": "noemailcount",
+				"dataType": "Int32",
+				"displayName": "Zero email count for mailbox",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "processemailreceivedafter",
+				"dataType": "DateTimeOffset",
+				"displayName": "Process Email Received After",
+				"description": "Shows the date and time to start processing email received by the mailbox.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "receivingpostponeduntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone receiving emails for the mailbox until the specified data and time.",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "outgoingemailstatus",
+				"dataType": "String",
+				"displayName": "Outgoing Email Status",
+				"description": "Select the status of outgoing email messages.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_outgoingemailstatus",
+						"displayName": "Outgoing Email Status",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Run"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							},
+							{
+								"value": 2,
+								"displayName": "Failure"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "incomingemailstatus",
+				"dataType": "String",
+				"displayName": "Incoming Email Status",
+				"description": "Select the status that will be assigned to incoming email messages.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_incomingemailstatus",
+						"displayName": "Incoming Email Status",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Run"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							},
+							{
+								"value": 2,
+								"displayName": "Failure"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "testmailboxaccesscompletedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Mailbox Test Completed On",
+				"description": "Date and time when the last email configuration test was completed for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "testemailconfigurationscheduled",
+				"dataType": "Boolean",
+				"displayName": "Test Email Configuration Scheduled",
+				"description": "Indicates if the email configuration test has been scheduled for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "enabledforincomingemail",
+				"dataType": "Boolean",
+				"displayName": "Enabled For Incoming Email",
+				"description": "Choose whether the mailbox is enabled for receiving email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "transientfailurecount",
+				"dataType": "Int32",
+				"displayName": "Transient Failure Count",
+				"description": "Concatenation of transient failure counts of all mailbox operations.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "actdeliverymethod",
+				"dataType": "String",
+				"displayName": "Appointments, Contacts, and Tasks",
+				"description": "Choose the delivery method for the mailbox for appointments, contacts, and tasks.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_actdeliverymethod",
+						"displayName": "Appointments, Contacts, and Tasks",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Microsoft Dynamics 365 for Outlook"
+							},
+							{
+								"value": 1,
+								"displayName": "Server-Side Synchronization"
+							},
+							{
+								"value": 2,
+								"displayName": "None"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the mailbox.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "postponetestemailconfigurationuntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone Test Email Configuration Until",
+				"description": "Shows the date and time when the next email configuration test will be run for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "testemailconfigurationretrycount",
+				"dataType": "Int32",
+				"displayName": "Test Email Configuration Retry Count",
+				"description": "Shows the number of times an email configuration test has been performed.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "postponesendinguntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone Sending Until",
+				"description": "Shows the date and time when the mailbox can start sending emails.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "undeliverablefolder",
+				"dataType": "String",
+				"displayName": "Undeliverable Folder",
+				"description": "Shows the ID of the Undeliverable folder in the mailbox managed by Microsoft Exchange.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256
+				}
+			},
+			{
+				"name": "ispasswordset",
+				"dataType": "Boolean",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "enabledforoutgoingemail",
+				"dataType": "Boolean",
+				"displayName": "Enabled For Outgoing Email",
+				"description": "Choose whether the mailbox is enabled for sending email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "processingstatecode",
+				"dataType": "Int32",
+				"displayName": "Mailbox Processing State",
+				"description": "Information that indicates whether email will be processed for this mailbox",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastautodiscoveredon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Auto Discovered On",
+				"description": "Shows the date and time when the Exchange web services URL was last discovered using the AutoDiscover service.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "postponemailboxprocessinguntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone Mailbox Processing Until",
+				"description": "Shows the date and time when processing will begin on this mailbox.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "ewsurl",
+				"dataType": "String",
+				"displayName": "Exchange Web Services URL",
+				"description": "Exchange web services endpoint URL for the mailbox.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "mailboxprocessingcontext",
+				"dataType": "Int32",
+				"displayName": "Processing Context of the Mailbox",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "enabledforact",
+				"dataType": "Boolean",
+				"displayName": "Enabled For Appointments, Contacts, And Tasks",
+				"description": "Indicates whether the mailbox is enabled for Appointments, Contacts, and Tasks.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "receivingpostponeduntilforact",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone processing Appointments, Contacts, and Tasks for the mailbox until the specified data and time.",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "noactcount",
+				"dataType": "Int32",
+				"displayName": "Zero appointment, contact, task count for mailbox",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "actstatus",
+				"dataType": "String",
+				"displayName": "Appointments, Contacts, and Tasks Status",
+				"description": "Status of the Appointments, Contacts, and Tasks.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_actstatus",
+						"displayName": "Appointments, Contacts, and Tasks Status",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Run"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							},
+							{
+								"value": 2,
+								"displayName": "Failure"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"displayName": "Entity Image Id",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "isemailaddressapprovedbyo365admin",
+				"dataType": "Boolean",
+				"displayName": "Email Address O365 Admin Approval Status",
+				"description": "Shows the status of approval of the email address by O365 Admin.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isactsyncorgflagset",
+				"dataType": "Boolean",
+				"displayName": "Set Current Organization as Synchronization Organization",
+				"description": "Set the current organization as the synchronization organization.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "processedtimes",
+				"dataType": "Int32",
+				"displayName": "Monitor Performance",
+				"description": "The number of times mailbox has processed",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastduration",
+				"dataType": "Int32",
+				"displayName": "Monitor last duration Performance",
+				"description": "Last Duration for the mailbox",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "orgmarkedasprimaryforexchangesync",
+				"dataType": "Boolean",
+				"displayName": "Crm Org Marked as Primary Org for Exchange Mailbox",
+				"description": "Indicates if the crm org is to be marked as primary syncing org for the mailbox record.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "averagetotalduration",
+				"dataType": "Int32",
+				"displayName": "Monitor Total Performance",
+				"description": "Mailbox Total Duration in Average",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastsyncerrorcode",
+				"dataType": "Int32",
+				"displayName": "Last Sync Error Code",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastsyncerror",
+				"dataType": "String",
+				"displayName": "Last Sync Error Stack",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 2048
+				}
+			},
+			{
+				"name": "lastsyncerrorcount",
+				"dataType": "Int32",
+				"displayName": "Last Sync Error Continuous Count",
+				"description": "For internal use only",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastsyncerroroccurredon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Sync Error Time",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "lastsyncerrormachinename",
+				"dataType": "String",
+				"displayName": "Last Sync Error Machine Name",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 320
+				}
+			},
+			{
+				"name": "itemsprocessedforlastsync",
+				"dataType": "Int32",
+				"displayName": "Items Processed For Last Sync",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "itemsfailedforlastsync",
+				"dataType": "Int32",
+				"displayName": "Items Failed For Last Sync",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastsyncstartedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Sync Start Time",
+				"description": "Last Sync Start Time",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "lastsuccessfulsynccompletedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Successful Sync Time",
+				"description": "Last Successful Sync Time",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "folderhierarchy",
+				"dataType": "String",
+				"displayName": "Folder Hierarchy",
+				"description": "Holds the hierarchy of folders under inbox in XML format.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1048576
+				}
+			},
+			{
+				"name": "processinglastattemptedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Date Processing Last Attempted",
+				"description": "Date and time when the processing of the mailbox was last attempted.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "forcedunlockcount",
+				"dataType": "Int32",
+				"displayName": "Count of the number of times a mailbox gets forced unlocked",
+				"description": "For internal use only",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastmailboxforcedunlockoccurredon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Date Time when a mailbox got forced unlocked",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "isserviceaccount",
+				"dataType": "Boolean",
+				"displayName": "Is Service Account",
+				"description": "Select whether the mailbox corresponds to one for the service account.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "verboseloggingenabled",
+				"dataType": "Int32",
+				"displayName": "Verbose Logging",
+				"description": "Indicates if verbose tracing needs to be enabled for this mailbox.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 100
+				}
+			},
+			{
+				"name": "officeappsdeploymentscheduled",
+				"dataType": "Boolean",
+				"displayName": "Office Apps Deployment Scheduled",
+				"description": "Indicates if the office apps deployment has been scheduled for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "officeappsdeploymentstatus",
+				"dataType": "String",
+				"displayName": "Office Apps Deployment Type",
+				"description": "Indicates the office apps deployment type for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_officeappsdeploymentstatus",
+						"displayName": "Office Apps Deployment Type",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "NotInstalled"
+							},
+							{
+								"value": 1,
+								"displayName": "Installed"
+							},
+							{
+								"value": 2,
+								"displayName": "InstallFailed"
+							},
+							{
+								"value": 3,
+								"displayName": "UninstallFailed"
+							},
+							{
+								"value": 4,
+								"displayName": "UpgradeRequired"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "officeappsdeploymentcompleteon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Office Apps Deployment Completed On",
+				"description": "Date and time when the last office apps deployment was completed for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "officeappsdeploymenterror",
+				"dataType": "String",
+				"displayName": "Office Apps Deployment Error",
+				"description": "The Office Apps deployment error.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 2048
+				}
+			},
+			{
+				"name": "postponeofficeappsdeploymentuntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Postpone Outlook Mail App Install Until",
+				"description": "Shows the date and time when the next outlook mail app install will be run for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "mailboxstatus",
+				"dataType": "String",
+				"displayName": "Mailbox Status",
+				"description": "Last Sync Status for Outgoing, Incoming and ACT as a whole.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_status",
+						"displayName": "Mailbox Status",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Run"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							},
+							{
+								"value": 2,
+								"displayName": "Failure"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "isexchangecontactsimportscheduled",
+				"dataType": "Boolean",
+				"displayName": "Is Exchange Contacts Import Scheduled.",
+				"description": "Is Exchange Contacts Import Scheduled.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "exchangecontactsimportstatus",
+				"dataType": "String",
+				"displayName": "Exchange Contacts Import Status",
+				"description": "Indicates the exchange contacts import status for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "mailbox_exchangecontactsimportstatus",
+						"displayName": "Exchange Contacts Import Deployment Status",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "NotImported"
+							},
+							{
+								"value": 1,
+								"displayName": "Imported"
+							},
+							{
+								"value": 2,
+								"displayName": "ImportFailed"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "exchangecontactsimportcompletedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Exchange Contacts Import Completed On",
+				"description": "Date and time when the exchange contacts import was last completed for a mailbox record.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_mailbox",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "mailbox_regarding_queue",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b9161e62-db25-8fe0-93cb-7fc16edcd6df"
+				},
+				"attributes": [
+					{
+						"name": "queueid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_mailbox",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "emailserverprofile_mailbox",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "emailserverprofile",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "emailserverprofileid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_mailbox",
+			"referencing": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,597 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Template",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
+			}
+		},
+		"description": "Template for an email message that contains the standard attributes of an email message.",
+		"displayName": "Email Template",
+		"attributes": [
+			{
+				"name": "templateid",
+				"dataType": "Guid",
+				"displayName": "Email Template",
+				"description": "Unique identifier of the template.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "subject",
+				"dataType": "String",
+				"displayName": "Subject",
+				"description": "Subject associated with the email template.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ispersonal",
+				"dataType": "Boolean",
+				"displayName": "Viewable By",
+				"description": "Information about whether the template is personal or is available to all users.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "mimetype",
+				"dataType": "String",
+				"displayName": "Mime Type",
+				"description": "MIME type of the email template.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256
+				}
+			},
+			{
+				"name": "templatetypecode",
+				"dataType": "String",
+				"displayName": "Template Type",
+				"description": "Type of email template.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "template_templatetypecode",
+						"displayName": "Template Type",
+						"description": "Type of email template.",
+						"items": [
+							{
+								"value": 8,
+								"displayName": "Global"
+							},
+							{
+								"value": 1,
+								"displayName": "Account"
+							},
+							{
+								"value": 2,
+								"displayName": "Contact"
+							},
+							{
+								"value": 4700,
+								"displayName": "System Job"
+							},
+							{
+								"value": 4,
+								"displayName": "Lead"
+							},
+							{
+								"value": 4402,
+								"displayName": "Campaign Activity"
+							},
+							{
+								"value": 112,
+								"displayName": "Case"
+							},
+							{
+								"value": 1010,
+								"displayName": "Contract"
+							},
+							{
+								"value": 4214,
+								"displayName": "Service Activity"
+							},
+							{
+								"value": 3,
+								"displayName": "Opportunity"
+							},
+							{
+								"value": 1084,
+								"displayName": "Quote"
+							},
+							{
+								"value": 1088,
+								"displayName": "Order"
+							},
+							{
+								"value": 1090,
+								"displayName": "Invoice"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "body",
+				"dataType": "String",
+				"displayName": "Body",
+				"description": "Body text of the email template.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "title",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Title of the template.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of the email template.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user who owns the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the email template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "presentationxml",
+				"dataType": "String",
+				"displayName": "Presentation XML",
+				"description": "XML data for the body of the email template.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the email template was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the email template was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the template.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the template for the email activity.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "subjectpresentationxml",
+				"dataType": "String",
+				"displayName": "Subject XML",
+				"description": "XML data for the subject of the email template.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "generationtypecode",
+				"dataType": "Int32",
+				"displayName": "Generation Type Code",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "languagecode",
+				"dataType": "Int32",
+				"displayName": "Language",
+				"description": "Language of the email template.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Idea.Language",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overwritetime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Overwrite Time",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "componentstate",
+				"dataType": "String",
+				"displayName": "Component State",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "componentstate",
+						"displayName": "Component State",
+						"description": "The state of this component.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Published"
+							},
+							{
+								"value": 1,
+								"displayName": "Unpublished"
+							},
+							{
+								"value": 2,
+								"displayName": "Deleted"
+							},
+							{
+								"value": 3,
+								"displayName": "Deleted Unpublished"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "solutionid",
+				"dataType": "Guid",
+				"displayName": "Solution",
+				"description": "Unique identifier of the associated solution.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "templateidunique",
+				"dataType": "Guid",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team who owns the template.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ismanaged",
+				"dataType": "Boolean",
+				"displayName": "Is Managed",
+				"description": "Indicates whether the solution component is part of a managed solution.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "iscustomizable",
+				"dataType": "Boolean",
+				"displayName": "Customizable",
+				"description": "Information that specifies whether this component can be customized.",
+				"semanticDomain": {
+					"structuralType": "managedproperty"
+				}
+			},
+			{
+				"name": "introducedversion",
+				"dataType": "String",
+				"displayName": "Introduced Version",
+				"description": "Version in which the form is introduced.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Measurement.Version",
+					"maxLength": 48
+				}
+			},
+			{
+				"name": "opencount",
+				"dataType": "Int32",
+				"displayName": "Open Count",
+				"description": "For internal use only. Shows the number of times emails that use this template have been opened.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "replycount",
+				"dataType": "Int32",
+				"displayName": "Reply Count",
+				"description": "For internal use only. Shows the number of times emails that use this template have received replies.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "isrecommended",
+				"dataType": "Boolean",
+				"displayName": "Recommended",
+				"description": "Indicates if a template is recommended by Dynamics 365.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "openrate",
+				"dataType": "Int32",
+				"displayName": "Open Rate",
+				"description": "Shows the open rate of this template. This is based on number of opens on followed emails that use this template.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "replyrate",
+				"dataType": "Int32",
+				"displayName": "Reply Rate",
+				"description": "Shows the reply rate for this template. This is based on number of replies received on followed emails that use this template.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "usedcount",
+				"dataType": "Int32",
+				"displayName": "Sent email count",
+				"description": "Shows the number of sent emails that use this template.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Template",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Template",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_templates",
+			"referencing": {
+				"entity": {
+					"type": "Template",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_templates",
+			"referencing": {
+				"entity": {
+					"type": "Template",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

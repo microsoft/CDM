@@ -1,0 +1,1046 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "EmailServerProfile",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+			}
+		},
+		"description": "Holds the Email Server Profiles of an organization",
+		"displayName": "Email Server Profile",
+		"attributes": [
+			{
+				"name": "emailserverprofileid",
+				"dataType": "Guid",
+				"displayName": "EmailServerProfile",
+				"description": "Unique identifier of the email server profile.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier of the organization associated with the record.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the email server profile is active or inactive.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "emailserverprofile_statecode",
+						"displayName": "Status",
+						"description": "Status of the Mail Server Profile",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Inactive"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the email server profile's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "emailserverprofile_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the MailServerProfile",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Inactive",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type a meaningful name for the email server profile. This name is displayed when you need to select an email server profile.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "servertype",
+				"dataType": "String",
+				"displayName": "Email Server Type",
+				"description": "Select the profile's email server type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_servertype",
+						"displayName": "Email Server Type",
+						"description": "Type of the mail server",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Exchange Server"
+							},
+							{
+								"value": 1,
+								"displayName": "Other (POP3/SMTP)"
+							},
+							{
+								"value": 2,
+								"displayName": "Exchange Server (Hybrid)"
+							},
+							{
+								"value": 3,
+								"displayName": "Exchange Online (Hybrid)"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "outgoingserverlocation",
+				"dataType": "String",
+				"displayName": "Outgoing Email Server Location",
+				"description": "Type the location of the server for outgoing email.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "incomingserverlocation",
+				"dataType": "String",
+				"displayName": "Incoming Email Server Location",
+				"description": "Type the location of the server for incoming email.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "incomingusername",
+				"dataType": "String",
+				"displayName": "Incoming Email User Name",
+				"description": "Type the user name for incoming email.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "outgoingusername",
+				"dataType": "String",
+				"displayName": "Outgoing Email User Name",
+				"description": "Type the user name for outgoing email.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "incomingportnumber",
+				"dataType": "Int32",
+				"displayName": "Incoming Email Port",
+				"description": "Type the Exchange port number for incoming mail.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 65536
+				}
+			},
+			{
+				"name": "outgoingportnumber",
+				"dataType": "Int32",
+				"displayName": "Outgoing Email Port",
+				"description": "Type the Exchange port number for outgoing mail.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 65536
+				}
+			},
+			{
+				"name": "incomingusessl",
+				"dataType": "Boolean",
+				"displayName": "Use SSL for Incoming Email",
+				"description": "Select whether to use the Secure Sockets Layer (SSL) protocol for incoming email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "outgoingusessl",
+				"dataType": "Boolean",
+				"displayName": "Use SSL for Outgoing Email",
+				"description": "Select whether to use the Secure Sockets Layer (SSL) protocol for outgoing email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "useautodiscover",
+				"dataType": "Boolean",
+				"displayName": "Auto Discover Server Location",
+				"description": "Select whether to automatically discover the server location",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "incomingauthenticationprotocol",
+				"dataType": "String",
+				"displayName": "Incoming Authentication Protocol",
+				"description": "Select the incoming email authentication protocol that is used for connecting to the email server.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_authenticationprotocol",
+						"displayName": "Authentication Protocol",
+						"description": "Authentication protocol used when connecting to the email server.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Auto Detect"
+							},
+							{
+								"value": 1,
+								"displayName": "Negotiate"
+							},
+							{
+								"value": 2,
+								"displayName": "NTLM"
+							},
+							{
+								"value": 3,
+								"displayName": "Basic"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "outgoingcredentialretrieval",
+				"dataType": "String",
+				"displayName": "Outgoing Email Credential Retrieval",
+				"description": "Select how credentials will be retrieved for outgoing email.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_outgoingcredentialretrieval",
+						"displayName": "Use Windows Authentication for Outgoing",
+						"description": "Options specifying the credential retrieval method for outgoing connection.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Credentials Specified by a User or Queue"
+							},
+							{
+								"value": 1,
+								"displayName": "Credentials Specified in Email Server Profile"
+							},
+							{
+								"value": 2,
+								"displayName": "Server to Server Authentication"
+							},
+							{
+								"value": 3,
+								"displayName": "Windows Integrated Authentication"
+							},
+							{
+								"value": 4,
+								"displayName": "Without Credentials (Anonymous)"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "incomingcredentialretrieval",
+				"dataType": "String",
+				"displayName": "Incoming Email Credential Retrieval",
+				"description": "Select how credentials will be retrieved for incoming email.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_incomingcredentialretrieval",
+						"displayName": "Credential retrieval method",
+						"description": "Options specifying the credential retrieval method.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Credentials Specified by a User or Queue"
+							},
+							{
+								"value": 1,
+								"displayName": "Credentials Specified in Email Server Profile"
+							},
+							{
+								"value": 2,
+								"displayName": "Server to Server Authentication"
+							},
+							{
+								"value": 3,
+								"displayName": "Windows Integrated Authentication"
+							},
+							{
+								"value": 4,
+								"displayName": "Without Credentials (Anonymous)"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "encodingcodepage",
+				"dataType": "String",
+				"displayName": "Encoding Code Page",
+				"description": "Indicates the code page to use when encoding email content.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "processemailsreceivedafter",
+				"dataType": "DateTimeOffset",
+				"displayName": "Process Emails Received After",
+				"description": "Shows the date and time after which email messages that are received will be processed for mailboxes associated with the email server profile.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "maxconcurrentconnections",
+				"dataType": "Int32",
+				"displayName": "Maximum Concurrent Connections",
+				"description": "Maximum number of concurrent connections allowed to the email server per authenticated user.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 1,
+					"maxValue": 65536
+				}
+			},
+			{
+				"name": "outgoingautograntdelegateaccess",
+				"dataType": "Boolean",
+				"displayName": "Auto Grant Delegate Access for Outgoing Email.",
+				"description": "Indicates whether the email connector will grant delegate access permissions to the accessing user when required while processing outgoing emails.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "outgoinguseimpersonation",
+				"dataType": "Boolean",
+				"displayName": "Use Impersonation for Outgoing Email",
+				"description": "Select whether to use impersonation for accessing the mailbox to process outgoing emails.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "incominguseimpersonation",
+				"dataType": "Boolean",
+				"displayName": "Use Impersonation for Incoming Email",
+				"description": "Select whether to use impersonation to access the mailbox to process incoming emails.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Select the business unit that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "incomingpartnerapplication",
+				"dataType": "Guid",
+				"displayName": "Incoming Partner Application",
+				"description": "Indicates the incoming partner application.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "outgoingpartnerapplication",
+				"dataType": "Guid",
+				"displayName": "Outgoing Partner Application",
+				"description": "Indicates the outgoing partner application.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "moveundeliveredemails",
+				"dataType": "Boolean",
+				"displayName": "Move Undelivered Emails to the Undeliverable Folder",
+				"description": "Indicates whether to move undelivered incoming emails to the Undeliverable folder in Microsoft Exchange.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "minpollingintervalinminutes",
+				"dataType": "Int32",
+				"displayName": "Minimum Polling Interval In Minutes",
+				"description": "Minimum polling interval, in minutes, for mailboxes that are associated with this email server profile.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1440
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information that describes the email server profile.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "usesamesettingsforoutgoingconnections",
+				"dataType": "Boolean",
+				"displayName": "Use Same Settings for Outgoing Connection",
+				"description": "Select whether to use the same settings for incoming and outgoing connections.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isincomingpasswordset",
+				"dataType": "Boolean",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isoutgoingpasswordset",
+				"dataType": "Boolean",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "outgoingauthenticationprotocol",
+				"dataType": "String",
+				"displayName": "Outgoing Authentication Protocol",
+				"description": "Select the outgoing email authentication protocol that is used for connecting to the email server.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_authenticationprotocol",
+						"displayName": "Authentication Protocol",
+						"description": "Authentication protocol used when connecting to the email server.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Auto Detect"
+							},
+							{
+								"value": 1,
+								"displayName": "Negotiate"
+							},
+							{
+								"value": 2,
+								"displayName": "NTLM"
+							},
+							{
+								"value": 3,
+								"displayName": "Basic"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "exchangeversion",
+				"dataType": "String",
+				"displayName": "Exchange Version",
+				"description": "Select the version of Exchange that is on the email server.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_exchangeversion",
+						"displayName": "Exchange Version",
+						"description": "Exchange version of the email server",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Exchange 2007"
+							},
+							{
+								"value": 1,
+								"displayName": "Exchange 2007 SP1"
+							},
+							{
+								"value": 2,
+								"displayName": "Exchange 2010"
+							},
+							{
+								"value": 3,
+								"displayName": "Exchange 2010 SP1"
+							},
+							{
+								"value": 4,
+								"displayName": "Exchange 2010 SP2"
+							},
+							{
+								"value": 5,
+								"displayName": "Exchange 2013"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"displayName": "Entity Image Id",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "timeoutmailboxconnection",
+				"dataType": "Boolean",
+				"displayName": "Timeout Mailbox Connection to Exchange",
+				"description": "Select whether to timeout a single mailbox.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "sendemailalert",
+				"dataType": "Boolean",
+				"displayName": "Send an alert email to the owner of the email server profile reporting on major events",
+				"description": "Select whether to send an email alert if more than 50% of the mailboxes in this email server profile failed to synchronize in an hour period.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "timeoutmailboxconnectionafteramount",
+				"dataType": "Int32",
+				"displayName": "Timeout a Single Mailbox Connection After this Amount of Milliseconds",
+				"description": "Type the number of milliseconds to timeout a single mailbox. The upper limit is 100 seconds.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 100000
+				}
+			},
+			{
+				"name": "emailservertypename",
+				"dataType": "String",
+				"displayName": "Email Server Type Name",
+				"description": "Email Server Type Name",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "exchangeonlinetenantid",
+				"dataType": "String",
+				"displayName": "Exchange Online Tenant Id",
+				"description": "Type the tenant ID of Exchange Online.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 36
+				}
+			},
+			{
+				"name": "lasttestexecutionstatus",
+				"dataType": "String",
+				"displayName": "Last Test Execution Status",
+				"description": "Shows the last test Execution status of email server profile",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_lasttestexecutionstatus",
+						"displayName": "Select the status of the Test",
+						"description": "Internally selects based on the execution of Test",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Failure"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							},
+							{
+								"value": 2,
+								"displayName": "Warning"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "lasttestvalidationstatus",
+				"dataType": "String",
+				"displayName": "Last Test Validation Status",
+				"description": "Shows the last test Validation status of email server profile",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_lasttestvalidationstatus",
+						"displayName": "Select the status of the Test",
+						"description": "Internally selects based on the execution of Test",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Failure"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "lasttestrequest",
+				"dataType": "String",
+				"displayName": "Last Test Request",
+				"description": "Shows the EWS Request created during the Last Test",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "lasttestresponse",
+				"dataType": "String",
+				"displayName": "Last Test Response",
+				"description": "Shows the EWS Response obtained during the Last Test",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "lastteststarttime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Test Time",
+				"description": "Shows the Last Test Start date and time",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "lasttesttotalexecutiontime",
+				"dataType": "Int64",
+				"displayName": "Last Test Time Taken",
+				"description": "Shows the Time taken while running the last test",
+				"semanticDomain": {
+					"structuralType": "bigint"
+				}
+			},
+			{
+				"name": "owneremailaddress",
+				"dataType": "String",
+				"displayName": "Email Server Profile Owner's email address",
+				"description": "Email Server Profile Owner's email address",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "usedefaulttenantid",
+				"dataType": "Boolean",
+				"displayName": "Use Default Tenant Id",
+				"description": "Select whether to use the Exchange Online Tenant ID obtained from running Microsoft Azure PowerShell cmdlets (highly recommended). If you select No, you can edit this field manually",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "lastauthorizationstatus",
+				"dataType": "String",
+				"displayName": "Last Test Authorization Status",
+				"description": "Shows the last test authorization status of email server profile",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "emailserverprofile_lastauthorizationstatus",
+						"displayName": "Select the status of the Test",
+						"description": "Internally selects based on the execution of Test",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Failure"
+							},
+							{
+								"value": 1,
+								"displayName": "Success"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "lastcrmmessage",
+				"dataType": "String",
+				"displayName": "Last Dynamics 365 Message",
+				"description": "Shows the Dynamics 365 message obtained during the Last Test",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "defaultserverlocation",
+				"dataType": "String",
+				"displayName": "Default Email Server Location",
+				"description": "Type the default location of the server.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 2084
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the email server profile.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_emailserverprofile",
+			"referencing": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_emailserverprofile",
+			"referencing": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_emailserverprofile",
+			"referencing": {
+				"entity": {
+					"type": "EmailServerProfile",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,711 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "CustomerAddress",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+			}
+		},
+		"description": "Address and shipping information. Used to store additional addresses for an account or contact.",
+		"displayName": "Address",
+		"attributes": [
+			{
+				"name": "parentid",
+				"dataType": "Guid",
+				"displayName": "Parent",
+				"description": "Choose the customer's address.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Object.Relationship.Parent"
+				}
+			},
+			{
+				"name": "customeraddressid",
+				"dataType": "Guid",
+				"displayName": "Address",
+				"description": "Unique identifier of the customer address.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "addressnumber",
+				"dataType": "Int32",
+				"displayName": "Address Number",
+				"description": "Shows the number of the address, to indicate whether the address is the primary, secondary, or other address for the customer.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "objecttypecode",
+				"dataType": "String",
+				"displayName": "Object Type ",
+				"description": "Shows the type code of the customer record to indicate whether the address belongs to a customer account or contact.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "customeraddress_objecttypecode",
+						"displayName": "Object Type ",
+						"description": "Type of entity with which the customer address is associated.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Account"
+							},
+							{
+								"value": 2,
+								"displayName": "Contact"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "addresstypecode",
+				"dataType": "String",
+				"displayName": "Address Type",
+				"description": "Select the address type, such as primary or billing.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "customeraddress_addresstypecode",
+						"displayName": "Address Type",
+						"description": "Type of address for the customer, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Bill To"
+							},
+							{
+								"value": 2,
+								"displayName": "Ship To"
+							},
+							{
+								"value": 3,
+								"displayName": "Primary"
+							},
+							{
+								"value": 4,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Address Name",
+				"description": "Type a descriptive name for the customer's address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "primarycontactname",
+				"dataType": "String",
+				"displayName": "Address Contact",
+				"description": "Type the name of the primary contact person for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 150
+				}
+			},
+			{
+				"name": "line1",
+				"dataType": "String",
+				"displayName": "Street 1",
+				"description": "Type the first line of the customer's address to help identify the location.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line2",
+				"dataType": "String",
+				"displayName": "Street 2",
+				"description": "Type the second line of the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line3",
+				"dataType": "String",
+				"displayName": "Street 3",
+				"description": "Type the third line of the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "city",
+				"dataType": "String",
+				"displayName": "City",
+				"description": "Type the city for the customer's address to help identify the location.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "stateorprovince",
+				"dataType": "String",
+				"displayName": "State/Province",
+				"description": "Type the state or province of the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "county",
+				"dataType": "String",
+				"displayName": "County",
+				"description": "Type the county for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "country",
+				"dataType": "String",
+				"displayName": "Country/Region",
+				"description": "Type the country or region for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "postofficebox",
+				"dataType": "String",
+				"displayName": "Post Office Box",
+				"description": "Type the post office box number of the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "postalcode",
+				"dataType": "String",
+				"displayName": "ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "utcoffset",
+				"dataType": "Int32",
+				"displayName": "UTC Offset",
+				"description": "Select the time zone for the address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "freighttermscode",
+				"dataType": "String",
+				"displayName": "Freight Terms",
+				"description": "Select the freight terms to make sure shipping charges are processed correctly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "customeraddress_freighttermscode",
+						"displayName": "Freight Terms",
+						"description": "Freight terms for the customer address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "FOB"
+							},
+							{
+								"value": 2,
+								"displayName": "No Charge"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "upszone",
+				"dataType": "String",
+				"displayName": "UPS Zone",
+				"description": "Type the UPS zone of the customer's address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "latitude",
+				"dataType": "Double",
+				"displayName": "Latitude",
+				"description": "Type the latitude value for the customer's address, for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "telephone1",
+				"dataType": "String",
+				"displayName": "Main Phone",
+				"description": "Type the primary phone number for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "longitude",
+				"dataType": "Double",
+				"displayName": "Longitude",
+				"description": "Type the longitude value for the customer's address, for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "customeraddress_shippingmethodcode",
+						"displayName": "Shipping Method",
+						"description": "Method of shipment for the customer address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Airborne"
+							},
+							{
+								"value": 2,
+								"displayName": "DHL"
+							},
+							{
+								"value": 3,
+								"displayName": "FedEx"
+							},
+							{
+								"value": 4,
+								"displayName": "UPS"
+							},
+							{
+								"value": 5,
+								"displayName": "Postal Mail"
+							},
+							{
+								"value": 6,
+								"displayName": "Full Load"
+							},
+							{
+								"value": 7,
+								"displayName": "Will Call"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "telephone2",
+				"dataType": "String",
+				"displayName": "Phone 2",
+				"description": "Type a second phone number for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone3",
+				"dataType": "String",
+				"displayName": "Telephone 3",
+				"description": "Type a third phone number for the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "fax",
+				"dataType": "String",
+				"displayName": "Fax",
+				"description": "Type the fax number associated with the customer's address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the customer address.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Shows the business unit that the record owner belongs to.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user who owns the customer address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "composite",
+				"dataType": "String",
+				"displayName": "Address",
+				"description": "Shows the complete address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Account_CustomerAddress",
+			"referencing": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "parentid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Contact_CustomerAddress",
+			"referencing": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "parentid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_CustomerAddress",
+			"referencing": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

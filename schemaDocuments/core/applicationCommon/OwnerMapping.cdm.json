@@ -1,0 +1,334 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "OwnerMapping",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "1b644bb9-4872-b16b-475c-7a4ce8496540"
+			}
+		},
+		"description": "In a data map, maps ownership data from the source file to Microsoft Dynamics 365.",
+		"displayName": "Owner Mapping",
+		"attributes": [
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"description": "Date and time when the owner mapping was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "targetuservalueforsourcecrmuserlink",
+				"dataType": "String",
+				"displayName": "Target User Value",
+				"description": "Microsoft Dynamics CRM user.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Reason for the status of the owner mapping.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "ownermapping_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the owner mapping.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "importmapid",
+				"dataType": "Guid",
+				"displayName": "Data Map",
+				"description": "Unique identifier of the data map with which the owner mapping is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the lookup mapping.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownermappingid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the owner mapping.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the owner mapping.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "processcode",
+				"dataType": "String",
+				"displayName": "Process Code",
+				"description": "Code that indicates whether the owner mapping has to be processed",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "ownermapping_processcode",
+						"displayName": "Process Code",
+						"description": "Code that indicates whether the owner mapping has to be processed",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Process"
+							},
+							{
+								"value": 2,
+								"displayName": "Ignore"
+							},
+							{
+								"value": 3,
+								"displayName": "Internal"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "sourcesystemusername",
+				"dataType": "String",
+				"displayName": "Source System User Name",
+				"description": "Source user name that has to be replaced",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "targetsystemuserid",
+				"dataType": "Guid",
+				"displayName": "Target System User",
+				"description": "Unique identifier of the Microsoft Dynamics 365 user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Status of the owner mapping.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "ownermapping_statecode",
+						"displayName": "Status",
+						"description": "Status of the owner mapping.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "sourceuservalueforsourcecrmuserlink",
+				"dataType": "String",
+				"displayName": "Source User Value",
+				"description": "Source user value for source Microsoft Dynamics 365 user link.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "targetsystemuserdomainname",
+				"dataType": "String",
+				"displayName": "Target Domain Name",
+				"description": "Microsoft Dynamics 365 logon name with which the source user name should be replaced.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 260
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the owner mapping was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the ownermapping.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the ownermapping.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "solutionid",
+				"dataType": "Guid",
+				"displayName": "Solution",
+				"description": "Unique identifier of the associated solution.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate",
+				"dataType": "String",
+				"displayName": "Component State",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "componentstate",
+						"displayName": "Component State",
+						"description": "The state of this component.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Published"
+							},
+							{
+								"value": 1,
+								"displayName": "Unpublished"
+							},
+							{
+								"value": 2,
+								"displayName": "Deleted"
+							},
+							{
+								"value": 3,
+								"displayName": "Deleted Unpublished"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "overwritetime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Overwrite Time",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "ismanaged",
+				"dataType": "Boolean",
+				"displayName": "State",
+				"description": "Information that specifies whether this component is managed.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "introducedversion",
+				"dataType": "String",
+				"displayName": "Introduced Version",
+				"description": "Version in which the component is introduced.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Measurement.Version",
+					"maxLength": 48
+				}
+			},
+			{
+				"name": "ownermappingidunique",
+				"dataType": "Guid",
+				"description": "Unique identifier of the OwnerMapping.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "OwnerMapping_SystemUser",
+			"referencing": {
+				"entity": {
+					"type": "OwnerMapping",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1b644bb9-4872-b16b-475c-7a4ce8496540"
+				},
+				"attributes": [
+					{
+						"name": "targetsystemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

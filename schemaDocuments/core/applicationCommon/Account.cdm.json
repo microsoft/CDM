@@ -1,0 +1,2309 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+      "class": {
+        "type": "Account",
+        "namespace": "core.applicationCommon",
+        "semanticVersion": "0.4.0",
+        "semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+      },
+ 			"extends": {
+				"type": "Customer",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+			}
+		},
+		"description": "Business that represents a customer or potential customer. The company that is billed in business transactions.",
+		"displayName": "Account",
+		"attributes": [
+			{
+				"name": "accountid",
+				"dataType": "Guid",
+				"displayName": "Account",
+				"description": "Unique identifier of the account.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "accountcategorycode",
+				"dataType": "String",
+				"displayName": "Category",
+				"description": "Select a category to indicate whether the customer account is standard or preferred.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_accountcategorycode",
+						"displayName": "Category",
+						"description": "Drop-down list for selecting the category of the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Preferred Customer"
+							},
+							{
+								"value": 2,
+								"displayName": "Standard"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "customersizecode",
+				"dataType": "String",
+				"displayName": "Customer Size",
+				"description": "Select the size category or range of the account for segmentation and reporting purposes.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_customersizecode",
+						"displayName": "Customer Size",
+						"description": "Size of the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "preferredcontactmethodcode",
+				"dataType": "String",
+				"displayName": "Preferred Method of Contact",
+				"description": "Select the preferred method of contact.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_preferredcontactmethodcode",
+						"displayName": "Preferred Method of Contact",
+						"description": "Preferred contact method for the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Any"
+							},
+							{
+								"value": 2,
+								"displayName": "Email"
+							},
+							{
+								"value": 3,
+								"displayName": "Phone"
+							},
+							{
+								"value": 4,
+								"displayName": "Fax"
+							},
+							{
+								"value": 5,
+								"displayName": "Mail"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "customertypecode",
+				"dataType": "String",
+				"displayName": "Relationship Type",
+				"description": "Select the category that best describes the relationship between the account and your organization.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_customertypecode",
+						"displayName": "Relationship Type",
+						"description": "Type of the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Competitor"
+							},
+							{
+								"value": 2,
+								"displayName": "Consultant"
+							},
+							{
+								"value": 3,
+								"displayName": "Customer"
+							},
+							{
+								"value": 4,
+								"displayName": "Investor"
+							},
+							{
+								"value": 5,
+								"displayName": "Partner"
+							},
+							{
+								"value": 6,
+								"displayName": "Influencer"
+							},
+							{
+								"value": 7,
+								"displayName": "Press"
+							},
+							{
+								"value": 8,
+								"displayName": "Prospect"
+							},
+							{
+								"value": 9,
+								"displayName": "Reseller"
+							},
+							{
+								"value": 10,
+								"displayName": "Supplier"
+							},
+							{
+								"value": 11,
+								"displayName": "Vendor"
+							},
+							{
+								"value": 12,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "accountratingcode",
+				"dataType": "String",
+				"displayName": "Account Rating",
+				"description": "Select a rating to indicate the value of the customer account.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_accountratingcode",
+						"displayName": "Account Rating",
+						"description": "Drop-down list for selecting account ratings.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "industrycode",
+				"dataType": "String",
+				"displayName": "Industry",
+				"description": "Select the account's primary industry for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_industrycode",
+						"displayName": "Industry",
+						"description": "Type of industry with which the account is associated.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Accounting"
+							},
+							{
+								"value": 2,
+								"displayName": "Agriculture and Non-petrol Natural Resource Extraction"
+							},
+							{
+								"value": 3,
+								"displayName": "Broadcasting Printing and Publishing"
+							},
+							{
+								"value": 4,
+								"displayName": "Brokers"
+							},
+							{
+								"value": 5,
+								"displayName": "Building Supply Retail"
+							},
+							{
+								"value": 6,
+								"displayName": "Business Services"
+							},
+							{
+								"value": 7,
+								"displayName": "Consulting"
+							},
+							{
+								"value": 8,
+								"displayName": "Consumer Services"
+							},
+							{
+								"value": 9,
+								"displayName": "Design, Direction and Creative Management"
+							},
+							{
+								"value": 10,
+								"displayName": "Distributors, Dispatchers and Processors"
+							},
+							{
+								"value": 11,
+								"displayName": "Doctor's Offices and Clinics"
+							},
+							{
+								"value": 12,
+								"displayName": "Durable Manufacturing"
+							},
+							{
+								"value": 13,
+								"displayName": "Eating and Drinking Places"
+							},
+							{
+								"value": 14,
+								"displayName": "Entertainment Retail"
+							},
+							{
+								"value": 15,
+								"displayName": "Equipment Rental and Leasing"
+							},
+							{
+								"value": 16,
+								"displayName": "Financial"
+							},
+							{
+								"value": 17,
+								"displayName": "Food and Tobacco Processing"
+							},
+							{
+								"value": 18,
+								"displayName": "Inbound Capital Intensive Processing"
+							},
+							{
+								"value": 19,
+								"displayName": "Inbound Repair and Services"
+							},
+							{
+								"value": 20,
+								"displayName": "Insurance"
+							},
+							{
+								"value": 21,
+								"displayName": "Legal Services"
+							},
+							{
+								"value": 22,
+								"displayName": "Non-Durable Merchandise Retail"
+							},
+							{
+								"value": 23,
+								"displayName": "Outbound Consumer Service"
+							},
+							{
+								"value": 24,
+								"displayName": "Petrochemical Extraction and Distribution"
+							},
+							{
+								"value": 25,
+								"displayName": "Service Retail"
+							},
+							{
+								"value": 26,
+								"displayName": "SIG Affiliations"
+							},
+							{
+								"value": 27,
+								"displayName": "Social Services"
+							},
+							{
+								"value": 28,
+								"displayName": "Special Outbound Trade Contractors"
+							},
+							{
+								"value": 29,
+								"displayName": "Specialty Realty"
+							},
+							{
+								"value": 30,
+								"displayName": "Transportation"
+							},
+							{
+								"value": 31,
+								"displayName": "Utility Creation and Distribution"
+							},
+							{
+								"value": 32,
+								"displayName": "Vehicle Retail"
+							},
+							{
+								"value": 33,
+								"displayName": "Wholesale"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "territorycode",
+				"dataType": "String",
+				"displayName": "Territory Code",
+				"description": "Select a region or territory for the account for use in segmentation and analysis.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_territorycode",
+						"displayName": "Territory Code",
+						"description": "Territory to which the account belongs.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "accountclassificationcode",
+				"dataType": "String",
+				"displayName": "Classification",
+				"description": "Select a classification code to indicate the potential value of the customer account based on the projected return on investment, cooperation level, sales cycle length or other criteria.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_accountclassificationcode",
+						"displayName": "Classification",
+						"description": "Drop-down list for classifying an account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "businesstypecode",
+				"dataType": "String",
+				"displayName": "Business Type",
+				"description": "Select the legal designation or other business type of the account for contracts or reporting purposes.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_businesstypecode",
+						"displayName": "Business Type",
+						"description": "Type of business associated with the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Shows the business unit that the record owner belongs to.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user who owns the account.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "paymenttermscode",
+				"dataType": "String",
+				"displayName": "Payment Terms",
+				"description": "Select the payment terms to indicate when the customer needs to pay the total amount.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_paymenttermscode",
+						"displayName": "Payment Terms",
+						"description": "Payment terms for the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Net 30"
+							},
+							{
+								"value": 2,
+								"displayName": "2% 10, Net 30"
+							},
+							{
+								"value": 3,
+								"displayName": "Net 45"
+							},
+							{
+								"value": 4,
+								"displayName": "Net 60"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Shipping Method",
+				"description": "Select a shipping method for deliveries sent to the account's address to designate the preferred carrier or other delivery option.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_shippingmethodcode",
+						"displayName": "Shipping Method",
+						"description": "Method of shipment for the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "primarycontactid",
+				"dataType": "Guid",
+				"displayName": "Primary Contact",
+				"description": "Choose the primary contact for the account to provide quick access to contact details.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			},
+			{
+				"name": "participatesinworkflow",
+				"dataType": "Boolean",
+				"displayName": "Participates in Workflow",
+				"description": "For system use only. Legacy Microsoft Dynamics CRM 3.0 workflow data.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Account Name",
+				"description": "Type the company or business name.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "accountnumber",
+				"dataType": "String",
+				"displayName": "Account Number",
+				"description": "Type an ID number or code for the account to quickly search and identify the account in system views.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "revenue",
+				"dataType": "Decimal",
+				"displayName": "Annual Revenue",
+				"description": "Type the annual revenue for the account, used as an indicator in financial performance analysis.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "numberofemployees",
+				"dataType": "Int32",
+				"displayName": "Number of Employees",
+				"description": "Type the number of employees that work at the account for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the account, such as an excerpt from the company's website.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "sic",
+				"dataType": "String",
+				"displayName": "SIC Code",
+				"description": "Type the Standard Industrial Classification (SIC) code that indicates the account's primary industry of business, for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "ownershipcode",
+				"dataType": "String",
+				"displayName": "Ownership",
+				"description": "Select the account's ownership structure, such as public or private.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_ownershipcode",
+						"displayName": "Ownership",
+						"description": "Type of company ownership, such as public or private.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Public"
+							},
+							{
+								"value": 2,
+								"displayName": "Private"
+							},
+							{
+								"value": 3,
+								"displayName": "Subsidiary"
+							},
+							{
+								"value": 4,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "marketcap",
+				"dataType": "Decimal",
+				"displayName": "Market Capitalization",
+				"description": "Type the market capitalization of the account to identify the company's equity, used as an indicator in financial performance analysis.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "sharesoutstanding",
+				"dataType": "Int32",
+				"displayName": "Shares Outstanding",
+				"description": "Type the number of shares available to the public for the account. This number is used as an indicator in financial performance analysis.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "tickersymbol",
+				"dataType": "String",
+				"displayName": "Ticker Symbol",
+				"description": "Type the stock exchange symbol for the account to track financial performance of the company. You can click the code entered in this field to access the latest trading information from MSN Money.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.TickerSymbol",
+					"maxLength": 10
+				}
+			},
+			{
+				"name": "stockexchange",
+				"dataType": "String",
+				"displayName": "Stock Exchange",
+				"description": "Type the stock exchange at which the account is listed to track their stock and financial performance of the company.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "websiteurl",
+				"dataType": "String",
+				"displayName": "Website",
+				"description": "Type the account's website URL to get quick details about the company profile.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "ftpsiteurl",
+				"dataType": "String",
+				"displayName": "FTP Site",
+				"description": "Type the URL for the account's FTP site to enable users to access data and share documents.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "emailaddress1",
+				"dataType": "String",
+				"displayName": "Email",
+				"description": "Type the primary email address for the account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "emailaddress2",
+				"dataType": "String",
+				"displayName": "Email Address 2",
+				"description": "Type the secondary email address for the account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "emailaddress3",
+				"dataType": "String",
+				"displayName": "Email Address 3",
+				"description": "Type an alternate email address for the account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "donotphone",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Phone Calls",
+				"description": "Select whether the account allows phone calls. If Do Not Allow is selected, the account will be excluded from phone call activities distributed in marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotfax",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Faxes",
+				"description": "Select whether the account allows faxes. If Do Not Allow is selected, the account will be excluded from fax activities distributed in marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "telephone1",
+				"dataType": "String",
+				"displayName": "Main Phone",
+				"description": "Type the main phone number for this account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "donotemail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Emails",
+				"description": "Select whether the account allows direct email sent from Microsoft Dynamics 365.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "telephone2",
+				"dataType": "String",
+				"displayName": "Other Phone",
+				"description": "Type a second phone number for this account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "fax",
+				"dataType": "String",
+				"displayName": "Fax",
+				"description": "Type the fax number for the account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone3",
+				"dataType": "String",
+				"displayName": "Telephone 3",
+				"description": "Type a third phone number for this account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "donotpostalmail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Mails",
+				"description": "Select whether the account allows direct mail. If Do Not Allow is selected, the account will be excluded from letter activities distributed in marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotbulkemail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Bulk Emails",
+				"description": "Select whether the account allows bulk email sent through campaigns. If Do Not Allow is selected, the account can be added to marketing lists, but is excluded from email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotbulkpostalmail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Bulk Mails",
+				"description": "Select whether the account allows bulk postal mail sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the account can be added to marketing lists, but will be excluded from the postal mail.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "creditlimit",
+				"dataType": "Decimal",
+				"displayName": "Credit Limit",
+				"description": "Type the credit limit of the account. This is a useful reference when you address invoice and accounting issues with the customer.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "creditonhold",
+				"dataType": "Boolean",
+				"displayName": "Credit Hold",
+				"description": "Select whether the credit for the account is on hold. This is a useful reference while addressing the invoice and accounting issues with the customer.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the account.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "parentaccountid",
+				"dataType": "Guid",
+				"displayName": "Parent Account",
+				"description": "Choose the parent account associated with this account to show parent and child businesses in reporting and analytics.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Account"
+				}
+			},
+			{
+				"name": "aging30",
+				"dataType": "Decimal",
+				"displayName": "Aging 30",
+				"description": "For system use only.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the account is active or inactive. Inactive accounts are read-only and can't be edited unless they are reactivated.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "account_statecode",
+						"displayName": "Status",
+						"description": "Status of the account.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Inactive"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "aging60",
+				"dataType": "Decimal",
+				"displayName": "Aging 60",
+				"description": "For system use only.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the account's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "account_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the account.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Inactive",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "aging90",
+				"dataType": "Decimal",
+				"displayName": "Aging 90",
+				"description": "For system use only.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "address1_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 1: ID",
+				"description": "Unique identifier for address 1.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address1_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 1: Address Type",
+				"description": "Select the primary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address1_addresstypecode",
+						"displayName": "Address 1: Address Type",
+						"description": "Type of address for address 1, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Bill To"
+							},
+							{
+								"value": 2,
+								"displayName": "Ship To"
+							},
+							{
+								"value": 3,
+								"displayName": "Primary"
+							},
+							{
+								"value": 4,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_name",
+				"dataType": "String",
+				"displayName": "Address 1: Name",
+				"description": "Type a descriptive name for the primary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "address1_primarycontactname",
+				"dataType": "String",
+				"displayName": "Address 1: Primary Contact Name",
+				"description": "Type the name of the main contact at the account's primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address1_line1",
+				"dataType": "String",
+				"displayName": "Address 1: Street 1",
+				"description": "Type the first line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line2",
+				"dataType": "String",
+				"displayName": "Address 1: Street 2",
+				"description": "Type the second line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line3",
+				"dataType": "String",
+				"displayName": "Address 1: Street 3",
+				"description": "Type the third line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_city",
+				"dataType": "String",
+				"displayName": "Address 1: City",
+				"description": "Type the city for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_stateorprovince",
+				"dataType": "String",
+				"displayName": "Address 1: State/Province",
+				"description": "Type the state or province of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_county",
+				"dataType": "String",
+				"displayName": "Address 1: County",
+				"description": "Type the county for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_country",
+				"dataType": "String",
+				"displayName": "Address 1: Country/Region",
+				"description": "Type the country or region for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 1: Post Office Box",
+				"description": "Type the post office box number of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_postalcode",
+				"dataType": "String",
+				"displayName": "Address 1: ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 1: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address1_freighttermscode",
+				"dataType": "String",
+				"displayName": "Address 1: Freight Terms",
+				"description": "Select the freight terms for the primary address to make sure shipping orders are processed correctly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address1_freighttermscode",
+						"displayName": "Address 1: Freight Terms",
+						"description": "Freight terms for address 1.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "FOB"
+							},
+							{
+								"value": 2,
+								"displayName": "No Charge"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_upszone",
+				"dataType": "String",
+				"displayName": "Address 1: UPS Zone",
+				"description": "Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address1_latitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Latitude",
+				"description": "Type the latitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address1_telephone1",
+				"dataType": "String",
+				"displayName": "Address Phone",
+				"description": "Type the main phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_longitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Longitude",
+				"description": "Type the longitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 1: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address1_shippingmethodcode",
+						"displayName": "Address 1: Shipping Method",
+						"description": "Method of shipment for address 1.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Airborne"
+							},
+							{
+								"value": 2,
+								"displayName": "DHL"
+							},
+							{
+								"value": 3,
+								"displayName": "FedEx"
+							},
+							{
+								"value": 4,
+								"displayName": "UPS"
+							},
+							{
+								"value": 5,
+								"displayName": "Postal Mail"
+							},
+							{
+								"value": 6,
+								"displayName": "Full Load"
+							},
+							{
+								"value": 7,
+								"displayName": "Will Call"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_telephone2",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 2",
+				"description": "Type a second phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone3",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 3",
+				"description": "Type a third phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_fax",
+				"dataType": "String",
+				"displayName": "Address 1: Fax",
+				"description": "Type the fax number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 2: ID",
+				"description": "Unique identifier for address 2.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address2_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 2: Address Type",
+				"description": "Select the secondary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address2_addresstypecode",
+						"displayName": "Address 2: Address Type",
+						"description": "Type of address for address 2, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_name",
+				"dataType": "String",
+				"displayName": "Address 2: Name",
+				"description": "Type a descriptive name for the secondary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "address2_primarycontactname",
+				"dataType": "String",
+				"displayName": "Address 2: Primary Contact Name",
+				"description": "Type the name of the main contact at the account's secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address2_line1",
+				"dataType": "String",
+				"displayName": "Address 2: Street 1",
+				"description": "Type the first line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line2",
+				"dataType": "String",
+				"displayName": "Address 2: Street 2",
+				"description": "Type the second line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line3",
+				"dataType": "String",
+				"displayName": "Address 2: Street 3",
+				"description": "Type the third line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_city",
+				"dataType": "String",
+				"displayName": "Address 2: City",
+				"description": "Type the city for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_stateorprovince",
+				"dataType": "String",
+				"displayName": "Address 2: State/Province",
+				"description": "Type the state or province of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_county",
+				"dataType": "String",
+				"displayName": "Address 2: County",
+				"description": "Type the county for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_country",
+				"dataType": "String",
+				"displayName": "Address 2: Country/Region",
+				"description": "Type the country or region for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 2: Post Office Box",
+				"description": "Type the post office box number of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_postalcode",
+				"dataType": "String",
+				"displayName": "Address 2: ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 2: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address2_freighttermscode",
+				"dataType": "String",
+				"displayName": "Address 2: Freight Terms",
+				"description": "Select the freight terms for the secondary address to make sure shipping orders are processed correctly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address2_freighttermscode",
+						"displayName": "Address 2: Freight Terms",
+						"description": "Freight terms for address 2.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_upszone",
+				"dataType": "String",
+				"displayName": "Address 2: UPS Zone",
+				"description": "Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address2_latitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Latitude",
+				"description": "Type the latitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address2_telephone1",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 1",
+				"description": "Type the main phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_longitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Longitude",
+				"description": "Type the longitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 2: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_address2_shippingmethodcode",
+						"displayName": "Address 2: Shipping Method ",
+						"description": "Method of shipment for address 2.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_telephone2",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 2",
+				"description": "Type a second phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone3",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 3",
+				"description": "Type a third phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_fax",
+				"dataType": "String",
+				"displayName": "Address 2: Fax",
+				"description": "Type the fax number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "preferredappointmentdaycode",
+				"dataType": "String",
+				"displayName": "Preferred Day",
+				"description": "Select the preferred day of the week for service appointments.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_preferredappointmentdaycode",
+						"displayName": "Preferred Day",
+						"description": "Day of the week that the account prefers for scheduling service activities.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Sunday"
+							},
+							{
+								"value": 1,
+								"displayName": "Monday"
+							},
+							{
+								"value": 2,
+								"displayName": "Tuesday"
+							},
+							{
+								"value": 3,
+								"displayName": "Wednesday"
+							},
+							{
+								"value": 4,
+								"displayName": "Thursday"
+							},
+							{
+								"value": 5,
+								"displayName": "Friday"
+							},
+							{
+								"value": 6,
+								"displayName": "Saturday"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "preferredsystemuserid",
+				"dataType": "Guid",
+				"displayName": "Preferred User",
+				"description": "Choose the preferred service representative for reference when you schedule service activities for the account.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "preferredappointmenttimecode",
+				"dataType": "String",
+				"displayName": "Preferred Time",
+				"description": "Select the preferred time of day for service appointments.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "account_preferredappointmenttimecode",
+						"displayName": "Preferred Time",
+						"description": "Time of day that the account prefers for scheduling service activities.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Morning"
+							},
+							{
+								"value": 2,
+								"displayName": "Afternoon"
+							},
+							{
+								"value": 3,
+								"displayName": "Evening"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "merged",
+				"dataType": "Boolean",
+				"displayName": "Merged",
+				"description": "Shows whether the account has been merged with another account.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotsendmm",
+				"dataType": "Boolean",
+				"displayName": "Send Marketing Materials",
+				"description": "Select whether the account accepts marketing materials, such as brochures or catalogs.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "masterid",
+				"dataType": "Guid",
+				"displayName": "Master ID",
+				"description": "Shows the master account that the account was merged with.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "lastusedincampaign",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Date Included in Campaign",
+				"description": "Shows the date when the account was last included in a marketing campaign or quick campaign.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "creditlimit_base",
+				"dataType": "Decimal",
+				"displayName": "Credit Limit (Base)",
+				"description": "Shows the credit limit converted to the system's default base currency for reporting purposes.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "aging30_base",
+				"dataType": "Decimal",
+				"displayName": "Aging 30 (Base)",
+				"description": "The base currency equivalent of the aging 30 field.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "revenue_base",
+				"dataType": "Decimal",
+				"displayName": "Annual Revenue (Base)",
+				"description": "Shows the annual revenue converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "aging90_base",
+				"dataType": "Decimal",
+				"displayName": "Aging 90 (Base)",
+				"description": "The base currency equivalent of the aging 90 field.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "marketcap_base",
+				"dataType": "Decimal",
+				"displayName": "Market Capitalization (Base)",
+				"description": "Shows the market capitalization converted to the system's default base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "aging60_base",
+				"dataType": "Decimal",
+				"displayName": "Aging 60 (Base)",
+				"description": "The base currency equivalent of the aging 60 field.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "yominame",
+				"dataType": "String",
+				"displayName": "Yomi Account Name",
+				"description": "Type the phonetic spelling of the company name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team who owns the account.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Process Stage",
+				"description": "Shows the ID of the stage.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process",
+				"description": "Shows the ID of the process.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "address2_composite",
+				"dataType": "String",
+				"displayName": "Address 2",
+				"description": "Shows the complete secondary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "address1_composite",
+				"dataType": "String",
+				"displayName": "Address 1",
+				"description": "Shows the complete primary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"displayName": "Entity Image Id",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "timespentbymeonemailandmeetings",
+				"dataType": "String",
+				"displayName": "Time Spent by me",
+				"description": "Total time spent for emails (read and write) and meetings by me in relation to account record.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "createdbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Created By (External Party)",
+				"description": "Shows the external party who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Modified By (External Party)",
+				"description": "Shows the external party who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "primarysatoriid",
+				"dataType": "String",
+				"displayName": "Primary Satori ID",
+				"description": "Primary Satori ID for Account",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "primarytwitterid",
+				"dataType": "String",
+				"displayName": "Primary Twitter ID",
+				"description": "Primary Twitter ID for Account",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Twitter",
+					"maxLength": 128
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) that you want to apply to the Account record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "slainvokedid",
+				"dataType": "Guid",
+				"displayName": "Last SLA applied",
+				"description": "Last SLA that was applied to this case. This field is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "onholdtime",
+				"dataType": "Int32",
+				"displayName": "On Hold Time (Minutes)",
+				"description": "Shows how long, in minutes, that the record was on hold.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastonholdtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last On Hold Time",
+				"description": "Contains the date and time stamp of the last on hold time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "followemail",
+				"dataType": "Boolean",
+				"displayName": "Follow Email Activity",
+				"description": "Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the account.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "marketingonly",
+				"dataType": "Boolean",
+				"displayName": "Marketing Only",
+				"description": "Whether is only for marketing",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "account_parent_account",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "parentaccountid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "sla_account",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "slainvokedid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_accounts",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_account",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_accounts",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "account_primary_contact",
+			"referencing": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "primarycontactid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

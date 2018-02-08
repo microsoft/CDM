@@ -1,0 +1,238 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "AnnualFiscalCalendar",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "8d17aa9f-b641-fcf2-900b-b6ae3f6c514c"
+			}
+		},
+		"description": "Year long fiscal calendar of an organization. A span of time during which the financial activities of an organization are calculated.",
+		"displayName": "Annual Fiscal Calendar",
+		"attributes": [
+			{
+				"name": "userfiscalcalendarid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the user associated with the annual fiscal calendar.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "salespersonid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the sales person associated with the sales quota.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "fiscalperiodtype",
+				"dataType": "Int32",
+				"description": "Type of fiscal period used in the sales quota.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "effectiveon",
+				"dataType": "DateTimeOffset",
+				"description": "Date and time when the fiscal calendar sales quota takes effect.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "annual",
+				"dataType": "Decimal",
+				"description": "Sales quota for the first period in the fiscal year.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"description": "Unique identifier of the user who created the quota for the annual fiscal calendar.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"description": "Date and time when the quota for the annual fiscal calendar was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"description": "Unique identifier of the user who last modified the quota for the annual fiscal calendar.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"description": "Date and time when the annual fiscal calendar was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Unique identifier of the currency associated with the annual fiscal calendar.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Exchange rate for the currency associated with the annual fiscal calendar with respect to the base currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "annual_base",
+				"dataType": "Decimal",
+				"description": "Base currency equivalent of the sales quota for the first period in the fiscal year.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"description": "Unique identifier of the delegate user who created the annualfiscalcalendar.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"description": "Unique identifier of the delegate user who last modified the annualfiscalcalendar.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "transactioncurrency_annualfiscalcalendar",
+			"referencing": {
+				"entity": {
+					"type": "AnnualFiscalCalendar",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8d17aa9f-b641-fcf2-900b-b6ae3f6c514c"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lk_annualfiscalcalendar_createdby",
+			"referencing": {
+				"entity": {
+					"type": "AnnualFiscalCalendar",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8d17aa9f-b641-fcf2-900b-b6ae3f6c514c"
+				},
+				"attributes": [
+					{
+						"name": "createdby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

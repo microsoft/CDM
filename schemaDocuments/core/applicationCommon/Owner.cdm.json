@@ -1,0 +1,66 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Owner",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+			}
+		},
+		"description": "Group of undeleted system users and undeleted teams. Owners can be used to control access to specific objects.",
+		"displayName": "Owner",
+		"attributes": [
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier for the Owner: systemuserid or teamid.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Owner Name",
+				"description": "Name of the Owner.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "owneridtype",
+				"dataType": "Int32",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "yominame",
+				"dataType": "String",
+				"displayName": "Yomi Name",
+				"description": "Pronunciation of the name of the owner, written in phonetic hiragana or katakana characters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 160
+				}
+			}
+		]
+	}
+}
