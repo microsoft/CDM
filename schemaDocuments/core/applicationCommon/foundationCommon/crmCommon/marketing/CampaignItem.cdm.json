@@ -1,0 +1,301 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "CampaignItem",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+				"semanticVersion": "0.4.0",
+				"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+			}
+		},
+		"description": "Work item in a campaign, a list or sales literature.",
+		"displayName": "Campaign Item",
+		"attributes": [
+			{
+				"name": "campaignitemid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the campaign item.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "name",
+				"description": "name",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "campaignid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the campaign that is associated with the individual item.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "entityid",
+				"dataType": "Guid",
+				"description": "Unique identifier of the entity for the campaign item.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "entitytype",
+				"dataType": "Int32",
+				"description": "Object type of entity for the campaign item.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the campaign item.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"description": "Unique identifier of the business unit that owns the campaign item.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"description": "Unique identifier of the user that owns the campaign item.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "CampaignItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "CampaignItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Campaign_CampaignItem",
+			"referencing": {
+				"entity": {
+					"type": "CampaignItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+				},
+				"attributes": [
+					{
+						"name": "entityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Campaign",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a3b0551-2870-096d-5db0-c869729e49a4"
+				},
+				"attributes": [
+					{
+						"name": "campaignid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "List_CampaignItem",
+			"referencing": {
+				"entity": {
+					"type": "CampaignItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+				},
+				"attributes": [
+					{
+						"name": "entityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "List",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "5aed4c08-ea2d-8a53-5eb3-74d8ddf9e204"
+				},
+				"attributes": [
+					{
+						"name": "listid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Product_CampaignItem",
+			"referencing": {
+				"entity": {
+					"type": "CampaignItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3e0d0184-2748-6eaa-d126-3702c7b64df4"
+				},
+				"attributes": [
+					{
+						"name": "entityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

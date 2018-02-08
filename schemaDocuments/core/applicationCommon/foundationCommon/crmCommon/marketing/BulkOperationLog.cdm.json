@@ -1,0 +1,394 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "BulkOperationLog",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+				"semanticVersion": "0.4.0",
+				"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+			}
+		},
+		"description": "Log used to track bulk operation execution, successes, and failures.",
+		"displayName": "Bulk Operation Log",
+		"attributes": [
+			{
+				"name": "bulkoperationlogid",
+				"dataType": "Guid",
+				"displayName": "Bulk Operation Log Number",
+				"description": "Unique identifier of the bulk operation log.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "name",
+				"description": "name",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "additionalinfo",
+				"dataType": "String",
+				"displayName": "Failed on Line",
+				"description": "Shows the data value at which an error occurred during the quick campaign.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 100000
+				}
+			},
+			{
+				"name": "bulkoperationid",
+				"dataType": "Guid",
+				"displayName": "Bulk Operation Number",
+				"description": "Shows the quick campaign record that the log applies to. This information is used to relate log data to the parent quick campaign.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdobjectid",
+				"dataType": "Guid",
+				"displayName": "Created Object",
+				"description": "Choose the activity or other item created by the bulk operation.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "errornumber",
+				"dataType": "Int32",
+				"displayName": "Reason Id",
+				"description": "Shows the error code that is used to troubleshoot issues in the bulk operation.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Customers Excluded",
+				"description": "Choose the account, contact, lead, or list that the bulk operation log item applies to.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "BulkOperation_logs",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "bulkoperationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BulkOperation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "activity_pointer_BulkOperation_logs",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "bulkoperationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "CreatedAccount_BulkOperationLogs2",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "createdobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "CreatedContact_BulkOperationLogs",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "createdobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "CreatedLead_BulkOperationLogs",
+			"referencing": {
+				"entity": {
+					"type": "BulkOperationLog",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7bf9d821-e610-d9c1-658a-1393a1fe18f1"
+				},
+				"attributes": [
+					{
+						"name": "createdobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7be0e6ca-0e97-e54f-9b5c-80c8c20ab225"
+				},
+				"attributes": [
+					{
+						"name": "leadid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}
