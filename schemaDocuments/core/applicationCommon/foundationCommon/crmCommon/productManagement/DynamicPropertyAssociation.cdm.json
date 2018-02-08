@@ -1,0 +1,450 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "DynamicPropertyAssociation",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+				"semanticVersion": "0.4.0",
+				"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+			}
+		},
+		"description": "Association of a property definition with another entity in the system.",
+		"displayName": "Property Association",
+		"attributes": [
+			{
+				"name": "dynamicpropertyassociationid",
+				"dataType": "Guid",
+				"displayName": "Property Association ID",
+				"description": "Shows the unique identifier of the property association.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier for the organization",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "name",
+				"description": "name",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Shows the object that the property is associated with.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "dynamicpropertyid",
+				"dataType": "Guid",
+				"displayName": "Property ID",
+				"description": "Shows the property that uses this option set item.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "associationstatus",
+				"dataType": "String",
+				"displayName": "Association Status.",
+				"description": "Shows the status of the property association.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "dynamicpropertyassociation_associationstatus",
+						"displayName": "Association Status",
+						"description": "Type of property associations.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Deleted"
+							},
+							{
+								"value": 2,
+								"displayName": "Draft"
+							},
+							{
+								"value": 3,
+								"displayName": "Draft Added"
+							},
+							{
+								"value": 4,
+								"displayName": "Draft Deleted"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "inheritancestate",
+				"dataType": "String",
+				"displayName": "Inheritance State.",
+				"description": "Shows the inheritance state in relationship to the parent property.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "dynamicpropertyassociation_inheritancestate",
+						"displayName": "Inheritance State",
+						"description": "State of  inheritance from parent attribute.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Inherited"
+							},
+							{
+								"value": 1,
+								"displayName": "Overridden"
+							},
+							{
+								"value": 2,
+								"displayName": "Owned"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Shows the currency associated with the record.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_DynamicPropertyAssociationattribute_CreatedOnBehalfBy",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "createdonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "DynamicPropertyAssociation_organization",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "ProductAssociation_DynamicPropertyAssociation",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ProductAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+				},
+				"attributes": [
+					{
+						"name": "productassociationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Product_DynamicPropertyAssociation",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Dynamicproperty_DynamicPropertyAssociation",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "dynamicpropertyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "DynamicProperty",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "622e0d3d-3297-13b7-6c8c-18e8f06abe0a"
+				},
+				"attributes": [
+					{
+						"name": "dynamicpropertyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "DynamicPropertyAssociation_TransactionCurrency",
+			"referencing": {
+				"entity": {
+					"type": "DynamicPropertyAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "06e0d6b9-2566-15ca-bde4-1edad51a02ec"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}
