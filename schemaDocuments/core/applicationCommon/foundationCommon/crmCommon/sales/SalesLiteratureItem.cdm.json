@@ -1,0 +1,345 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "SalesLiteratureItem",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "079af839-3c62-3df4-447c-1a2aab003b83"
+			}
+		},
+		"description": "Item in the sales literature collection.",
+		"displayName": "Sales Attachment",
+		"attributes": [
+			{
+				"name": "salesliteratureitemid",
+				"dataType": "Guid",
+				"displayName": "Sales Literature Item",
+				"description": "Unique identifier for the document.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the document was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the document.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the document was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the document.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the salesliteratureitem.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the salesliteratureitem.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "title",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Type the title or name that describes the document.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "abstract",
+				"dataType": "String",
+				"displayName": "Abstract",
+				"description": "Abstract of the document.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 100000
+				}
+			},
+			{
+				"name": "attacheddocumenturl",
+				"dataType": "String",
+				"displayName": "Attached Document URL",
+				"description": "URL of the Website on which the document is located.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "authorname",
+				"dataType": "String",
+				"displayName": "Author Name",
+				"description": "Author name for the document.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "documentbody",
+				"dataType": "String",
+				"description": "Shows the encoded contents of the sales literature document attachment.",
+				"semanticDomain": {
+					"structuralType": "text",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "filename",
+				"dataType": "String",
+				"displayName": "File Name",
+				"description": "File name of the document.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 255
+				}
+			},
+			{
+				"name": "filesize",
+				"dataType": "Int32",
+				"displayName": "File Size (Bytes)",
+				"description": "File size of the document.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "filetypecode",
+				"dataType": "String",
+				"displayName": "File Type",
+				"description": "Select the file type of the document.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "salesliteratureitem_filetypecode",
+						"displayName": "File Type",
+						"description": "File type of the document.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "iscustomerviewable",
+				"dataType": "Boolean",
+				"displayName": "Customer Viewable",
+				"description": "Tells whether the document can be shared with customers or is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "keywords",
+				"dataType": "String",
+				"displayName": "Key Words",
+				"description": "Keywords to use for searches in documents.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 100000
+				}
+			},
+			{
+				"name": "mimetype",
+				"dataType": "String",
+				"displayName": "Mime Type",
+				"description": "Shows the file type of the sales literature document attachment, such as text or document.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization ",
+				"description": "Unique identifier of the organization associated with the document.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "salesliteratureid",
+				"dataType": "Guid",
+				"displayName": "Sales Literature",
+				"description": "Unique identifier of the sales literature that is associated with the individual item.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_salesliteratureitembase_createdonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "SalesLiteratureItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "079af839-3c62-3df4-447c-1a2aab003b83"
+				},
+				"attributes": [
+					{
+						"name": "createdonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "sales_literature_items",
+			"referencing": {
+				"entity": {
+					"type": "SalesLiteratureItem",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "079af839-3c62-3df4-447c-1a2aab003b83"
+				},
+				"attributes": [
+					{
+						"name": "salesliteratureid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SalesLiterature",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e2260ad0-0428-d5b7-5409-2ea4ad0ef032"
+				},
+				"attributes": [
+					{
+						"name": "salesliteratureid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

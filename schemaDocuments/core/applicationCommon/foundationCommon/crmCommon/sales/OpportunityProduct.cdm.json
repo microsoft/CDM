@@ -1,0 +1,992 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "OpportunityProduct",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+			}
+		},
+		"description": "Association between an opportunity and a product.",
+		"displayName": "Opportunity Product",
+		"attributes": [
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "opportunityproductid",
+				"dataType": "Guid",
+				"displayName": "Opportunity Product",
+				"description": "Unique identifier of the opportunity product.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the opportunityproduct.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "opportunityproductname",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Opportunity Product Name. Added for 1:n Referential relationship",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "baseamount",
+				"dataType": "Decimal",
+				"displayName": "Amount",
+				"description": "Shows the total price of the opportunity product, based on the price per unit, volume discount, and quantity.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "baseamount_base",
+				"dataType": "Decimal",
+				"displayName": "Amount (Base)",
+				"description": "Value of the Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the opportunity product, such as manufacturing details.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "extendedamount",
+				"dataType": "Decimal",
+				"displayName": "Extended Amount",
+				"description": "Shows the total amount due for the opportunity product, calculated on the Amount value minus the Manual Discount amount.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "extendedamount_base",
+				"dataType": "Decimal",
+				"displayName": "Extended Amount (Base)",
+				"description": "Value of the Extended Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "ispriceoverridden",
+				"dataType": "Boolean",
+				"displayName": "Price Overridden",
+				"description": "Select whether the pricing on the opportunity product reflects an override of the product catalog pricing.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isproductoverridden",
+				"dataType": "Boolean",
+				"displayName": "Select Product",
+				"description": "For system use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "lineitemnumber",
+				"dataType": "Int32",
+				"displayName": "Line Item Number",
+				"description": "Type the line item number for the opportunity product to easily identify the product in the opportunity documents and make sure it's listed in the correct order.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "manualdiscountamount",
+				"dataType": "Decimal",
+				"displayName": "Manual Discount Amount",
+				"description": "Type the manual discount amount for the opportunity product to deduct any negotiated or other savings from the product total.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "manualdiscountamount_base",
+				"dataType": "Decimal",
+				"displayName": "Manual Discount Amount (Base)",
+				"description": "Value of the Manual Discount Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "opportunityid",
+				"dataType": "Guid",
+				"displayName": "Opportunity",
+				"description": "Unique identifier of the opportunity with which the opportunity product is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "opportunitystatecode",
+				"dataType": "String",
+				"displayName": "Opportunity Status",
+				"description": "Select the status of the opportunity product.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "opportunityproduct_opportunitystatecode",
+						"displayName": "Opportunity Status",
+						"description": "Status of the opportunity product.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "parentbundleid",
+				"dataType": "Guid",
+				"displayName": "Parent Bundle",
+				"description": "Choose the parent bundle associated with this product",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "productassociationid",
+				"dataType": "Guid",
+				"displayName": "Bundle Item Association",
+				"description": "Unique identifier of the product line item association with bundle in the opportunity",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "producttypecode",
+				"dataType": "String",
+				"displayName": "Product type",
+				"description": "Product Type",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooiproduct_producttype",
+						"displayName": "Product Type",
+						"description": "Product Type Code",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Product"
+							},
+							{
+								"value": 2,
+								"displayName": "Bundle"
+							},
+							{
+								"value": 3,
+								"displayName": "Required Bundle Product"
+							},
+							{
+								"value": 4,
+								"displayName": "Optional Bundle Product"
+							},
+							{
+								"value": 5,
+								"displayName": "Project-based Service"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "priceperunit",
+				"dataType": "Decimal",
+				"displayName": "Price Per Unit",
+				"description": "Shows the price per unit of the opportunity product, based on the price list specified on the parent opportunity.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "priceperunit_base",
+				"dataType": "Decimal",
+				"displayName": "Price Per Unit (Base)",
+				"description": "Value of the Price Per Unit in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "pricingerrorcode",
+				"dataType": "String",
+				"displayName": "Pricing Error ",
+				"description": "Select the pricing error for the opportunity product.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooi_pricingerrorcode",
+						"displayName": "Pricing Error ",
+						"description": "Pricing error code.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 1,
+								"displayName": "Detail Error"
+							},
+							{
+								"value": 2,
+								"displayName": "Missing Price Level"
+							},
+							{
+								"value": 3,
+								"displayName": "Inactive Price Level"
+							},
+							{
+								"value": 4,
+								"displayName": "Missing Quantity"
+							},
+							{
+								"value": 5,
+								"displayName": "Missing Unit Price"
+							},
+							{
+								"value": 6,
+								"displayName": "Missing Product"
+							},
+							{
+								"value": 7,
+								"displayName": "Invalid Product"
+							},
+							{
+								"value": 8,
+								"displayName": "Missing Pricing Code"
+							},
+							{
+								"value": 9,
+								"displayName": "Invalid Pricing Code"
+							},
+							{
+								"value": 10,
+								"displayName": "Missing UOM"
+							},
+							{
+								"value": 11,
+								"displayName": "Product Not In Price Level"
+							},
+							{
+								"value": 12,
+								"displayName": "Missing Price Level Amount"
+							},
+							{
+								"value": 13,
+								"displayName": "Missing Price Level Percentage"
+							},
+							{
+								"value": 14,
+								"displayName": "Missing Price"
+							},
+							{
+								"value": 15,
+								"displayName": "Missing Current Cost"
+							},
+							{
+								"value": 16,
+								"displayName": "Missing Standard Cost"
+							},
+							{
+								"value": 17,
+								"displayName": "Invalid Price Level Amount"
+							},
+							{
+								"value": 18,
+								"displayName": "Invalid Price Level Percentage"
+							},
+							{
+								"value": 19,
+								"displayName": "Invalid Price"
+							},
+							{
+								"value": 20,
+								"displayName": "Invalid Current Cost"
+							},
+							{
+								"value": 21,
+								"displayName": "Invalid Standard Cost"
+							},
+							{
+								"value": 22,
+								"displayName": "Invalid Rounding Policy"
+							},
+							{
+								"value": 23,
+								"displayName": "Invalid Rounding Option"
+							},
+							{
+								"value": 24,
+								"displayName": "Invalid Rounding Amount"
+							},
+							{
+								"value": 25,
+								"displayName": "Price Calculation Error"
+							},
+							{
+								"value": 26,
+								"displayName": "Invalid Discount Type"
+							},
+							{
+								"value": 27,
+								"displayName": "Discount Type Invalid State"
+							},
+							{
+								"value": 28,
+								"displayName": "Invalid Discount"
+							},
+							{
+								"value": 29,
+								"displayName": "Invalid Quantity"
+							},
+							{
+								"value": 30,
+								"displayName": "Invalid Pricing Precision"
+							},
+							{
+								"value": 31,
+								"displayName": "Missing Product Default UOM"
+							},
+							{
+								"value": 32,
+								"displayName": "Missing Product UOM Schedule "
+							},
+							{
+								"value": 33,
+								"displayName": "Inactive Discount Type"
+							},
+							{
+								"value": 34,
+								"displayName": "Invalid Price Level Currency"
+							},
+							{
+								"value": 35,
+								"displayName": "Price Attribute Out Of Range"
+							},
+							{
+								"value": 36,
+								"displayName": "Base Currency Attribute Overflow"
+							},
+							{
+								"value": 37,
+								"displayName": "Base Currency Attribute Underflow"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "productdescription",
+				"dataType": "String",
+				"displayName": "Write-In Product",
+				"description": "Type a detailed product description or additional notes about the opportunity product, such as talking points or product updates, that will assist the sales team when they discuss the product with the customer.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "productname",
+				"dataType": "String",
+				"displayName": "Product Name",
+				"description": "Calculated field that will be populated by name and description of the product.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "productid",
+				"dataType": "Guid",
+				"displayName": "Existing Product",
+				"description": "Choose the product to include on the opportunity to link the product's pricing and other information to the opportunity.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Product"
+				}
+			},
+			{
+				"name": "quantity",
+				"dataType": "Decimal",
+				"displayName": "Quantity",
+				"description": "Type the amount or quantity of the product the customer would like to purchase.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": -100000000000,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "tax",
+				"dataType": "Decimal",
+				"displayName": "Tax",
+				"description": "Type the tax amount to be applied on the opportunity product.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -100000000000000,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "tax_base",
+				"dataType": "Decimal",
+				"displayName": "Tax (Base)",
+				"description": "Value of the Tax in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "uomid",
+				"dataType": "Guid",
+				"displayName": "Unit",
+				"description": "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "volumediscountamount",
+				"dataType": "Decimal",
+				"displayName": "Volume Discount",
+				"description": "Shows the discount amount per unit if a specified volume is purchased. Configure volume discounts in the Product Catalog in the Settings area.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "volumediscountamount_base",
+				"dataType": "Decimal",
+				"displayName": "Volume Discount (Base)",
+				"description": "Value of the Volume Discount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "sequencenumber",
+				"dataType": "Int32",
+				"displayName": "Sequence Number",
+				"description": "Shows the ID of the data that maintains the sequence.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "propertyconfigurationstatus",
+				"dataType": "String",
+				"displayName": "Property Configuration",
+				"description": "Status of the property configuration.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooiproduct_propertiesconfigurationstatus",
+						"displayName": "Properties Configuration",
+						"description": "Specifies whether the property is in Edit or Rectify mode.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Edit"
+							},
+							{
+								"value": 1,
+								"displayName": "Rectify"
+							},
+							{
+								"value": 2,
+								"displayName": "Not Configured"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunity_products",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_opportunityproduct",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "product_opportunities",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "opportunityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Opportunity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "58e4064e-c29e-f5aa-58e0-6d3f390cc4b0"
+				},
+				"attributes": [
+					{
+						"name": "opportunityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "unit_of_measurement_opportunity_products",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "productAssociation_opportunity_product",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "productassociationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ProductAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+				},
+				"attributes": [
+					{
+						"name": "productassociationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunityproduct_parent_opportunityproduct",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "parentbundleid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "OpportunityProduct",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6214cf1f-687a-4c8d-0775-97a61914db13"
+				},
+				"attributes": [
+					{
+						"name": "opportunityproductid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

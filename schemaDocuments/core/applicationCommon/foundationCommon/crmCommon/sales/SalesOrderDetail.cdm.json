@@ -1,0 +1,1219 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "SalesOrderDetail",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+			}
+		},
+		"description": "Line item in a sales order.",
+		"displayName": "Order Product",
+		"attributes": [
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "salesorderdetailid",
+				"dataType": "Guid",
+				"displayName": "Order Product",
+				"description": "Unique identifier of the product specified in the order.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "salesorderdetailname",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Sales Order Detail Name. Added for 1:n Referential relationship",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "baseamount",
+				"dataType": "Decimal",
+				"displayName": "Amount",
+				"description": "Shows the total price of the order product, based on the price per unit, volume discount, and quantity.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "baseamount_base",
+				"dataType": "Decimal",
+				"displayName": "Amount (Base)",
+				"description": "Value of the Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the order product, such as manufacturing details or acceptable substitutions.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "extendedamount",
+				"dataType": "Decimal",
+				"displayName": "Extended Amount",
+				"description": "Shows the total amount due for the order product, based on the sum of the unit price, quantity, discounts, and tax.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "extendedamount_base",
+				"dataType": "Decimal",
+				"displayName": "Extended Amount (Base)",
+				"description": "Value of the Extended Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "iscopied",
+				"dataType": "Boolean",
+				"displayName": "Copied",
+				"description": "Select whether the invoice line item is copied from another item or data source.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "ispriceoverridden",
+				"dataType": "Boolean",
+				"displayName": "Pricing",
+				"description": "Select whether the price per unit is fixed at the value in the specified price list or can be overridden by users who have edit rights to the order product.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isproductoverridden",
+				"dataType": "Boolean",
+				"displayName": "Select Product",
+				"description": "Select whether the product exists in the Microsoft Dynamics 365 product catalog or is a write-in product specific to the order.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "lineitemnumber",
+				"dataType": "Int32",
+				"displayName": "Line Item Number",
+				"description": "Type the line item number for the order product to easily identify the product in the order and make sure it's listed in the correct sequence.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "manualdiscountamount",
+				"dataType": "Decimal",
+				"displayName": "Manual Discount",
+				"description": "Type the manual discount amount for the order product to deduct any negotiated or other savings from the product total on the order.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 1000000000000
+				}
+			},
+			{
+				"name": "manualdiscountamount_base",
+				"dataType": "Decimal",
+				"displayName": "Manual Discount (Base)",
+				"description": "Value of the Manual Discount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "parentbundleid",
+				"dataType": "Guid",
+				"displayName": "Parent Bundle",
+				"description": "Choose the parent bundle associated with this product",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "productassociationid",
+				"dataType": "Guid",
+				"displayName": "Bundle Item Association",
+				"description": "Unique identifier of the product line item association with bundle in the sales order",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "producttypecode",
+				"dataType": "String",
+				"displayName": "Product type",
+				"description": "Product Type",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooiproduct_producttype",
+						"displayName": "Product Type",
+						"description": "Product Type Code",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Product"
+							},
+							{
+								"value": 2,
+								"displayName": "Bundle"
+							},
+							{
+								"value": 3,
+								"displayName": "Required Bundle Product"
+							},
+							{
+								"value": 4,
+								"displayName": "Optional Bundle Product"
+							},
+							{
+								"value": 5,
+								"displayName": "Project-based Service"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "priceperunit",
+				"dataType": "Decimal",
+				"displayName": "Price Per Unit",
+				"description": "Type the price per unit of the order product. The default is the value in the price list specified on the order for existing products.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "priceperunit_base",
+				"dataType": "Decimal",
+				"displayName": "Price Per Unit (Base)",
+				"description": "Value of the Price Per Unit in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "pricingerrorcode",
+				"dataType": "String",
+				"displayName": "Pricing Error ",
+				"description": "Select the type of pricing error, such as a missing or invalid product, or missing quantity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooi_pricingerrorcode",
+						"displayName": "Pricing Error ",
+						"description": "Pricing error code.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 1,
+								"displayName": "Detail Error"
+							},
+							{
+								"value": 2,
+								"displayName": "Missing Price Level"
+							},
+							{
+								"value": 3,
+								"displayName": "Inactive Price Level"
+							},
+							{
+								"value": 4,
+								"displayName": "Missing Quantity"
+							},
+							{
+								"value": 5,
+								"displayName": "Missing Unit Price"
+							},
+							{
+								"value": 6,
+								"displayName": "Missing Product"
+							},
+							{
+								"value": 7,
+								"displayName": "Invalid Product"
+							},
+							{
+								"value": 8,
+								"displayName": "Missing Pricing Code"
+							},
+							{
+								"value": 9,
+								"displayName": "Invalid Pricing Code"
+							},
+							{
+								"value": 10,
+								"displayName": "Missing UOM"
+							},
+							{
+								"value": 11,
+								"displayName": "Product Not In Price Level"
+							},
+							{
+								"value": 12,
+								"displayName": "Missing Price Level Amount"
+							},
+							{
+								"value": 13,
+								"displayName": "Missing Price Level Percentage"
+							},
+							{
+								"value": 14,
+								"displayName": "Missing Price"
+							},
+							{
+								"value": 15,
+								"displayName": "Missing Current Cost"
+							},
+							{
+								"value": 16,
+								"displayName": "Missing Standard Cost"
+							},
+							{
+								"value": 17,
+								"displayName": "Invalid Price Level Amount"
+							},
+							{
+								"value": 18,
+								"displayName": "Invalid Price Level Percentage"
+							},
+							{
+								"value": 19,
+								"displayName": "Invalid Price"
+							},
+							{
+								"value": 20,
+								"displayName": "Invalid Current Cost"
+							},
+							{
+								"value": 21,
+								"displayName": "Invalid Standard Cost"
+							},
+							{
+								"value": 22,
+								"displayName": "Invalid Rounding Policy"
+							},
+							{
+								"value": 23,
+								"displayName": "Invalid Rounding Option"
+							},
+							{
+								"value": 24,
+								"displayName": "Invalid Rounding Amount"
+							},
+							{
+								"value": 25,
+								"displayName": "Price Calculation Error"
+							},
+							{
+								"value": 26,
+								"displayName": "Invalid Discount Type"
+							},
+							{
+								"value": 27,
+								"displayName": "Discount Type Invalid State"
+							},
+							{
+								"value": 28,
+								"displayName": "Invalid Discount"
+							},
+							{
+								"value": 29,
+								"displayName": "Invalid Quantity"
+							},
+							{
+								"value": 30,
+								"displayName": "Invalid Pricing Precision"
+							},
+							{
+								"value": 31,
+								"displayName": "Missing Product Default UOM"
+							},
+							{
+								"value": 32,
+								"displayName": "Missing Product UOM Schedule "
+							},
+							{
+								"value": 33,
+								"displayName": "Inactive Discount Type"
+							},
+							{
+								"value": 34,
+								"displayName": "Invalid Price Level Currency"
+							},
+							{
+								"value": 35,
+								"displayName": "Price Attribute Out Of Range"
+							},
+							{
+								"value": 36,
+								"displayName": "Base Currency Attribute Overflow"
+							},
+							{
+								"value": 37,
+								"displayName": "Base Currency Attribute Underflow"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "productdescription",
+				"dataType": "String",
+				"displayName": "Write-In Product",
+				"description": "Type a name or description to identify the type of write-in product included in the order.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "productname",
+				"dataType": "String",
+				"displayName": "Product Name",
+				"description": "Calculated field that will be populated by name and description of the product.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "productid",
+				"dataType": "Guid",
+				"displayName": "Existing Product",
+				"description": "Choose the product to include on the order to link the product's pricing and other information to the parent order.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Product"
+				}
+			},
+			{
+				"name": "quantity",
+				"dataType": "Decimal",
+				"displayName": "Quantity",
+				"description": "Type the amount or quantity of the product ordered by the customer.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": -100000000000,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "quantitybackordered",
+				"dataType": "Decimal",
+				"displayName": "Quantity Back Ordered",
+				"description": "Type the amount or quantity of the product that is back ordered for the order.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "quantitycancelled",
+				"dataType": "Decimal",
+				"displayName": "Quantity Canceled",
+				"description": "Type the amount or quantity of the product that was canceled.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "quantityshipped",
+				"dataType": "Decimal",
+				"displayName": "Quantity Shipped",
+				"description": "Type the amount or quantity of the product that was shipped for the order.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": -1000000000,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "requestdeliveryby",
+				"dataType": "DateTimeOffset",
+				"displayName": "Requested Delivery Date",
+				"description": "Enter the delivery date requested by the customer for the order product.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "salesorderid",
+				"dataType": "Guid",
+				"displayName": "Order",
+				"description": "Shows the order for the product. The ID is used to link product pricing and other details to the total amounts and other information on the order.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "salesorderispricelocked",
+				"dataType": "Boolean",
+				"displayName": "Order Is Price Locked",
+				"description": "Tells whether product pricing is locked for the order.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "salesorderstatecode",
+				"dataType": "String",
+				"displayName": "Order Status",
+				"description": "Shows the status of the order that the order detail is associated with.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "salesorderdetail_salesorderstatecode",
+						"displayName": "Order Status",
+						"description": "Status of the order product.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "salesrepid",
+				"dataType": "Guid",
+				"displayName": "Salesperson",
+				"description": "Choose the user responsible for the sale of the order product.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "shipto_addressid",
+				"dataType": "Guid",
+				"displayName": "Ship To Address ID",
+				"description": "Unique identifier of the shipping address.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "shipto_city",
+				"dataType": "String",
+				"displayName": "Ship To City",
+				"description": "Type the city for the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "shipto_contactname",
+				"dataType": "String",
+				"displayName": "Ship To Contact Name",
+				"description": "Type the primary contact name at the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 150
+				}
+			},
+			{
+				"name": "shipto_country",
+				"dataType": "String",
+				"displayName": "Ship To Country/Region",
+				"description": "Type the country or region for the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "shipto_fax",
+				"dataType": "String",
+				"displayName": "Ship To Fax",
+				"description": "Type the fax number for the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "shipto_freighttermscode",
+				"dataType": "String",
+				"displayName": "Freight Terms",
+				"description": "Select the freight terms to make sure shipping orders are processed correctly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "salesorderdetail_shipto_freighttermscode",
+						"displayName": "Freight Terms",
+						"description": "Freight terms for the shipping address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "FOB"
+							},
+							{
+								"value": 2,
+								"displayName": "No Charge"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "shipto_line1",
+				"dataType": "String",
+				"displayName": "Ship To Street 1",
+				"description": "Type the first line of the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "shipto_line2",
+				"dataType": "String",
+				"displayName": "Ship To Street 2",
+				"description": "Type the second line of the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "shipto_line3",
+				"dataType": "String",
+				"displayName": "Ship To Street 3",
+				"description": "Type the third line of the shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "shipto_name",
+				"dataType": "String",
+				"displayName": "Ship To Name",
+				"description": "Type a name for the customer's shipping address, such as \"Headquarters\" or \"Field office\",  to identify the address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "shipto_postalcode",
+				"dataType": "String",
+				"displayName": "Ship To ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "shipto_stateorprovince",
+				"dataType": "String",
+				"displayName": "Ship To State/Province",
+				"description": "Type the state or province for the shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "shipto_telephone",
+				"dataType": "String",
+				"displayName": "Ship To Phone",
+				"description": "Type the phone number for the customer's shipping address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "tax",
+				"dataType": "Decimal",
+				"displayName": "Tax",
+				"description": "Type the tax amount for the order product.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -1000000000000,
+					"maxValue": 1000000000000
+				}
+			},
+			{
+				"name": "tax_base",
+				"dataType": "Decimal",
+				"displayName": "Tax (Base)",
+				"description": "Value of the Tax in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "uomid",
+				"dataType": "Guid",
+				"displayName": "Unit",
+				"description": "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "volumediscountamount",
+				"dataType": "Decimal",
+				"displayName": "Volume Discount",
+				"description": "Shows the discount amount per unit if a specified volume is purchased. Configure volume discounts in the Product Catalog in the Settings area.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "volumediscountamount_base",
+				"dataType": "Decimal",
+				"displayName": "Volume Discount (Base)",
+				"description": "Value of the Volume Discount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "willcall",
+				"dataType": "Boolean",
+				"displayName": "Ship To",
+				"description": "Select whether the order product should be shipped to the specified address or held until the customer calls with further pick up or delivery instructions.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "sequencenumber",
+				"dataType": "Int32",
+				"displayName": "Sequence Number",
+				"description": "Shows the ID of the data that maintains the sequence.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "propertyconfigurationstatus",
+				"dataType": "String",
+				"displayName": "Property Configuration",
+				"description": "Status of the property configuration.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "qooiproduct_propertiesconfigurationstatus",
+						"displayName": "Properties Configuration",
+						"description": "Specifies whether the property is in Edit or Rectify mode.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Edit"
+							},
+							{
+								"value": 1,
+								"displayName": "Rectify"
+							},
+							{
+								"value": 2,
+								"displayName": "Not Configured"
+							}
+						]
+					}
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "productAssociation_salesorder_details",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "productassociationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ProductAssociation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+				},
+				"attributes": [
+					{
+						"name": "productassociationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "salesorderdetail_parent_salesorderdetail",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "parentbundleid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "salesorderdetailid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "order_details",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "salesorderid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SalesOrder",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "53b43709-3b92-473f-cf54-bb4626a4b1a1"
+				},
+				"attributes": [
+					{
+						"name": "salesorderid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "unit_of_measurement_order_details",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_salesorderdetail",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "product_order_details",
+			"referencing": {
+				"entity": {
+					"type": "SalesOrderDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a5c3c82-4a2b-fc4d-9673-b2c38969aa8f"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}
