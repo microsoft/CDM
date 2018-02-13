@@ -1,0 +1,830 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Queue",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+			},
+			"extends": {
+				"type": "Queue",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "b9161e62-db25-8fe0-93cb-7fc16edcd6df"
+			}
+		},
+		"description": "A list of records that require action, such as accounts, activities, and cases.",
+		"displayName": "Queue",
+		"attributes": [
+			{
+				"name": "queueid",
+				"dataType": "Guid",
+				"displayName": "Queue",
+				"description": "Unique identifier of the queue.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"displayName": "Business Unit",
+				"description": "Unique identifier of the business unit with which the queue is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization",
+				"description": "Unique identifier of the organization associated with the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization",
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailaddress",
+				"dataType": "String",
+				"displayName": "Incoming Email",
+				"description": "Email address that is associated with the queue.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100,
+					"inherited": true
+				}
+			},
+			{
+				"name": "primaryuserid",
+				"dataType": "Guid",
+				"displayName": "Owner (deprecated)",
+				"description": "Unique identifier of the owner of the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "queuetypecode",
+				"dataType": "String",
+				"displayName": "Queue Type",
+				"description": "Type of queue that is automatically assigned when a user or queue is created. The type can be public, private, or work in process.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_queuetypecode",
+						"displayName": "Queue Type",
+						"description": "Type of queue that is automatically assigned when a user or queue is created. The type can be public, private, or work in process.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the queue.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of the queue.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "queuesemantics",
+				"dataType": "Int32",
+				"displayName": "Queue Semantics",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the queue was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the queue record.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the queue was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify",
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the queue.",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "ignoreunsolicitedemail",
+				"dataType": "Boolean",
+				"displayName": "Convert To Email Activities",
+				"description": "Information that specifies whether a queue is to ignore unsolicited email (deprecated).",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isfaxqueue",
+				"dataType": "Boolean",
+				"displayName": "Fax Queue",
+				"description": "Indication of whether a queue is the fax delivery queue.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailpassword",
+				"dataType": "String",
+				"displayName": "Password (Obsolete)",
+				"description": "This attribute is no longer used. The data is now in the Mailbox.Password attribute.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "incomingemaildeliverymethod",
+				"dataType": "String",
+				"displayName": "Incoming Email Delivery Method",
+				"description": "Incoming email delivery method for the queue.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_incomingemaildeliverymethod",
+						"displayName": "Incoming Email Delivery Method",
+						"description": "Incoming email delivery method for the queue.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 2,
+								"displayName": "Server-Side Synchronization or Email Router"
+							},
+							{
+								"value": 3,
+								"displayName": "Forward Mailbox"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "emailusername",
+				"dataType": "String",
+				"displayName": "User Name (Obsolete)",
+				"description": "This attribute is no longer used. The data is now in the Mailbox.UserName attribute.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "outgoingemaildeliverymethod",
+				"dataType": "String",
+				"displayName": "Outgoing Email Delivery Method",
+				"description": "Outgoing email delivery method for the queue.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_outgoingemaildeliverymethod",
+						"displayName": "Outgoing Email Delivery Method",
+						"description": "Outgoing email delivery method for the queue.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "None"
+							},
+							{
+								"value": 2,
+								"displayName": "Server-Side Synchronization or Email Router"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "allowemailcredentials",
+				"dataType": "Boolean",
+				"displayName": "Allow to Use Credentials for Email Processing (Obsolete)",
+				"description": "This attribute is no longer used. The data is now in the Mailbox.AllowEmailConnectorToUseCredentials attribute.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "incomingemailfilteringmethod",
+				"dataType": "String",
+				"displayName": "Convert Incoming Email To Activities",
+				"description": "Convert Incoming Email To Activities",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_incomingemailfilteringmethod",
+						"displayName": "Incoming Email Filtering Method",
+						"description": "Incoming email filtering method.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "All email messages"
+							},
+							{
+								"value": 1,
+								"displayName": "Email messages in response to Dynamics 365 email"
+							},
+							{
+								"value": 2,
+								"displayName": "Email messages from Dynamics 365 Leads, Contacts and Accounts"
+							},
+							{
+								"value": 3,
+								"displayName": "Email messages from Dynamics 365 records that are email enabled"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the queue.",
+				"semanticDomain": {
+					"structuralType": "owner",
+					"inherited": true
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Reason for the status of the queue.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the queue.",
+						"items": [
+							{
+								"value": 2,
+								"displayName": "Inactive",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user who owns the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Status of the queue.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_statecode",
+						"displayName": "Status",
+						"description": "Status of the queue.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Inactive"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "numberofitems",
+				"dataType": "Int32",
+				"displayName": "Queue Items",
+				"description": "Number of Queue items associated with the queue.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "numberofmembers",
+				"dataType": "Int32",
+				"displayName": "No. of Members",
+				"description": "Number of Members associated with the queue.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team who owns the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Unique identifier of the currency associated with the queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type",
+					"inherited": true
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Exchange rate for the currency associated with the queue with respect to the base currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailrouteraccessapproval",
+				"dataType": "String",
+				"displayName": "Primary Email Status",
+				"description": "Shows the status of the primary email address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_emailrouteraccessapproval",
+						"displayName": "Shows whether the email address is approved for each mailbox for processing email through server-side synchronization or the Email Router.",
+						"description": "Indicates the approval options for server-side synchronization or Email Router access.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Empty"
+							},
+							{
+								"value": 1,
+								"displayName": "Approved"
+							},
+							{
+								"value": 2,
+								"displayName": "Pending Approval"
+							},
+							{
+								"value": 3,
+								"displayName": "Rejected"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "defaultmailbox",
+				"dataType": "Guid",
+				"displayName": "Mailbox",
+				"description": "Select the mailbox associated with this queue.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"displayName": "Entity Image Id",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isemailaddressapprovedbyo365admin",
+				"dataType": "Boolean",
+				"displayName": "Email Address O365 Admin Approval Status",
+				"description": "Shows the status of approval of the email address by O365 Admin.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "queueviewtype",
+				"dataType": "String",
+				"displayName": "Type",
+				"description": "Select whether the queue is public or private. A public queue can be viewed by all. A private queue can be viewed only by the members added to the queue.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "queue_queueviewtype",
+						"displayName": "Type",
+						"description": "Select whether the queue is public or private. A public queue can be viewed by all.A private queue can be viewed only by the members added to the queue.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Public"
+							},
+							{
+								"value": 1,
+								"displayName": "Private"
+							}
+						]
+					}
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "queue_defaultmailbox_mailbox",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "defaultmailbox",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
+				},
+				"attributes": [
+					{
+						"name": "mailboxid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_queues",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_queues",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_Queue",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_queues",
+			"referencing": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

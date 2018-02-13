@@ -1,0 +1,1013 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Competitor",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+			}
+		},
+		"description": "Business competing for the sale represented by a lead or opportunity.",
+		"displayName": "Competitor",
+		"attributes": [
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "competitorid",
+				"dataType": "Guid",
+				"displayName": "Competitor ",
+				"description": "Unique identifier of the competitor.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier for the organization",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type the company or business name used to identify the competitor in data views and related records.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process Id",
+				"description": "Contains the id of the process associated with the entity.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Stage Id",
+				"description": "Contains the id of the stage where the entity is located.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "address1_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 1: ID",
+				"description": "Unique identifier for address 1.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address1_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 1: Address Type",
+				"description": "Select the primary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitor_address1_addresstypecode",
+						"displayName": "Address 1: Address Type",
+						"description": "Type of address for address 1, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_city",
+				"dataType": "String",
+				"displayName": "City",
+				"description": "Type the city for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_country",
+				"dataType": "String",
+				"displayName": "Country/Region",
+				"description": "Type the country or region for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_composite",
+				"dataType": "String",
+				"displayName": "Address 1",
+				"description": "Shows the complete primary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "address1_county",
+				"dataType": "String",
+				"displayName": "Address 1: County",
+				"description": "Type the county for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_fax",
+				"dataType": "String",
+				"displayName": "Address 1: Fax",
+				"description": "Type the fax number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_latitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Latitude",
+				"description": "Type the latitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address1_line1",
+				"dataType": "String",
+				"displayName": "Street 1",
+				"description": "Type the first line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line2",
+				"dataType": "String",
+				"displayName": "Street 2",
+				"description": "Type the second line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line3",
+				"dataType": "String",
+				"displayName": "Street 3",
+				"description": "Type the third line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_longitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Longitude",
+				"description": "Type the longitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address1_name",
+				"dataType": "String",
+				"displayName": "Address 1: Name",
+				"description": "Type a descriptive name for the primary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address1_postalcode",
+				"dataType": "String",
+				"displayName": "ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 1: Post Office Box",
+				"description": "Type the post office box number of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 1: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitor_address1_shippingmethodcode",
+						"displayName": "Address 1: Shipping Method ",
+						"description": "Method of shipment for address 1.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_stateorprovince",
+				"dataType": "String",
+				"displayName": "State/Province",
+				"description": "Type the state or province of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone1",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 1",
+				"description": "Type the main phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone2",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 2",
+				"description": "Type a second phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone3",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 3",
+				"description": "Type a third phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_upszone",
+				"dataType": "String",
+				"displayName": "Address 1: UPS Zone",
+				"description": "Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address1_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 1: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address2_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 2: ID",
+				"description": "Unique identifier for address 2.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address2_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 2: Address Type",
+				"description": "Select the secondary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitor_address2_addresstypecode",
+						"displayName": "Address 2: Address Type",
+						"description": "Type of address for address 2. such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_city",
+				"dataType": "String",
+				"displayName": "Address 2: City",
+				"description": "Type the city for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_composite",
+				"dataType": "String",
+				"displayName": "Address 2",
+				"description": "Shows the complete secondary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "address2_country",
+				"dataType": "String",
+				"displayName": "Address 2: Country/Region",
+				"description": "Type the country or region for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_county",
+				"dataType": "String",
+				"displayName": "Address 2: County",
+				"description": "Type the county for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_fax",
+				"dataType": "String",
+				"displayName": "Address 2: Fax",
+				"description": "Type the fax number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_latitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Latitude",
+				"description": "Type the latitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address2_line1",
+				"dataType": "String",
+				"displayName": "Address 2: Street 1",
+				"description": "Type the first line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line2",
+				"dataType": "String",
+				"displayName": "Address 2: Street 2",
+				"description": "Type the second line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line3",
+				"dataType": "String",
+				"displayName": "Address 2: Street 3",
+				"description": "Type the third line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_longitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Longitude",
+				"description": "Type the longitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address2_name",
+				"dataType": "String",
+				"displayName": "Address 2: Name",
+				"description": "Type a descriptive name for the secondary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address2_postalcode",
+				"dataType": "String",
+				"displayName": "Address 2: ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 2: Post Office Box",
+				"description": "Type the post office box number of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 2: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitor_address2_shippingmethodcode",
+						"displayName": "Address 2: Shipping Method ",
+						"description": "Method of shipment for address 2.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_stateorprovince",
+				"dataType": "String",
+				"displayName": "Address 2: State/Province",
+				"description": "Type the state or province of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone1",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 1",
+				"description": "Type the main phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone2",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 2",
+				"description": "Type a second phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone3",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 3",
+				"description": "Type a third phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_upszone",
+				"dataType": "String",
+				"displayName": "Address 2: UPS Zone",
+				"description": "Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly , if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address2_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 2: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "keyproduct",
+				"dataType": "String",
+				"displayName": "Key Product",
+				"description": "Type the competitor's primary product, service, or specialty.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "opportunities",
+				"dataType": "String",
+				"displayName": "Opportunity",
+				"description": "Type notes or other information about the competitive opportunities or selling points you can make.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "overview",
+				"dataType": "String",
+				"displayName": "Overview",
+				"description": "Type notes or other information about the competitor's business, such as location, revenue, or distribution channel.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "referenceinfourl",
+				"dataType": "String",
+				"displayName": "Reference Info URL",
+				"description": "Type the URL for the website used to obtain reference information about the competitor.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "reportedrevenue",
+				"dataType": "Decimal",
+				"displayName": "Reported Revenue",
+				"description": "Type the amount of revenue reported in the competitor's annual report or other source.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "reportedrevenue_base",
+				"dataType": "Decimal",
+				"displayName": "Reported Revenue (Base)",
+				"description": "Value of the Reported Revenue in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "reportingquarter",
+				"dataType": "Int32",
+				"displayName": "Reporting Quarter",
+				"description": "Type the quarter number during which the competitor's reported revenue was recorded or announced for use in reporting and analysis.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "reportingyear",
+				"dataType": "Int32",
+				"displayName": "Reporting Year",
+				"description": "Type the fiscal year during which the competitor's reported revenue was announced for use in reporting and analysis.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "stockexchange",
+				"dataType": "String",
+				"displayName": "Stock Exchange",
+				"description": "Type the stock exchange at which the competitor is listed to track their stock and financial performance of the company.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.TickerSymbol",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "strengths",
+				"dataType": "String",
+				"displayName": "Strength",
+				"description": "Type notes or other information about the competitor's strengths, such as top-selling products and targeted industries or markets.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "threats",
+				"dataType": "String",
+				"displayName": "Threat",
+				"description": "Type notes or other information about the competitor's threats to your organization when you sell to the same prospect or customer.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "tickersymbol",
+				"dataType": "String",
+				"displayName": "Ticker Symbol",
+				"description": "Type the stock exchange symbol for the competitor to track financial performance of the company. You can click the code entered in this field to access the latest trading information from MSN Money.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.TickerSymbol",
+					"maxLength": 10
+				}
+			},
+			{
+				"name": "weaknesses",
+				"dataType": "String",
+				"displayName": "Weakness",
+				"description": "Type notes or other information about the competitor's weaknesses or areas in which your organization outperforms the competitor.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "websiteurl",
+				"dataType": "String",
+				"displayName": "Website",
+				"description": "Type the website URL for the competitor.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "winpercentage",
+				"dataType": "Double",
+				"displayName": "Win Percentage",
+				"description": "Type the percentage of your organization's lost opportunities that are won by the competitor to identify your strongest competitors.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "yominame",
+				"dataType": "String",
+				"displayName": "Yomi Name",
+				"description": "Type the phonetic spelling of the competitor's name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 100
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_competitorbase_createdonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "Competitor",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+				},
+				"attributes": [
+					{
+						"name": "createdonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_competitors",
+			"referencing": {
+				"entity": {
+					"type": "Competitor",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_competitor",
+			"referencing": {
+				"entity": {
+					"type": "Competitor",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

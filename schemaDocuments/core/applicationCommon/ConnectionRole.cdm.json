@@ -1,0 +1,398 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "ConnectionRole",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+			}
+		},
+		"description": "Role describing a relationship between a two records.",
+		"displayName": "Connection Role",
+		"attributes": [
+			{
+				"name": "connectionroleid",
+				"dataType": "Guid",
+				"displayName": "Connection Role",
+				"description": "Unique identifier of the connection role.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the connection role.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the connection role was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the connection role.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Status of the connection role.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "connectionrole_statecode",
+						"displayName": "Status",
+						"description": "Status of the connection role.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Active"
+							},
+							{
+								"value": 1,
+								"displayName": "Inactive"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Reason for the status of the connection role.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "connectionrole_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the connection role.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Active",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Inactive",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the relationship role.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "category",
+				"dataType": "String",
+				"displayName": "Connection Role Category",
+				"description": "Categories for connection roles.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "connectionrole_category",
+						"displayName": "Category",
+						"description": "Categories for connection roles.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Business"
+							},
+							{
+								"value": 2,
+								"displayName": "Family"
+							},
+							{
+								"value": 3,
+								"displayName": "Social"
+							},
+							{
+								"value": 4,
+								"displayName": "Sales"
+							},
+							{
+								"value": 5,
+								"displayName": "Other"
+							},
+							{
+								"value": 1000,
+								"displayName": "Stakeholder"
+							},
+							{
+								"value": 1001,
+								"displayName": "Sales Team"
+							},
+							{
+								"value": 1002,
+								"displayName": "Service"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization",
+				"description": "Unique identifier of the organization that this connection role belongs to.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of the connection role.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the connection role was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the connection role.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "solutionid",
+				"dataType": "Guid",
+				"displayName": "Solution",
+				"description": "Unique identifier of the associated solution.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate",
+				"dataType": "String",
+				"displayName": "Component State",
+				"description": "State of the component.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "componentstate",
+						"displayName": "Component State",
+						"description": "The state of this component.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Published"
+							},
+							{
+								"value": 1,
+								"displayName": "Unpublished"
+							},
+							{
+								"value": 2,
+								"displayName": "Deleted"
+							},
+							{
+								"value": 3,
+								"displayName": "Deleted Unpublished"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "overwritetime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Overwritten On",
+				"description": "Date and time when the record was last overwritten.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "connectionroleidunique",
+				"dataType": "Guid",
+				"displayName": "Unique ID",
+				"description": "Unique identifier of the published or unpublished connection role record.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who modified the relationship role.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the relationship role.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ismanaged",
+				"dataType": "Boolean",
+				"displayName": "State",
+				"description": "Indicates whether the solution component is part of a managed solution.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "iscustomizable",
+				"dataType": "Boolean",
+				"displayName": "Customizable",
+				"description": "Information that specifies whether this component can be customized.",
+				"semanticDomain": {
+					"structuralType": "managedproperty"
+				}
+			},
+			{
+				"name": "introducedversion",
+				"dataType": "String",
+				"displayName": "Introduced Version",
+				"description": "Version in which the form is introduced.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Measurement.Version",
+					"maxLength": 48
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "modifiedby_connection_role",
+			"referencing": {
+				"entity": {
+					"type": "ConnectionRole",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+				},
+				"attributes": [
+					{
+						"name": "modifiedby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_connection_roles",
+			"referencing": {
+				"entity": {
+					"type": "ConnectionRole",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

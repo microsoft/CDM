@@ -1,0 +1,195 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "KbArticleComment",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "3c878a8d-b35f-4c5c-070d-2a3ffefb060b"
+			}
+		},
+		"description": "Comment on a knowledge base article.",
+		"displayName": "Article Comment",
+		"attributes": [
+			{
+				"name": "kbarticlecommentid",
+				"dataType": "Guid",
+				"displayName": "Article Comment",
+				"description": "Unique identifier of the knowledge base article comment.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "kbarticleid",
+				"dataType": "Guid",
+				"displayName": "KB Article",
+				"description": "Unique identifier of the knowledge base article to which the comment applies.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "title",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Title of the knowledge base article comment.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "commenttext",
+				"dataType": "String",
+				"displayName": "Comment Text",
+				"description": "Comment text for the knowledge base article.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 100000
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the knowledge base article comment was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the knowledge base article comment.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the knowledge base article comment was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the knowledge base article comment.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization ",
+				"description": "Unique identifier of the organization with which the article comment is associated.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the kbarticlecomment.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the kbarticlecomment.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_kbarticlecommentbase_modifiedby",
+			"referencing": {
+				"entity": {
+					"type": "KbArticleComment",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3c878a8d-b35f-4c5c-070d-2a3ffefb060b"
+				},
+				"attributes": [
+					{
+						"name": "modifiedby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "kbarticle_comments",
+			"referencing": {
+				"entity": {
+					"type": "KbArticleComment",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3c878a8d-b35f-4c5c-070d-2a3ffefb060b"
+				},
+				"attributes": [
+					{
+						"name": "kbarticleid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KbArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0644c5e4-7e07-e577-5cc2-9bddabd38f13"
+				},
+				"attributes": [
+					{
+						"name": "kbarticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,795 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "SLAKPIInstance",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+			},
+			"extends": {
+				"type": "SLAKPIInstance",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+			}
+		},
+		"description": "Service level agreement (SLA) key performance indicator (KPI) instance that is tracked for an individual case",
+		"displayName": "SLA KPI Instance",
+		"attributes": [
+			{
+				"name": "slakpiinstanceid",
+				"dataType": "Guid",
+				"displayName": "SLA KPI InstanceId",
+				"description": "Unique identifier of the SLA KPI Instance.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type a descriptive name for the service level agreement (SLA) key performance indicator (KPI) instance.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100,
+					"inherited": true
+				}
+			},
+			{
+				"name": "computedfailuretime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Computed Failure Time",
+				"description": "Computed Failure Date and time",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "computedwarningtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Computed Warning Time",
+				"description": "Computed Warning Date and time",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "failuretime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Failure Time",
+				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI) will expire.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user or team.",
+				"semanticDomain": {
+					"structuralType": "owner",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Owning User.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "OwningTeam.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Owning Business Unit.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "regarding",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Reference.Regarding",
+					"inherited": true
+				}
+			},
+			{
+				"name": "status",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Reason for the status of the service level agreement (SLA) key performance indicator (KPI) instance. For example, the SLA KPI could be Noncompliant or Succeeded.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "slakpiinstance_status",
+						"displayName": "SLA KPI Instance Type",
+						"description": "Information that specifies the type of SLA KPI Instance.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "In Progress"
+							},
+							{
+								"value": 1,
+								"displayName": "Noncompliant"
+							},
+							{
+								"value": 2,
+								"displayName": "Nearing Noncompliance"
+							},
+							{
+								"value": 3,
+								"displayName": "Paused"
+							},
+							{
+								"value": 4,
+								"displayName": "Succeeded"
+							},
+							{
+								"value": 5,
+								"displayName": "Canceled"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "succeededon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Succeeded On",
+				"description": "Shows the date and time when the service level agreement (SLA) key performance indicator (KPI) success criteria was met.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "warningtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Warning Time",
+				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI)will go to a warning state.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date",
+					"inherited": true
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type",
+					"inherited": true
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Description",
+					"maxLength": 100,
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "warningtimereached",
+				"dataType": "String",
+				"displayName": "Warning Time Reached",
+				"description": "Shows information about whether the case has reached its warning time.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "slakpiinstance_warningtimereached",
+						"displayName": "Warning Time Reached",
+						"description": "Information that specifies whether the case is decrementing.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "No"
+							},
+							{
+								"value": 1,
+								"displayName": "Yes"
+							}
+						]
+					}
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_owner",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_slakpiinstance",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_slakpiinstance",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_account",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_fax",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Fax",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a5bb8322-6632-6f83-2c89-9537b195c778"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_email",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Email",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ccf6d1d9-b418-ef81-2952-7216b80fcac2"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_activitypointer",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f8933236-f276-4bb5-ffb1-d31fd98f6199"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_letter",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4ddf6414-3ed0-2276-4cf0-d92a46503a89"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_appointment",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Appointment",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "537e0344-518e-ede2-6178-f4ba75853411"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_socialactivity",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SocialActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7fb13917-d746-d6fd-3b63-0e90f273a054"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_task",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Task",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "d7557a7b-740a-4dc5-793f-70ad343c51be"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_phonecall",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "PhoneCall",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "slakpiinstance_contact",
+			"referencing": {
+				"entity": {
+					"type": "SLAKPIInstance",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3172fc69-7993-9c7a-b701-4f6c7a865705"
+				},
+				"attributes": [
+					{
+						"name": "regarding",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

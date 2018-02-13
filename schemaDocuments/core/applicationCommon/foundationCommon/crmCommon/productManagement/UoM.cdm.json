@@ -1,0 +1,308 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "UoM",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+				"semanticVersion": "0.4.0",
+				"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+			}
+		},
+		"description": "Unit of measure.",
+		"displayName": "Unit",
+		"attributes": [
+			{
+				"name": "uomid",
+				"dataType": "Guid",
+				"displayName": "Unit",
+				"description": "Unique identifier of the unit.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the unit was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the unit.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the unit was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the unit.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the uom.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the uom.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Type a descriptive title or name for the unit of measure.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "baseuom",
+				"dataType": "Guid",
+				"displayName": "Base Unit",
+				"description": "Choose the base or primary unit on which the unit is based.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "isschedulebaseuom",
+				"dataType": "Boolean",
+				"displayName": "Is Schedule Base Unit",
+				"description": "Tells whether the unit is the base unit for the associated unit group.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization ",
+				"description": "Unique identifier of the organization associated with the unit of measure.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "quantity",
+				"dataType": "Decimal",
+				"displayName": "Quantity",
+				"description": "Unit quantity for the product.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 10000000000
+				}
+			},
+			{
+				"name": "uomscheduleid",
+				"dataType": "Guid",
+				"displayName": "Unit Schedule",
+				"description": "Choose the ID of the unit group that the unit is associated with.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Created By (External Party)",
+				"description": "Shows the external party who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Modified By (External Party)",
+				"description": "Shows the external party who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_uombase_modifiedonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "modifiedonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "unit_of_measurement_base_unit",
+			"referencing": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "baseuom",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "unit_of_measure_schedule_conversions",
+			"referencing": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "uomscheduleid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoMSchedule",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0163dda0-830d-5079-cf9b-993e5cf0f38f"
+				},
+				"attributes": [
+					{
+						"name": "uomscheduleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,440 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "SalesLiterature",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "e2260ad0-0428-d5b7-5409-2ea4ad0ef032"
+			}
+		},
+		"description": "Storage of sales literature, which may contain one or more documents.",
+		"displayName": "Sales Literature",
+		"attributes": [
+			{
+				"name": "salesliteratureid",
+				"dataType": "Guid",
+				"displayName": "Sales Literature",
+				"description": "Unique identifier of the sales literature.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier for the organization",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Type a descriptive title for the sales literature.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process Id",
+				"description": "Contains the id of the process associated with the entity.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Stage Id",
+				"description": "Contains the id of the stage where the entity is located.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the sales literature, such as the intended audience or primary messages.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "employeecontactid",
+				"dataType": "Guid",
+				"displayName": "Employee Contact",
+				"description": "Choose the user who is responsible for maintaining or updating the sales literature.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			},
+			{
+				"name": "expirationdate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Expiration Date",
+				"description": "Enter the expiration date or last day the sales literature can be distributed.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "hasattachments",
+				"dataType": "Boolean",
+				"displayName": "Has Attachments",
+				"description": "Tells whether the sales literature has one or more attachments.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "iscustomerviewable",
+				"dataType": "Boolean",
+				"displayName": "Customer Viewable",
+				"description": "Select whether the sales literature can be distributed to prospects and customers or is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "keywords",
+				"dataType": "String",
+				"displayName": "Key Words",
+				"description": "Type one or more topics or keywords that can be used to search for the sales literature.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 100000
+				}
+			},
+			{
+				"name": "literaturetypecode",
+				"dataType": "String",
+				"displayName": "Type",
+				"description": "Select a category or type to help others identify the intended use of the sales literature.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "salesliterature_literaturetypecode",
+						"displayName": "Type",
+						"description": "Type of sales literature.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Presentation"
+							},
+							{
+								"value": 1,
+								"displayName": "Product Sheet"
+							},
+							{
+								"value": 2,
+								"displayName": "Policies And Procedures"
+							},
+							{
+								"value": 3,
+								"displayName": "Sales Literature"
+							},
+							{
+								"value": 4,
+								"displayName": "Spreadsheets"
+							},
+							{
+								"value": 5,
+								"displayName": "News"
+							},
+							{
+								"value": 6,
+								"displayName": "Bulletins"
+							},
+							{
+								"value": 7,
+								"displayName": "Price Sheets"
+							},
+							{
+								"value": 8,
+								"displayName": "Manuals"
+							},
+							{
+								"value": 9,
+								"displayName": "Company Background"
+							},
+							{
+								"value": 100001,
+								"displayName": "Marketing Collateral"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "subjectid",
+				"dataType": "Guid",
+				"displayName": "Subject",
+				"description": "Choose the subject for the sales literature to relate the item to a product or business group. Administrators can configure subjects under Business Management in the Settings area.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_salesliteraturebase_modifiedonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "SalesLiterature",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e2260ad0-0428-d5b7-5409-2ea4ad0ef032"
+				},
+				"attributes": [
+					{
+						"name": "modifiedonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_SalesLiterature",
+			"referencing": {
+				"entity": {
+					"type": "SalesLiterature",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e2260ad0-0428-d5b7-5409-2ea4ad0ef032"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_sales_literature",
+			"referencing": {
+				"entity": {
+					"type": "SalesLiterature",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e2260ad0-0428-d5b7-5409-2ea4ad0ef032"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

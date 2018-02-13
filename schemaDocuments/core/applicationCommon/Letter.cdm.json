@@ -1,0 +1,977 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Letter",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+			}
+		},
+		"description": "Activity that tracks the delivery of a letter. The activity can contain the electronic copy of the letter.",
+		"displayName": "Letter",
+		"attributes": [
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "from",
+				"dataType": "Guid",
+				"displayName": "From",
+				"description": "Enter the account, contact, lead, or user who sent the letter.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Choose the record that the letter relates to.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "directioncode",
+				"dataType": "Boolean",
+				"displayName": "Direction",
+				"description": "Select the direction of the letter as incoming or outbound.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the letter.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "isbilled",
+				"dataType": "Boolean",
+				"displayName": "Is Billed",
+				"description": "Shows whether the letter activity was billed as part of resolving a case.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "address",
+				"dataType": "String",
+				"displayName": "Address",
+				"description": "Type the complete recipient address for the letter to ensure timely delivery.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "scheduledstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Start Date",
+				"description": "Enter the expected due date and time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "subject",
+				"dataType": "String",
+				"displayName": "Subject",
+				"description": "Type a short description about the objective or primary topic of the letter.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "bcc",
+				"dataType": "Guid",
+				"displayName": "Bcc",
+				"description": "Enter the recipients that are included in the letter distribution, but are not displayed to other recipients.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "subcategory",
+				"dataType": "String",
+				"displayName": "Sub-Category",
+				"description": "Type a subcategory to identify the letter type and relate the activity to a specific product, sales region, business group, or other function.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Category",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "actualend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Actual End",
+				"description": "Enter the actual end date and time of the letter. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the letter.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "activityid",
+				"dataType": "Guid",
+				"displayName": "Letter",
+				"description": "Unique identifier of the letter activity.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "actualdurationminutes",
+				"dataType": "Int32",
+				"displayName": "Duration",
+				"description": "Type the number of minutes spent creating and sending the letter. The duration is used in reporting.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Measurement.Duration",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "isworkflowcreated",
+				"dataType": "Boolean",
+				"displayName": "Is Workflow Created",
+				"description": "Shows whether the letter activity was created by a workflow rule.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "scheduledend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Due Date",
+				"description": "Enter the expected due date and time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "scheduleddurationminutes",
+				"dataType": "Int32",
+				"displayName": "Scheduled Duration",
+				"description": "Scheduled duration of the letter activity, specified in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Measurement.Duration",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the letter's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "letter_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the letter activity.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Open",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Draft",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Received",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 4,
+								"displayName": "Sent",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 5,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "category",
+				"dataType": "String",
+				"displayName": "Category",
+				"description": "Type a category to identify the letter type, such as sales offer or past due notice, to tie the letter to a business group or function.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Category",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the letter activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "cc",
+				"dataType": "Guid",
+				"displayName": "Cc",
+				"description": "Enter the recipients that should be copied on the letter.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "to",
+				"dataType": "Guid",
+				"displayName": "To",
+				"description": "Enter the account, contact, lead, or user recipients for the letter.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Activity Status",
+				"description": "Shows whether the letter is open, completed, or canceled. Completed and canceled letters are read-only and can't be edited.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "letter_statecode",
+						"displayName": "Activity Status",
+						"description": "Status of the letter activity.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Open"
+							},
+							{
+								"value": 1,
+								"displayName": "Completed"
+							},
+							{
+								"value": 2,
+								"displayName": "Canceled"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type the letter body or additional information to describe the letter, such as the primary message or the products and services described.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "prioritycode",
+				"dataType": "String",
+				"displayName": "Priority",
+				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "letter_prioritycode",
+						"displayName": "Priority",
+						"description": "Priority code of the letter.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Low"
+							},
+							{
+								"value": 1,
+								"displayName": "Normal"
+							},
+							{
+								"value": 2,
+								"displayName": "High"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "actualstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Actual Start",
+				"description": "Enter the actual start date and time for the letter. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the letter.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user that owns the letter activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "activitytypecode",
+				"dataType": "String",
+				"displayName": "Activity Type",
+				"description": "Shows the type of activity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "activitypointer_activitytypecode",
+						"displayName": "Activity Type",
+						"description": "Type of activity.",
+						"items": [
+							{
+								"value": 4204,
+								"displayName": "Fax"
+							},
+							{
+								"value": 4210,
+								"displayName": "Phone Call"
+							},
+							{
+								"value": 4202,
+								"displayName": "Email"
+							},
+							{
+								"value": 4207,
+								"displayName": "Letter"
+							},
+							{
+								"value": 4201,
+								"displayName": "Appointment"
+							},
+							{
+								"value": 4212,
+								"displayName": "Task"
+							},
+							{
+								"value": 4251,
+								"displayName": "Recurring Appointment"
+							},
+							{
+								"value": 4406,
+								"displayName": "Quick Campaign"
+							},
+							{
+								"value": 4402,
+								"displayName": "Campaign Activity"
+							},
+							{
+								"value": 4401,
+								"displayName": "Campaign Response"
+							},
+							{
+								"value": 4206,
+								"displayName": "Case Resolution"
+							},
+							{
+								"value": 4214,
+								"displayName": "Service Activity"
+							},
+							{
+								"value": 4208,
+								"displayName": "Opportunity Close"
+							},
+							{
+								"value": 4209,
+								"displayName": "Order Close"
+							},
+							{
+								"value": 4211,
+								"displayName": "Quote Close"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "isregularactivity",
+				"dataType": "Boolean",
+				"displayName": "Is Regular Activity",
+				"description": "Shows whether the activity is a regular activity type or event type.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team that owns the letter activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process",
+				"description": "Shows the ID of the process.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Process Stage",
+				"description": "Shows the ID of the stage.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) that you want to apply to the Letter record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "slainvokedid",
+				"dataType": "Guid",
+				"displayName": "Last SLA applied",
+				"description": "Last SLA that was applied to this Letter. This field is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "onholdtime",
+				"dataType": "Int32",
+				"displayName": "On Hold Time (Minutes)",
+				"description": "Shows how long, in minutes, that the record was on hold.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastonholdtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last On Hold Time",
+				"description": "Contains the date and time stamp of the last on hold time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "sortdate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Sort Date",
+				"description": "Shows the date and time by which the activities are sorted.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "sla_letter",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "slainvokedid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Account_Letters",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "Contact_Letters",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "KnowledgeArticle_Letters",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				},
+				"attributes": [
+					{
+						"name": "knowledgearticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "KnowledgeBaseRecord_Letters",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeBaseRecord",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+				},
+				"attributes": [
+					{
+						"name": "knowledgebaserecordid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_letter_activities",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "activity_pointer_letter",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_Letter",
+			"referencing": {
+				"entity": {
+					"type": "Letter",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

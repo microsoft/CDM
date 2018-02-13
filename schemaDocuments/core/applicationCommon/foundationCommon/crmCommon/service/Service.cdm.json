@@ -1,0 +1,463 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Service",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+			}
+		},
+		"description": "Activity that represents work done to satisfy a customer's need.",
+		"displayName": "Service",
+		"attributes": [
+			{
+				"name": "serviceid",
+				"dataType": "Guid",
+				"displayName": "Service",
+				"description": "Unique identifier of the associated service.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the service was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the service was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization Id",
+				"description": "Unique identifier for the organization",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Name of the service.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "anchoroffset",
+				"dataType": "Int32",
+				"displayName": "Anchor Offset",
+				"description": "Used in conjunction with granularity to describes when services can be performed in relation to midnight on a given day.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1440
+				}
+			},
+			{
+				"name": "calendarid",
+				"dataType": "Guid",
+				"displayName": "Calendar",
+				"description": "Unique identifier of the calendar.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of activity that represents work done to satisfy a customer's need.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "duration",
+				"dataType": "Int32",
+				"displayName": "Duration",
+				"description": "Duration of the service.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Measurement.Duration",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "granularity",
+				"dataType": "String",
+				"displayName": "Granularity",
+				"description": "Describes how often the service is performed.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "initialstatuscode",
+				"dataType": "String",
+				"displayName": "Initial Status Reason",
+				"description": "Initial status reason for the service activity.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "service_initialstatuscode",
+						"displayName": "Initial Status Reason",
+						"description": "Initial status reason for the service activity.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Requested",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Tentative",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Pending",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 4,
+								"displayName": "Reserved",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 6,
+								"displayName": "In Progress",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 7,
+								"displayName": "Arrived",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 8,
+								"displayName": "Completed",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 9,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 10,
+								"displayName": "No Show",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "isschedulable",
+				"dataType": "Boolean",
+				"displayName": "Status",
+				"description": "Information about whether the service can be scheduled.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isvisible",
+				"dataType": "Boolean",
+				"displayName": "Is Visible",
+				"description": "Information about whether the service is visible to users.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "resourcespecid",
+				"dataType": "Guid",
+				"displayName": "Required Resources",
+				"description": "Unique identifier of the resource specification with which the service is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "showresources",
+				"dataType": "Boolean",
+				"displayName": "Show Resources",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "strategyid",
+				"dataType": "Guid",
+				"displayName": "Strategy",
+				"description": "Value that is taken from PluginTypeId in the Plugin Type record for the scheduling strategy. This is the ID of the scheduling strategy plug-in associated with the service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "resource_spec_services",
+			"referencing": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "resourcespecid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ResourceSpec",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b5bfad07-4a9b-b5f7-5524-6706370ecaf0"
+				},
+				"attributes": [
+					{
+						"name": "resourcespecid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_services",
+			"referencing": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "calendar_services",
+			"referencing": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "calendarid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Calendar",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6b63df25-daad-9c73-cd61-79dd38dab8eb"
+				},
+				"attributes": [
+					{
+						"name": "calendarid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lk_service_createdonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "createdonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,531 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Team",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+			},
+			"extends": {
+				"type": "Team",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+			}
+		},
+		"description": "Collection of system users that routinely collaborate. Teams can be used to simplify record sharing and provide team members with common access to organization data when team members belong to different Business Units.",
+		"displayName": "Team",
+		"attributes": [
+			{
+				"name": "teamid",
+				"dataType": "Guid",
+				"displayName": "Team",
+				"description": "Unique identifier for the team.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true,
+					"inherited": true
+				}
+			},
+			{
+				"name": "organizationid",
+				"dataType": "Guid",
+				"displayName": "Organization ",
+				"description": "Unique identifier of the organization associated with the team.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "businessunitid",
+				"dataType": "Guid",
+				"displayName": "Business Unit",
+				"description": "Unique identifier of the business unit with which the team is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Team Name",
+				"description": "Name of the team.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of the team.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailaddress",
+				"dataType": "String",
+				"displayName": "Email",
+				"description": "Email address for the team.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100,
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the team was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the team was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify",
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version number",
+				"description": "Version number of the team.",
+				"semanticDomain": {
+					"structuralType": "timestamp",
+					"inherited": true
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "administratorid",
+				"dataType": "Guid",
+				"displayName": "Administrator",
+				"description": "Unique identifier of the user primary responsible for the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "isdefault",
+				"dataType": "Boolean",
+				"displayName": "Is Default",
+				"description": "Information about whether the team is a default business unit team.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "yominame",
+				"dataType": "String",
+				"displayName": "Yomi Name",
+				"description": "Pronunciation of the full name of the team, written in phonetic hiragana or katakana characters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 160,
+					"inherited": true
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250,
+					"inherited": true
+				}
+			},
+			{
+				"name": "queueid",
+				"dataType": "Guid",
+				"displayName": "Default Queue",
+				"description": "Unique identifier of the default queue for the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Unique identifier of the currency associated with the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type",
+					"inherited": true
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Exchange rate for the currency associated with the team with respect to the base currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "teamtype",
+				"dataType": "String",
+				"displayName": "Team Type",
+				"description": "Select the team type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"inherited": true,
+					"constrainedList": {
+						"name": "team_type",
+						"displayName": "Team Type",
+						"description": "Information about team type.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Owner"
+							},
+							{
+								"value": 1,
+								"displayName": "Access"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "teamtemplateid",
+				"dataType": "Guid",
+				"displayName": "Team Template Identifier",
+				"description": "Shows the team template that is associated with the team.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding Object Id",
+				"description": "Choose the record that the team relates to.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Reference.Regarding",
+					"inherited": true
+				}
+			},
+			{
+				"name": "systemmanaged",
+				"dataType": "Boolean",
+				"displayName": "Is System Managed",
+				"description": "Select whether the team will be managed by the system.",
+				"semanticDomain": {
+					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Process Stage",
+				"description": "Shows the ID of the stage.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process",
+				"description": "Shows the ID of the process.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
+					"inherited": true
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "knowledgearticle_Teams",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				},
+				"attributes": [
+					{
+						"name": "knowledgearticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lk_teambase_modifiedonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "modifiedonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "TransactionCurrency_Team",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_teams",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "queue_team",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "queueid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Queue",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				},
+				"attributes": [
+					{
+						"name": "queueid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "organization_teams",
+			"referencing": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Organization",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				},
+				"attributes": [
+					{
+						"name": "organizationid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

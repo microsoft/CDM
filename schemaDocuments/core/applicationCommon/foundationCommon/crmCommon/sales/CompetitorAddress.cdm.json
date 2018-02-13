@@ -1,0 +1,470 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "CompetitorAddress",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "d5f06b82-7313-cf09-d575-493ed62574ab"
+			}
+		},
+		"description": "Additional addresses for a competitor. The first two addresses are stored in the competitor object.",
+		"displayName": "Competitor Address",
+		"attributes": [
+			{
+				"name": "competitoraddressid",
+				"dataType": "Guid",
+				"displayName": "Competitor Address",
+				"description": "Unique identifier of the competitor address.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the competitor address was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the competitor address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the competitor address was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the competitor address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the competitor address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the competitor address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Address Name",
+				"description": "Name used to identify the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "addressnumber",
+				"dataType": "Int32",
+				"displayName": "Address Number",
+				"description": "Information about which competitor address is applicable.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "addresstypecode",
+				"dataType": "String",
+				"displayName": "Address Type",
+				"description": "Type of address for the competitor, such as primary address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitoraddress_addresstypecode",
+						"displayName": "competitoraddress_addresstypecode",
+						"description": "Type of address for the competitor, such as primary address.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "city",
+				"dataType": "String",
+				"displayName": "City",
+				"description": "City name in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "composite",
+				"dataType": "String",
+				"displayName": "Address",
+				"description": "Shows the complete address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "country",
+				"dataType": "String",
+				"displayName": "Country/Region",
+				"description": "Country/region name in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "county",
+				"dataType": "String",
+				"displayName": "County",
+				"description": "County name in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "fax",
+				"dataType": "String",
+				"displayName": "Fax",
+				"description": "Fax number for the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "latitude",
+				"dataType": "Double",
+				"displayName": "Latitude",
+				"description": "Latitude for the competitor address.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "line1",
+				"dataType": "String",
+				"displayName": "Street 1",
+				"description": "First line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line2",
+				"dataType": "String",
+				"displayName": "Street 2",
+				"description": "Second line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line3",
+				"dataType": "String",
+				"displayName": "Street 3",
+				"description": "Third line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "longitude",
+				"dataType": "Double",
+				"displayName": "Longitude",
+				"description": "Longitude for the address for the competitor.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "parentid",
+				"dataType": "Guid",
+				"displayName": "Parent",
+				"description": "Unique identifier of the parent object with which the competitor address is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Object.Relationship.Parent"
+				}
+			},
+			{
+				"name": "postalcode",
+				"dataType": "String",
+				"displayName": "ZIP/Postal Code",
+				"description": "ZIP Code or postal code in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "postofficebox",
+				"dataType": "String",
+				"displayName": "Post Office Box",
+				"description": "Post office box number in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Shipping Method",
+				"description": "Method of shipment for the competitor.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "competitoraddress_shippingmethodcode",
+						"displayName": "competitoraddress_shippingmethodcode",
+						"description": "Method of shipment for the competitor.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "stateorprovince",
+				"dataType": "String",
+				"displayName": "State/Province",
+				"description": "State or province in the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone1",
+				"dataType": "String",
+				"displayName": "Main Phone",
+				"description": "First telephone number for the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone2",
+				"dataType": "String",
+				"displayName": "Phone 2",
+				"description": "Second telephone number for the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone3",
+				"dataType": "String",
+				"displayName": "Phone 3",
+				"description": "Third telephone number for the competitor address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "upszone",
+				"dataType": "String",
+				"displayName": "UPS Zone",
+				"description": "United Parcel Service (UPS) zone for the address of the competitor.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "utcoffset",
+				"dataType": "Int32",
+				"displayName": "UTC Offset",
+				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "lk_competitoraddressbase_createdonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "CompetitorAddress",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "d5f06b82-7313-cf09-d575-493ed62574ab"
+				},
+				"attributes": [
+					{
+						"name": "createdonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "competitor_addresses",
+			"referencing": {
+				"entity": {
+					"type": "CompetitorAddress",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "d5f06b82-7313-cf09-d575-493ed62574ab"
+				},
+				"attributes": [
+					{
+						"name": "parentid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Competitor",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+				},
+				"attributes": [
+					{
+						"name": "competitorid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

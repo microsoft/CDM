@@ -1,0 +1,414 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "EmailSignature",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.4.0",
+				"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+			}
+		},
+		"description": "Signature for email message",
+		"displayName": "Email Signature",
+		"attributes": [
+			{
+				"name": "emailsignatureid",
+				"dataType": "Guid",
+				"displayName": "Email Signature",
+				"description": "Unique identifier of the email signature.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ispersonal",
+				"dataType": "Boolean",
+				"displayName": "Viewable By",
+				"description": "Information about whether the email signature is personal or is available to all users.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "mimetype",
+				"dataType": "String",
+				"displayName": "Mime Type",
+				"description": "MIME type of the email signature.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 256
+				}
+			},
+			{
+				"name": "body",
+				"dataType": "String",
+				"displayName": "Body",
+				"description": "Body text of the email signature.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "title",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Title of the email signature.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Description of the email signature.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user who owns the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "presentationxml",
+				"dataType": "String",
+				"displayName": "Presentation XML",
+				"description": "XML data for the body of the email signature.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "internalextentdata",
+					"maxLength": 1073741823
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the email signature was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the email signature was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the email signature for the email activity.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "generationtypecode",
+				"dataType": "Int32",
+				"displayName": "Generation Type Code",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "languagecode",
+				"dataType": "Int32",
+				"displayName": "Language",
+				"description": "Language of the email signature.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Idea.Language",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Unique identifier of the data import or data migration that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overwritetime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Overwrite Time",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "componentstate",
+				"dataType": "String",
+				"displayName": "Component State",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "componentstate",
+						"displayName": "Component State",
+						"description": "The state of this component.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Published"
+							},
+							{
+								"value": 1,
+								"displayName": "Unpublished"
+							},
+							{
+								"value": 2,
+								"displayName": "Deleted"
+							},
+							{
+								"value": 3,
+								"displayName": "Deleted Unpublished"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team who owns the email signature.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "iscustomizable",
+				"dataType": "Boolean",
+				"displayName": "Customizable",
+				"description": "Information that specifies whether this component can be customized.",
+				"semanticDomain": {
+					"structuralType": "managedproperty"
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "isdefault",
+				"dataType": "Boolean",
+				"displayName": "Is Default",
+				"description": "Information that specifies whether the email signature is default to the user.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "EmailSignature",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "EmailSignature",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_emailsignatures",
+			"referencing": {
+				"entity": {
+					"type": "EmailSignature",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_emailsignatures",
+			"referencing": {
+				"entity": {
+					"type": "EmailSignature",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

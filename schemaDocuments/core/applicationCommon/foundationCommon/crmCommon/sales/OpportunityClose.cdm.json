@@ -1,0 +1,1615 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "OpportunityClose",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+				"semanticVersion": "0.4.0",
+				"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+			}
+		},
+		"description": "Activity that is created automatically when an opportunity is closed, containing information such as the description of the closing and actual revenue.",
+		"displayName": "Opportunity Close",
+		"attributes": [
+			{
+				"name": "serviceid",
+				"dataType": "Guid",
+				"displayName": "Service",
+				"description": "Unique identifier of an associated service.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Created By (External Party)",
+				"description": "Shows the external party who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedbyexternalparty",
+				"dataType": "Guid",
+				"displayName": "Modified By (External Party)",
+				"description": "Shows the external party who modified the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "activityadditionalparams",
+				"dataType": "String",
+				"displayName": "Activity Additional Parameters",
+				"description": "Additional information provided by the external application as JSON. For internal use only.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 8192
+				}
+			},
+			{
+				"name": "activityid",
+				"dataType": "Guid",
+				"displayName": "Opportunity Close",
+				"description": "Unique identifier of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "activitytypecode",
+				"dataType": "String",
+				"displayName": "Activity Type",
+				"description": "Type of activity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "actualdurationminutes",
+				"dataType": "Int32",
+				"displayName": "Actual Duration",
+				"description": "Actual duration of the opportunity close activity in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "actualend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Closed On",
+				"description": "Actual end time of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "actualstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Actual Start",
+				"description": "Actual start time of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "community",
+				"dataType": "String",
+				"displayName": "Social Channel",
+				"description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the opportunity close activity was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the opportunityclose.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "deliverylastattemptedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Date Delivery Last Attempted",
+				"description": "Date and time when the delivery of the activity was last attempted.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "deliveryprioritycode",
+				"dataType": "String",
+				"displayName": "Delivery Priority",
+				"description": "Priority of delivery of the activity to the email server.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Activity that is created automatically when an opportunity is closed, containing information such as the description of the closing and actual revenue.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "exchangeitemid",
+				"dataType": "String",
+				"displayName": "Exchange Item ID",
+				"description": "The message id of activity which is returned from Exchange Server.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "exchangeweblink",
+				"dataType": "String",
+				"displayName": "Exchange WebLink",
+				"description": "Shows the web link of Activity of type email.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "instancetypecode",
+				"dataType": "String",
+				"displayName": "Recurring Instance Type",
+				"description": "Type of instance of a recurring series.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "none_opportunityclose_instancetypecode",
+						"displayName": "Appointment Type",
+						"description": "Type of instance of a recurring series.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Not Recurring"
+							},
+							{
+								"value": 1,
+								"displayName": "Recurring Master"
+							},
+							{
+								"value": 2,
+								"displayName": "Recurring Instance"
+							},
+							{
+								"value": 3,
+								"displayName": "Recurring Exception"
+							},
+							{
+								"value": 4,
+								"displayName": "Recurring Future Exception"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "isbilled",
+				"dataType": "Boolean",
+				"displayName": "Is Billed",
+				"description": "Information about whether the opportunity close activity was billed as part of resolving a case.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "ismapiprivate",
+				"dataType": "Boolean",
+				"displayName": "Is Private",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isregularactivity",
+				"dataType": "Boolean",
+				"displayName": "Is Regular Activity",
+				"description": "Information regarding whether the activity is a regular activity type or event type.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "isworkflowcreated",
+				"dataType": "Boolean",
+				"displayName": "Is Workflow Created",
+				"description": "Information that specifies if the opportunity close activity was created from a workflow rule.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "lastonholdtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last On Hold Time",
+				"description": "Contains the date and time stamp of the last on hold time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "leftvoicemail",
+				"dataType": "Boolean",
+				"displayName": "Left Voice Mail",
+				"description": "Left the voice mail",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the opportunity close activity was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the opportunityclose.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "onholdtime",
+				"dataType": "Int32",
+				"displayName": "On Hold Time (Minutes)",
+				"description": "Shows how long, in minutes, that the record was on hold.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Unique identifier of the user or team who owns the activity.",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier of the business unit that owns the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier of the team that owns the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier of the user that owns the activity.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "postponeactivityprocessinguntil",
+				"dataType": "DateTimeOffset",
+				"displayName": "Delay activity processing until",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "prioritycode",
+				"dataType": "String",
+				"displayName": "Priority",
+				"description": "Priority of the activity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "none_opportunityclose_prioritycode",
+						"displayName": "Priority",
+						"description": "Priority of the activity.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Low"
+							},
+							{
+								"value": 1,
+								"displayName": "Normal"
+							},
+							{
+								"value": 2,
+								"displayName": "High"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process",
+				"description": "Unique identifier of the Process.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "regardingobjectid",
+				"dataType": "Guid",
+				"displayName": "Regarding",
+				"description": "Unique identifier of the object with which the activity is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "scheduleddurationminutes",
+				"dataType": "Int32",
+				"displayName": "Scheduled Duration",
+				"description": "Scheduled duration of the opportunity close activity, specified in minutes.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "scheduledend",
+				"dataType": "DateTimeOffset",
+				"displayName": "Scheduled End",
+				"description": "Scheduled end time of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "scheduledstart",
+				"dataType": "DateTimeOffset",
+				"displayName": "Scheduled Start",
+				"description": "Scheduled start time of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "sendermailboxid",
+				"dataType": "Guid",
+				"displayName": "Sender's Mailbox",
+				"description": "Unique identifier of the mailbox associated with the sender of the email message.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "senton",
+				"dataType": "DateTimeOffset",
+				"displayName": "Date Sent",
+				"description": "Date and time when the activity was sent.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "seriesid",
+				"dataType": "Guid",
+				"displayName": "Series Id",
+				"description": "Uniqueidentifier specifying the id of recurring series of an instance.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "slainvokedid",
+				"dataType": "Guid",
+				"displayName": "Last SLA applied",
+				"description": "Last SLA that was applied to this case. This field is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "sortdate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Sort Date",
+				"description": "Shows the date and time by which the activities are sorted.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Process Stage",
+				"description": "Unique identifier of the Stage.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the opportunity close activity is open, completed, or canceled.  By default, opportunity close activities are completed unless the opportunity is reactivated,  which updates them to canceled.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "opportunityclose_statecode",
+						"displayName": "Activity Status",
+						"description": "Status of the activity.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Open"
+							},
+							{
+								"value": 1,
+								"displayName": "Completed"
+							},
+							{
+								"value": 2,
+								"displayName": "Canceled"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Reason for the status of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "opportunityclose_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the activity.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Open",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Completed",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "subject",
+				"dataType": "String",
+				"displayName": "Subject",
+				"description": "Subject associated with the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version number of the activity.",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "from",
+				"dataType": "Guid",
+				"displayName": "From",
+				"description": "Person who the activity is from.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "to",
+				"dataType": "Guid",
+				"displayName": "To",
+				"description": "Person who is the receiver of the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "cc",
+				"dataType": "Guid",
+				"displayName": "CC",
+				"description": "Carbon-copy (cc) recipients of the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "bcc",
+				"dataType": "Guid",
+				"displayName": "BCC",
+				"description": "Blind Carbon-copy (bcc) recipients of the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "requiredattendees",
+				"dataType": "Guid",
+				"displayName": "Required Attendees",
+				"description": "List of required attendees for the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "optionalattendees",
+				"dataType": "Guid",
+				"displayName": "Optional Attendees",
+				"description": "List of optional attendees for the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "organizer",
+				"dataType": "Guid",
+				"displayName": "Organizer",
+				"description": "Person who organized the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "resources",
+				"dataType": "Guid",
+				"displayName": "Resources",
+				"description": "Users or facility/equipment that are required for the activity.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "customers",
+				"dataType": "Guid",
+				"displayName": "Customers",
+				"description": "Customer with which the activity is associated.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "partners",
+				"dataType": "Guid",
+				"displayName": "Outsource Vendors",
+				"description": "Outsource vendor with which activity is associated.",
+				"semanticDomain": {
+					"structuralType": "partylist",
+					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "actualrevenue",
+				"dataType": "Decimal",
+				"displayName": "Actual Revenue",
+				"description": "Actual revenue generated for the opportunity.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "actualrevenue_base",
+				"dataType": "Decimal",
+				"displayName": "Actual Revenue (Base)",
+				"description": "Value of the Actual Revenue in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "category",
+				"dataType": "String",
+				"displayName": "Category",
+				"description": "Category of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Category",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "competitorid",
+				"dataType": "Guid",
+				"displayName": "Competitor",
+				"description": "Unique identifier of the competitor with which the opportunity close activity is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "opportunityid",
+				"dataType": "Guid",
+				"displayName": "Opportunity",
+				"description": "Unique identifier of the opportunity closed.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "subcategory",
+				"dataType": "String",
+				"displayName": "Sub-Category",
+				"description": "Subcategory of the opportunity close activity.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Category",
+					"maxLength": 250
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "service_opportunityclose",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Service",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+				},
+				"attributes": [
+					{
+						"name": "serviceid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "competitor_opportunity_activities",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "competitorid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Competitor",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1799d750-b9be-5d6c-b555-1725d95933ff"
+				},
+				"attributes": [
+					{
+						"name": "competitorid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunityclose_mailbox_sendermailboxid",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "sendermailboxid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Mailbox",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
+				},
+				"attributes": [
+					{
+						"name": "mailboxid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "account_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "bulkoperation_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BulkOperation",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "campaignactivity_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "CampaignActivity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
+					"semanticVersion": "0.4.0",
+					"semanticId": "76b04004-ab55-9f5d-ba3a-8f1eacdf1eed"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "bookableresourcebookingheader_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BookableResourceBookingHeader",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55a1ba00-ba94-5607-a6c1-eb625236c9f7"
+				},
+				"attributes": [
+					{
+						"name": "bookableresourcebookingheaderid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "bookableresourcebooking_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BookableResourceBooking",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
+					"semanticVersion": "0.4.0",
+					"semanticId": "e459aa4c-e193-78fd-8cc8-2c542eb2935d"
+				},
+				"attributes": [
+					{
+						"name": "bookableresourcebookingid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "knowledgebaserecord_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeBaseRecord",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+				},
+				"attributes": [
+					{
+						"name": "knowledgebaserecordid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lead_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7be0e6ca-0e97-e54f-9b5c-80c8c20ab225"
+				},
+				"attributes": [
+					{
+						"name": "leadid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunity_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Opportunity",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "58e4064e-c29e-f5aa-58e0-6d3f390cc4b0"
+				},
+				"attributes": [
+					{
+						"name": "opportunityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "site_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Site",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+				},
+				"attributes": [
+					{
+						"name": "siteid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "campaign_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Campaign",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "6a47c491-48dd-30fe-b16f-df8a345193ec"
+				},
+				"attributes": [
+					{
+						"name": "campaignid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "entitlement_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Entitlement",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+				},
+				"attributes": [
+					{
+						"name": "entitlementid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "entitlementtemplate_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "EntitlementTemplate",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "27b2c278-f860-4e97-fc0b-a1dd0bebe978"
+				},
+				"attributes": [
+					{
+						"name": "entitlementtemplateid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "incident_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Incident",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c2ea8f24-aa95-f0a1-429c-8ad1659f33ce"
+				},
+				"attributes": [
+					{
+						"name": "incidentid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "knowledgearticle_OpportunityCloses",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "regardingobjectid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "KnowledgeArticle",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				},
+				"attributes": [
+					{
+						"name": "knowledgearticleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunityclose_sla_slainvokedid",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "slainvokedid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_opportunity_close_activities",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "activity_pointer_opportunity_close",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "ActivityPointer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+				},
+				"attributes": [
+					{
+						"name": "activityid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "opportunityclose_owner_ownerid",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_opportunityclose",
+			"referencing": {
+				"entity": {
+					"type": "OpportunityClose",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a6593fb-85d8-8110-518e-3222c0eca64b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

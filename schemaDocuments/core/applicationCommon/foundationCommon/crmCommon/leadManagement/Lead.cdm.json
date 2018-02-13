@@ -1,0 +1,2286 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "Lead",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+				"semanticVersion": "0.4.0",
+				"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+			}
+		},
+		"description": "Prospect or potential sales opportunity. Leads are converted into accounts, contacts, or opportunities when they are qualified. Otherwise, they are deleted or archived.",
+		"displayName": "Lead",
+		"attributes": [
+			{
+				"name": "leadid",
+				"dataType": "Guid",
+				"displayName": "Lead",
+				"description": "Unique identifier of the lead.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "fullname",
+				"dataType": "String",
+				"displayName": "Name",
+				"description": "Combines and shows the lead's first and last names so the full name can be displayed in views and reports.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Person.FullName",
+					"maxLength": 160
+				}
+			},
+			{
+				"name": "processid",
+				"dataType": "Guid",
+				"displayName": "Process Id",
+				"description": "Contains the id of the process associated with the entity.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "stageid",
+				"dataType": "Guid",
+				"displayName": "Stage Id",
+				"description": "Contains the id of the stage where the entity is located.",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "traversedpath",
+				"dataType": "String",
+				"displayName": "Traversed Path",
+				"description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "parentaccountid",
+				"dataType": "Guid",
+				"displayName": "Parent Account for lead",
+				"description": "Choose an account to connect this lead to, so that the relationship is visible in reports and analytics.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Account"
+				}
+			},
+			{
+				"name": "parentcontactid",
+				"dataType": "Guid",
+				"displayName": "Parent Contact for lead",
+				"description": "Choose a contact to connect this lead to, so that the relationship is visible in reports and analytics.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			},
+			{
+				"name": "address1_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 1: ID",
+				"description": "Unique identifier for address 1.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address1_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 1: Address Type",
+				"description": "Select the primary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_address1_addresstypecode",
+						"displayName": "Address 1: Address Type",
+						"description": "Type of address for address 1, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_city",
+				"dataType": "String",
+				"displayName": "City",
+				"description": "Type the city for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_composite",
+				"dataType": "String",
+				"displayName": "Address 1",
+				"description": "Shows the complete primary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "address1_country",
+				"dataType": "String",
+				"displayName": "Country/Region",
+				"description": "Type the country or region for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address1_county",
+				"dataType": "String",
+				"displayName": "Address 1: County",
+				"description": "Type the county for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_fax",
+				"dataType": "String",
+				"displayName": "Address 1: Fax",
+				"description": "Type the fax number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_latitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Latitude",
+				"description": "Type the latitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address1_line1",
+				"dataType": "String",
+				"displayName": "Street 1",
+				"description": "Type the first line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line2",
+				"dataType": "String",
+				"displayName": "Street 2",
+				"description": "Type the second line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_line3",
+				"dataType": "String",
+				"displayName": "Street 3",
+				"description": "Type the third line of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address1_longitude",
+				"dataType": "Double",
+				"displayName": "Address 1: Longitude",
+				"description": "Type the longitude value for the primary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address1_name",
+				"dataType": "String",
+				"displayName": "Address 1: Name",
+				"description": "Type a descriptive name for the primary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address1_postalcode",
+				"dataType": "String",
+				"displayName": "ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 1: Post Office Box",
+				"description": "Type the post office box number of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 1: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_address1_shippingmethodcode",
+						"displayName": "Address 1: Shipping Method ",
+						"description": "Method of shipment for address 1.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address1_stateorprovince",
+				"dataType": "String",
+				"displayName": "State/Province",
+				"description": "Type the state or province of the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone1",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 1",
+				"description": "Type the main phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone2",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 2",
+				"description": "Type a second phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_telephone3",
+				"dataType": "String",
+				"displayName": "Address 1: Telephone 3",
+				"description": "Type a third phone number associated with the primary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address1_upszone",
+				"dataType": "String",
+				"displayName": "Address 1: UPS Zone",
+				"description": "Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address1_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 1: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address2_addressid",
+				"dataType": "Guid",
+				"displayName": "Address 2: ID",
+				"description": "Unique identifier for address 2.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address2_addresstypecode",
+				"dataType": "String",
+				"displayName": "Address 2: Address Type",
+				"description": "Select the secondary address type.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_address2_addresstypecode",
+						"displayName": "Address 2: Address Type",
+						"description": "Type of address for address 2, such as billing, shipping, or primary address.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_city",
+				"dataType": "String",
+				"displayName": "Address 2: City",
+				"description": "Type the city for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.City",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_composite",
+				"dataType": "String",
+				"displayName": "Address 2",
+				"description": "Shows the complete secondary address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "address2_country",
+				"dataType": "String",
+				"displayName": "Address 2: Country/Region",
+				"description": "Type the country or region for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Country",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "address2_county",
+				"dataType": "String",
+				"displayName": "Address 2: County",
+				"description": "Type the county for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.County",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_fax",
+				"dataType": "String",
+				"displayName": "Address 2: Fax",
+				"description": "Type the fax number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_latitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Latitude",
+				"description": "Type the latitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Latitude",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "address2_line1",
+				"dataType": "String",
+				"displayName": "Address 2: Street 1",
+				"description": "Type the first line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line2",
+				"dataType": "String",
+				"displayName": "Address 2: Street 2",
+				"description": "Type the second line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_line3",
+				"dataType": "String",
+				"displayName": "Address 2: Street 3",
+				"description": "Type the third line of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.Address.Street",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "address2_longitude",
+				"dataType": "Double",
+				"displayName": "Address 2: Longitude",
+				"description": "Type the longitude value for the secondary address for use in mapping and other applications.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"semanticType": "Location.Longitude",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "address2_name",
+				"dataType": "String",
+				"displayName": "Address 2: Name",
+				"description": "Type a descriptive name for the secondary address, such as Corporate Headquarters.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "address2_postalcode",
+				"dataType": "String",
+				"displayName": "Address 2: ZIP/Postal Code",
+				"description": "Type the ZIP Code or postal code for the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.PostalCode",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_postofficebox",
+				"dataType": "String",
+				"displayName": "Address 2: Post Office Box",
+				"description": "Type the post office box number of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Address 2: Shipping Method",
+				"description": "Select a shipping method for deliveries sent to this address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_address2_shippingmethodcode",
+						"displayName": "Address 2: Shipping Method ",
+						"description": "Method of shipment for address 2.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "address2_stateorprovince",
+				"dataType": "String",
+				"displayName": "Address 2: State/Province",
+				"description": "Type the state or province of the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Location.State",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone1",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 1",
+				"description": "Type the main phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone2",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 2",
+				"description": "Type a second phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_telephone3",
+				"dataType": "String",
+				"displayName": "Address 2: Telephone 3",
+				"description": "Type a third phone number associated with the secondary address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "address2_upszone",
+				"dataType": "String",
+				"displayName": "Address 2: UPS Zone",
+				"description": "Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "address2_utcoffset",
+				"dataType": "Int32",
+				"displayName": "Address 2: UTC Offset",
+				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"semanticType": "Location.Timezone",
+					"minValue": -1500,
+					"maxValue": 1500
+				}
+			},
+			{
+				"name": "budgetamount",
+				"dataType": "Decimal",
+				"displayName": "Budget Amount",
+				"description": "Information about the budget amount of the lead's company or organization.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 1000000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "budgetamount_base",
+				"dataType": "Decimal",
+				"displayName": "Budget Amount (Base)",
+				"description": "Value of the Budget Amount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "budgetstatus",
+				"dataType": "String",
+				"displayName": "Budget",
+				"description": "Information about the budget status of the lead's company or organization.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "budgetstatus",
+						"displayName": "Budget",
+						"description": "Do they have a budget?",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "No Committed Budget"
+							},
+							{
+								"value": 1,
+								"displayName": "May Buy"
+							},
+							{
+								"value": 2,
+								"displayName": "Can Buy"
+							},
+							{
+								"value": 3,
+								"displayName": "Will Buy"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "companyname",
+				"dataType": "String",
+				"displayName": "Company Name",
+				"description": "Type the name of the company associated with the lead. This becomes the account name when the lead is qualified and converted to a customer account.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "confirminterest",
+				"dataType": "Boolean",
+				"displayName": "Confirm Interest",
+				"description": "Select whether the lead confirmed interest in your offerings. This helps in determining the lead quality.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "customerid",
+				"dataType": "Guid",
+				"displayName": "Customer",
+				"description": "Select the customer account or contact to provide a quick link to additional customer details, such as account information, activities, and opportunities.",
+				"semanticDomain": {
+					"structuralType": "customer",
+					"semanticType": "Idea.Customer"
+				}
+			},
+			{
+				"name": "decisionmaker",
+				"dataType": "Boolean",
+				"displayName": "Decision Maker?",
+				"description": "Select whether your notes include information about who makes the purchase decisions at the lead's company.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "description",
+				"dataType": "String",
+				"displayName": "Description",
+				"description": "Type additional information to describe the lead, such as an excerpt from the company's website.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "donotbulkemail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Bulk Emails",
+				"description": "Select whether the lead accepts bulk email sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the lead can be added to marketing lists, but will be excluded from the email.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotemail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Emails",
+				"description": "Select whether the lead allows direct email sent from Microsoft Dynamics 365.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotfax",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Faxes",
+				"description": "Select whether the lead allows faxes.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotphone",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Phone Calls",
+				"description": "Select whether the lead allows phone calls.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotpostalmail",
+				"dataType": "Boolean",
+				"displayName": "Do not allow Mails",
+				"description": "Select whether the lead allows direct mail.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "donotsendmm",
+				"dataType": "Boolean",
+				"displayName": "Marketing Material",
+				"description": "Select whether the lead accepts marketing materials, such as brochures or catalogs. Leads that opt out can be excluded from marketing initiatives.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "emailaddress1",
+				"dataType": "String",
+				"displayName": "Email",
+				"description": "Type the primary email address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "emailaddress2",
+				"dataType": "String",
+				"displayName": "Email Address 2",
+				"description": "Type the secondary email address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "emailaddress3",
+				"dataType": "String",
+				"displayName": "Email Address 3",
+				"description": "Type a third email address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "estimatedamount",
+				"dataType": "Decimal",
+				"displayName": "Est. Value",
+				"description": "Type the estimated revenue value that this lead will generate to assist in sales forecasting and planning.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 1000000000000
+				}
+			},
+			{
+				"name": "estimatedamount_base",
+				"dataType": "Decimal",
+				"displayName": "Est. Value (Base)",
+				"description": "Value of the Est. Value in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "estimatedclosedate",
+				"dataType": "DateTimeOffset",
+				"displayName": "Est. Close Date",
+				"description": "Enter the expected close date for the lead, so that the sales team can schedule timely follow-up meetings to move the prospect to the next sales stage.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "estimatedvalue",
+				"dataType": "Double",
+				"displayName": "Est. Value (deprecated)",
+				"description": "Type a numeric value of the lead's estimated value, such as a product quantity, if no revenue amount can be specified in the Est. Value field. This can be used for sales forecasting and planning.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "evaluatefit",
+				"dataType": "Boolean",
+				"displayName": "Evaluate Fit",
+				"description": "Select whether the fit between the lead's requirements and your offerings was evaluated.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "fax",
+				"dataType": "String",
+				"displayName": "Fax",
+				"description": "Type the fax number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "firstname",
+				"dataType": "String",
+				"displayName": "First Name",
+				"description": "Type the first name of the primary contact for the lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Person.FirstName",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "industrycode",
+				"dataType": "String",
+				"displayName": "Industry",
+				"description": "Select the primary industry in which the lead's business is focused, for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_industrycode",
+						"displayName": "Industry",
+						"description": "Type of industry with which the company or organization of the lead is associated.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Accounting"
+							},
+							{
+								"value": 2,
+								"displayName": "Agriculture and Non-petrol Natural Resource Extraction"
+							},
+							{
+								"value": 3,
+								"displayName": "Broadcasting Printing and Publishing"
+							},
+							{
+								"value": 4,
+								"displayName": "Brokers"
+							},
+							{
+								"value": 5,
+								"displayName": "Building Supply Retail"
+							},
+							{
+								"value": 6,
+								"displayName": "Business Services"
+							},
+							{
+								"value": 7,
+								"displayName": "Consulting"
+							},
+							{
+								"value": 8,
+								"displayName": "Consumer Services"
+							},
+							{
+								"value": 9,
+								"displayName": "Design, Direction and Creative Management"
+							},
+							{
+								"value": 10,
+								"displayName": "Distributors, Dispatchers and Processors"
+							},
+							{
+								"value": 11,
+								"displayName": "Doctor's Offices and Clinics"
+							},
+							{
+								"value": 12,
+								"displayName": "Durable Manufacturing"
+							},
+							{
+								"value": 13,
+								"displayName": "Eating and Drinking Places"
+							},
+							{
+								"value": 14,
+								"displayName": "Entertainment Retail"
+							},
+							{
+								"value": 15,
+								"displayName": "Equipment Rental and Leasing"
+							},
+							{
+								"value": 16,
+								"displayName": "Financial"
+							},
+							{
+								"value": 17,
+								"displayName": "Food and Tobacco Processing"
+							},
+							{
+								"value": 18,
+								"displayName": "Inbound Capital Intensive Processing"
+							},
+							{
+								"value": 19,
+								"displayName": "Inbound Repair and Services"
+							},
+							{
+								"value": 20,
+								"displayName": "Insurance"
+							},
+							{
+								"value": 21,
+								"displayName": "Legal Services"
+							},
+							{
+								"value": 22,
+								"displayName": "Non-Durable Merchandise Retail"
+							},
+							{
+								"value": 23,
+								"displayName": "Outbound Consumer Service"
+							},
+							{
+								"value": 24,
+								"displayName": "Petrochemical Extraction and Distribution"
+							},
+							{
+								"value": 25,
+								"displayName": "Service Retail"
+							},
+							{
+								"value": 26,
+								"displayName": "SIG Affiliations"
+							},
+							{
+								"value": 27,
+								"displayName": "Social Services"
+							},
+							{
+								"value": 28,
+								"displayName": "Special Outbound Trade Contractors"
+							},
+							{
+								"value": 29,
+								"displayName": "Specialty Realty"
+							},
+							{
+								"value": 30,
+								"displayName": "Transportation"
+							},
+							{
+								"value": 31,
+								"displayName": "Utility Creation and Distribution"
+							},
+							{
+								"value": 32,
+								"displayName": "Vehicle Retail"
+							},
+							{
+								"value": 33,
+								"displayName": "Wholesale"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "initialcommunication",
+				"dataType": "String",
+				"displayName": "Initial Communication",
+				"description": "Choose whether someone from the sales team contacted this lead earlier.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "initialcommunication",
+						"displayName": "Initial Communication",
+						"description": "If there has been initial communication with this lead.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Contacted"
+							},
+							{
+								"value": 1,
+								"displayName": "Not Contacted"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "jobtitle",
+				"dataType": "String",
+				"displayName": "Job Title",
+				"description": "Type the job title of the primary contact for this lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "lastname",
+				"dataType": "String",
+				"displayName": "Last Name",
+				"description": "Type the last name of the primary contact for the lead to make sure the prospect is addressed correctly in sales calls, email, and marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Person.LastName",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "lastusedincampaign",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last Campaign Date",
+				"description": "Shows the date when the lead was last included in a marketing campaign or quick campaign.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "leadqualitycode",
+				"dataType": "String",
+				"displayName": "Rating",
+				"description": "Select a rating value to indicate the lead's potential to become a customer.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_leadqualitycode",
+						"displayName": "Rating",
+						"description": "Quality of the lead, such as hot, warm, or cold.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Hot"
+							},
+							{
+								"value": 2,
+								"displayName": "Warm"
+							},
+							{
+								"value": 3,
+								"displayName": "Cold"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "leadsourcecode",
+				"dataType": "String",
+				"displayName": "Lead Source",
+				"description": "Select the primary marketing source that prompted the lead to contact you.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_leadsourcecode",
+						"displayName": "Lead Source",
+						"description": "Source of the lead.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Advertisement"
+							},
+							{
+								"value": 2,
+								"displayName": "Employee Referral"
+							},
+							{
+								"value": 3,
+								"displayName": "External Referral"
+							},
+							{
+								"value": 4,
+								"displayName": "Partner"
+							},
+							{
+								"value": 5,
+								"displayName": "Public Relations"
+							},
+							{
+								"value": 6,
+								"displayName": "Seminar"
+							},
+							{
+								"value": 7,
+								"displayName": "Trade Show"
+							},
+							{
+								"value": 8,
+								"displayName": "Web"
+							},
+							{
+								"value": 9,
+								"displayName": "Word of Mouth"
+							},
+							{
+								"value": 10,
+								"displayName": "Other"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "masterid",
+				"dataType": "Guid",
+				"displayName": "Master ID",
+				"description": "Unique identifier of the master lead for merge.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "merged",
+				"dataType": "Boolean",
+				"displayName": "Merged",
+				"description": "Tells whether the lead has been merged with another lead.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "middlename",
+				"dataType": "String",
+				"displayName": "Middle Name",
+				"description": "Type the middle name or initial of the primary contact for the lead to make sure the prospect is addressed correctly.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Person.MiddleName",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "mobilephone",
+				"dataType": "String",
+				"displayName": "Mobile Phone",
+				"description": "Type the mobile phone number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "need",
+				"dataType": "String",
+				"displayName": "Need",
+				"description": "Choose how high the level of need is for the lead's company.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "need",
+						"displayName": "Need",
+						"description": "Need type",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Must have"
+							},
+							{
+								"value": 1,
+								"displayName": "Should have"
+							},
+							{
+								"value": 2,
+								"displayName": "Good to have"
+							},
+							{
+								"value": 3,
+								"displayName": "No need"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "numberofemployees",
+				"dataType": "Int32",
+				"displayName": "No. of Employees",
+				"description": "Type the number of employees that work at the company associated with the lead, for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000
+				}
+			},
+			{
+				"name": "pager",
+				"dataType": "String",
+				"displayName": "Pager",
+				"description": "Type the pager number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "participatesinworkflow",
+				"dataType": "Boolean",
+				"displayName": "Participates in Workflow",
+				"description": "Shows whether the lead participates in workflow rules.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "preferredcontactmethodcode",
+				"dataType": "String",
+				"displayName": "Preferred Method of Contact",
+				"description": "Select the preferred method of contact.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_preferredcontactmethodcode",
+						"displayName": "Preferred Method of Contact",
+						"description": "Preferred contact method for the lead.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Any"
+							},
+							{
+								"value": 2,
+								"displayName": "Email"
+							},
+							{
+								"value": 3,
+								"displayName": "Phone"
+							},
+							{
+								"value": 4,
+								"displayName": "Fax"
+							},
+							{
+								"value": 5,
+								"displayName": "Mail"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "prioritycode",
+				"dataType": "String",
+				"displayName": "Priority",
+				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_prioritycode",
+						"displayName": "Priority",
+						"description": "Priority of the lead.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "purchaseprocess",
+				"dataType": "String",
+				"displayName": "Purchase Process",
+				"description": "Choose whether an individual or a committee will be involved in the  purchase process for the lead.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "purchaseprocess",
+						"displayName": "Purchase Process",
+						"description": "The type of Purchase Process for this lead.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Individual"
+							},
+							{
+								"value": 1,
+								"displayName": "Committee"
+							},
+							{
+								"value": 2,
+								"displayName": "Unknown"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "qualificationcomments",
+				"dataType": "String",
+				"displayName": "Qualification Comments",
+				"description": "Type comments about the qualification or scoring of the lead.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 2000
+				}
+			},
+			{
+				"name": "revenue",
+				"dataType": "Decimal",
+				"displayName": "Annual Revenue",
+				"description": "Type the annual revenue of the company associated with the lead to provide an understanding of the prospect's business.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "revenue_base",
+				"dataType": "Decimal",
+				"displayName": "Annual Revenue (Base)",
+				"description": "Value of the Annual Revenue in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "salesstage",
+				"dataType": "String",
+				"displayName": "Sales Stage",
+				"description": "Select the sales stage of this lead to aid the sales team in their efforts to convert this lead to an opportunity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_salesstage",
+						"displayName": "Lead Sales Stage",
+						"description": "The sales process stage that this entity is in.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Qualify"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "salesstagecode",
+				"dataType": "String",
+				"displayName": "Sales Stage Code",
+				"description": "Select the sales process stage for the lead to help determine the probability of the lead converting to an opportunity.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "lead_salesstagecode",
+						"displayName": "Sales Stage",
+						"description": "Current stage of the sales process for the lead.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "salutation",
+				"dataType": "String",
+				"displayName": "Salutation",
+				"description": "Type the salutation of the primary contact for this lead to make sure the prospect is addressed correctly in sales calls, email messages, and marketing campaigns.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "schedulefollowup_prospect",
+				"dataType": "DateTimeOffset",
+				"displayName": "Schedule Follow Up (Prospect)",
+				"description": "Enter the date and time of the prospecting follow-up meeting with the lead.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "schedulefollowup_qualify",
+				"dataType": "DateTimeOffset",
+				"displayName": "Schedule Follow Up (Qualify)",
+				"description": "Enter the date and time of the qualifying follow-up meeting with the lead.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "sic",
+				"dataType": "String",
+				"displayName": "SIC Code",
+				"description": "Type the Standard Industrial Classification (SIC) code that indicates the lead's primary industry of business for use in marketing segmentation and demographic analysis.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the lead is open, qualified, or disqualified. Qualified and disqualified leads are read-only and can't be edited unless they are reactivated.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "lead_statecode",
+						"displayName": "Status",
+						"description": "Status of the lead.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Open"
+							},
+							{
+								"value": 1,
+								"displayName": "Qualified"
+							},
+							{
+								"value": 2,
+								"displayName": "Disqualified"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the lead's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "lead_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the lead.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "New",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Contacted",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Qualified",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 4,
+								"displayName": "Lost",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 5,
+								"displayName": "Cannot Contact",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 6,
+								"displayName": "No Longer Interested",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 7,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "subject",
+				"dataType": "String",
+				"displayName": "Topic",
+				"description": "Type a subject or descriptive name, such as the expected order, company name, or marketing source list, to identify the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 300
+				}
+			},
+			{
+				"name": "telephone1",
+				"dataType": "String",
+				"displayName": "Business Phone",
+				"description": "Type the work phone number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone2",
+				"dataType": "String",
+				"displayName": "Home Phone",
+				"description": "Type the home phone number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone3",
+				"dataType": "String",
+				"displayName": "Other Phone",
+				"description": "Type an alternate phone number for the primary contact for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "purchasetimeframe",
+				"dataType": "String",
+				"displayName": "Purchase Timeframe",
+				"description": "Choose how long the lead will likely take to make the purchase, so the sales team will be aware.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "purchasetimeframe",
+						"displayName": "Purchase Timeframe",
+						"description": "The timeframe that this lead is likely to make a purchase in.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Immediate"
+							},
+							{
+								"value": 1,
+								"displayName": "This Quarter"
+							},
+							{
+								"value": 2,
+								"displayName": "Next Quarter"
+							},
+							{
+								"value": 3,
+								"displayName": "This Year"
+							},
+							{
+								"value": 4,
+								"displayName": "Unknown"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "websiteurl",
+				"dataType": "String",
+				"displayName": "Website",
+				"description": "Type the website URL for the company associated with this lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.URL",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "slaid",
+				"dataType": "Guid",
+				"displayName": "SLA",
+				"description": "Choose the service level agreement (SLA) that you want to apply to the Lead record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "slainvokedid",
+				"dataType": "Guid",
+				"displayName": "Last SLA applied",
+				"description": "Last SLA that was applied to this case. This field is for internal use only.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "onholdtime",
+				"dataType": "Int32",
+				"displayName": "On Hold Time (Minutes)",
+				"description": "Shows how long, in minutes, that the record was on hold.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "lastonholdtime",
+				"dataType": "DateTimeOffset",
+				"displayName": "Last On Hold Time",
+				"description": "Contains the date and time stamp of the last on hold time.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "followemail",
+				"dataType": "Boolean",
+				"displayName": "Follow Email Activity",
+				"description": "Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the lead.",
+				"semanticDomain": {
+					"structuralType": "bit"
+				}
+			},
+			{
+				"name": "timespentbymeonemailandmeetings",
+				"dataType": "String",
+				"displayName": "Time Spent by me",
+				"description": "Total time spent for emails (read and write) and meetings by me in relation to the lead record.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Email",
+					"maxLength": 1250
+				}
+			},
+			{
+				"name": "entityimageid",
+				"dataType": "Guid",
+				"semanticDomain": {
+					"structuralType": "uniqueidentifier",
+					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "accountid",
+				"dataType": "Guid",
+				"displayName": "Account",
+				"description": "Unique identifier of the account with which the lead is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Account"
+				}
+			},
+			{
+				"name": "contactid",
+				"dataType": "Guid",
+				"displayName": "Contact",
+				"description": "Unique identifier of the contact with which the lead is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			},
+			{
+				"name": "yomicompanyname",
+				"dataType": "String",
+				"displayName": "Yomi Company Name",
+				"description": "Type the phonetic spelling of the lead's company name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "yomifirstname",
+				"dataType": "String",
+				"displayName": "Yomi First Name",
+				"description": "Type the phonetic spelling of the lead's first name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 150
+				}
+			},
+			{
+				"name": "yomifullname",
+				"dataType": "String",
+				"displayName": "Yomi Full Name",
+				"description": "Combines and shows the lead's Yomi first and last names so the full phonetic name can be displayed in views and reports.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 450
+				}
+			},
+			{
+				"name": "yomilastname",
+				"dataType": "String",
+				"displayName": "Yomi Last Name",
+				"description": "Type the phonetic spelling of the lead's last name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 150
+				}
+			},
+			{
+				"name": "yomimiddlename",
+				"dataType": "String",
+				"displayName": "Yomi Middle Name",
+				"description": "Type the phonetic spelling of the lead's middle name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the prospect.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Reference.Phonetic",
+					"maxLength": 150
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_customer",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Customer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "manualsla_lead",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SLA",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+				},
+				"attributes": [
+					{
+						"name": "slaid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lead_customer_accounts",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lead_customer_contacts",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lead_master_lead",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "masterid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "leadid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "business_unit_leads",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "owningbusinessunit",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "BusinessUnit",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+				},
+				"attributes": [
+					{
+						"name": "businessunitid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "owner_leads",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Owner",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_lead",
+			"referencing": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

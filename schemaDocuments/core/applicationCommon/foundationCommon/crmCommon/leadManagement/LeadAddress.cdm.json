@@ -1,0 +1,522 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "LeadAddress",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+				"semanticVersion": "0.4.0",
+				"semanticId": "037204e4-4d2b-995e-e0f1-3b32af0200d5"
+			}
+		},
+		"description": "Address information for a lead.",
+		"displayName": "Lead Address",
+		"attributes": [
+			{
+				"name": "leadaddressid",
+				"dataType": "Guid",
+				"displayName": "Address",
+				"description": "Unique identifier of the lead address.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the lead address was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Unique identifier of the user who created the lead address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the lead address was last modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Unique identifier of the user who last modified the lead address.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Unique identifier of the delegate user who created the leadaddress.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Unique identifier of the delegate user who last modified the leadaddress.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -1,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "name",
+				"dataType": "String",
+				"displayName": "Address Name",
+				"description": "Name used to identify the lead address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Name",
+					"maxLength": 200
+				}
+			},
+			{
+				"name": "addressnumber",
+				"dataType": "Int32",
+				"displayName": "Address Number",
+				"description": "Information about the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "addresstypecode",
+				"dataType": "String",
+				"displayName": "Address Type",
+				"description": "Type of address for the lead address.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "leadaddress_addresstypecode",
+						"displayName": "Address Type",
+						"description": "Type of address for the lead address.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "city",
+				"dataType": "String",
+				"displayName": "City",
+				"description": "City name in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "composite",
+				"dataType": "String",
+				"displayName": "Address",
+				"description": "Shows the complete address.",
+				"semanticDomain": {
+					"structuralType": "ntext",
+					"semanticType": "Reference.Description",
+					"maxLength": 1000
+				}
+			},
+			{
+				"name": "country",
+				"dataType": "String",
+				"displayName": "Country/Region",
+				"description": "Country/region name in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 80
+				}
+			},
+			{
+				"name": "county",
+				"dataType": "String",
+				"displayName": "County",
+				"description": "County name in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "fax",
+				"dataType": "String",
+				"displayName": "Fax",
+				"description": "Fax number for the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "latitude",
+				"dataType": "Double",
+				"displayName": "Latitude",
+				"description": "Latitude for the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -90,
+					"maxValue": 90
+				}
+			},
+			{
+				"name": "line1",
+				"dataType": "String",
+				"displayName": "Street 1",
+				"description": "First line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line2",
+				"dataType": "String",
+				"displayName": "Street 2",
+				"description": "Second line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "line3",
+				"dataType": "String",
+				"displayName": "Street 3",
+				"description": "Third line for entering address information.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 250
+				}
+			},
+			{
+				"name": "longitude",
+				"dataType": "Double",
+				"displayName": "Longitude",
+				"description": "Longitude for the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "float",
+					"minValue": -180,
+					"maxValue": 180
+				}
+			},
+			{
+				"name": "parentid",
+				"dataType": "Guid",
+				"displayName": "Parent",
+				"description": "Unique identifier of the parent object with which the lead address is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Object.Relationship.Parent"
+				}
+			},
+			{
+				"name": "postalcode",
+				"dataType": "String",
+				"displayName": "ZIP/Postal Code",
+				"description": "ZIP Code or postal code in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "postofficebox",
+				"dataType": "String",
+				"displayName": "Post Office Box",
+				"description": "Post office box number in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 20
+				}
+			},
+			{
+				"name": "shippingmethodcode",
+				"dataType": "String",
+				"displayName": "Shipping Method",
+				"description": "Method of shipment for the lead.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "leadaddress_shippingmethodcode",
+						"displayName": "Shipping Method",
+						"description": "Method of shipment for the lead.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "stateorprovince",
+				"dataType": "String",
+				"displayName": "State/Province",
+				"description": "State or province in the address for the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone1",
+				"dataType": "String",
+				"displayName": "Main Phone",
+				"description": "First telephone number for the lead address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone2",
+				"dataType": "String",
+				"displayName": "Phone 2",
+				"description": "Second telephone number for the lead address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "telephone3",
+				"dataType": "String",
+				"displayName": "Telephone 3",
+				"description": "Third telephone number for the lead address.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Service.Phone",
+					"maxLength": 50
+				}
+			},
+			{
+				"name": "upszone",
+				"dataType": "String",
+				"displayName": "UPS Zone",
+				"description": "United Parcel Service (UPS) zone for the address of the lead.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 4
+				}
+			},
+			{
+				"name": "utcoffset",
+				"dataType": "Int32",
+				"displayName": "UTC Offset",
+				"description": "UTC offset for the lead address. This is the difference between local time and standard Coordinated Universal Time.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Exchange rate for the currency associated with the leadaddress with respect to the base currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Unique identifier of the currency associated with the leadaddress.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "TransactionCurrency_LeadAddress",
+			"referencing": {
+				"entity": {
+					"type": "LeadAddress",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "037204e4-4d2b-995e-e0f1-3b32af0200d5"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lk_leadaddressbase_modifiedonbehalfby",
+			"referencing": {
+				"entity": {
+					"type": "LeadAddress",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "037204e4-4d2b-995e-e0f1-3b32af0200d5"
+				},
+				"attributes": [
+					{
+						"name": "modifiedonbehalfby",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "lead_addresses",
+			"referencing": {
+				"entity": {
+					"type": "LeadAddress",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "037204e4-4d2b-995e-e0f1-3b32af0200d5"
+				},
+				"attributes": [
+					{
+						"name": "parentid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Lead",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.leadManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "55d5cbac-3e88-9819-410d-80c178071973"
+				},
+				"attributes": [
+					{
+						"name": "leadid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

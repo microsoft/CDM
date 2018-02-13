@@ -1,0 +1,958 @@
+{
+	"jsonSchemaSemanticVersion": "0.4.0",
+	"entity": {
+		"semanticDomain": {
+			"class": {
+				"type": "ContractDetail",
+				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+				"semanticVersion": "0.4.0",
+				"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+			}
+		},
+		"description": "Line item in a contract that specifies the type of service a customer is entitled to.",
+		"displayName": "Contract Line",
+		"attributes": [
+			{
+				"name": "exchangerate",
+				"dataType": "Decimal",
+				"displayName": "Exchange Rate",
+				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 1E-10,
+					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "contractdetailid",
+				"dataType": "Guid",
+				"displayName": "Contract Line",
+				"description": "Unique identifier of the contract line.",
+				"semanticDomain": {
+					"structuralType": "primarykey",
+					"semanticType": "Object.Identity.UniqueIdentifer",
+					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "createdon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Created On",
+				"description": "Date and time when the record was created.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "createdby",
+				"dataType": "Guid",
+				"displayName": "Created By",
+				"description": "Shows who created the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Modified On",
+				"description": "Date and time when the record was modified.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "modifiedby",
+				"dataType": "Guid",
+				"displayName": "Modified By",
+				"description": "Shows who last updated the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "createdonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Created By (Delegate)",
+				"description": "Shows who created the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"dataType": "Guid",
+				"displayName": "Modified By (Delegate)",
+				"description": "Shows who last updated the record on behalf of another user.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "ownerid",
+				"dataType": "Guid",
+				"displayName": "Owner",
+				"description": "Owner Id",
+				"semanticDomain": {
+					"structuralType": "owner"
+				}
+			},
+			{
+				"name": "owningbusinessunit",
+				"dataType": "Guid",
+				"displayName": "Owning Business Unit",
+				"description": "Unique identifier for the business unit that owns the record",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owninguser",
+				"dataType": "Guid",
+				"displayName": "Owning User",
+				"description": "Unique identifier for the user that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "owningteam",
+				"dataType": "Guid",
+				"displayName": "Owning Team",
+				"description": "Unique identifier for the team that owns the record.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "versionnumber",
+				"dataType": "Int64",
+				"displayName": "Version Number",
+				"description": "Version Number",
+				"semanticDomain": {
+					"structuralType": "timestamp"
+				}
+			},
+			{
+				"name": "importsequencenumber",
+				"dataType": "Int32",
+				"displayName": "Import Sequence Number",
+				"description": "Sequence number of the import that created this record.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "overriddencreatedon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Record Created On",
+				"description": "Date and time that the record was migrated.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"dataType": "Int32",
+				"displayName": "Time Zone Rule Version Number",
+				"description": "For internal use only.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"dataType": "Int32",
+				"displayName": "UTC Conversion Time Zone Code",
+				"description": "Time zone code that was in use when the record was created.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": -2147483648,
+					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "title",
+				"dataType": "String",
+				"displayName": "Title",
+				"description": "Type a title or name that describes the contract line.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "Object.Identity.Title",
+					"maxLength": 500
+				}
+			},
+			{
+				"name": "activeon",
+				"dataType": "DateTimeOffset",
+				"displayName": "Start Date",
+				"description": "Enter the date when the contract line becomes active.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "allotmentsoverage",
+				"dataType": "Int32",
+				"displayName": "Allotments Overage",
+				"description": "Shows the number of minutes over the Total Allotments field that have been spent on resolved cases related to the contract line.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "allotmentsremaining",
+				"dataType": "Int32",
+				"displayName": "Allotments Remaining",
+				"description": "Shows the number of cases or minutes remaining, based on the resolved cases logged to the contract line.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "allotmentsused",
+				"dataType": "Int32",
+				"displayName": "Allotments Used",
+				"description": "Shows the number of cases or minutes used in the resolved cases on the contract line.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "contractid",
+				"dataType": "Guid",
+				"displayName": "Contract",
+				"description": "Unique identifier of the contract associated with the contract line.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "contractstatecode",
+				"dataType": "String",
+				"displayName": "Contract State",
+				"description": "Status of the contract.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "contractdetail_contractstatecode",
+						"displayName": "Contract State",
+						"description": "Status of the contract.",
+						"items": [
+							{
+								"value": 0
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "customerid",
+				"dataType": "Guid",
+				"displayName": "Customer",
+				"description": "Select the customer account or contact to provide a quick link to additional customer details, such as address, phone number, activities, and orders.",
+				"semanticDomain": {
+					"structuralType": "customer",
+					"semanticType": "Idea.Customer"
+				}
+			},
+			{
+				"name": "discount",
+				"dataType": "Decimal",
+				"displayName": "Discount",
+				"description": "Type the discount amount for the contract line to deduct any negotiated or other savings from the net amount due.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "transactioncurrencyid",
+				"dataType": "Guid",
+				"displayName": "Currency",
+				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Measurement.Currency.Type"
+				}
+			},
+			{
+				"name": "discount_base",
+				"dataType": "Decimal",
+				"displayName": "Discount (Base)",
+				"description": "Value of the Discount in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "discountpercentage",
+				"dataType": "Decimal",
+				"displayName": "Discount (%)",
+				"description": "Type the discount rate that should be applied to the Total Price, for use in calculating the net amount due for the contract line.",
+				"semanticDomain": {
+					"structuralType": "decimal",
+					"minValue": 0,
+					"maxValue": 100
+				}
+			},
+			{
+				"name": "effectivitycalendar",
+				"dataType": "String",
+				"displayName": "Support Calendar",
+				"description": "Days of the week and times for which the contract line item is effective.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 168
+				}
+			},
+			{
+				"name": "expireson",
+				"dataType": "DateTimeOffset",
+				"displayName": "End Date",
+				"description": "Enter the date when the contract line expires. The date is automatically filled with the contract date, but you can change it if required.",
+				"semanticDomain": {
+					"structuralType": "datetime",
+					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "initialquantity",
+				"dataType": "Int32",
+				"displayName": "Quantity",
+				"description": "Type the number of units of the specified product or service that are eligible for support on the contract line.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "lineitemorder",
+				"dataType": "Int32",
+				"displayName": "Line Item Order",
+				"description": "Type the line item number for the contract line to easily identify the contract line and make sure it's listed in the correct order in the parent contract.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "net",
+				"dataType": "Decimal",
+				"displayName": "Net",
+				"description": "Shows the total charge to the customer for the contract line, calculated as the Total Price minus any discounts.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "net_base",
+				"dataType": "Decimal",
+				"displayName": "Net (Base)",
+				"description": "Value of the Net in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "price",
+				"dataType": "Decimal",
+				"displayName": "Total Price",
+				"description": "Type the total service charge for the contract line before any discounts are credited.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "price_base",
+				"dataType": "Decimal",
+				"displayName": "Total Price (Base)",
+				"description": "Value of the Total Price in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "productid",
+				"dataType": "Guid",
+				"displayName": "Product",
+				"description": "Choose the product that is eligible for services on the contract line.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Product"
+				}
+			},
+			{
+				"name": "productserialnumber",
+				"dataType": "String",
+				"displayName": "Serial Number",
+				"description": "Type the serial number for the product that is eligible for services on the contract line.",
+				"semanticDomain": {
+					"structuralType": "nvarchar",
+					"semanticType": "text",
+					"maxLength": 100
+				}
+			},
+			{
+				"name": "rate",
+				"dataType": "Decimal",
+				"displayName": "Rate",
+				"description": "Shows the cost per case or minute, calculated by dividing the Total Price value by the total number of cases or minutes allocated to the contract line.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": 0,
+					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "rate_base",
+				"dataType": "Decimal",
+				"displayName": "Rate (Base)",
+				"description": "Value of the Rate in base currency.",
+				"semanticDomain": {
+					"structuralType": "money",
+					"semanticType": "Measurement.Currency",
+					"minValue": -922337203685477,
+					"maxValue": 922337203685477
+				}
+			},
+			{
+				"name": "serviceaddress",
+				"dataType": "Guid",
+				"displayName": "Location",
+				"description": "Choose the address for the customer account or contact where the services are provided.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "servicecontractunitscode",
+				"dataType": "String",
+				"displayName": "Service Contract Units",
+				"description": "Select the unit type allotted in the contract line, such as cases or minutes, to determine the level of support.",
+				"semanticDomain": {
+					"structuralType": "picklist",
+					"semanticType": "Measurement.OptionCode",
+					"constrainedList": {
+						"name": "contractdetail_servicecontractunitscode",
+						"displayName": "Service Contract Units",
+						"description": "Unique identifier of the product units specified on the contract line.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "Default Value"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statecode",
+				"dataType": "String",
+				"displayName": "Status",
+				"description": "Shows whether the contract line is existing, renewed, canceled, or expired. You can't edit a contract line after it is saved, regardless of the status.",
+				"semanticDomain": {
+					"structuralType": "state",
+					"semanticType": "Measurement.State",
+					"constrainedList": {
+						"name": "contractdetail_statecode",
+						"displayName": "Status",
+						"description": "Status of the contract line item.",
+						"items": [
+							{
+								"value": 0,
+								"displayName": "Existing"
+							},
+							{
+								"value": 1,
+								"displayName": "Renewed"
+							},
+							{
+								"value": 2,
+								"displayName": "Canceled"
+							},
+							{
+								"value": 3,
+								"displayName": "Expired"
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "statuscode",
+				"dataType": "String",
+				"displayName": "Status Reason",
+				"description": "Select the contract line's status.",
+				"semanticDomain": {
+					"structuralType": "status",
+					"semanticType": "Measurement.Status",
+					"inSupportOf": "state",
+					"constrainedList": {
+						"name": "contractdetail_statuscode",
+						"displayName": "Status Reason",
+						"description": "Reason for the status of the contract line item.",
+						"items": [
+							{
+								"value": 1,
+								"displayName": "New",
+								"annotations": [
+									"whenStateIs:0"
+								]
+							},
+							{
+								"value": 2,
+								"displayName": "Renewed",
+								"annotations": [
+									"whenStateIs:1"
+								]
+							},
+							{
+								"value": 3,
+								"displayName": "Canceled",
+								"annotations": [
+									"whenStateIs:2"
+								]
+							},
+							{
+								"value": 4,
+								"displayName": "Expired",
+								"annotations": [
+									"whenStateIs:3"
+								]
+							}
+						]
+					}
+				}
+			},
+			{
+				"name": "totalallotments",
+				"dataType": "Int32",
+				"displayName": "Total Allotments",
+				"description": "Type the total number of minutes or cases allowed for the contract line.",
+				"semanticDomain": {
+					"structuralType": "int",
+					"minValue": 0,
+					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "uomid",
+				"dataType": "Guid",
+				"displayName": "Unit",
+				"description": "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "uomscheduleid",
+				"dataType": "Guid",
+				"displayName": "Unit Schedule",
+				"description": "Unique identifier of the unit group associated with the contract line.",
+				"semanticDomain": {
+					"structuralType": "lookup"
+				}
+			},
+			{
+				"name": "accountid",
+				"dataType": "Guid",
+				"displayName": "Account",
+				"description": "Unique identifier of the account with which the contract is associated.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Account"
+				}
+			},
+			{
+				"name": "contactid",
+				"dataType": "Guid",
+				"displayName": "Contact",
+				"description": "Unique identifier for the contact associated with the contract line.",
+				"semanticDomain": {
+					"structuralType": "lookup",
+					"semanticType": "Idea.Contact"
+				}
+			}
+		]
+	},
+	"relationships": [
+		{
+			"name": "implicit_user",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "SystemUser",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				},
+				"attributes": [
+					{
+						"name": "systemuserid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_team",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "ownerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Team",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+				},
+				"attributes": [
+					{
+						"name": "teamid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "implicit_customer",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Customer",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contract_line_items",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "contractid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contract",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7ce080eb-5e88-d5af-fac7-656ea2914c8e"
+				},
+				"attributes": [
+					{
+						"name": "contractid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "transactioncurrency_contractdetail",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "TransactionCurrency",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+				},
+				"attributes": [
+					{
+						"name": "transactioncurrencyid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "customer_address_contract_line_items",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "serviceaddress",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "CustomerAddress",
+					"namespace": "core.applicationCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "9466af64-6df6-9336-71a7-efe525243a5d"
+				},
+				"attributes": [
+					{
+						"name": "customeraddressid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "product_contract_line_items",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Product",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+				},
+				"attributes": [
+					{
+						"name": "productid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contract_detail_unit_of_measure_schedule",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "uomscheduleid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoMSchedule",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "0163dda0-830d-5079-cf9b-993e5cf0f38f"
+				},
+				"attributes": [
+					{
+						"name": "uomscheduleid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "unit_of_measurement_contract_line_items",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "UoM",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
+					"semanticVersion": "0.4.0",
+					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+				},
+				"attributes": [
+					{
+						"name": "uomid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contractlineitem_customer_accounts",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Account",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+				},
+				"attributes": [
+					{
+						"name": "accountid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		},
+		{
+			"name": "contractlineitem_customer_contacts",
+			"referencing": {
+				"entity": {
+					"type": "ContractDetail",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
+					"semanticVersion": "0.4.0",
+					"semanticId": "c41ef231-34bf-9652-126c-5d89d78fd292"
+				},
+				"attributes": [
+					{
+						"name": "customerid",
+						"comparisonOrder": 0
+					}
+				]
+			},
+			"referenced": {
+				"entity": {
+					"type": "Contact",
+					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
+					"semanticVersion": "0.4.0",
+					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+				},
+				"attributes": [
+					{
+						"name": "contactid",
+						"comparisonOrder": 0
+					}
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,502 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "http://microsoft.com/cdm/schema.cdm.json",
+    "$version" :  "0.4.0",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "$id": "/properties/$schema",
+            "type": "string",
+            "examples": [
+                "../schema.entities.json"
+            ]
+        },
+        "jsonSchemaSemanticVersion": {
+            "$id": "/properties/jsonSchemaSemanticVersion",
+            "type": "string",
+            "description": "the semantic version (major.minor.patch) number of the $schema document dictating the shape of the json document describing the entity shapes",
+            "examples": [
+                "0.3.0"
+            ]
+        },
+        "entity": {
+            "$id": "/properties/entity",
+            "type": "object",
+            "properties": {
+                "semanticDomain": {
+                    "$id": "/properties/entity/properties/semanticDomain",
+                    "type": "object",
+                    "description": "encapsulates information about the 'kind' of entity described",
+                    "properties": {
+                        "class": {
+                            "$id": "/properties/entity/properties/semanticDomain/properties/class",
+                            "type": "object",
+                            "description": "the class, identity, version and 'base class' of the entity",
+                            "properties": {
+                                "type": {
+                                    "$id": "/properties/entity/properties/semanticDomain/properties/class/properties/type",
+                                    "type": "string",
+                                    "description": "the simple name for the kind of entity represented",
+                                    "examples": [
+                                        "Account",
+                                        "Contact",
+                                        "Invoice",
+                                        "Purchase",
+                                        "OilWell"
+                                    ]
+                                },
+                                "namespace": {
+                                    "$id": "/properties/entity/properties/semanticDomain/properties/class/properties/namespace",
+                                    "type": "string",
+                                    "description": "the location for this entity in the hierarcy of business and object domains",
+                                    "examples": [
+                                        "core.applicationCommon"
+                                    ]
+                                },
+                                "semanticVersion": {
+                                    "$id": "/properties/entity/properties/semanticDomain/properties/class/properties/semanticVersion",
+                                    "type": "string",
+                                    "description": "the semantic version (major.minor.patch) number of this entity, set of attributes and relationships. Major=breaking change, Minor=additional attributes or relationships. patch=non-structural changes",
+                                    "examples": [
+                                        "0.9.1",
+                                        "1.2.0"
+                                    ]
+                                },
+                                "semanticId": {
+                                    "$id": "/properties/entity/properties/semanticDomain/properties/class/properties/semanticId",
+                                    "type": "string",
+                                    "description": "a GUID that identities the class, namespace and major.minor version for the entity",
+                                    "examples": [
+                                        "2597bfcf-fe52-06e1-a130-920cde6b5505"
+                                    ]
+                                },
+                                "annotations": {
+                                    "type": "array",
+                                    "description": "an array of string values",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "semanticId"
+                            ]
+                        },
+                        "extends": {
+                            "$id": "/properties/entity/properties/semanticDomain/properties/extends",
+                            "type": "object",
+                            "description": "the class description of the 'base' entity for which this entity documnent describes only additions",
+                            "$ref": "#/properties/entity/properties/semanticDomain/properties/class/properties",
+                            "required": [
+                                "semanticId"
+                            ]
+                        },
+                        "annotations": {
+                            "type": "array",
+                            "description": "an array of string values",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "class"
+                    ]
+                },
+                "description": {
+                    "$id": "/properties/entity/properties/description",
+                    "type": "string",
+                    "description": "An explanation about the meaning of this entity."
+                },
+                "displayName": {
+                    "$id": "/properties/entity/properties/displayName",
+                    "type": "string",
+                    "description": "a 'friendlier' name for the entity to use in reports / forms"
+                },
+                "annotations": {
+                    "type": "array",
+                    "description": "an array of string values",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "attributes": {
+                    "$id": "/properties/entity/properties/attributes",
+                    "type": "array",
+                    "description": "the attributes that define the shape of this entity",
+                    "items": {
+                        "$id": "/properties/entity/properties/attributes/items",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "$id": "/properties/entity/properties/attributes/items/properties/name",
+                                "type": "string",
+                                "examples": [
+                                    "accountid"
+                                ]
+                            },
+                            "dataType": {
+                                "$id": "/properties/entity/properties/attributes/items/properties/dataType",
+                                "type": "string",
+                                "enum": [
+                                    null,
+                                    "Binary",
+                                    "Boolean",
+                                    "Byte",
+                                    "DateTime",
+                                    "Decimal",
+                                    "Double",
+                                    "Single",
+                                    "Guid",
+                                    "Int16",
+                                    "Int32",
+                                    "Int64",
+                                    "SByte",
+                                    "String",
+                                    "Time",
+                                    "DateTimeOffset"
+                                ],
+                                "description": "The primative data type of the attribute."
+                            },
+                            "displayName": {
+                                "$id": "/properties/entity/properties/attributes/items/properties/displayName",
+                                "type": "string",
+                                "description": "a 'friendlier' name for the attribute to use in reports / forms"
+                            },
+                            "description": {
+                                "$id": "/properties/entity/properties/attributes/items/properties/description",
+                                "type": "string",
+                                "description": "An explanation about the meaning of the attribute values"
+                            },
+                            "annotations": {
+                                "type": "array",
+                                "description": "an array of string values",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "semanticDomain": {
+                                "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain",
+                                "type": "object",
+                                "description": "encapsulates information about the 'kind' of attribute being described",
+                                "properties": {
+                                    "structuralType": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/structuralType",
+                                        "type": "string",
+                                        "description": "a hint about how to interpret or use the values represented as the primative types for this attribute",
+                                        "examples": [
+                                            "image",
+                                            "status",
+                                            "picklist",
+                                            "lookup",
+                                            "money",
+                                            "timestamp",
+                                            "customer"
+                                        ]
+                                    },
+                                    "semanticType" : {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/semanticType",
+                                        "type": "string",
+                                        "description": "the meaning of the attribute values",
+                                        "examples": [
+                                            "Object.Identity",
+                                            "Object.Identity.Person.Fullname",
+                                            "Measurement.Date.Modified"
+                                        ]
+                                        // see "knownSemanticTypes" in definitions section
+                                    },
+                                    "inSupportOf" : {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/inSupportOf",
+                                        "type": "string",
+                                        "description": "This attribute supports the named attribute."
+                                    },
+                                    "isReadOnly": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/isReadOnly",
+                                        "type": "boolean",
+                                        "description": "is this attribute read-only or read-write",
+                                        "default": false
+                                    },
+                                    "isPrimaryKey": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/isPrimaryKey",
+                                        "type": "boolean",
+                                        "description": "is this attribute the (or part of) the primary key for entity entries.",
+                                        "default": false
+                                    },
+                                    "inherited": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/inherited",
+                                        "type": "boolean",
+                                        "description": "true if this attribute is from the 'base' entity from which this entity is extended.",
+                                        "default": false
+                                    },
+                                    "maxLength": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/maxLength",
+                                        "type": "integer",
+                                        "description": "the maximum length for variable length primative types"
+                                    },
+                                    "minValue": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/maxLength",
+                                        "type": "number",
+                                        "description": "the minimum value expected for this attribute"
+                                    },
+                                    "maxValue": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/maxLength",
+                                        "type": "number",
+                                        "description": "the maximum value expected for this attribute"
+                                    },
+                                    "constrainedList": {
+                                        "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList",
+                                        "type": "object",
+                                        "description": "the values of this integer attribute shall include these items",
+                                        "properties": {
+                                            "name": {
+                                                "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/name",
+                                                "type": "string",
+                                                "description": "a name for the set of values"
+                                            },
+                                            "displayName": {
+                                                "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/displayName",
+                                                "type": "string",
+                                                "description": "a 'friendlier' name for the set of values",
+                                                "examples": [
+                                                    "Preferred Time"
+                                                ]
+                                            },
+                                            "description": {
+                                                "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/description",
+                                                "type": "string",
+                                                "description": "An explanation about the use and meaning of the set of values"
+                                            },
+                                            "annotations": {
+                                                "type": "array",
+                                                "description": "an array of string values",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "items": {
+                                                "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/items",
+                                                "type": "array",
+                                                "items": {
+                                                    "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/items/items",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "value": {
+                                                            "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/items/items/properties/value",
+                                                            "type": "integer"
+                                                        },
+                                                        "displayName": {
+                                                            "$id": "/properties/entity/properties/attributes/items/properties/semanticDomain/properties/constrainedList/properties/items/items/properties/displayName",
+                                                            "type": "string",
+                                                            "description": "the display value describing the meaning of the corresponding integer value",
+                                                            "examples": [
+                                                                "Morning",
+                                                                "Evening"
+                                                            ]
+                                                        },
+                                                        "annotations": {
+                                                            "type": "array",
+                                                            "description": "an array of string values",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                        "value",
+                                                        "displayName"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "required": [
+                                            "items"
+                                        ]
+                                    },
+                                    "annotations": {
+                                        "type": "array",
+                                        "description": "an array of string values",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "name",
+                            "dataType"
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "semanticDomain",
+                "attributes"
+            ]
+        },
+        "relationships": {
+            "$id": "/properties/relationships",
+            "type": "array",
+            "description": "The 'outgoing' relationships from an entity associated with the many-side foreign key attributes contained by the entity which point to the primary key or one-side attributes of another entity.",
+            "items": {
+                "$id": "/properties/relationships/items",
+                "type": "object",
+                "description": "a connection between two entities, can be multi-attribute",
+                "properties": {
+                    "name": {
+                        "$id": "/properties/relationships/items/properties/name",
+                        "type": "string"
+                    },
+                    "referencing": {
+                        "$id": "/properties/relationships/items/properties/referencing",
+                        "type": "object",
+                        "properties": {
+                            "entity": {
+                                "$id": "/properties/relationships/items/properties/referencing/properties/entity",
+                                "type": "object",
+                                "$ref": "#/properties/entity/properties/semanticDomain/properties/class/properties",
+                                "required": [
+                                    "semanticId"
+                                ]
+                            },
+                            "attributes": {
+                                "$id": "/properties/relationships/items/properties/referencing/properties/attributes",
+                                "type": "array",
+                                "items": {
+                                    "$id": "/properties/relationships/items/properties/referencing/properties/attributes/items",
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$id": "/properties/relationships/items/properties/referencing/properties/attributes/items/properties/name",
+                                            "type": "string",
+                                            "description": "an attribute name from the associated entity"
+                                        },
+                                        "comparisonOrder": {
+                                            "$id": "/properties/relationships/items/properties/referencing/properties/attributes/items/properties/comparisonOrder",
+                                            "type": "integer",
+                                            "description": "for multi-attribute relationships, the 'comparisonOrder' for the corresponding attribute in the adjacent entity reference."
+                                        },
+                                        "annotations": {
+                                            "type": "array",
+                                            "description": "an array of string values",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "name"
+                                    ]
+                                },
+                                "annotations": {
+                                    "type": "array",
+                                    "description": "an array of string values",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "entity",
+                            "attributes"
+                        ]
+                    },
+                    "referenced": {
+                        "$id": "/properties/relationships/items/properties/referenced",
+                        "type": "object",
+                        "$ref": "#/properties/relationships/items/properties/referencing/properties",
+                        "required": [
+                            "entity",
+                            "attributes"
+                        ]
+                    },
+                    "annotations": {
+                        "type": "array",
+                        "description": "an array of string values",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "referencing",
+                    "referenced"
+                ]
+            }
+        },
+        "additionalProperties": false
+    },
+    "additionalProperties": false,
+    "required": [
+        "jsonSchemaSemanticVersion",
+        "entity"
+    ],
+    "definitions": {
+        "knownSemanticTypes" : { "enum" : [
+            "Activity", "Activity.Party",
+            "Calendar", 
+            "Calendar.DayOfHalfyear", "Calendar.DayOfMonth", "Calendar.DayOfMonthOrPeriod", "Calendar.DayOfQuarter", "Calendar.DayOfTendays", "Calendar.DayOfTrimester", "Calendar.DayOfWeek", "Calendar.DayOfYear", 
+            "Calendar.HalfyearOfYear", "Calendar.Halfyears", "Calendar.IsHoliday", "Calendar.IsPeakDay", "Calendar.IsWeekday", "Calendar.IsWorkingDay",
+            "Calendar.MonthOfHalfyear", "Calendar.MonthOfQuarter", "Calendar.MonthOfTrimester", "Calendar.MonthOfYear", "Calendar.MonthOrPeriodOfQuarter", "Calendar.MonthOrPeriodOfYear", "Calendar.QuarterOfHalfyear", "Calendar.QuarterOfYear", 
+            "Calendar.TendayOfHalfyear", "Calendar.TendayOfMonth", "Calendar.TendayOfQuarter", "Calendar.TendayOfTrimester", "Calendar.TendayOfYear", "Calendar.Tendays", "Calendar.TrimesterOfYear", "Calendar.Trimesters", 
+            "Calendar.WeekOfMonthOrPeriod", "Calendar.WeekOfQuarter", "Calendar.WeekOfYear", "Calendar.WinterSummerSeason",  
+            "Calendar.Fiscal", "Calendar.Fiscal.Date", "Calendar.Fiscal.DayOfHalfyear", "Calendar.Fiscal.DayOfMonth", "Calendar.Fiscal.DayOfQuarter", "Calendar.Fiscal.DayOfTrimester", "Calendar.Fiscal.DayOfWeek", 
+            "Calendar.Fiscal.DayOfYear", "Calendar.Fiscal.HalfyearOfYear", "Calendar.Fiscal.Halfyears", "Calendar.Fiscal.MonthOfHalfyear", "Calendar.Fiscal.MonthOfQuarter", "Calendar.Fiscal.MonthOfTrimester", "Calendar.Fiscal.MonthOfYear", 
+            "Calendar.Fiscal.Months", "Calendar.Fiscal.QuarterOfHalfyear", "Calendar.Fiscal.QuarterOfYear", "Calendar.Fiscal.Quarters", "Calendar.Fiscal.TrimesterOfYear", "Calendar.Fiscal.Trimesters", "Calendar.Fiscal.WeekOfHalfyear", 
+            "Calendar.Fiscal.WeekOfMonth", "Calendar.Fiscal.WeekOfQuarter", "Calendar.Fiscal.WeekOfTrimester", "Calendar.Fiscal.WeekOfYear", "Calendar.Fiscal.Weeks", "Calendar.Fiscal.Years", 
+            "Calendar.ISO8601", "Calendar.ISO8601.Date", "Calendar.ISO8601.DayOfWeek", "Calendar.ISO8601.DayOfYear", "Calendar.ISO8601.WeekOfYear", "Calendar.ISO8601.Weeks", "Calendar.ISO8601.Years", "Calendar.Manufacturing",
+            "Calendar.Manufacturing.Date", "Calendar.Manufacturing.DayOfHalfyear", "Calendar.Manufacturing.DayOfMonth", "Calendar.Manufacturing.DayOfQuarter", "Calendar.Manufacturing.DayOfWeek", "Calendar.Manufacturing.DayOfYear", 
+            "Calendar.Manufacturing.HalfyearOfYear", "Calendar.Manufacturing.Halfyears", "Calendar.Manufacturing.MonthOfHalfyear", "Calendar.Manufacturing.MonthOfQuarter", "Calendar.Manufacturing.MonthOfYear", "Calendar.Manufacturing.Months", 
+            "Calendar.Manufacturing.QuarterOfHalfyear", "Calendar.Manufacturing.QuarterOfYear", "Calendar.Manufacturing.Quarters", "Calendar.Manufacturing.TrimesterOfYear", "Calendar.Manufacturing.Trimesters", "Calendar.Manufacturing.WeekOfHalfyear", 
+            "Calendar.Manufacturing.WeekOfMonth", "Calendar.Manufacturing.WeekOfQuarter", "Calendar.Manufacturing.WeekOfYear", "Calendar.Manufacturing.Weeks", "Calendar.Manufacturing.Years", "Calendar.Reporting",
+            "Calendar.Reporting.Date", "Calendar.Reporting.DayOfHalfyear", "Calendar.Reporting.DayOfMonth", "Calendar.Reporting.DayOfQuarter", "Calendar.Reporting.DayOfTrimester", "Calendar.Reporting.DayOfWeek", "Calendar.Reporting.DayOfYear",
+            "Calendar.Reporting.HalfyearOfYear", "Calendar.Reporting.Halfyears", "Calendar.Reporting.MonthOfHalfyear", "Calendar.Reporting.MonthOfQuarter", "Calendar.Reporting.MonthOfTrimester", "Calendar.Reporting.MonthOfYear", 
+            "Calendar.Reporting.Months", "Calendar.Reporting.QuarterOfHalfyear", "Calendar.Reporting.QuarterOfYear", "Calendar.Reporting.Quarters", "Calendar.Reporting.TrimesterOfYear", "Calendar.Reporting.Trimesters", 
+            "Calendar.Reporting.WeekOfHalfyear", "Calendar.Reporting.WeekOfMonth", "Calendar.Reporting.WeekOfQuarter", "Calendar.Reporting.WeekOfTrimester", "Calendar.Reporting.WeekOfYear", "Calendar.Reporting.Weeks", "Calendar.Reporting.Years",
+            "Formatting",
+            "Formatting.Color", "Formatting.Font", "Formatting.Font.Effects", "Formatting.Font.Size", "Formatting.Heading", "Formatting.Order", "Formatting.Subtotal",
+            "Idea",
+            "Idea.Account", "Idea.Channel", "Idea.Company", "Idea.Contact", "Idea.Customer", "Idea.Customer.Group", "Idea.Customer.Household", "Idea.Employee", "Idea.Language", "Idea.Organization", "Idea.Organization.Unit", 
+            "Idea.Person", "Idea.Person.Demographic", "Idea.Product", "Idea.Product.Group", "Idea.Project", "Idea.Promotion", "Idea.Representative", "Idea.Scenario", "Idea.Schedule", "Idea.Service ", "Idea.Utility",
+            "Location",
+            "Location.Address", "Location.Address.Building", "Location.Address.Floor", "Location.Address.House", "Location.Address.Room", "Location.Address.Street", "Location.City", "Location.Continent", "Location.Country", "Location.County", 
+            "Location.Latitude", "Location.Longitude", "Location.Point", "Location.PostalCode", "Location.Province", "Location.Region", "Location.State", "Location.Timezone", 
+            "Location.Geo.Boundary", "Location.Geo.Boundary.Bottom", "Location.Geo.Boundary.Front", "Location.Geo.Boundary.Left", "Location.Geo.Boundary.Polygon", "Location.Geo.Boundary.Rear", "Location.Geo.Boundary.Right", "Location.Geo.Boundary.Top", 
+            "Location.Geo.Centroid", "Location.Geo.Centroid.X", "Location.Geo.Centroid.Y", "Location.Geo.Centroid.Z", 
+            "Measurement", 
+            "Measurement.Age", "Measurement.Code", "Measurement.Color", "Measurement.Density", "Measurement.Distance", "Measurement.Sequence", "Measurement.Temperature", "Measurement.Version", "Measurement.Weight",
+            "Measurement.Currency", "Measurement.Currency.Cost", "Measurement.Currency.IsOCode", "Measurement.Currency.Price", "Measurement.Currency.Type", "Measurement.Currency.Type.Destination", "Measurement.Currency.Type.Source",
+            "Measurement.Date", "Measurement.Date.Completion", "Measurement.Date.Creation", "Measurement.Date.End", "Measurement.Date.End.Scd", "Measurement.Date.Modify", "Measurement.Date.Occurrence", "Measurement.Date.Remove", 
+            "Measurement.Date.Start", "Measurement.Date.Start.Scd", "Measurement.Date.Target",
+            "Measurement.Duration", "Measurement.Duration.Days", "Measurement.Duration.Hours", "Measurement.Duration.Minutes", "Measurement.Duration.Months", "Measurement.Duration.Quarters", "Measurement.Duration.Seconds", "Measurement.Duration.Weeks", "Measurement.Duration.Years", 
+            "Measurement.OptionCode", "Measurement.OptionCode.Display",
+            "Measurement.Percent", "Measurement.Percent.Ownership", "Measurement.Percent.Voterright",
+            "Measurement.Range", "Measurement.Range.High", "Measurement.Range.Low", "Measurement.Rate", "Measurement.Rate.Type", 
+            "Measurement.Size", "Measurement.Size.Depth", "Measurement.Size.Height", "Measurement.Size.Volume", "Measurement.Size.Width",
+            "Measurement.State", "Measurement.State.Deleted", "Measurement.State.Display", "Measurement.Status", "Measurement.Status.Display", "Measurement.Status.Scd",
+            "Object",
+            "Object.Category", "Object.Category.Type", "Object.Content", "Object.Content.HTML", "Object.Content.JSON", "Object.Content.Mime", "Object.Content.XML",
+            "Object.Identity", "Object.Identity.BarCode", "Object.Identity.Brand", "Object.Identity.GovernmentID", "Object.Identity.Name", "Object.Identity.Person.FirstName", "Object.Identity.Person.FullName", "Object.Identity.Person.LastName", 
+            "Object.Identity.Person.MiddleName", "Object.Identity.RowNumber", "Object.Identity.Scd.OriginalIdentity", "Object.Identity.Scd.SurogateIdentity", 
+            "Object.Identity.Service", "Object.Identity.Service.Email", "Object.Identity.Service.Facebook", "Object.Identity.Service.Phone", "Object.Identity.Service.Phone.Cell", "Object.Identity.Service.Phone.Fax", "Object.Identity.Service.Twitter",
+            "Object.Identity.SKU", "Object.Identity.TickerSymbol", "Object.Identity.Title", "Object.Identity.UniqueIdentifer", "Object.Identity.UniqueIdentifer.Reference",
+            "Object.Image", "Object.Image.BMP", "Object.Image.GIF", "Object.Image.JPG", "Object.Image.PNG", "Object.Image.TIFF",
+            "Object.Relationship", "Object.Relationship.Child", "Object.Relationship.Parent",
+            "Reference",
+            "Reference.Caption", "Reference.Caption.Abbreviation", "Reference.Caption.Description", "Reference.Caption.Short",
+            "Reference.Definition", "Reference.Description", "Reference.ImageURL", "Reference.Phonetic", "Reference.Regarding", "Reference.URL"                        
+            ]
+        }   
+    }
+}
