@@ -10,7 +10,7 @@ CDM is undergoing a specification effort driven by Microsoft. The documents publ
 
 # Repository Layout
 
-There are two primary ways to consume the information in this repository
+There are two primary ways to consume the information in this repository (both in active development):
 
 1. Entity Reference Index
 2. [Visual Entity Browser](schemaDocuments/readme.md) for visually navigating entities, entity inheritance, attributes, and entity relationships
