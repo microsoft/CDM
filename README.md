@@ -1,3 +1,28 @@
+# Common Data Model (CDM) Schema
+
+The Common Data Model is a library of entities to represent commonly used objects and activities across business and productivity applications. CDM provides well-defined, modular, and extensible business entities, such as Account, Business Unit, Case, Contact, Lead, Opportunity, Product, Purchase Order, and customer interactions such as lead follow-ups, support calls, etc. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
+
+# Introduction
+
+The Common Data Model standard defines a common language for business entities covering customer relationship management (CRM), marketing, product services, and will expand to enterprise resource planning (ERP) and other areas over time. The goal of CDM is to enable data interoperability spanning multiple channels, service implementations, and vendors.
+
+CDM is undergoing a specification effort driven by Microsoft. The documents published here are a preview, and iterated on.
+
+# Repository Layout
+
+There are currently two primary ways to consume the information in this repository
+
+1. Entity Reference Index
+2. Visual Browser for entities, attributes, and inter-dependencies
+
+# Versioning
+
+Maintaining forward and backwards compatibility is a key goal of CDM. Therefore, CDM uses purely additive versioning, which means any revision of the CDM following an initial 1.0 release will not:
+
+* introduce new mandatory properties on existing entities
+* rename existing properties
+* remove previously defined properties
+* remove or restrict previously supported property values
 
 # Contributing
 
