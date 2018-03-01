@@ -1,6 +1,6 @@
 # Common Data Model (CDM) Schema
 
-The Common Data Model is a library of entities to represent commonly used objects and activities across business and productivity applications. CDM provides well-defined, modular, and extensible business entities, such as Account, Business Unit, Case, Contact, Lead, Opportunity, Product, Purchase Order, and customer interactions such as lead follow-ups, support calls, etc. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
+The Common Data Model is a library of entities that represent commonly used concepts and activities across business and productivity applications. CDM provides well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as lead follow-ups, support calls, etc. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
 
 # Introduction
 
@@ -13,16 +13,15 @@ CDM is undergoing a specification effort driven by Microsoft. The documents publ
 There are two primary ways to consume the information in this repository (both in active development):
 
 1. Entity Reference Index
-2. [Visual Entity Browser](schemaDocuments/readme.md) for visually navigating entities, entity inheritance, attributes, and entity relationships
+2. [Visual Entity Navigator](schemaDocuments/readme.md) for visually navigating entities, entity inheritance, attributes, and entity relationships
 
 # Versioning
 
-Maintaining forward and backwards compatibility is a key goal of CDM. Therefore, CDM uses purely additive versioning, which means any revision of the CDM following an initial 1.0 release will not:
+Maintaining forward and backwards compatibility is a key goal of CDM. Therefore, CDM uses purely additive versioning, which means any revision of the CDM following an initial release will not:
 
 * introduce new mandatory properties on existing entities
-* rename existing properties
+* rename existing properties or existing entities
 * remove previously defined properties
-* remove or restrict previously supported property values
 
 # Contributing
 
