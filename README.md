@@ -12,7 +12,7 @@ The CDM is undergoing a specification effort driven by Microsoft. The documents 
 
 There are two primary ways to consume the information in this repository (both in active development):
 
-1. Entity Reference Index
+1. [Entity Reference Index](schemaDocuments#directory-of-cdm-entities)
 2. [Visual Entity Navigator](schemaDocuments/readme.md) for visually navigating entities, entity inheritance, attributes, and entity relationships
 
 # Versioning
