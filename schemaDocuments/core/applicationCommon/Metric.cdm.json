@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Metric",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "a99e9b4c-4460-4336-0e2d-ee9e05f3860e"
+				"semanticVersion": "0.5.0",
+				"semanticId": "3f038bdb-2156-8ebf-2bd8-d4433388dce9"
 			}
 		},
 		"description": "Type of measurement for a goal, such as money amount or count.",
@@ -18,7 +18,6 @@
 				"displayName": "Goal Metric",
 				"description": "Unique identifier of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -39,7 +37,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -48,7 +46,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -58,7 +55,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -67,7 +64,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -76,7 +73,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -85,8 +82,16 @@
 				"displayName": "Organization Id",
 				"description": "Unique identifier of the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -95,7 +100,6 @@
 				"displayName": "Status",
 				"description": "Status of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "metric_statecode",
@@ -115,14 +119,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "metric_statuscode",
 						"displayName": "Status Reason",
@@ -131,16 +142,12 @@
 							{
 								"value": 0,
 								"displayName": "Open",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 1,
 								"displayName": "Closed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -152,7 +159,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -161,7 +168,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -172,7 +178,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -182,7 +187,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -193,7 +197,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -204,9 +207,17 @@
 				"displayName": "Name",
 				"description": "Name of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
+				}
+			},
+			{
+				"name": "amountdatatype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "amountdatatype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -215,7 +226,6 @@
 				"displayName": "Amount Data Type",
 				"description": "Data type of the amount.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "metric_goaltype",
@@ -244,7 +254,7 @@
 				"displayName": "Metric Type",
 				"description": "Information that indicates whether the metric type is Count or Amount.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -253,7 +263,7 @@
 				"displayName": "Track Stretch Target",
 				"description": "Indicates whether the goal metric tracks stretch targets.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -262,7 +272,6 @@
 				"displayName": "Description",
 				"description": "Description of the goal metric.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 2000
 				}
@@ -276,8 +285,8 @@
 				"entity": {
 					"type": "Metric",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a99e9b4c-4460-4336-0e2d-ee9e05f3860e"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3f038bdb-2156-8ebf-2bd8-d4433388dce9"
 				},
 				"attributes": [
 					{
@@ -290,8 +299,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -307,8 +316,8 @@
 				"entity": {
 					"type": "Metric",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a99e9b4c-4460-4336-0e2d-ee9e05f3860e"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3f038bdb-2156-8ebf-2bd8-d4433388dce9"
 				},
 				"attributes": [
 					{
@@ -321,8 +330,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{

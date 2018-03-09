@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "RecurringAppointmentMaster",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+				"semanticVersion": "0.5.0",
+				"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 			}
 		},
 		"description": "The Master appointment of a recurring appointment series.",
@@ -18,7 +18,7 @@
 				"displayName": "Every Weekday",
 				"description": "Indicates whether the weekly recurrence pattern is a daily weekday pattern. Valid for weekly recurrence pattern only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -27,7 +27,7 @@
 				"displayName": "Recurrence Rule",
 				"description": "Unique identifier of the recurrence rule that is associated with the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -36,7 +36,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -46,7 +45,16 @@
 				"displayName": "Nth Yearly",
 				"description": "Indicates whether the recurring appointment series should occur after every N years. Valid for yearly recurrence pattern only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -55,7 +63,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the recurring appointment is open, scheduled, completed, or canceled. Completed and canceled appointments are read-only and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_statecode",
@@ -88,7 +95,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -98,7 +104,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -107,7 +113,7 @@
 				"displayName": "Group Id",
 				"description": "Unique identifier of the recurring appointment series for which the recurrence information was updated. ",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -116,7 +122,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -127,7 +132,6 @@
 				"displayName": "Optional Attendees",
 				"description": "Enter the account, contact, lead, user, or other equipment resources that are not needed at the recurring appointment, but can optionally attend.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -137,7 +141,6 @@
 				"displayName": "Last Expanded Instance Date",
 				"description": "Date of last expanded instance of a recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -147,7 +150,6 @@
 				"displayName": "Effective End Date",
 				"description": "Actual end date of the recurring appointment series based on the specified end date and recurrence pattern.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -157,7 +159,6 @@
 				"displayName": "Recurrence Range Start",
 				"description": "Start date of the recurrence range.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -167,7 +168,16 @@
 				"displayName": "Is Workflow Created",
 				"description": "Indicates whether the recurring appointment series was created from a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "instancetypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "instancetypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -176,7 +186,6 @@
 				"displayName": "Appointment Type",
 				"description": "Type of instance of a recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_instancetypecode",
@@ -213,7 +222,7 @@
 				"displayName": "Regenerate",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -222,7 +231,6 @@
 				"displayName": "First Day Of Week",
 				"description": "First day of week for the recurrence pattern.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 6
 				}
@@ -233,7 +241,6 @@
 				"displayName": "Sub-Category",
 				"description": "Type a subcategory to identify the recurring appointment type and relate the activity to a specific product, sales region, business group, or other function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -244,7 +251,6 @@
 				"displayName": "Category",
 				"description": "Type a category to identify the recurring appointment type, such as status meeting or service call, to tie the appointment to a business group or function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -255,7 +261,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -266,9 +271,17 @@
 				"displayName": "Outlook Recurring Appointment Master Owner",
 				"description": "Unique identifier of the Microsoft Office Outlook recurring appointment series owner that correlates to the PR_OWNER_APPT_ID MAPI property.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "recurrencepatterntype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "recurrencepatterntype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -277,7 +290,6 @@
 				"displayName": "Recurrence Frequency",
 				"description": "Select the pattern type for the recurring appointment to indicate whether the appointment occurs daily, weekly, monthly, or yearly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_recurrencepatterntype",
@@ -310,8 +322,16 @@
 				"displayName": "Next Expanded Instance Date",
 				"description": "Date of the next expanded instance of a recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "expansionstatecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "expansionstatecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -320,7 +340,6 @@
 				"displayName": "Expansion State Code",
 				"description": "State code to indicate whether the recurring appointment series is expanded fully or partially.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_expansionstatecode",
@@ -344,12 +363,20 @@
 				}
 			},
 			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "prioritycode",
 				"dataType": "String",
 				"displayName": "Priority",
 				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_prioritycode",
@@ -378,7 +405,7 @@
 				"displayName": "Is Billed",
 				"description": "Indicates whether the recurring appointment series was billed as part of resolving a case.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -387,7 +414,6 @@
 				"displayName": "Recurrence Range End",
 				"description": "End date of the recurrence range.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -396,7 +422,6 @@
 				"dataType": "Int32",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -407,7 +432,6 @@
 				"displayName": "Outlook Recurring Appointment Master",
 				"description": "Unique Outlook identifier to correlate recurring appointment series across Exchange mailboxes.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 300
 				}
@@ -418,7 +442,6 @@
 				"displayName": "Effective Start Date",
 				"description": "Actual start date of the recurring appointment series based on the specified start date and recurrence pattern.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -428,7 +451,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -437,9 +460,17 @@
 				"displayName": "Day Of Month",
 				"description": "The day of the month on which the recurring appointment occurs.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 31
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -448,9 +479,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the recurring appointment's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_statuscode",
 						"displayName": "Status Reason",
@@ -459,44 +488,32 @@
 							{
 								"value": 1,
 								"displayName": "Free",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Tentative",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 3,
 								"displayName": "Completed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 4,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 5,
 								"displayName": "Busy",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 6,
 								"displayName": "Out of Office",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							}
 						]
 					}
@@ -508,7 +525,6 @@
 				"displayName": "Organizer",
 				"description": "Enter the user who is in charge of coordinating or leading the recurring appointment to make sure the appointment is displayed in the user's My Activities view.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -518,7 +534,6 @@
 				"displayName": "Pattern Start Time",
 				"description": "Start time of the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -528,7 +543,6 @@
 				"displayName": "Occurrences",
 				"description": "Number of appointment occurrences in a recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 999
 				}
@@ -539,7 +553,6 @@
 				"displayName": "Regarding",
 				"description": "Choose the record that the recurring appointment series relates to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
 				}
 			},
@@ -549,7 +562,7 @@
 				"displayName": "All Day Event",
 				"description": "Select whether the recurring appointment is an all-day event to make sure that the required resources are scheduled for the full day.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -558,7 +571,7 @@
 				"displayName": "Series Status",
 				"description": "Indicates whether the recurring appointment series is active or inactive.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -567,7 +580,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -577,7 +589,7 @@
 				"displayName": "Nth Monthly",
 				"description": "Indicates whether the recurring appointment series should occur after every N months. Valid for monthly recurrence pattern only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -586,7 +598,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -595,7 +607,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -604,7 +616,6 @@
 				"displayName": "Pattern End Time",
 				"description": "End time of the associated activity.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -614,7 +625,6 @@
 				"displayName": "Days Of Week Mask",
 				"description": "Bitmask that represents the days of the week on which the recurring appointment occurs.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 127
 				}
@@ -625,7 +635,6 @@
 				"displayName": "Subject",
 				"description": "Type a short description about the objective or primary topic of the recurring appointment.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -636,7 +645,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the recurring appointment, such as key talking points or objectives.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -646,7 +654,6 @@
 				"displayName": "Recurring Appointment",
 				"description": "Unique identifier of the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -657,7 +664,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -666,8 +673,16 @@
 				"displayName": "Required Attendees",
 				"description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the recurring appointment.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
+				}
+			},
+			{
+				"name": "instance_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "instance",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -676,7 +691,6 @@
 				"displayName": "Instance",
 				"description": "Specifies the recurring appointment series to occur on every Nth day of a month. Valid for monthly and yearly recurrence patterns only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_instance",
@@ -713,7 +727,6 @@
 				"displayName": "Deleted Appointments",
 				"description": "List of deleted instances of the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -722,7 +735,7 @@
 				"name": "versionnumber",
 				"dataType": "Int64",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -731,7 +744,6 @@
 				"displayName": "Interval",
 				"description": "Number of units of a given recurrence type between occurrences.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 1000
 				}
@@ -742,10 +754,18 @@
 				"displayName": "Duration",
 				"description": "Duration of the recurring appointment series in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "monthofyear_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "monthofyear",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -754,7 +774,6 @@
 				"displayName": "Month Of Year",
 				"description": "Indicates the month of the year for the recurrence pattern.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurrencerule_monthofyear",
@@ -823,7 +842,6 @@
 				"displayName": "Location",
 				"description": "Type the location where the recurring appointment will take place, such as a conference room or customer office.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -834,7 +852,6 @@
 				"displayName": "Start Time",
 				"description": "Scheduled start time of the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -844,8 +861,16 @@
 				"displayName": "End Time",
 				"description": "Scheduled end time of the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -854,7 +879,6 @@
 				"displayName": "Activity Type",
 				"description": "Type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "activitypointer_activitytypecode",
@@ -931,7 +955,16 @@
 				"displayName": "Is Regular Activity",
 				"description": "Indicates whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "patternendtype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "patternendtype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -940,7 +973,6 @@
 				"displayName": "Pattern End Type",
 				"description": "Select the type of end date for the recurring appointment, such as no end date or the number of occurrences.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "recurringappointmentmaster_patternendtype",
@@ -969,7 +1001,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who last updated the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -978,7 +1010,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -987,7 +1019,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the recurring appointment series.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -996,7 +1028,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -1006,7 +1037,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -1017,7 +1047,7 @@
 				"displayName": "Is Private",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1026,7 +1056,6 @@
 				"displayName": "Process",
 				"description": "Shows the ID of the process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1036,7 +1065,6 @@
 				"displayName": "Process Stage",
 				"description": "Shows the ID of the stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1046,7 +1074,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -1057,7 +1084,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			}
@@ -1070,8 +1096,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1084,8 +1110,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -1101,8 +1127,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1115,8 +1141,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -1132,8 +1158,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1146,8 +1172,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -1163,8 +1189,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1177,8 +1203,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -1194,8 +1220,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1208,8 +1234,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1225,8 +1251,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1239,8 +1265,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -1256,8 +1282,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1270,8 +1296,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1287,8 +1313,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1301,8 +1327,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -1318,8 +1344,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -1332,8 +1358,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Feedback",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+				"semanticVersion": "0.5.0",
+				"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 			}
 		},
 		"description": "Container for feedback and ratings for knowledge articles.",
@@ -18,7 +18,6 @@
 				"displayName": "Feedback",
 				"description": "FeedbackId",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Rating",
 				"description": "Specifies how helpful the related record was.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -40,7 +38,6 @@
 				"displayName": "Minimum Rating",
 				"description": "Enter the minimum rating value.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -51,7 +48,6 @@
 				"displayName": "Maximum Rating",
 				"description": "Enter the maximum rating value.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -62,7 +58,6 @@
 				"displayName": "Normalized Rating",
 				"description": "Shows the rating scaled to a value between 0 and 1 based on minimum and maximum ratings.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": -100000000000,
 					"maxValue": 1000000000
 				}
@@ -73,9 +68,17 @@
 				"displayName": "Comments",
 				"description": "Type the feedback comments.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 2000
+				}
+			},
+			{
+				"name": "source_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "source",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -84,7 +87,6 @@
 				"displayName": "Source",
 				"description": "Shows where the feedback was submitted from.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "feedback_source",
@@ -104,12 +106,20 @@
 				}
 			},
 			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statecode",
 				"dataType": "String",
 				"displayName": "Status",
 				"description": "Shows whether the feedback is open, rejected or closed.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "feedback_statecode",
@@ -129,14 +139,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Select the feedback's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "feedback_statuscode",
 						"displayName": "Status",
@@ -145,30 +162,22 @@
 							{
 								"value": 1,
 								"displayName": "Proposed",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Accepted",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 3,
 								"displayName": "Closed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 4,
 								"displayName": "Rejected",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -180,7 +189,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the feedback.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -189,7 +198,6 @@
 				"displayName": "Regarding",
 				"description": "Shows the record that the feedback is associated with.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
 				}
 			},
@@ -199,7 +207,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -208,7 +216,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -218,7 +225,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -227,7 +234,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -236,7 +243,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -246,7 +252,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -255,7 +261,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the knowledge article views.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -264,7 +270,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the knowledge article views.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -273,7 +279,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns this feedback.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -282,7 +288,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team that owns the feedback.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -291,7 +297,7 @@
 				"displayName": "Closed By",
 				"description": "Shows who closed the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -300,7 +306,6 @@
 				"displayName": "Closed On",
 				"description": "Shows the date and time when the record was closed. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -310,7 +315,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -321,7 +325,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -331,7 +334,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -341,7 +343,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -352,7 +353,6 @@
 				"displayName": "Title",
 				"description": "Type a title for the feedback.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 155
 				}
@@ -363,7 +363,7 @@
 				"displayName": "Created By (Contact)",
 				"description": "Shows the contact who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -372,7 +372,7 @@
 				"displayName": "Created OnBelhalfBy (Contact)",
 				"description": "Shows the contact who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			}
 		]
@@ -384,8 +384,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -398,8 +398,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -415,8 +415,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -429,8 +429,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -446,8 +446,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -460,8 +460,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -477,8 +477,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -491,8 +491,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -508,8 +508,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -522,8 +522,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -539,8 +539,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -553,8 +553,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -570,8 +570,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -584,8 +584,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -601,8 +601,8 @@
 				"entity": {
 					"type": "Feedback",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fcf9591a-8d1a-463c-31bb-bcb803bf1106"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2da1dd1b-2ced-9b5c-f768-06e197c9b7f0"
 				},
 				"attributes": [
 					{
@@ -615,8 +615,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{

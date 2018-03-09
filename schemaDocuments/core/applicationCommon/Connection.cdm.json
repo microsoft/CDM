@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Connection",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+				"semanticVersion": "0.5.0",
+				"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 			}
 		},
 		"description": "Relationship between two entities.",
@@ -18,7 +18,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -27,7 +27,16 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the connection.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -36,9 +45,7 @@
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the connection.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "connection_statuscode",
 						"displayName": "Status Reason",
@@ -47,16 +54,12 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -68,7 +71,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -79,7 +81,6 @@
 				"displayName": "Connection",
 				"description": "Unique identifier of the connection.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -90,7 +91,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the connection.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -99,7 +100,6 @@
 				"displayName": "Starting",
 				"description": "Enter the start date of the connection.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -109,7 +109,7 @@
 				"displayName": "Is Master",
 				"description": "Indicates that this is the master record.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -118,7 +118,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -127,7 +127,7 @@
 				"displayName": "Reciprocal Connection",
 				"description": "Unique identifier for the reciprocal connection record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -136,7 +136,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the connection, such as the length or quality of the relationship.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 2000
 				}
@@ -147,7 +146,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Shows the business unit that the record owner belongs to.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -156,7 +155,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -166,7 +164,6 @@
 				"displayName": "Connected To",
 				"description": "Unique identifier of the target record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Object.Relationship"
 				}
 			},
@@ -176,7 +173,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -185,7 +182,7 @@
 				"displayName": "Role (To)",
 				"description": "Choose the secondary party's role or relationship with the primary party.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -194,7 +191,6 @@
 				"displayName": "Ending",
 				"description": "Enter the end date of the connection.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -204,7 +200,7 @@
 				"displayName": "Role (From)",
 				"description": "Choose the primary party's role or relationship with the second party.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -213,7 +209,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -223,7 +218,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -233,8 +227,16 @@
 				"displayName": "Connected From",
 				"description": "Unique identifier of the source record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Object.Relationship"
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -243,7 +245,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the connection is active or inactive. Inactive connections are read-only and can't be edited unless they are reactivated.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "connection_statecode",
@@ -268,7 +269,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who last updated the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -277,7 +278,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -286,7 +287,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the connection.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -295,7 +296,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -305,9 +305,17 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "record2objecttypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "record2objecttypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -316,7 +324,6 @@
 				"displayName": "Type (To)",
 				"description": "Shows the record type of the target record.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "connection_record2objecttypecode",
@@ -332,12 +339,20 @@
 				}
 			},
 			{
+				"name": "record1objecttypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "record1objecttypecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "record1objecttypecode",
 				"dataType": "String",
 				"displayName": "Type (From)",
 				"description": "Shows the record type of the source record.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "connection_record1objecttypecode",
@@ -358,7 +373,6 @@
 				"displayName": "Connection Name",
 				"description": "Name of the connection.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 500
 				}
@@ -369,7 +383,6 @@
 				"displayName": "Entity Image Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			}
@@ -382,8 +395,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -396,8 +409,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -413,8 +426,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -427,8 +440,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -444,8 +457,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -458,8 +471,8 @@
 				"entity": {
 					"type": "ConnectionRole",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+					"semanticVersion": "0.5.0",
+					"semanticId": "46189f48-078f-cbe6-1a7f-df007a25bd1c"
 				},
 				"attributes": [
 					{
@@ -475,8 +488,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -489,8 +502,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -506,8 +519,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -520,8 +533,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -537,8 +550,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -551,8 +564,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -568,8 +581,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -582,8 +595,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -599,8 +612,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -613,8 +626,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -630,8 +643,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -644,8 +657,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -661,8 +674,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -675,8 +688,8 @@
 				"entity": {
 					"type": "Fax",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1b662506-1bc7-4927-aa31-c3bc72413fc3"
+					"semanticVersion": "0.5.0",
+					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
 				},
 				"attributes": [
 					{
@@ -692,8 +705,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -706,8 +719,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -723,8 +736,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -737,8 +750,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -754,8 +767,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -768,8 +781,8 @@
 				"entity": {
 					"type": "Letter",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
 				},
 				"attributes": [
 					{
@@ -785,8 +798,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -799,8 +812,8 @@
 				"entity": {
 					"type": "Goal",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1793c36a-70ff-9cfe-398d-8de70b892781"
+					"semanticVersion": "0.5.0",
+					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
 				},
 				"attributes": [
 					{
@@ -816,8 +829,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -830,8 +843,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -847,8 +860,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -861,8 +874,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -878,8 +891,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -892,8 +905,8 @@
 				"entity": {
 					"type": "Position",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "12a7bf02-cba3-f4c6-3cfc-8f1c9f206bbc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d32d0b13-eba6-a24c-1287-ec88549d4708"
 				},
 				"attributes": [
 					{
@@ -909,8 +922,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -923,8 +936,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -940,8 +953,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -954,8 +967,8 @@
 				"entity": {
 					"type": "Appointment",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cbc4c152-9ad5-13d1-d7d3-3db95531d4d0"
+					"semanticVersion": "0.5.0",
+					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
 				},
 				"attributes": [
 					{
@@ -971,8 +984,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -985,8 +998,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1002,8 +1015,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -1016,8 +1029,8 @@
 				"entity": {
 					"type": "Task",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "61dffda4-ce8d-527d-448a-fe0fa8418f00"
+					"semanticVersion": "0.5.0",
+					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
 				},
 				"attributes": [
 					{
@@ -1033,8 +1046,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -1047,8 +1060,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "edb76fc4-cb3e-86c5-e84b-38b26fd3e221"
+					"semanticVersion": "0.5.0",
+					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
 				},
 				"attributes": [
 					{
@@ -1064,8 +1077,8 @@
 				"entity": {
 					"type": "Connection",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "d80c71e0-183a-f5ef-aa54-ae9e43cf28f9"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d05ea04f-d954-5e9d-fa0a-4479826e8301"
 				},
 				"attributes": [
 					{
@@ -1078,8 +1091,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{

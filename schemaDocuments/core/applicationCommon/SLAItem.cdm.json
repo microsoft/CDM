@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "SLAItem",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "b4c4aa37-830c-db15-8bc9-1db660dd5756"
+				"semanticVersion": "0.5.0",
+				"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
 			}
 		},
 		"description": "Contains information about a tracked support KPI for a specific customer.",
@@ -18,7 +18,6 @@
 				"displayName": "SLA Item",
 				"description": "Unique identifier of the SLA Item.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Name",
 				"description": "Type a descriptive name of the service level agreement (SLA) item.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -40,7 +38,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier for the business unit that owns the record",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -49,7 +47,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the SLA Item",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Description",
 					"maxLength": 100
 				}
@@ -60,7 +57,6 @@
 				"displayName": "Related Case Field",
 				"description": "Select the service level agreement (SLA) key performance indicator (KPI) that this SLA Item is created for.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100
 				}
@@ -71,7 +67,7 @@
 				"displayName": "SLA",
 				"description": "Unique identifier for SLA associated with SLA Item.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -80,7 +76,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -90,7 +85,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -99,7 +94,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -109,7 +103,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -118,7 +112,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Exchange rate between the currency associated with the SLA Item record and the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -129,7 +122,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the SLA Item.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -138,7 +131,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the currency associated with the SLA Item record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -148,7 +140,6 @@
 				"displayName": "ApplicableWhenXml",
 				"description": "Condition for SLA item",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -159,7 +150,6 @@
 				"displayName": "SuccessConditionsXml",
 				"description": "Condition for SLA item",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -170,8 +160,16 @@
 				"displayName": "Solution",
 				"description": "Unique identifier of the associated solution.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "componentstate",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -180,7 +178,6 @@
 				"displayName": "Component State",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "componentstate",
@@ -213,7 +210,6 @@
 				"displayName": "Record Overwrite Time",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -223,7 +219,7 @@
 				"displayName": "Is Managed",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -232,7 +228,6 @@
 				"displayName": "Unique Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -242,7 +237,6 @@
 				"displayName": "Sequence",
 				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1500
 				}
@@ -253,7 +247,6 @@
 				"displayName": "Failure After",
 				"description": "Select how soon the success criteria must be met until the SLA item is considered failed and failure actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -265,7 +258,6 @@
 				"displayName": "Warn After",
 				"description": "Select how soon the success criteria must be met before warning actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -277,7 +269,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the SLA Item record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -286,7 +278,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who owns the SLA. This field is updated every time the item is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -295,7 +287,7 @@
 				"displayName": "Workflow ID",
 				"description": "Workflow associated with the SLA Item.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -304,7 +296,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -313,7 +305,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -321,7 +313,6 @@
 				"dataType": "String",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -335,8 +326,8 @@
 				"entity": {
 					"type": "SLAItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b4c4aa37-830c-db15-8bc9-1db660dd5756"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
 				},
 				"attributes": [
 					{
@@ -349,8 +340,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -366,8 +357,8 @@
 				"entity": {
 					"type": "SLAItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b4c4aa37-830c-db15-8bc9-1db660dd5756"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
 				},
 				"attributes": [
 					{
@@ -380,8 +371,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -397,8 +388,8 @@
 				"entity": {
 					"type": "SLAItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b4c4aa37-830c-db15-8bc9-1db660dd5756"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
 				},
 				"attributes": [
 					{
@@ -411,8 +402,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -428,8 +419,8 @@
 				"entity": {
 					"type": "SLAItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b4c4aa37-830c-db15-8bc9-1db660dd5756"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
 				},
 				"attributes": [
 					{
@@ -442,8 +433,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "SocialProfile",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+				"semanticVersion": "0.5.0",
+				"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 			}
 		},
 		"description": "This entity is used to store social profile information of its associated account and contacts on different social channels.",
@@ -18,7 +18,6 @@
 				"displayName": "Social Profile ID",
 				"description": "Unique Identifier of the social profile name.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -38,7 +37,6 @@
 				"displayName": "Profile Name",
 				"description": "Shows the name of the social profile on the corresponding social channel.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -49,7 +47,6 @@
 				"displayName": "Full Name",
 				"description": "Shows the display name of the customer on this social profile.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.FullName",
 					"maxLength": 160
 				}
@@ -60,7 +57,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -70,7 +66,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -79,7 +75,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -89,7 +84,16 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -98,7 +102,6 @@
 				"displayName": "Status",
 				"description": "Status of the Social Profile",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "socialprofile_statecode",
@@ -118,14 +121,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the Social Profile",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "socialprofile_statuscode",
 						"displayName": "Status Reason",
@@ -134,16 +144,12 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -155,7 +161,6 @@
 				"displayName": "Customer",
 				"description": "Shows the customer that this social profile belongs to.",
 				"semanticDomain": {
-					"structuralType": "customer",
 					"semanticType": "Idea.Customer"
 				}
 			},
@@ -165,7 +170,7 @@
 				"displayName": "Blocked",
 				"description": "Identifies if the social profile has been blocked.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -174,7 +179,7 @@
 				"displayName": "Owner",
 				"description": "Shows the user or team that is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -183,7 +188,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier for the business unit that owns the record",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -192,8 +197,16 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "community_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "community",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -202,7 +215,6 @@
 				"displayName": "Social Channel",
 				"description": "Identifies where the social profile originated from, such as Twitter, or Facebook.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "socialprofile_community",
@@ -231,7 +243,6 @@
 				"displayName": "Influence Score",
 				"description": "Shows the score that determines the online social influence of the social profile.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -242,7 +253,6 @@
 				"displayName": "Profile Link",
 				"description": "Shows the customer that this social profile belongs to.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.URL",
 					"maxLength": 100
 				}
@@ -253,7 +263,6 @@
 				"displayName": "Unique Profile ID",
 				"description": "Unique ID of the Profile ID",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100
 				}
@@ -264,7 +273,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -274,7 +282,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -285,7 +292,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -296,7 +302,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -307,7 +312,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -318,7 +322,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the social profile.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -327,7 +331,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -336,7 +340,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -345,7 +349,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			}
 		]
@@ -357,8 +361,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -371,8 +375,8 @@
 				"entity": {
 					"type": "Customer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f4bc7ee4-cb15-9116-7ce0-7efd4bd9ab27"
 				},
 				"attributes": [
 					{
@@ -388,8 +392,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -402,8 +406,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -419,8 +423,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -433,8 +437,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -450,8 +454,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -464,8 +468,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -481,8 +485,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -495,8 +499,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -512,8 +516,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -526,8 +530,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -543,8 +547,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -557,8 +561,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -574,8 +578,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -588,8 +592,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

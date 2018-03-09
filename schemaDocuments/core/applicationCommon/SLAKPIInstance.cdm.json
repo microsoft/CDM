@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "SLAKPIInstance",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+				"semanticVersion": "0.5.0",
+				"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 			}
 		},
 		"description": "Service level agreement (SLA) key performance indicator (KPI) instance that is tracked for an individual case",
@@ -18,7 +18,6 @@
 				"displayName": "SLA KPI InstanceId",
 				"description": "Unique identifier of the SLA KPI Instance.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Name",
 				"description": "Type a descriptive name for the service level agreement (SLA) key performance indicator (KPI) instance.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -40,7 +38,6 @@
 				"displayName": "Computed Failure Time",
 				"description": "Computed Failure Date and time",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -50,7 +47,6 @@
 				"displayName": "Computed Warning Time",
 				"description": "Computed Warning Date and time",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -60,7 +56,6 @@
 				"displayName": "Failure Time",
 				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI) will expire.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -70,7 +65,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user or team.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -79,7 +74,7 @@
 				"displayName": "Owning User",
 				"description": "Owning User.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -88,7 +83,7 @@
 				"displayName": "Owning Team",
 				"description": "OwningTeam.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -97,7 +92,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Owning Business Unit.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -106,8 +101,16 @@
 				"displayName": "Regarding",
 				"description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "status_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "status",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -116,7 +119,6 @@
 				"displayName": "Status",
 				"description": "Reason for the status of the service level agreement (SLA) key performance indicator (KPI) instance. For example, the SLA KPI could be Noncompliant or Succeeded.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "slakpiinstance_status",
@@ -157,7 +159,6 @@
 				"displayName": "Succeeded On",
 				"description": "Shows the date and time when the service level agreement (SLA) key performance indicator (KPI) success criteria was met.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -167,7 +168,6 @@
 				"displayName": "Warning Time",
 				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI)will go to a warning state.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -177,7 +177,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -187,7 +186,6 @@
 				"displayName": "Exchange Rate",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -198,7 +196,7 @@
 				"displayName": "Created By",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -207,7 +205,6 @@
 				"displayName": "Created On",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -217,7 +214,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -226,7 +223,6 @@
 				"displayName": "Description",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Description",
 					"maxLength": 100
 				}
@@ -237,7 +233,7 @@
 				"displayName": "Modified By",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -246,7 +242,6 @@
 				"displayName": "Modified On",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -256,7 +251,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -265,7 +260,16 @@
 				"displayName": "Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
+				}
+			},
+			{
+				"name": "warningtimereached_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "warningtimereached",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -274,7 +278,6 @@
 				"displayName": "Warning Time Reached",
 				"description": "Shows information about whether the case has reached its warning time.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "slakpiinstance_warningtimereached",
@@ -302,8 +305,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -316,8 +319,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -333,8 +336,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -347,8 +350,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -364,8 +367,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -378,8 +381,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -395,8 +398,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -409,8 +412,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -426,8 +429,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -440,8 +443,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -457,8 +460,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -471,8 +474,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -488,8 +491,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -502,8 +505,8 @@
 				"entity": {
 					"type": "Fax",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1b662506-1bc7-4927-aa31-c3bc72413fc3"
+					"semanticVersion": "0.5.0",
+					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
 				},
 				"attributes": [
 					{
@@ -519,8 +522,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -533,8 +536,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -550,8 +553,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -564,8 +567,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -581,8 +584,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -595,8 +598,8 @@
 				"entity": {
 					"type": "Letter",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
 				},
 				"attributes": [
 					{
@@ -612,8 +615,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -626,8 +629,8 @@
 				"entity": {
 					"type": "Appointment",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cbc4c152-9ad5-13d1-d7d3-3db95531d4d0"
+					"semanticVersion": "0.5.0",
+					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
 				},
 				"attributes": [
 					{
@@ -643,8 +646,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -657,8 +660,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -674,8 +677,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -688,8 +691,8 @@
 				"entity": {
 					"type": "Task",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "61dffda4-ce8d-527d-448a-fe0fa8418f00"
+					"semanticVersion": "0.5.0",
+					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
 				},
 				"attributes": [
 					{
@@ -705,8 +708,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -719,8 +722,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "edb76fc4-cb3e-86c5-e84b-38b26fd3e221"
+					"semanticVersion": "0.5.0",
+					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
 				},
 				"attributes": [
 					{
@@ -736,8 +739,8 @@
 				"entity": {
 					"type": "SLAKPIInstance",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3f877090-3858-24b6-cc96-005200d50501"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
 				},
 				"attributes": [
 					{
@@ -750,8 +753,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{

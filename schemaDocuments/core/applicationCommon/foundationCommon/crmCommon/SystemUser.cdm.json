@@ -1,18 +1,18 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "SystemUser",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+				"semanticVersion": "0.5.0",
+				"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 			},
 			"extends": {
 				"type": "SystemUser",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+				"semanticVersion": "0.5.0",
+				"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 			}
 		},
 		"description": "Person with access to the Microsoft CRM system and who owns objects in the Microsoft CRM database.",
@@ -24,7 +24,6 @@
 				"displayName": "User",
 				"description": "Unique identifier for the user.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true,
 					"inherited": true
@@ -36,7 +35,6 @@
 				"displayName": "Organization ",
 				"description": "Unique identifier of the organization associated with the user.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -47,7 +45,6 @@
 				"displayName": "Business Unit",
 				"description": "Unique identifier of the business unit with which the user is associated.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -57,7 +54,6 @@
 				"displayName": "Manager",
 				"description": "Unique identifier of the manager of the user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Object.Relationship.Parent",
 					"inherited": true
 				}
@@ -68,7 +64,6 @@
 				"displayName": "First Name",
 				"description": "First name of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.FirstName",
 					"maxLength": 64,
 					"inherited": true
@@ -80,7 +75,6 @@
 				"displayName": "Salutation",
 				"description": "Salutation for correspondence with the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20,
 					"inherited": true
@@ -92,7 +86,6 @@
 				"displayName": "Middle Name",
 				"description": "Middle name of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.MiddleName",
 					"maxLength": 50,
 					"inherited": true
@@ -104,7 +97,6 @@
 				"displayName": "Last Name",
 				"description": "Last name of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.LastName",
 					"maxLength": 64,
 					"inherited": true
@@ -116,7 +108,6 @@
 				"displayName": "Email 2",
 				"description": "Personal email address of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100,
 					"inherited": true
@@ -128,7 +119,6 @@
 				"displayName": "Full Name",
 				"description": "Full name of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.FullName",
 					"maxLength": 200,
 					"inherited": true
@@ -140,7 +130,6 @@
 				"displayName": "Nickname",
 				"description": "Nickname of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 50,
 					"inherited": true
@@ -152,7 +141,6 @@
 				"displayName": "Title",
 				"description": "Title of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 128,
 					"inherited": true
@@ -164,7 +152,6 @@
 				"displayName": "Primary Email",
 				"description": "Internal email address for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100,
 					"inherited": true
@@ -176,7 +163,6 @@
 				"displayName": "Job Title",
 				"description": "Job title of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 100,
 					"inherited": true
@@ -188,9 +174,18 @@
 				"displayName": "Mobile Alert Email",
 				"description": "Mobile alert email address for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100,
+					"inherited": true
+				}
+			},
+			{
+				"name": "preferredemailcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredemailcode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -200,7 +195,6 @@
 				"displayName": "Preferred Email",
 				"description": "Preferred email address for the user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -222,7 +216,6 @@
 				"displayName": "Home Phone",
 				"description": "Home phone number for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -234,9 +227,18 @@
 				"displayName": "Mobile Phone",
 				"description": "Mobile phone number for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 64,
+					"inherited": true
+				}
+			},
+			{
+				"name": "preferredphonecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredphonecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -246,7 +248,6 @@
 				"displayName": "Preferred Phone",
 				"description": "Preferred phone number for the user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -275,12 +276,21 @@
 				}
 			},
 			{
+				"name": "preferredaddresscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredaddresscode",
+					"isReadOnly": true,
+					"inherited": true
+				}
+			},
+			{
 				"name": "preferredaddresscode",
 				"dataType": "String",
 				"displayName": "Preferred Address",
 				"description": "Preferred address for the user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -306,7 +316,6 @@
 				"displayName": "Photo URL",
 				"description": "URL for the Website on which a photo of the user is located.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.URL",
 					"maxLength": 200,
 					"inherited": true
@@ -318,7 +327,6 @@
 				"displayName": "User Name",
 				"description": "Active Directory domain of which the user is a member.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 1024,
 					"inherited": true
@@ -330,7 +338,6 @@
 				"displayName": "Passport Lo",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000,
 					"inherited": true
@@ -342,7 +349,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the user was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -353,7 +359,6 @@
 				"displayName": "Passport Hi",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000,
 					"inherited": true
@@ -365,7 +370,6 @@
 				"displayName": "Disabled Reason",
 				"description": "Reason for disabling the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500,
 					"inherited": true
@@ -377,7 +381,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the user was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify",
 					"inherited": true
 				}
@@ -388,7 +391,6 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -398,7 +400,6 @@
 				"displayName": "Employee",
 				"description": "Employee identifier for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100,
 					"inherited": true
@@ -410,7 +411,6 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -420,7 +420,6 @@
 				"displayName": "Status",
 				"description": "Information about whether the user is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -430,7 +429,6 @@
 				"displayName": "Government",
 				"description": "Government identifier for the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.GovernmentID",
 					"maxLength": 100,
 					"inherited": true
@@ -442,7 +440,6 @@
 				"displayName": "Version number",
 				"description": "Version number of the user.",
 				"semanticDomain": {
-					"structuralType": "timestamp",
 					"inherited": true
 				}
 			},
@@ -452,8 +449,17 @@
 				"displayName": "Address 1: ID",
 				"description": "Unique identifier for address 1.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
+					"inherited": true
+				}
+			},
+			{
+				"name": "address1_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_addresstypecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -463,7 +469,6 @@
 				"displayName": "Address 1: Address Type",
 				"description": "Type of address for address 1, such as billing, shipping, or primary address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -485,7 +490,6 @@
 				"displayName": "Address 1: Name",
 				"description": "Name to enter for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100,
 					"inherited": true
@@ -497,7 +501,6 @@
 				"displayName": "Street 1",
 				"description": "First line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -509,7 +512,6 @@
 				"displayName": "Street 2",
 				"description": "Second line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -521,7 +523,6 @@
 				"displayName": "Street 3",
 				"description": "Third line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -533,7 +534,6 @@
 				"displayName": "City",
 				"description": "City name for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 128,
 					"inherited": true
@@ -545,7 +545,6 @@
 				"displayName": "State/Province",
 				"description": "State or province for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 128,
 					"inherited": true
@@ -557,7 +556,6 @@
 				"displayName": "Address 1: County",
 				"description": "County name for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 128,
 					"inherited": true
@@ -569,7 +567,6 @@
 				"displayName": "Country/Region",
 				"description": "Country/region name in address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 128,
 					"inherited": true
@@ -581,7 +578,6 @@
 				"displayName": "Address 1: Post Office Box",
 				"description": "Post office box number for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 40,
 					"inherited": true
@@ -593,7 +589,6 @@
 				"displayName": "ZIP/Postal Code",
 				"description": "ZIP Code or postal code for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 40,
 					"inherited": true
@@ -605,7 +600,6 @@
 				"displayName": "Address 1: UTC Offset",
 				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500,
@@ -618,7 +612,6 @@
 				"displayName": "Address 1: UPS Zone",
 				"description": "United Parcel Service (UPS) zone for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4,
 					"inherited": true
@@ -630,7 +623,6 @@
 				"displayName": "Address 1: Latitude",
 				"description": "Latitude for address 1.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90,
@@ -643,7 +635,6 @@
 				"displayName": "Main Phone",
 				"description": "First telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 64,
 					"inherited": true
@@ -655,10 +646,19 @@
 				"displayName": "Address 1: Longitude",
 				"description": "Longitude for address 1.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180,
+					"inherited": true
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_shippingmethodcode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -668,7 +668,6 @@
 				"displayName": "Address 1: Shipping Method",
 				"description": "Method of shipment for address 1.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -690,7 +689,6 @@
 				"displayName": "Other Phone",
 				"description": "Second telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -702,7 +700,6 @@
 				"displayName": "Pager",
 				"description": "Third telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -714,7 +711,6 @@
 				"displayName": "Address 1: Fax",
 				"description": "Fax number for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 64,
 					"inherited": true
@@ -726,8 +722,17 @@
 				"displayName": "Address 2: ID",
 				"description": "Unique identifier for address 2.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
+					"inherited": true
+				}
+			},
+			{
+				"name": "address2_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_addresstypecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -737,7 +742,6 @@
 				"displayName": "Address 2: Address Type",
 				"description": "Type of address for address 2, such as billing, shipping, or primary address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -759,7 +763,6 @@
 				"displayName": "Address 2: Name",
 				"description": "Name to enter for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100,
 					"inherited": true
@@ -771,7 +774,6 @@
 				"displayName": "Other Street 1",
 				"description": "First line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -783,7 +785,6 @@
 				"displayName": "Other Street 2",
 				"description": "Second line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -795,7 +796,6 @@
 				"displayName": "Other Street 3",
 				"description": "Third line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 1024,
 					"inherited": true
@@ -807,7 +807,6 @@
 				"displayName": "Other City",
 				"description": "City name for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 128,
 					"inherited": true
@@ -819,7 +818,6 @@
 				"displayName": "Other State/Province",
 				"description": "State or province for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 128,
 					"inherited": true
@@ -831,7 +829,6 @@
 				"displayName": "Address 2: County",
 				"description": "County name for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 128,
 					"inherited": true
@@ -843,7 +840,6 @@
 				"displayName": "Other Country/Region",
 				"description": "Country/region name in address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 128,
 					"inherited": true
@@ -855,7 +851,6 @@
 				"displayName": "Address 2: Post Office Box",
 				"description": "Post office box number for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 40,
 					"inherited": true
@@ -867,7 +862,6 @@
 				"displayName": "Other ZIP/Postal Code",
 				"description": "ZIP Code or postal code for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 40,
 					"inherited": true
@@ -879,7 +873,6 @@
 				"displayName": "Address 2: UTC Offset",
 				"description": "UTC offset for address 2. This is the difference between local time and standard Coordinated Universal Time.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500,
@@ -892,7 +885,6 @@
 				"displayName": "Address 2: UPS Zone",
 				"description": "United Parcel Service (UPS) zone for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4,
 					"inherited": true
@@ -904,7 +896,6 @@
 				"displayName": "Address 2: Latitude",
 				"description": "Latitude for address 2.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90,
@@ -917,7 +908,6 @@
 				"displayName": "Address 2: Telephone 1",
 				"description": "First telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -929,10 +919,19 @@
 				"displayName": "Address 2: Longitude",
 				"description": "Longitude for address 2.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180,
+					"inherited": true
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_shippingmethodcode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -942,7 +941,6 @@
 				"displayName": "Address 2: Shipping Method",
 				"description": "Method of shipment for address 2.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -964,7 +962,6 @@
 				"displayName": "Address 2: Telephone 2",
 				"description": "Second telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -976,7 +973,6 @@
 				"displayName": "Address 2: Telephone 3",
 				"description": "Third telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50,
 					"inherited": true
@@ -988,7 +984,6 @@
 				"displayName": "Address 2: Fax",
 				"description": "Fax number for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50,
 					"inherited": true
@@ -1000,7 +995,6 @@
 				"displayName": "Skills",
 				"description": "Skill set of the user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100,
 					"inherited": true
@@ -1012,7 +1006,6 @@
 				"displayName": "Display in Service Views",
 				"description": "Whether to display the user in service views.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1022,7 +1015,6 @@
 				"displayName": "Calendar",
 				"description": "Fiscal calendar associated with the user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1032,7 +1024,6 @@
 				"displayName": "Restricted Access Mode",
 				"description": "Check if user is a setup user.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1042,9 +1033,18 @@
 				"displayName": "Windows Live ID",
 				"description": "Windows Live ID",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 1024,
+					"inherited": true
+				}
+			},
+			{
+				"name": "incomingemaildeliverymethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "incomingemaildeliverymethod",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -1054,7 +1054,6 @@
 				"displayName": "Incoming Email Delivery Method",
 				"description": "Incoming email delivery method for the user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1083,12 +1082,21 @@
 				}
 			},
 			{
+				"name": "outgoingemaildeliverymethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "outgoingemaildeliverymethod",
+					"isReadOnly": true,
+					"inherited": true
+				}
+			},
+			{
 				"name": "outgoingemaildeliverymethod",
 				"dataType": "String",
 				"displayName": "Outgoing Email Delivery Method",
 				"description": "Outgoing email delivery method for the user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1118,9 +1126,18 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "accessmode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "accessmode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -1130,7 +1147,6 @@
 				"displayName": "Access Mode",
 				"description": "Type of user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1167,12 +1183,21 @@
 				}
 			},
 			{
+				"name": "invitestatuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "invitestatuscode",
+					"isReadOnly": true,
+					"inherited": true
+				}
+			},
+			{
 				"name": "invitestatuscode",
 				"dataType": "String",
 				"displayName": "Invitation Status",
 				"description": "User invitation status.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1218,7 +1243,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -1229,7 +1253,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -1241,7 +1264,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -1253,7 +1275,6 @@
 				"displayName": "Yomi Full Name",
 				"description": "Pronunciation of the full name of the user, written in phonetic hiragana or katakana characters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 200,
 					"inherited": true
@@ -1265,7 +1286,6 @@
 				"displayName": "Yomi Last Name",
 				"description": "Pronunciation of the last name of the user, written in phonetic hiragana or katakana characters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 64,
 					"inherited": true
@@ -1277,7 +1297,6 @@
 				"displayName": "Yomi Middle Name",
 				"description": "Pronunciation of the middle name of the user, written in phonetic hiragana or katakana characters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 50,
 					"inherited": true
@@ -1289,7 +1308,6 @@
 				"displayName": "Yomi First Name",
 				"description": "Pronunciation of the first name of the user, written in phonetic hiragana or katakana characters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 64,
 					"inherited": true
@@ -1301,7 +1319,6 @@
 				"displayName": "Integration user mode",
 				"description": "Check if user is an integration user.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1311,7 +1328,6 @@
 				"displayName": "Default Filters Populated",
 				"description": "Indicates if default outlook filters have been populated.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1321,7 +1337,6 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the systemuser.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1331,7 +1346,6 @@
 				"displayName": "Default Queue",
 				"description": "Unique identifier of the default queue for the user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1341,7 +1355,16 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the systemuser.",
 				"semanticDomain": {
-					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailrouteraccessapproval_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "emailrouteraccessapproval",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -1351,7 +1374,6 @@
 				"displayName": "Primary Email Status",
 				"description": "Shows the status of the primary email address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1385,7 +1407,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the currency associated with the systemuser.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type",
 					"inherited": true
 				}
@@ -1396,9 +1417,18 @@
 				"displayName": "Exchange Rate",
 				"description": "Exchange rate for the currency associated with the systemuser with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "caltype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "caltype",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -1408,7 +1438,6 @@
 				"displayName": "License Type",
 				"description": "License type of user.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -1478,7 +1507,6 @@
 				"displayName": "User Licensed",
 				"description": "Information about whether the user is licensed.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1488,7 +1516,6 @@
 				"displayName": "User Synced",
 				"description": "Information about whether the user is synced with the directory.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1498,7 +1525,6 @@
 				"displayName": "Yammer Email",
 				"description": "User's Yammer login email address",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 200,
 					"inherited": true
@@ -1510,7 +1536,6 @@
 				"displayName": "Yammer User ID",
 				"description": "User's Yammer ID",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 128,
 					"inherited": true
@@ -1522,7 +1547,6 @@
 				"displayName": "Mailbox",
 				"description": "Select the mailbox associated with this user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1532,7 +1556,6 @@
 				"displayName": "User License Type",
 				"description": "Shows the type of user license.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -1544,7 +1567,6 @@
 				"displayName": "Entity Image Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -1555,7 +1577,6 @@
 				"displayName": "Other Address",
 				"description": "Shows the complete secondary address.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 1000,
 					"inherited": true
@@ -1567,7 +1588,6 @@
 				"displayName": "Address",
 				"description": "Shows the complete primary address.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 1000,
 					"inherited": true
@@ -1579,7 +1599,6 @@
 				"displayName": "Process",
 				"description": "Shows the ID of the process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -1590,7 +1609,6 @@
 				"displayName": "Process Stage",
 				"description": "Shows the ID of the stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -1601,7 +1619,6 @@
 				"displayName": "Email Address O365 Admin Approval Status",
 				"description": "Shows the status of approval of the email address by O365 Admin.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -1611,7 +1628,6 @@
 				"displayName": "Position",
 				"description": "User's position in hierarchical security model.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1621,7 +1637,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250,
 					"inherited": true
@@ -1633,7 +1648,6 @@
 				"displayName": "SharePoint Email Address",
 				"description": "SharePoint Work Email Address",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 1024,
 					"inherited": true
@@ -1645,7 +1659,6 @@
 				"displayName": "Mobile Offline Profile",
 				"description": "Items contained with a particular SystemUser.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -1655,7 +1668,6 @@
 				"displayName": "Default OneDrive for Business Folder Name",
 				"description": "Type a default folder name for the user's OneDrive For Business location.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 200,
 					"inherited": true
@@ -1667,7 +1679,6 @@
 				"displayName": "Application ID",
 				"description": "The identifier for the application. This is used to access data in another application.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -1678,7 +1689,6 @@
 				"displayName": "Application ID URI",
 				"description": "The URI used as a unique logical identifier for the external app. This can be used to validate the application.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1024,
 					"inherited": true
@@ -1690,7 +1700,6 @@
 				"displayName": "Azure AD Object ID",
 				"description": "This is the application directory object Id.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -1701,7 +1710,6 @@
 				"displayName": "Unique user identity id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -1713,7 +1721,7 @@
 				"displayName": "Territory",
 				"description": "Unique identifier of the territory to which the user is assigned.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1722,7 +1730,7 @@
 				"displayName": "Site",
 				"description": "Site at which the user is located.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			}
 		]
@@ -1734,8 +1742,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1748,8 +1756,8 @@
 				"entity": {
 					"type": "Territory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f5279157-91ec-f236-b555-b2b9606ec391"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5f40bde7-7a04-621f-c455-a44c94f05b46"
 				},
 				"attributes": [
 					{
@@ -1765,8 +1773,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1779,8 +1787,8 @@
 				"entity": {
 					"type": "Site",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
 				},
 				"attributes": [
 					{
@@ -1796,8 +1804,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1810,8 +1818,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1827,8 +1835,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1841,8 +1849,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -1858,8 +1866,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1872,8 +1880,8 @@
 				"entity": {
 					"type": "Position",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "12a7bf02-cba3-f4c6-3cfc-8f1c9f206bbc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d32d0b13-eba6-a24c-1287-ec88549d4708"
 				},
 				"attributes": [
 					{
@@ -1889,8 +1897,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1903,43 +1911,12 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
 						"name": "queueid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "calendar_system_users",
-			"referencing": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
-				},
-				"attributes": [
-					{
-						"name": "calendarid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Calendar",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6b63df25-daad-9c73-cd61-79dd38dab8eb"
-				},
-				"attributes": [
-					{
-						"name": "calendarid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1951,8 +1928,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1965,43 +1942,12 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
 						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "systemuser_defaultmailbox_mailbox",
-			"referencing": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
-				},
-				"attributes": [
-					{
-						"name": "defaultmailbox",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -2013,8 +1959,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -2027,8 +1973,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{

@@ -1,18 +1,18 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "PhoneCall",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-				"semanticVersion": "0.4.0",
-				"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+				"semanticVersion": "0.5.0",
+				"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 			},
 			"extends": {
 				"type": "PhoneCall",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "edb76fc4-cb3e-86c5-e84b-38b26fd3e221"
+				"semanticVersion": "0.5.0",
+				"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
 			}
 		},
 		"description": "Activity to track a telephone call.",
@@ -24,7 +24,6 @@
 				"displayName": "Subject",
 				"description": "Type a short description about the objective or primary topic of the phone call.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200,
 					"inherited": true
@@ -36,7 +35,6 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -46,7 +44,6 @@
 				"displayName": "Call To",
 				"description": "Enter the account, contact, lead, or user recipients of the phone call.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party",
 					"inherited": true
 				}
@@ -57,7 +54,6 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the phone call activity.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -67,7 +63,6 @@
 				"displayName": "Actual End",
 				"description": "Enter the actual end date and time of the phone call. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual duration of the phone call.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -78,7 +73,6 @@
 				"displayName": "Phone Call",
 				"description": "Unique identifier of the phone call activity.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true,
 					"inherited": true
@@ -90,7 +84,6 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -100,7 +93,6 @@
 				"displayName": "Phone Number",
 				"description": "Type the phone number.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 200,
 					"inherited": true
@@ -112,7 +104,6 @@
 				"displayName": "Direction",
 				"description": "Select the direction of the phone call as incoming or outbound.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -122,7 +113,6 @@
 				"displayName": "Regarding",
 				"description": "Choose the record that the phone call relates to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding",
 					"inherited": true
 				}
@@ -133,7 +123,6 @@
 				"displayName": "Is Billed",
 				"description": "Information which specifies whether the phone call activity was billed as part of resolving a case.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -143,7 +132,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify",
 					"inherited": true
 				}
@@ -154,7 +142,6 @@
 				"displayName": "Due",
 				"description": "Enter the expected due date and time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -165,7 +152,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -176,7 +162,6 @@
 				"displayName": "Version Number",
 				"description": "Version number of the phone call activity.",
 				"semanticDomain": {
-					"structuralType": "timestamp",
 					"inherited": true
 				}
 			},
@@ -186,7 +171,6 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner",
 					"inherited": true
 				}
 			},
@@ -196,7 +180,16 @@
 				"displayName": "Is Workflow Created",
 				"description": "Indication which specifies if the phone call activity was created by a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -206,7 +199,6 @@
 				"displayName": "Priority",
 				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -236,7 +228,6 @@
 				"displayName": "Actual Start",
 				"description": "Enter the actual start date and time for the phone call. By default, it displays the date and time when the activity was created, but can be edited to capture the actual duration of the phone call.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -247,7 +238,6 @@
 				"displayName": "Category",
 				"description": "Type a category to identify the phone call type, such as lead gathering or customer follow-up, to tie the phone call to a business group or function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250,
 					"inherited": true
@@ -259,7 +249,6 @@
 				"displayName": "Scheduled Duration",
 				"description": "Scheduled duration of the phone call activity, specified in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647,
@@ -272,7 +261,6 @@
 				"displayName": "Call From",
 				"description": "Enter the account, contact, lead, or user who made the phone call.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party",
 					"inherited": true
 				}
@@ -283,8 +271,17 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the phone call, such as the primary message or the products and services discussed.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -294,7 +291,6 @@
 				"displayName": "Activity Status",
 				"description": "Shows whether the phone call is open, completed, or canceled. Completed and canceled phone calls are read-only and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"inherited": true,
 					"constrainedList": {
@@ -324,7 +320,6 @@
 				"displayName": "Sub-Category",
 				"description": "Type a subcategory to identify the phone call type and relate the activity to a specific product, sales region, business group, or other function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250,
 					"inherited": true
@@ -336,10 +331,19 @@
 				"displayName": "Duration",
 				"description": "Type the number of minutes spent on the phone call. The duration is used in reporting.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647,
+					"inherited": true
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -349,9 +353,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the phone call's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"inherited": true,
 					"constrainedList": {
 						"name": "phonecall_statuscode",
@@ -361,30 +363,22 @@
 							{
 								"value": 1,
 								"displayName": "Open",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Made",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 3,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 4,
 								"displayName": "Received",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -396,7 +390,6 @@
 				"displayName": "Start Date",
 				"description": "Enter the expected due date and time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -407,7 +400,6 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user that owns the phone call activity.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -417,7 +409,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -429,7 +420,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -440,7 +430,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -452,7 +441,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -464,7 +452,6 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -474,7 +461,16 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who last updated the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -484,7 +480,6 @@
 				"displayName": "Activity Type",
 				"description": "Shows the type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -562,7 +557,6 @@
 				"displayName": "Is Regular Activity",
 				"description": "Information regarding whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -572,7 +566,6 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team that owns the phone call activity.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -582,7 +575,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type",
 					"inherited": true
 				}
@@ -593,7 +585,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000,
 					"inherited": true
@@ -605,7 +596,6 @@
 				"displayName": "Left Voice Mail",
 				"description": "Select whether a voice mail was left for the person.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -615,7 +605,6 @@
 				"displayName": "Process",
 				"description": "Shows the ID of the process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -626,7 +615,6 @@
 				"displayName": "Process Stage",
 				"description": "Shows the ID of the stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -637,7 +625,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250,
 					"inherited": true
@@ -649,7 +636,6 @@
 				"displayName": "Additional Parameters",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192,
 					"inherited": true
@@ -661,7 +647,6 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this Phone Call. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -671,7 +656,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -683,7 +667,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -694,7 +677,6 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the Phone Call record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -704,7 +686,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence",
 					"inherited": true
 				}
@@ -715,7 +696,7 @@
 				"displayName": "Service",
 				"description": "Unique identifier for an associated service.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			}
 		]
@@ -727,8 +708,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -741,8 +722,8 @@
 				"entity": {
 					"type": "Service",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
 				},
 				"attributes": [
 					{
@@ -758,8 +739,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -772,8 +753,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -789,8 +770,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -803,8 +784,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
@@ -820,8 +801,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -834,8 +815,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f8933236-f276-4bb5-ffb1-d31fd98f6199"
+					"semanticVersion": "0.5.0",
+					"semanticId": "900527a9-8536-27bf-3dbb-3f844bc8fbc1"
 				},
 				"attributes": [
 					{
@@ -851,8 +832,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -865,8 +846,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -882,8 +863,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -896,8 +877,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -913,8 +894,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -927,8 +908,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+					"semanticVersion": "0.5.0",
+					"semanticId": "df394c24-7e33-6d24-83f6-e4ddb6829d9c"
 				},
 				"attributes": [
 					{
@@ -944,8 +925,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -958,8 +939,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "dfe39730-95bb-3b41-54f6-5dd514a36d1f"
 				},
 				"attributes": [
 					{
@@ -975,8 +956,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -989,8 +970,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1006,8 +987,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -1020,8 +1001,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -1037,8 +1018,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f34f20e1-3f37-db5f-ed6a-710abc5c4fd5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b991ef42-985f-7622-385e-677bb7670db3"
 				},
 				"attributes": [
 					{
@@ -1051,8 +1032,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

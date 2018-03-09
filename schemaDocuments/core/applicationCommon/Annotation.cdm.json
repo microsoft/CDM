@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Annotation",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+				"semanticVersion": "0.5.0",
+				"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 			}
 		},
 		"description": "Note that is attached to one or more objects, including other notes.",
@@ -18,9 +18,17 @@
 				"displayName": "Note",
 				"description": "Unique identifier of the note.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "objecttypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "objecttypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -29,7 +37,6 @@
 				"displayName": "Object Type ",
 				"description": "Type of entity with which the note is associated.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "annotation_objecttypecode",
@@ -186,7 +193,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the note.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -195,7 +202,7 @@
 				"displayName": "Regarding",
 				"description": "Unique identifier of the object with which the note is associated.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -204,7 +211,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the note.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -213,7 +220,6 @@
 				"displayName": "Title",
 				"description": "Subject associated with the note.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500
 				}
@@ -224,7 +230,7 @@
 				"displayName": "Is Document",
 				"description": "Specifies whether the note is an attachment.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -233,7 +239,6 @@
 				"displayName": "Description",
 				"description": "Text of the note.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 100000
 				}
 			},
@@ -243,7 +248,6 @@
 				"displayName": "Mime Type",
 				"description": "MIME type of the note's attachment.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 256
 				}
@@ -254,7 +258,6 @@
 				"displayName": "Language ID",
 				"description": "Language identifier for the note.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 2
 				}
@@ -265,7 +268,6 @@
 				"displayName": "Document",
 				"description": "Contents of the note's attachment.",
 				"semanticDomain": {
-					"structuralType": "text",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -276,7 +278,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the note was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -286,7 +287,6 @@
 				"displayName": "File Size (Bytes)",
 				"description": "File size of the note.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -297,7 +297,6 @@
 				"displayName": "File Name",
 				"description": "File name of the note.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 255
 				}
@@ -308,7 +307,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the note.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -317,7 +316,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the note.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -326,7 +325,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the note was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -336,7 +334,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the note.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -345,7 +343,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the note.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -354,7 +352,6 @@
 				"displayName": "Step Id",
 				"description": "workflow step id associated with the note.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 32
 				}
@@ -365,7 +362,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -375,7 +371,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -386,7 +381,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the annotation.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -395,7 +390,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the annotation.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -404,7 +399,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the note.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			}
 		]
@@ -416,8 +411,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -430,8 +425,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -447,8 +442,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -461,8 +456,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -478,8 +473,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -492,8 +487,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -509,8 +504,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -523,8 +518,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -540,8 +535,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -554,8 +549,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -571,8 +566,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -585,8 +580,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -602,8 +597,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -616,8 +611,8 @@
 				"entity": {
 					"type": "Fax",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1b662506-1bc7-4927-aa31-c3bc72413fc3"
+					"semanticVersion": "0.5.0",
+					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
 				},
 				"attributes": [
 					{
@@ -633,8 +628,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -647,8 +642,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -664,8 +659,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -678,8 +673,8 @@
 				"entity": {
 					"type": "Letter",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
 				},
 				"attributes": [
 					{
@@ -695,8 +690,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -709,8 +704,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -726,8 +721,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -740,8 +735,8 @@
 				"entity": {
 					"type": "Goal",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1793c36a-70ff-9cfe-398d-8de70b892781"
+					"semanticVersion": "0.5.0",
+					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
 				},
 				"attributes": [
 					{
@@ -757,8 +752,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -771,8 +766,8 @@
 				"entity": {
 					"type": "KbArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0644c5e4-7e07-e577-5cc2-9bddabd38f13"
+					"semanticVersion": "0.5.0",
+					"semanticId": "aff22c88-6c60-3d89-1cf8-5b6622304027"
 				},
 				"attributes": [
 					{
@@ -788,8 +783,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -802,8 +797,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -819,8 +814,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -833,43 +828,12 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
 						"name": "knowledgebaserecordid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Mailbox_Annotation",
-			"referencing": {
-				"entity": {
-					"type": "Annotation",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -881,8 +845,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -895,43 +859,12 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
 						"name": "contactid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "EmailServerProfile_Annotation",
-			"referencing": {
-				"entity": {
-					"type": "Annotation",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "EmailServerProfile",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
-				},
-				"attributes": [
-					{
-						"name": "emailserverprofileid",
 						"comparisonOrder": 0
 					}
 				]
@@ -943,8 +876,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -957,8 +890,8 @@
 				"entity": {
 					"type": "Appointment",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cbc4c152-9ad5-13d1-d7d3-3db95531d4d0"
+					"semanticVersion": "0.5.0",
+					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
 				},
 				"attributes": [
 					{
@@ -974,8 +907,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -988,8 +921,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1005,8 +938,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -1019,8 +952,8 @@
 				"entity": {
 					"type": "Task",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "61dffda4-ce8d-527d-448a-fe0fa8418f00"
+					"semanticVersion": "0.5.0",
+					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
 				},
 				"attributes": [
 					{
@@ -1036,8 +969,8 @@
 				"entity": {
 					"type": "Annotation",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4d244554-b5b2-b9ad-505a-244a76f50f04"
 				},
 				"attributes": [
 					{
@@ -1050,74 +983,12 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "edb76fc4-cb3e-86c5-e84b-38b26fd3e221"
+					"semanticVersion": "0.5.0",
+					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
 				},
 				"attributes": [
 					{
 						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Calendar_Annotation",
-			"referencing": {
-				"entity": {
-					"type": "Annotation",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Calendar",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "e049b9f8-bd03-0bb0-e76a-77ca421be393"
-				},
-				"attributes": [
-					{
-						"name": "calendarid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "msdyn_postalbum_Annotations",
-			"referencing": {
-				"entity": {
-					"type": "Annotation",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "269b0cb7-5bab-ddfb-7b72-2a08f695dd08"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "msdyn_PostAlbum",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "9a45a67a-4d01-009e-911f-9457fec9b591"
-				},
-				"attributes": [
-					{
-						"name": "msdyn_postalbumid",
 						"comparisonOrder": 0
 					}
 				]

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "ProductAssociation",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-				"semanticVersion": "0.4.0",
-				"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+				"semanticVersion": "0.5.0",
+				"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 			}
 		},
 		"description": "Instance of a product added to a bundle or kit.",
@@ -18,7 +18,6 @@
 				"displayName": "Product Association ID",
 				"description": "Shows the unique identifier of the product association.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -39,7 +37,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -48,7 +46,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -58,7 +55,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -67,7 +64,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -76,7 +73,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -85,7 +82,6 @@
 				"displayName": "Organization Id",
 				"description": "Unique identifier for the organization",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -95,7 +91,7 @@
 				"displayName": "Version Number",
 				"description": "Version Number",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -104,7 +100,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -115,7 +110,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -125,7 +119,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -136,7 +129,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -147,7 +139,7 @@
 				"displayName": "Associated Product",
 				"description": "Select a product to add to the bundle or kit.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -156,7 +148,6 @@
 				"displayName": "Product",
 				"description": "Select a bundle or a kit.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Product"
 				}
 			},
@@ -166,9 +157,17 @@
 				"displayName": "Quantity",
 				"description": "Type the quantity of the products added to the bundle or kit.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 0,
 					"maxValue": 100000000000
+				}
+			},
+			{
+				"name": "productisrequired_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "productisrequired",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -177,7 +176,6 @@
 				"displayName": "Required",
 				"description": "Select whether the associated product is required or optional.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "productassociate_productisrequired",
@@ -202,7 +200,16 @@
 				"displayName": "Unit",
 				"description": "Shows the unit of the product association.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -211,7 +218,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the associated product is active or inactive.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "productassociate_statecode",
@@ -239,14 +245,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Select the associated product's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "productassociate_statuscode",
 						"displayName": "Status Reason",
@@ -255,33 +268,34 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 0,
 								"displayName": "Draft",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 3,
 								"displayName": "DraftActive",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							}
 						]
 					}
+				}
+			},
+			{
+				"name": "propertycustomizationstatus_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "propertycustomizationstatus",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -290,7 +304,6 @@
 				"displayName": "Property Customization",
 				"description": "Shows whether the item has properties that can be customized.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "productassociation_propertiescustomizationstatus",
@@ -315,7 +328,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -326,7 +338,6 @@
 				"displayName": "Currency",
 				"description": "Shows the currency associated with the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			}
@@ -339,8 +350,8 @@
 				"entity": {
 					"type": "ProductAssociation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 				},
 				"attributes": [
 					{
@@ -353,8 +364,8 @@
 				"entity": {
 					"type": "Product",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1a4545e4-20cd-db0a-67fc-6c0701399719"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8f52b568-a4d5-d30e-f5dc-551f22ecde66"
 				},
 				"attributes": [
 					{
@@ -370,8 +381,8 @@
 				"entity": {
 					"type": "ProductAssociation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 				},
 				"attributes": [
 					{
@@ -384,8 +395,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -401,8 +412,8 @@
 				"entity": {
 					"type": "ProductAssociation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 				},
 				"attributes": [
 					{
@@ -415,8 +426,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -432,8 +443,8 @@
 				"entity": {
 					"type": "ProductAssociation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 				},
 				"attributes": [
 					{
@@ -446,8 +457,8 @@
 				"entity": {
 					"type": "UoM",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4bf7c717-a929-b6cf-db7b-be7d9dc2b0f0"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a89fdae7-6e7b-add0-09e6-b30ae52cdc87"
 				},
 				"attributes": [
 					{
@@ -463,8 +474,8 @@
 				"entity": {
 					"type": "ProductAssociation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "561ee410-a708-e6c8-68d7-219b2f80c1f1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "16a0789b-db7b-3b5d-9302-c9a665eab630"
 				},
 				"attributes": [
 					{
@@ -477,8 +488,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
