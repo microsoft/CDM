@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Organization",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+				"semanticVersion": "0.5.0",
+				"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 			}
 		},
 		"description": "Top level of the Microsoft Dynamics 365 business hierarchy. The organization can be a specific business, holding company, or corporation.",
@@ -18,7 +18,6 @@
 				"displayName": "Organization",
 				"description": "Unique identifier of the organization.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Organization Name",
 				"description": "Name of the organization. The name is set when Microsoft CRM is installed and should not be changed.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 160
 				}
@@ -40,7 +38,6 @@
 				"displayName": "User Group",
 				"description": "Unique identifier of the default group of users in the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -50,7 +47,6 @@
 				"displayName": "Privilege User Group",
 				"description": "Unique identifier of the default privilege for users in the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -60,7 +56,6 @@
 				"displayName": "Recurrence Expansion On Demand Job Batch Size",
 				"description": "Specifies the value for number of instances created in on demand job in one shot.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -71,7 +66,6 @@
 				"displayName": "Recurrence Expansion Job Batch Interval",
 				"description": "Specifies the interval (in seconds) for pausing expansion job.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -82,7 +76,6 @@
 				"displayName": "Fiscal Period Type",
 				"description": "Type of fiscal period used throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -93,8 +86,16 @@
 				"displayName": "Fiscal Calendar Start",
 				"description": "Start date for the fiscal period that is to be used throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "dateformatcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "dateformatcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -103,7 +104,6 @@
 				"displayName": "Date Format Code",
 				"description": "Information about how the date is displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_dateformatcode",
@@ -117,12 +117,20 @@
 				}
 			},
 			{
+				"name": "timeformatcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "timeformatcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "timeformatcode",
 				"dataType": "String",
 				"displayName": "Time Format Code",
 				"description": "Information that specifies how the time is displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_timeformatcode",
@@ -141,9 +149,17 @@
 				"displayName": "Currency Symbol",
 				"description": "Symbol used for currency throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 13
+				}
+			},
+			{
+				"name": "weekstartdaycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "weekstartdaycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -152,7 +168,6 @@
 				"displayName": "Week Start Day Code",
 				"description": "Designated first day of the week throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_weekstartdaycode",
@@ -171,9 +186,17 @@
 				"displayName": "Date Separator",
 				"description": "Character used to separate the month, the day, and the year in dates throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
+				}
+			},
+			{
+				"name": "fullnameconventioncode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "fullnameconventioncode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -182,7 +205,6 @@
 				"displayName": "Full Name Display Order",
 				"description": "Order in which names are to be displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_fullnameconventioncode",
@@ -225,12 +247,20 @@
 				}
 			},
 			{
+				"name": "negativeformatcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "negativeformatcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "negativeformatcode",
 				"dataType": "String",
 				"displayName": "Negative Format",
 				"description": "Information that specifies how negative numbers are displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_negativeformatcode",
@@ -266,7 +296,6 @@
 				"displayName": "Number Format",
 				"description": "Specification of how numbers are displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 2
 				}
@@ -277,7 +306,7 @@
 				"displayName": "Is Organization Disabled",
 				"description": "Information that specifies whether the organization is disabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -286,7 +315,6 @@
 				"displayName": "Disabled Reason",
 				"description": "Reason for disabling the organization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500
 				}
@@ -297,7 +325,6 @@
 				"displayName": "Article Prefix",
 				"description": "Prefix to use for all articles in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -308,7 +335,6 @@
 				"displayName": "Current Article Number",
 				"description": "First article number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -319,7 +345,6 @@
 				"displayName": "Case Prefix",
 				"description": "Prefix to use for all cases throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -330,7 +355,6 @@
 				"displayName": "Current Case Number",
 				"description": "First case number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -341,7 +365,6 @@
 				"displayName": "Contract Prefix",
 				"description": "Prefix to use for all contracts throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -352,7 +375,6 @@
 				"displayName": "Current Contract Number",
 				"description": "First contract number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -363,7 +385,6 @@
 				"displayName": "Quote Prefix",
 				"description": "Prefix to use for all quotes throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -374,7 +395,6 @@
 				"displayName": "Current Quote Number",
 				"description": "First quote number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -385,7 +405,6 @@
 				"displayName": "Order Prefix",
 				"description": "Prefix to use for all orders throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -396,7 +415,6 @@
 				"displayName": "Current Order Number",
 				"description": "First order number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -407,7 +425,6 @@
 				"displayName": "Invoice Prefix",
 				"description": "Prefix to use for all invoice numbers throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -418,7 +435,6 @@
 				"displayName": "Current Invoice Number",
 				"description": "First invoice number to use. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -429,7 +445,6 @@
 				"displayName": "Unique String Length",
 				"description": "Number of characters appended to invoice, quote, and order numbers.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 4,
 					"maxValue": 6
 				}
@@ -440,7 +455,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the organization was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -450,7 +464,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the organization was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -460,7 +473,6 @@
 				"displayName": "Fiscal Year Format",
 				"description": "Information that specifies how the name of the fiscal year is displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 25
 				}
@@ -471,7 +483,6 @@
 				"displayName": "Fiscal Period Format",
 				"description": "Information that specifies how the name of the fiscal period is displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 25
 				}
@@ -482,7 +493,6 @@
 				"displayName": "Fiscal Year Period Connector",
 				"description": "Information that specifies how the names of the fiscal year and the fiscal period should be connected when displayed together.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
 				}
@@ -493,7 +503,6 @@
 				"displayName": "Language",
 				"description": "Preferred language for the organization.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Idea.Language",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -505,7 +514,6 @@
 				"displayName": "Sort",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -516,7 +524,6 @@
 				"displayName": "Date Format String",
 				"description": "String showing how the date is displayed throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 255
 				}
@@ -527,7 +534,6 @@
 				"displayName": "Time Format String",
 				"description": "Text for how time is displayed in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 255
 				}
@@ -538,7 +544,6 @@
 				"displayName": "Pricing Decimal Precision",
 				"description": "Number of decimal places that can be used for prices.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 4
 				}
@@ -549,7 +554,7 @@
 				"displayName": "Show Week Number",
 				"description": "Information that specifies whether to display the week number in calendar displays throughout Microsoft CRM.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -558,7 +563,6 @@
 				"displayName": "Next Tracking Number",
 				"description": "Next token to be placed on the subject line of an email message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -569,7 +573,7 @@
 				"displayName": "Auto-Tag Max Cycles",
 				"description": "Maximum number of aggressive polling cycles executed for email auto-tagging when a new email is received.",
 				"semanticDomain": {
-					"structuralType": "tinyint"
+
 				}
 			},
 			{
@@ -578,7 +582,6 @@
 				"displayName": "System User",
 				"description": "Unique identifier of the system user for the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -588,7 +591,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -597,7 +600,7 @@
 				"displayName": "Grant Access To Network Service",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -606,7 +609,7 @@
 				"displayName": "Allow Scheduled Synchronization",
 				"description": "Indicates whether scheduled synchronizations to Outlook are allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -615,7 +618,7 @@
 				"displayName": "Allow Marketing Email Execution",
 				"description": "Indicates whether marketing emails execution is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -624,8 +627,16 @@
 				"displayName": "SQL Access Group",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "currencyformatcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "currencyformatcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -634,7 +645,6 @@
 				"displayName": "Currency Format Code",
 				"description": "Information about how currency symbols are placed throughout Microsoft Dynamics CRM.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_currencyformatcode",
@@ -666,7 +676,7 @@
 				"displayName": "Is Fiscal Settings Updated",
 				"description": "Information that specifies whether the fiscal settings have been updated.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -675,7 +685,6 @@
 				"displayName": "Reporting Group",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -685,7 +694,7 @@
 				"displayName": "Token Expiration Duration",
 				"description": "Duration used for token expiration.",
 				"semanticDomain": {
-					"structuralType": "smallint"
+
 				}
 			},
 			{
@@ -694,7 +703,7 @@
 				"displayName": "Share To Previous Owner On Assign",
 				"description": "Information that specifies whether to share to previous owner on assign.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -703,7 +712,7 @@
 				"displayName": "Acknowledgement Template",
 				"description": "Unique identifier of the template to be used for acknowledgement when a user unsubscribes.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -712,7 +721,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -721,7 +730,6 @@
 				"displayName": "Integration User",
 				"description": "Unique identifier of the integration user for the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -731,7 +739,6 @@
 				"displayName": "Tracking Token Base",
 				"description": "Base number used to provide separate tracking token identifiers to users belonging to different deployments.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -742,7 +749,6 @@
 				"displayName": "Business Closure Calendar",
 				"description": "Unique identifier of the business closure calendar of organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -752,7 +758,7 @@
 				"displayName": "Allow Automatic Unsubscribe Acknowledgement",
 				"description": "Indicates whether automatic unsubscribe acknowledgement email is allowed to send.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -761,7 +767,7 @@
 				"displayName": "Allow Automatic Unsubscribe",
 				"description": "Indicates whether automatic unsubscribe is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -770,7 +776,6 @@
 				"displayName": "Picture",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -781,7 +786,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the organization.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -790,7 +795,6 @@
 				"displayName": "Tracking Prefix",
 				"description": "History list of tracking token prefixes.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 256
 				}
@@ -801,7 +805,6 @@
 				"displayName": "Min Synchronization Frequency",
 				"description": "Minimum allowed time between scheduled Outlook synchronizations.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -812,7 +815,6 @@
 				"displayName": "Bulk Operation Prefix",
 				"description": "Prefix used for bulk operation numbering.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -823,7 +825,7 @@
 				"displayName": "Allow Automatic Response Creation",
 				"description": "Indicates whether automatic response creation is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -832,7 +834,6 @@
 				"displayName": "Max Tracking Number",
 				"description": "Maximum tracking number before recycling takes place.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -843,7 +844,6 @@
 				"displayName": "Campaign Prefix",
 				"description": "Prefix used for campaign numbering.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -854,7 +854,6 @@
 				"displayName": "SQL Access Group Name",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 256
 				}
@@ -865,7 +864,6 @@
 				"displayName": "Current Campaign Number",
 				"description": "Current campaign number. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -876,7 +874,7 @@
 				"displayName": "Fiscal Year Display",
 				"description": "Information that specifies whether the fiscal year should be displayed based on the start date or the end date of the fiscal year.",
 				"semanticDomain": {
-					"structuralType": "tinyint"
+
 				}
 			},
 			{
@@ -885,7 +883,6 @@
 				"displayName": "SiteMap XML",
 				"description": "XML string that defines the navigation structure for the application.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -896,7 +893,7 @@
 				"displayName": "Is Registered",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -905,7 +902,6 @@
 				"displayName": "Reporting Group Name",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 256
 				}
@@ -916,7 +912,6 @@
 				"displayName": "Current Bulk Operation Number",
 				"description": "Current bulk operation number. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -927,7 +922,6 @@
 				"displayName": "Customization Name Prefix",
 				"description": "Prefix used for custom entities and attributes.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 8
 				}
@@ -938,7 +932,7 @@
 				"displayName": "Ignore Internal Email",
 				"description": "Indicates whether incoming email sent by internal Microsoft Dynamics 365 users or queues should be tracked.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -947,7 +941,6 @@
 				"displayName": "Auto-Tag Interval",
 				"description": "Normal polling frequency used for email receive auto-tagging in outlook.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -958,7 +951,7 @@
 				"displayName": "Tracking Token Digits",
 				"description": "Number of digits used to represent a tracking token identifier.",
 				"semanticDomain": {
-					"structuralType": "tinyint"
+
 				}
 			},
 			{
@@ -967,7 +960,6 @@
 				"displayName": "Number Grouping Format",
 				"description": "Specifies how numbers are grouped in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -978,7 +970,6 @@
 				"displayName": "Long Date Format",
 				"description": "Information that specifies how the Long Date format is displayed in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -989,7 +980,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -1000,7 +990,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -1011,7 +1000,6 @@
 				"displayName": "Current Import Sequence Number",
 				"description": "Import sequence to use.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1022,7 +1010,6 @@
 				"displayName": "Parsed Table Prefix",
 				"description": "Prefix used for parsed tables.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -1033,7 +1020,6 @@
 				"displayName": "V3 Callout Hash",
 				"description": "Hash of the V3 callout configuration file.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 256
 				}
@@ -1044,7 +1030,7 @@
 				"displayName": "Is Fiscal Period Monthly",
 				"description": "Indicates whether the fiscal period is displayed as the month number.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1053,7 +1039,6 @@
 				"displayName": "Locale",
 				"description": "Unique identifier of the locale of the organization.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Idea.Language",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -1065,7 +1050,6 @@
 				"displayName": "Parsed Table Column Prefix",
 				"description": "Prefix used for parsed table columns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -1076,7 +1060,6 @@
 				"displayName": "Support User",
 				"description": "Unique identifier of the support user for the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1086,9 +1069,17 @@
 				"displayName": "AM Designator",
 				"description": "AM designator to use throughout Microsoft Dynamics CRM.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 25
+				}
+			},
+			{
+				"name": "currencydisplayoption_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "currencydisplayoption",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1097,7 +1088,6 @@
 				"displayName": "Display Currencies Using",
 				"description": "Indicates whether to display money fields with currency code or currency symbol.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_currencydisplayoption",
@@ -1122,7 +1112,6 @@
 				"displayName": "Min Address Synchronization Frequency",
 				"description": "Normal polling frequency used for address book synchronization in Microsoft Office Outlook.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1133,7 +1122,7 @@
 				"displayName": "Is Duplicate Detection Enabled for Online Create/Update",
 				"description": "Indicates whether duplicate detection during online create or update is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1142,7 +1131,6 @@
 				"displayName": "Feature Set",
 				"description": "Features to be enabled as an XML BLOB.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -1152,7 +1140,6 @@
 				"displayName": "Block Attachments",
 				"description": "Prevent upload or download of certain attachment types that are considered dangerous.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -1162,7 +1149,7 @@
 				"displayName": "Is Duplicate Detection Enabled For Offline Synchronization",
 				"description": "Indicates whether duplicate detection of records during offline synchronization is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1171,7 +1158,7 @@
 				"displayName": "Allow Offline Scheduled Synchronization",
 				"description": "Indicates whether background offline synchronization in Microsoft Office Outlook is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1180,7 +1167,7 @@
 				"displayName": "Allow Unresolved Address Email Send",
 				"description": "Indicates whether users are allowed to send email to unresolved parties (parties must still have an email address).",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1189,7 +1176,6 @@
 				"displayName": "Time Separator",
 				"description": "Text for how the time separator is displayed throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
 				}
@@ -1200,7 +1186,6 @@
 				"displayName": "Current Parsed Table Number",
 				"description": "First parsed table number to use.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1211,7 +1196,6 @@
 				"displayName": "Min Offline Synchronization Frequency",
 				"description": "Normal polling frequency used for background offline synchronization in Microsoft Office Outlook.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1222,7 +1206,7 @@
 				"displayName": "Allow Export to Excel",
 				"description": "Indicates whether Web-based export of grids to Microsoft Office Excel is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1231,7 +1215,6 @@
 				"displayName": "Reference SiteMap XML",
 				"description": "XML string that defines the navigation structure for the application. This is the site map from the previously upgraded build and is used in a 3-way merge during upgrade.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -1241,7 +1224,7 @@
 				"displayName": "Is Duplicate Detection Enabled For Import",
 				"description": "Indicates whether duplicate detection of records during import is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1250,7 +1233,6 @@
 				"displayName": "Calendar Type",
 				"description": "Calendar type for the system. Set to Gregorian US by default.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1261,7 +1243,7 @@
 				"displayName": "Is SQM Enabled",
 				"description": "Setting for SQM data collection, 0 no, 1 yes enabled",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1270,7 +1252,6 @@
 				"displayName": "Negative Currency Format",
 				"description": "Information that specifies how negative currency numbers are displayed throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1281,7 +1262,16 @@
 				"displayName": "Allow Address Book Synchronization",
 				"description": "Indicates whether background address book synchronization in Microsoft Office Outlook is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "isvintegrationcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "isvintegrationcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1290,7 +1280,6 @@
 				"displayName": "ISV Integration Mode",
 				"description": "Indicates whether loading of Microsoft Dynamics 365 in a browser window that does not have address, tool, and menu bars is enabled.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_isvintegrationcode",
@@ -1338,7 +1327,6 @@
 				"displayName": "Decimal Symbol",
 				"description": "Symbol used for decimal in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
 				}
@@ -1349,7 +1337,6 @@
 				"displayName": "Max Upload File Size",
 				"description": "Maximum allowed size of an attachment.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1360,7 +1347,7 @@
 				"displayName": "Is Application Mode Enabled",
 				"description": "Indicates whether loading of Microsoft Dynamics 365 in a browser window that does not have address, tool, and menu bars is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1369,7 +1356,7 @@
 				"displayName": "Enable Pricing On Create",
 				"description": "Enable pricing calculations on a Create call.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1378,7 +1365,7 @@
 				"displayName": "Is Sales Order Integration Enabled",
 				"description": "Enable sales order processing integration.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1387,7 +1374,6 @@
 				"displayName": "PM Designator",
 				"description": "PM designator to use throughout Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 25
 				}
@@ -1398,7 +1384,6 @@
 				"displayName": "Currency Decimal Precision",
 				"description": "Number of decimal places that can be used for currency.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1409,7 +1394,6 @@
 				"displayName": "Max Appointment Duration",
 				"description": "Maximum number of days an appointment can last.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1420,7 +1404,6 @@
 				"displayName": "Email Send Polling Frequency",
 				"description": "Normal polling frequency used for sending email in Microsoft Office Outlook.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1431,7 +1414,7 @@
 				"displayName": "Render Secure Frame For Email",
 				"description": "Flag to render the body of email in the Web form in an IFRAME with the security='restricted' attribute set. This is additional security but can cause a credentials prompt.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1440,7 +1423,6 @@
 				"displayName": "Number Separator",
 				"description": "Symbol used for number separation in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
 				}
@@ -1451,7 +1433,6 @@
 				"displayName": "Privilege Reporting Group",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1461,7 +1442,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the base currency of the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -1471,7 +1451,6 @@
 				"displayName": "Max Records For Excel Export",
 				"description": "Maximum number of records that will be exported to a static Microsoft Office Excel worksheet when exporting from the grid.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1482,7 +1461,6 @@
 				"displayName": "Privilege Reporting Group Name",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 256
 				}
@@ -1493,7 +1471,6 @@
 				"displayName": "Year Start Week Code",
 				"description": "Information that specifies how the first week of the year is specified in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1504,7 +1481,7 @@
 				"displayName": "Presence Enabled",
 				"description": "Information on whether IM presence is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1513,7 +1490,7 @@
 				"displayName": "Is Duplicate Detection Enabled",
 				"description": "Indicates whether duplicate detection of records is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1522,7 +1499,6 @@
 				"displayName": "Days to Expire Subscriptions",
 				"description": "Maximum number of days before deleting inactive subscriptions.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1533,7 +1509,7 @@
 				"displayName": "Is Auditing Enabled",
 				"description": "Enable or disable auditing of changes.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1542,7 +1518,6 @@
 				"displayName": "Base Currency Precision",
 				"description": "Number of decimal places that can be used for the base currency.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 4
 				}
@@ -1553,7 +1528,6 @@
 				"displayName": "Base Currency Symbol",
 				"description": "Symbol used for the base currency.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 5
 				}
@@ -1564,7 +1538,6 @@
 				"displayName": "Max Records Filter Selection",
 				"description": "Maximum number of lookup and picklist records that can be selected by user for filtering.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1575,7 +1548,16 @@
 				"displayName": "Allow Entity Level Auditing",
 				"description": "Indicates whether auditing of changes to entity is allowed when no attributes have changed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "defaultrecurrenceendrangetype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "defaultrecurrenceendrangetype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1584,7 +1566,6 @@
 				"displayName": "Default Recurrence End Range Type",
 				"description": "Type of default recurrence end range date.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_defaultrecurrenceendrangetype",
@@ -1613,7 +1594,6 @@
 				"displayName": "Future Expansion Window",
 				"description": "Specifies the maximum number of months in future for which the recurring activities can be created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 140
 				}
@@ -1624,7 +1604,6 @@
 				"displayName": "Past Expansion Window",
 				"description": "Specifies the maximum number of months in past for which the recurring activities can be created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 120
 				}
@@ -1635,7 +1614,6 @@
 				"displayName": "Recurrence Expansion Synchronization Create Maximum",
 				"description": "Specifies the maximum number of instances to be created synchronously after creating a recurring appointment.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 1000
 				}
@@ -1646,7 +1624,6 @@
 				"displayName": "Recurrence Default Number of Occurrences",
 				"description": "Specifies the default value for number of occurrences field in the recurrence dialog.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 999
 				}
@@ -1657,7 +1634,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1666,7 +1643,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the organization.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1675,7 +1652,7 @@
 				"displayName": "Is Get Started Pane Content Enabled",
 				"description": "Indicates whether Get Started content is enabled for this organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1684,7 +1661,7 @@
 				"displayName": "Use Read-Optimized Form",
 				"description": "Indicates whether the read-optimized form should be enabled for this organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1693,7 +1670,6 @@
 				"displayName": "Initial Version",
 				"description": "Initial version of the organization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -1704,8 +1680,16 @@
 				"displayName": "Sample Data Import",
 				"description": "Unique identifier of the sample data import job.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "reportscripterrors_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "reportscripterrors",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1714,7 +1698,6 @@
 				"displayName": "Report Script Errors",
 				"description": "Picklist for selecting the organization preference for reporting scripting errors.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_reportscripterrors",
@@ -1747,7 +1730,7 @@
 				"displayName": "Is Approval For User Email Required",
 				"description": "Indicates whether Send As Other User privilege is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1756,7 +1739,7 @@
 				"displayName": "Is Approval For Queue Email Required",
 				"description": "Indicates whether Send As Other User privilege is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1765,7 +1748,6 @@
 				"displayName": "Rollup Expiration Time for Goal",
 				"description": "Number of days after the goal's end date after which the rollup of the goal stops automatically.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 400
 				}
@@ -1776,7 +1758,6 @@
 				"displayName": "Automatic Rollup Frequency for Goal",
 				"description": "Number of hours between automatic rollup jobs .",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 2147483647
 				}
@@ -1787,7 +1768,7 @@
 				"displayName": "Auto Apply Default Entitlement on Case Create",
 				"description": "Select whether to auto apply the default customer entitlement on case creation.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1796,7 +1777,16 @@
 				"displayName": "Auto Apply Default Entitlement on Case Update",
 				"description": "Select whether to auto apply the default customer entitlement on case update.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "fiscalyearformatprefix_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "fiscalyearformatprefix",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1805,7 +1795,6 @@
 				"displayName": "Prefix for Fiscal Year",
 				"description": "Prefix for the display of the fiscal year.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_fiscalyearformatprefix",
@@ -1825,12 +1814,20 @@
 				}
 			},
 			{
+				"name": "fiscalyearformatsuffix_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "fiscalyearformatsuffix",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "fiscalyearformatsuffix",
 				"dataType": "String",
 				"displayName": "Suffix for Fiscal Year",
 				"description": "Suffix for the display of the fiscal year.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_fiscalyearformatsuffix",
@@ -1854,12 +1851,20 @@
 				}
 			},
 			{
+				"name": "fiscalyearformatyear_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "fiscalyearformatyear",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "fiscalyearformatyear",
 				"dataType": "String",
 				"displayName": "Fiscal Year Format Year",
 				"description": "Format for the year.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_fiscalyearformatyear",
@@ -1883,12 +1888,20 @@
 				}
 			},
 			{
+				"name": "discountcalculationmethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "discountcalculationmethod",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "discountcalculationmethod",
 				"dataType": "String",
 				"displayName": "Discount calculation method",
 				"description": "Discount calculation method for the QOOI product.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_discountcalculationmethod",
@@ -1908,12 +1921,20 @@
 				}
 			},
 			{
+				"name": "fiscalperiodformatperiod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "fiscalperiodformatperiod",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "fiscalperiodformatperiod",
 				"dataType": "String",
 				"displayName": "Format for Fiscal Period",
 				"description": "Format in which the fiscal period will be displayed.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_fiscalperiodformat",
@@ -1958,7 +1979,7 @@
 				"displayName": "Allow Outlook Client Message Bar Advertisement",
 				"description": "Indicates whether Outlook Client message bar advertisement is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1967,7 +1988,7 @@
 				"displayName": "Allow User Form Mode Preference",
 				"description": "Indicates whether individuals can select their form mode preference in their personal options.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1976,7 +1997,6 @@
 				"displayName": "Hash Filter Keywords",
 				"description": "Filter Subject Keywords",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -1986,7 +2006,6 @@
 				"displayName": "Hash Max Count",
 				"description": "Maximum number of subject keywords or recipients used for correlation",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1997,7 +2016,6 @@
 				"displayName": "Hash Delta Subject Count",
 				"description": "Maximum difference allowed between subject keywords count of the email messaged to be correlated",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2008,7 +2026,6 @@
 				"displayName": "Hash Min Address Count",
 				"description": "Minimum number of recipients required to match for email messaged to be correlated",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2019,14 +2036,13 @@
 				"displayName": "Enable Smart Matching",
 				"description": "Use Smart Matching.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
 				"name": "pinpointlanguagecode",
 				"dataType": "Int32",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Idea.Language",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -2038,7 +2054,6 @@
 				"displayName": "Organization Database Organization Settings",
 				"description": "Organization settings stored in Organization Database.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -2048,7 +2063,7 @@
 				"displayName": "Is User Access Auditing Enabled",
 				"description": "Enable or disable auditing of user access.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2057,7 +2072,6 @@
 				"displayName": "User Authentication Auditing Interval",
 				"description": "The interval at which user access is checked for auditing.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2068,7 +2082,7 @@
 				"displayName": "Quick Find Record Limit Enabled",
 				"description": "Indicates whether a quick find record limit should be enabled for this organization (allows for faster Quick Find queries but prevents overly broad searches).",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2077,7 +2091,7 @@
 				"displayName": "Enable Integration with Bing Maps",
 				"description": "Enable Integration with Bing Maps",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2086,7 +2100,7 @@
 				"displayName": "Enable or disable country code selection",
 				"description": "Enable or disable country code selection.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2095,7 +2109,6 @@
 				"displayName": "Default Country Code",
 				"description": "Text area to enter default country code.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 30
 				}
 			},
@@ -2105,7 +2118,7 @@
 				"displayName": "User Skype Protocol",
 				"description": "Indicates default protocol selected for organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2114,7 +2127,6 @@
 				"displayName": "Exchange Email Retrieval Batch Size",
 				"description": "Setting for the Async Service Mailbox Queue. Defines the retrieval batch size of exchange server.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 2147483647
 				}
@@ -2125,7 +2137,7 @@
 				"displayName": "Use Email Correlation",
 				"description": "Flag to turn email correlation on or off.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2134,7 +2146,7 @@
 				"displayName": "Yammer OAuth Access Token Expired",
 				"description": "Denotes whether the OAuth access token for Yammer network has expired",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2143,7 +2155,6 @@
 				"displayName": "Default Email Settings",
 				"description": "XML string containing the default email settings that are applied when a user or queue is created.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 1073741823
 				}
@@ -2154,7 +2165,6 @@
 				"displayName": "Yammer Group Id",
 				"description": "Denotes the Yammer group ID",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2165,8 +2175,16 @@
 				"displayName": "Yammer Network Permalink",
 				"description": "Denotes the Yammer network permalink",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 100
+				}
+			},
+			{
+				"name": "yammerpostmethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "yammerpostmethod",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2175,7 +2193,6 @@
 				"displayName": "Internal Use Only",
 				"description": "Internal Use Only",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_yammerpostmethod",
@@ -2194,12 +2211,20 @@
 				}
 			},
 			{
+				"name": "emailconnectionchannel_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "emailconnectionchannel",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "emailconnectionchannel",
 				"dataType": "String",
 				"displayName": "Email Connection Channel",
 				"description": "Select if you want to use the Email Router or server-side synchronization for email processing.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_emailconnectionchannel",
@@ -2223,7 +2248,7 @@
 				"displayName": "Email Server Profile",
 				"description": "Unique identifier of the default email server profile.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -2232,7 +2257,7 @@
 				"displayName": "Auto Save Enabled",
 				"description": "Information on whether auto save is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2241,7 +2266,6 @@
 				"displayName": "Bing Maps API Key",
 				"description": "Api Key to be used in requests to Bing Maps services.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1024
 				}
 			},
@@ -2251,7 +2275,7 @@
 				"displayName": "Generate Alerts For Errors",
 				"description": "Indicates whether alerts will be generated for errors.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2260,7 +2284,7 @@
 				"displayName": "Generate Alerts For Information",
 				"description": "Indicates whether alerts will be generated for information.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2269,7 +2293,7 @@
 				"displayName": "Generate Alerts For Warnings",
 				"description": "Indicates whether alerts will be generated for warnings.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2278,7 +2302,7 @@
 				"displayName": "Notify Mailbox Owner Of Email Server Level Alerts",
 				"description": "Indicates whether mailbox owners will be notified of email server profile level alerts.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2287,7 +2311,6 @@
 				"displayName": "Maximum active business process flows per entity",
 				"description": "Maximum number of active business process flows allowed per entity",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 2147483647
 				}
@@ -2298,7 +2321,6 @@
 				"displayName": "Entity Image Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -2308,7 +2330,7 @@
 				"displayName": "Allow the showing tablet application notification bars in a browser.",
 				"description": "Indicates whether the showing tablet application notification bars in a browser is allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2317,7 +2339,6 @@
 				"displayName": "CRMForOutlookDownloadURL",
 				"description": "CRM for Outlook Download URL",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 200
 				}
 			},
@@ -2327,7 +2348,7 @@
 				"displayName": "Cascade Status Update",
 				"description": "Flag to cascade Update on incident.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2336,7 +2357,7 @@
 				"displayName": "Restrict Status Update",
 				"description": "Flag to restrict Update on incident.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2345,7 +2366,7 @@
 				"displayName": "Is SLA suppressed",
 				"description": "Indicates whether SLA is suppressed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2354,7 +2375,7 @@
 				"displayName": "Social Insights Terms of Use",
 				"description": "Flag for whether the organization has accepted the Social Insights terms of use.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2363,7 +2384,6 @@
 				"displayName": "Social Insights instance identifier",
 				"description": "Identifier for the Social Insights instance for the organization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 2048
 				}
@@ -2374,7 +2394,7 @@
 				"displayName": "Is Social Care disabled",
 				"description": "Indicates whether Social Care is disabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2383,7 +2403,6 @@
 				"displayName": "Bundle Item Limit",
 				"description": "Restrict the maximum no of items in a bundle",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2394,7 +2413,7 @@
 				"displayName": "Use Inbuilt Rule For Default Pricelist Selection",
 				"description": "Flag indicates whether to Use Inbuilt Rule For DefaultPricelist.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2403,7 +2422,7 @@
 				"displayName": "Enable OOB Price calculation",
 				"description": "Enable OOB pricing calculation logic for Opportunity, Quote, Order and Invoice entities.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2412,7 +2431,7 @@
 				"displayName": "Enable Hierarchical Security Model",
 				"description": "Enable Hierarchical Security Model",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2421,7 +2440,6 @@
 				"displayName": "Product Properties Item Limit",
 				"description": "Restrict the maximum number of product properties for a product family/bundle",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2432,7 +2450,7 @@
 				"displayName": "Use position hierarchy",
 				"description": "Use position hierarchy",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2441,7 +2459,6 @@
 				"displayName": "Maximum depth for hierarchy security propagation.",
 				"description": "Maximum depth for hierarchy security propagation.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2452,7 +2469,6 @@
 				"displayName": "SLA pause states",
 				"description": "Contains the on hold case status values.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1073741823
 				}
@@ -2463,7 +2479,7 @@
 				"displayName": "Social Insights Enabled",
 				"description": "Flag for whether the organization is using Social Insights.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2472,7 +2488,7 @@
 				"displayName": "Is Attachment Sync Enabled",
 				"description": "Enable or disable attachments sync for outlook and exchange.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2481,7 +2497,7 @@
 				"displayName": "Is Assigned Tasks Sync Enabled",
 				"description": "Enable or disable assigned tasks sync for outlook and exchange.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2490,7 +2506,7 @@
 				"displayName": "Is Mailing Address Sync Enabled",
 				"description": "Enable or disable mailing address sync for outlook and exchange.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2499,7 +2515,6 @@
 				"displayName": "Max supported IE version",
 				"description": "The maximum version of IE to run browser emulation for in Outlook client",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2510,7 +2525,6 @@
 				"displayName": "Global Help URL.",
 				"description": "URL for the web page global help.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 500
 				}
 			},
@@ -2520,7 +2534,7 @@
 				"displayName": "Is Customizable Global Help enabled",
 				"description": "Indicates whether the customizable global help is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2529,7 +2543,7 @@
 				"displayName": "Is AppendUrl Parameters enabled",
 				"description": "Indicates whether the append URL parameters is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2538,7 +2552,6 @@
 				"displayName": "Knowledge Management Settings",
 				"description": "XML string containing the Knowledge Management settings that are applied in Knowledge Management Wizard.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -2548,7 +2561,7 @@
 				"displayName": "Enable Active Initial Product State",
 				"description": "Enable Initial state of newly created products to be Active instead of Draft",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2557,7 +2570,7 @@
 				"displayName": "Is Mailbox Keep Alive Enabled",
 				"description": "Enable or disable mailbox keep alive for Server Side Sync.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2566,7 +2579,7 @@
 				"displayName": "Enable Full-text search for Quick Find",
 				"description": "Indicates whether full-text search for Quick Find entities should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2575,7 +2588,16 @@
 				"displayName": "Organization setting to enforce read only plugins.",
 				"description": "Organization setting to enforce read only plugins.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "sharepointdeploymenttype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "sharepointdeploymenttype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2584,7 +2606,6 @@
 				"displayName": "Choose SharePoint Deployment Type",
 				"description": "Indicates which SharePoint deployment type is configured for Server to Server. (Online or On-Premises)",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_sharepointdeploymenttype",
@@ -2603,12 +2624,20 @@
 				}
 			},
 			{
+				"name": "organizationstate_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "organizationstate",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "organizationstate",
 				"dataType": "String",
 				"displayName": "Organization State",
 				"description": "Indicates the organization lifecycle state",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_organizationstate",
@@ -2641,7 +2670,6 @@
 				"displayName": "Default Theme Data",
 				"description": "Default theme data for the organization.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -2652,7 +2680,7 @@
 				"displayName": "Is Folder Based Tracking Enabled",
 				"description": "Enable or disable folder based tracking for Server Side Sync.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2661,7 +2689,6 @@
 				"displayName": "Web resource hash",
 				"description": "Hash value of web resources.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 100
 				}
 			},
@@ -2671,7 +2698,6 @@
 				"displayName": "Days to Expire Change Tracking Deleted Records",
 				"description": "Maximum number of days to keep change tracking deleted records",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 365
 				}
@@ -2682,7 +2708,6 @@
 				"displayName": "Max Folder Based Tracking Mappings",
 				"description": "Maximum number of Folder Based Tracking mappings user can add",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 1,
 					"maxValue": 25
 				}
@@ -2693,8 +2718,16 @@
 				"displayName": "Privacy Statement URL",
 				"description": "Privacy Statement URL",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 500
+				}
+			},
+			{
+				"name": "plugintracelogsetting_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "plugintracelogsetting",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2703,7 +2736,6 @@
 				"displayName": "Plug-in Trace Log Setting",
 				"description": "Plug-in Trace Log Setting for the Organization.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_plugintracelogsetting",
@@ -2731,7 +2763,7 @@
 				"displayName": "Is Mailbox Forced Unlocking Enabled",
 				"description": "Enable or disable forced unlocking for Server Side Sync mailboxes.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2740,7 +2772,6 @@
 				"displayName": "Lower Threshold For Mailbox Intermittent Issue",
 				"description": "Lower Threshold For Mailbox Intermittent Issue.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2751,7 +2782,6 @@
 				"displayName": "Lower Threshold For Mailbox Permanent Issue.",
 				"description": "Lower Threshold For Mailbox Permanent Issue.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2762,7 +2792,6 @@
 				"displayName": "High contrast Theme Data",
 				"description": "High contrast theme data for the organization.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -2773,7 +2802,6 @@
 				"displayName": "Delegated Admin",
 				"description": "Unique identifier of the delegated admin user for the organization.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -2783,7 +2811,7 @@
 				"displayName": "Enable external search data syncing",
 				"description": "Select whether data can be synchronized with an external search index.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2792,7 +2820,7 @@
 				"displayName": "Enable MobileOffline for this Organization",
 				"description": "Indicates whether the feature MobileOffline should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2801,7 +2829,7 @@
 				"displayName": "Enable OfficeGraph for this Organization",
 				"description": "Indicates whether the feature OfficeGraph should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2810,7 +2838,7 @@
 				"displayName": "Enable One Drive for this Organization",
 				"description": "Indicates whether the feature One Drive should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2819,7 +2847,6 @@
 				"displayName": "ExternalPartyEnabled Entities Settings.For internal use only",
 				"description": "XML string containing the ExternalPartyEnabled entities settings.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -2829,7 +2856,6 @@
 				"displayName": "ExternalPartyEnabled Entities correlation Keys",
 				"description": "XML string containing the ExternalPartyEnabled entities correlation keys for association of existing External Party instance entities to newly created IsExternalPartyEnabled entities.For internal use only",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1073741823
 				}
 			},
@@ -2839,7 +2865,6 @@
 				"displayName": "Max No Of Mailboxes To Enable For Verbose Logging",
 				"description": "Maximum number of mailboxes that can be toggled for verbose logging",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2850,7 +2875,6 @@
 				"displayName": "Maximum number of sync cycles for which verbose logging will be enabled by default",
 				"description": "Maximum number of sync cycles for which verbose logging will be enabled by default",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2861,7 +2885,6 @@
 				"displayName": "Sync interval for mobile offline.",
 				"description": "Sync interval for mobile offline.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2872,7 +2895,6 @@
 				"displayName": "The url to open the Delve",
 				"description": "The url to open the Delve for the organization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1000
 				}
 			},
@@ -2882,7 +2904,6 @@
 				"displayName": "Minimum number of user license required for mobile offline service by trial organization",
 				"description": "Minimum number of user license required for mobile offline service by trial organization",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2893,7 +2914,6 @@
 				"displayName": "Minimum number of user license required for mobile offline service by production/preview organization",
 				"description": "Minimum number of user license required for mobile offline service by production/preview organization",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2904,7 +2924,6 @@
 				"displayName": "Max value of Days since record last modified",
 				"description": "The maximum value for the Mobile Offline setting Days since record last modified",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -2915,7 +2934,7 @@
 				"displayName": "Enable Task Flow processes for this Organization",
 				"description": "Select whether to turn on task flows for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2924,7 +2943,7 @@
 				"displayName": "Show KBArticle deprecation message to user",
 				"description": "Select whether to display a KB article deprecation notification to the user.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2933,7 +2952,6 @@
 				"displayName": "For internal use only.",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -2944,7 +2962,7 @@
 				"displayName": "Enable Cortana Proactive Experience Flow processes for this Organization",
 				"description": "Indicates whether the feature CortanaProactiveExperience Flow processes should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2953,7 +2971,7 @@
 				"displayName": "Enable Office Apps Auto Deployment for this Organization",
 				"description": "Indicates whether the Office Apps auto deployment is enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2962,7 +2980,7 @@
 				"displayName": "Enable App Designer Experience for this Organization",
 				"description": "Indicates whether the appDesignerExperience is enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2971,7 +2989,7 @@
 				"displayName": "Enable Integration with Immersive Skype",
 				"description": "Enable Integration with Immersive Skype",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2980,7 +2998,7 @@
 				"displayName": "Is Auto-apply SLA After Manually Over-riding",
 				"description": "Indicates whether to Auto-apply SLA on case record update after SLA was manually applied.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2989,7 +3007,7 @@
 				"displayName": "Is Email Server Profile Content Filtering Enabled",
 				"description": "Enable Email Server Profile content filtering",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2998,7 +3016,7 @@
 				"displayName": "Is Delegation Access Enabled",
 				"description": "Enable Delegation Access content",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3007,7 +3025,7 @@
 				"displayName": "Display Navigation Tour",
 				"description": "Indicates whether or not navigation tour is displayed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3016,7 +3034,7 @@
 				"displayName": "Legacy Form Rendering",
 				"description": "Select whether to use legacy form rendering.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3025,7 +3043,7 @@
 				"displayName": "Default Mobile Offline Profile",
 				"description": "Unique identifier of the default mobile offline profile.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -3034,7 +3052,6 @@
 				"displayName": "Knowledge Article Prefix",
 				"description": "Type the prefix to use for all knowledge articles in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -3045,7 +3062,6 @@
 				"displayName": "Current Knowledge Article Number",
 				"description": "Enter the first number to use for knowledge articles. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -3056,7 +3072,6 @@
 				"displayName": "Current Category Number",
 				"description": "Enter the first number to use for Categories. Deprecated. Use SetAutoNumberSeed message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -3067,7 +3082,6 @@
 				"displayName": "Category Prefix",
 				"description": "Type the prefix to use for all categories in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -3078,7 +3092,6 @@
 				"displayName": "Maximum number of active SLA allowed per entity in online",
 				"description": "Maximum number of active SLA allowed per entity in online",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3089,7 +3102,6 @@
 				"displayName": "Maximum number of active SLA KPI allowed per entity in online",
 				"description": "Maximum number of SLA KPI per active SLA allowed for entity in online",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3100,7 +3112,7 @@
 				"displayName": "Is Conflict Detection for Mobile Client enabled",
 				"description": "Information that specifies whether conflict detection for mobile client is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3109,7 +3121,7 @@
 				"displayName": "Enable Action Hub for this Organization",
 				"description": "Indicates whether the feature Action Hub should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3118,7 +3130,7 @@
 				"displayName": "Enable OrgInsights for this Organization",
 				"description": "Select whether to turn on OrgInsights for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3127,7 +3139,7 @@
 				"displayName": "Enable Product Recommendations for this Organization",
 				"description": "Select whether to turn on product recommendations for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3136,7 +3148,7 @@
 				"displayName": "Enable Text Analytics for this Organization",
 				"description": "Select whether to turn on text analytics for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3145,7 +3157,6 @@
 				"displayName": "Maximum number of conditions allowed for mobile offline filters",
 				"description": "Maximum number of conditions allowed for mobile offline filters",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3156,7 +3167,7 @@
 				"displayName": "Automatically create folders",
 				"description": "Select whether folders should be automatically created on SharePoint.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3165,7 +3176,7 @@
 				"displayName": "Enable Power BI feature for this Organization",
 				"description": "Indicates whether the Power BI feature should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3174,7 +3185,7 @@
 				"displayName": "Enable Action Card for this Organization",
 				"description": "Indicates whether the feature Action Card should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3183,7 +3194,7 @@
 				"displayName": "Allow tracking recipient activity on sent emails",
 				"description": "Allow tracking recipient activity on sent emails.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3192,7 +3203,7 @@
 				"displayName": "Enable Relationship Analytics for this Organization",
 				"description": "Indicates whether the feature Relationship Analytics should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3201,7 +3212,7 @@
 				"displayName": "Enable Auto Capture for this Organization",
 				"description": "Indicates whether the feature Auto Capture should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3210,7 +3221,6 @@
 				"displayName": "External Base URL",
 				"description": "Specify the base URL to use to look for external document suggestions.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 500
 				}
 			},
@@ -3220,7 +3230,7 @@
 				"displayName": "Enable Preview Action Card feature for this Organization",
 				"description": "Indicates whether the Preview feature for Action Card should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3229,7 +3239,7 @@
 				"displayName": "Allows Preview For Email Monitoring",
 				"description": "Is Preview For Email Monitoring Allowed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3238,7 +3248,7 @@
 				"displayName": "Set To,cc,bcc fields as unresolved if multiple matches are found",
 				"description": "Indicates whether email address should be unresolved if multiple matches are found",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3247,7 +3257,6 @@
 				"displayName": "Error status of Relationship Insights provisioning.",
 				"description": "Error status of Relationship Insights provisioning.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3258,7 +3267,6 @@
 				"displayName": "For Internal use only.",
 				"description": "For Internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 100
 				}
 			},
@@ -3268,7 +3276,7 @@
 				"displayName": "Enable Integration with Microsoft Flow",
 				"description": "Enable Integration with Microsoft Flow",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3277,7 +3285,7 @@
 				"displayName": "option set values for isenabledforallroles",
 				"description": "Indicates whether appmodule is enabled for all roles",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3286,7 +3294,7 @@
 				"displayName": "Enable Auto Capture for this Organization at Preview Settings",
 				"description": "Indicates whether the feature Auto Capture should be enabled for the organization at Preview Settings.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3295,7 +3303,6 @@
 				"displayName": "Name of the default app",
 				"description": "Name of the default crm custom.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -3306,7 +3313,6 @@
 				"displayName": "ACI Tenant URL.",
 				"description": "ACI Web Endpoint URL.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 500
 				}
 			},
@@ -3316,7 +3322,7 @@
 				"displayName": "Enable Learning Path Authoring",
 				"description": "Select to enable learning path auhtoring.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3325,7 +3331,7 @@
 				"displayName": "Resource booking synchronization enabled",
 				"description": "Indicates if the synchronization of user resource booking with Exchange is enabled at organization level.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3334,7 +3340,7 @@
 				"displayName": "Is Mobile Client On Demand Sync enabled",
 				"description": "Information that specifies whether mobile client on demand sync is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3343,7 +3349,6 @@
 				"displayName": "For internal use only.",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 500
 				}
 			},
@@ -3353,7 +3358,7 @@
 				"displayName": "Enable Relationship Insights for this Organization",
 				"description": "Indicates whether the feature Relationship Insights should be enabled for the organization.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3362,7 +3367,7 @@
 				"displayName": "Apply same email address to all unresolved matches when you manually resolve it for one",
 				"description": "Apply same email address to all unresolved matches when you manually resolve it for one",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3371,7 +3376,7 @@
 				"displayName": "Enable Text Wrap",
 				"description": "Information on whether text wrap is enabled.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3380,7 +3385,7 @@
 				"displayName": "Session timeout enabled",
 				"description": "Information that specifies whether session timeout is enabled",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3389,7 +3394,6 @@
 				"displayName": "Session timeout in minutes",
 				"description": "Session timeout in minutes",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3400,7 +3404,6 @@
 				"displayName": "Session timeout reminder in minutes",
 				"description": "Session timeout reminder in minutes",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3411,7 +3414,6 @@
 				"displayName": "Environment selected for Integration with Microsoft Flow",
 				"description": "Environment selected for Integration with Microsoft Flow",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"maxLength": 1024
 				}
 			},
@@ -3421,7 +3423,7 @@
 				"displayName": "Inactivity timeout enabled",
 				"description": "Information that specifies whether Inactivity timeout is enabled",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3430,7 +3432,6 @@
 				"displayName": "Inactivity timeout in minutes",
 				"description": "Inactivity timeout in minutes",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3441,7 +3442,6 @@
 				"displayName": "Inactivity timeout reminder in minutes",
 				"description": "Inactivity timeout reminder in minutes",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -3452,7 +3452,16 @@
 				"displayName": "Enable dynamics 365 azure sync framework for this organization.",
 				"description": "Indicates the selection to use the dynamics 365 azure sync framework or server side sync.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "syncoptinselectionstatus_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "syncoptinselectionstatus",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -3461,7 +3470,6 @@
 				"displayName": "Status of opt-in or opt-out operation for dynamics 365 azure sync.",
 				"description": "Indicates the status of the opt-in or opt-out operation for dynamics 365 azure sync.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "organization_syncoptinselectionstatus",
@@ -3489,7 +3497,7 @@
 				"displayName": "Action Support Feature enabled",
 				"description": "Information that specifies whether Action Support Feature is enabled",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3498,7 +3506,7 @@
 				"displayName": "BPF Entity Customization Feature enabled",
 				"description": "Information that specifies whether BPF Entity Customization Feature is enabled",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3507,7 +3515,7 @@
 				"displayName": "Display cards in expanded state for Interactive Dashboard",
 				"description": "Display cards in expanded state for interactive dashboard",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -3516,7 +3524,6 @@
 				"displayName": "Maximum number of actionsteps allowed in a BPF",
 				"description": "Maximum number of actionsteps allowed in a BPF",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 100
 				}
@@ -3527,7 +3534,7 @@
 				"displayName": "Serve Static Content From CDN",
 				"description": "Serve Static Content From CDN",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			}
 		]
@@ -3539,8 +3546,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -3553,43 +3560,12 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
 						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "calendar_organization",
-			"referencing": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
-				},
-				"attributes": [
-					{
-						"name": "businessclosurecalendarid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Calendar",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "e049b9f8-bd03-0bb0-e76a-77ca421be393"
-				},
-				"attributes": [
-					{
-						"name": "calendarid",
 						"comparisonOrder": 0
 					}
 				]
@@ -3601,8 +3577,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -3615,74 +3591,12 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
 						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Template_Organization",
-			"referencing": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
-				},
-				"attributes": [
-					{
-						"name": "acknowledgementtemplateid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Template",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
-				},
-				"attributes": [
-					{
-						"name": "templateid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "EmailServerProfile_Organization",
-			"referencing": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
-				},
-				"attributes": [
-					{
-						"name": "defaultemailserverprofileid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "EmailServerProfile",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cb606462-e996-496b-f44b-ced0fc5d795e"
-				},
-				"attributes": [
-					{
-						"name": "emailserverprofileid",
 						"comparisonOrder": 0
 					}
 				]

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "KbArticleTemplate",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "82fb15af-20fe-7ba6-306c-5dccc7b4a648"
+				"semanticVersion": "0.5.0",
+				"semanticId": "82fc325c-09f1-fb72-2804-fdb0258ec5a9"
 			}
 		},
 		"description": "Template for a knowledge base article that contains the standard attributes of an article.",
@@ -18,7 +18,6 @@
 				"displayName": "Article Template",
 				"description": "Unique identifier of the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Structure XML",
 				"description": "XML structure of the knowledge base article.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -40,7 +38,6 @@
 				"displayName": "Organization",
 				"description": "Unique identifier of the organization associated with the template.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -50,7 +47,6 @@
 				"displayName": "Format XML",
 				"description": "XML format of the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -61,7 +57,6 @@
 				"displayName": "Title",
 				"description": "Title of the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 500
 				}
@@ -70,7 +65,7 @@
 				"name": "versionnumber",
 				"dataType": "Int64",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -79,7 +74,6 @@
 				"displayName": "Description",
 				"description": "Description of the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -89,7 +83,7 @@
 				"displayName": "Status",
 				"description": "Information about whether the knowledge base article is active.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -98,7 +92,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -107,7 +101,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the knowledge base article template.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -116,7 +110,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the knowledge base article template was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -126,7 +119,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the knowledge base article template was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -136,7 +128,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -146,7 +137,6 @@
 				"displayName": "Language",
 				"description": "Language of the Article Template",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Idea.Language",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -158,7 +148,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -168,8 +157,16 @@
 				"dataType": "Guid",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "componentstate",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -178,7 +175,6 @@
 				"displayName": "Component State",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "componentstate",
@@ -211,7 +207,6 @@
 				"displayName": "Solution",
 				"description": "Unique identifier of the associated solution.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -221,7 +216,6 @@
 				"displayName": "Record Overwrite Time",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -231,7 +225,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the kbarticletemplate.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -240,14 +234,14 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the kbarticletemplate.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
 				"name": "ismanaged",
 				"dataType": "Boolean",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -256,7 +250,7 @@
 				"displayName": "Customizable",
 				"description": "Information that specifies whether this component can be customized.",
 				"semanticDomain": {
-					"structuralType": "managedproperty"
+
 				}
 			},
 			{
@@ -265,7 +259,6 @@
 				"displayName": "Introduced Version",
 				"description": "Version in which the form is introduced.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Measurement.Version",
 					"maxLength": 48
 				}
@@ -279,8 +272,8 @@
 				"entity": {
 					"type": "KbArticleTemplate",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "82fb15af-20fe-7ba6-306c-5dccc7b4a648"
+					"semanticVersion": "0.5.0",
+					"semanticId": "82fc325c-09f1-fb72-2804-fdb0258ec5a9"
 				},
 				"attributes": [
 					{
@@ -293,8 +286,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -310,8 +303,8 @@
 				"entity": {
 					"type": "KbArticleTemplate",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "82fb15af-20fe-7ba6-306c-5dccc7b4a648"
+					"semanticVersion": "0.5.0",
+					"semanticId": "82fc325c-09f1-fb72-2804-fdb0258ec5a9"
 				},
 				"attributes": [
 					{
@@ -324,8 +317,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Email",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+				"semanticVersion": "0.5.0",
+				"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 			}
 		},
 		"description": "Activity that is delivered using email protocols.",
@@ -18,8 +18,16 @@
 				"displayName": "Start Date",
 				"description": "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -28,9 +36,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the email's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "email_statuscode",
 						"displayName": "Status Reason",
@@ -39,58 +45,42 @@
 							{
 								"value": 1,
 								"displayName": "Draft",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Completed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 3,
 								"displayName": "Sent",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 4,
 								"displayName": "Received",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 5,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 6,
 								"displayName": "Pending Send",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 7,
 								"displayName": "Sending",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 8,
 								"displayName": "Failed",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							}
 						]
 					}
@@ -102,7 +92,6 @@
 				"displayName": "Submitted By",
 				"description": "Shows the Microsoft Office Outlook account for the user who submitted the email to Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 250
 				}
@@ -113,7 +102,6 @@
 				"displayName": "Description",
 				"description": "Type the greeting and message text of the email.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Object.Content",
 					"maxLength": 1073741823
 				}
@@ -124,7 +112,6 @@
 				"displayName": "To",
 				"description": "Enter the account, contact, lead, queue, or user recipients for the email.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -134,7 +121,7 @@
 				"displayName": "Is Workflow Created",
 				"description": "Indication if the email was created by a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -143,7 +130,6 @@
 				"displayName": "Email Message",
 				"description": "Unique identifier of the email activity.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -154,7 +140,6 @@
 				"displayName": "Due Date",
 				"description": "Enter the expected due date and time for the activity to be completed to provide details about when the email will be sent.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -164,7 +149,6 @@
 				"displayName": "Mime Type",
 				"description": "MIME type of the email message data.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 256
 				}
@@ -175,7 +159,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -184,7 +168,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the email message.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -193,7 +177,7 @@
 				"displayName": "Read Receipt Requested",
 				"description": "Indicates that a read receipt is requested.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -202,7 +186,6 @@
 				"displayName": "Sub-Category",
 				"description": "Type a subcategory to identify the email type and relate the activity to a specific product, sales region, business group, or other function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -213,7 +196,7 @@
 				"displayName": "Is Billed",
 				"description": "Information regarding whether the email activity was billed as part of resolving a case.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -222,10 +205,18 @@
 				"displayName": "Duration",
 				"description": "Type the number of minutes spent creating and sending the email. The duration is used in reporting.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -234,7 +225,6 @@
 				"displayName": "Priority",
 				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "email_prioritycode",
@@ -263,7 +253,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -272,7 +262,6 @@
 				"displayName": "Actual Start",
 				"description": "Enter the actual start date and time for the email. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the email.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -282,7 +271,6 @@
 				"displayName": "From",
 				"description": "Enter the sender of the email.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -292,7 +280,7 @@
 				"displayName": "Direction",
 				"description": "Select the direction of the email as incoming or outbound.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -301,7 +289,6 @@
 				"displayName": "Actual End",
 				"description": "Enter the actual end date and time of the email. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the email.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -311,7 +298,6 @@
 				"displayName": "Tracking Token",
 				"description": "Shows the tracking token assigned to the email to make sure responses are automatically tracked in Microsoft Dynamics 365.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -322,7 +308,6 @@
 				"displayName": "Scheduled Duration",
 				"description": "Scheduled duration of the email activity, specified in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -334,7 +319,6 @@
 				"displayName": "Category",
 				"description": "Type a category to identify the email type, such as lead outreach, customer follow-up, or service alert, to tie the email to a business group or function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -345,7 +329,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -355,7 +338,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the email activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -364,7 +347,6 @@
 				"displayName": "Bcc",
 				"description": "Enter the recipients that are included on the email distribution, but are not displayed to other recipients.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -374,7 +356,6 @@
 				"displayName": "Cc",
 				"description": "Enter the recipients that should be copied on the email.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -384,7 +365,6 @@
 				"displayName": "From",
 				"description": "Sender of the email.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 250
 				}
@@ -395,7 +375,6 @@
 				"displayName": "Subject",
 				"description": "Type a short description about the objective or primary topic of the email.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -406,7 +385,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -416,7 +394,6 @@
 				"displayName": "To Recipients",
 				"description": "Shows the email addresses corresponding to the recipients.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500
 				}
@@ -427,7 +404,7 @@
 				"displayName": "Delivery Receipt Requested",
 				"description": "Select whether the sender should receive confirmation that the email was delivered.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -436,8 +413,16 @@
 				"displayName": "Regarding",
 				"description": "Choose the record that the email relates to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -446,7 +431,6 @@
 				"displayName": "Activity Status",
 				"description": "Shows whether the email is open, completed, or canceled. Completed and canceled email is read-only and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "email_statecode",
@@ -475,7 +459,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -484,7 +468,6 @@
 				"displayName": "Message ID",
 				"description": "Unique identifier of the email message. Used only for email that is received.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 320
 				}
@@ -495,7 +478,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the email activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -504,7 +487,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -514,7 +496,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -525,7 +506,6 @@
 				"displayName": "No. of Delivery Attempts",
 				"description": "Shows the count of the number of attempts made to send the email. The count is used as an indicator of email routing issues.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -536,7 +516,16 @@
 				"displayName": "Compression",
 				"description": "Indicates if the body is compressed.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "notifications_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "notifications",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -545,7 +534,6 @@
 				"displayName": "Notifications",
 				"description": "Select the notification code to identify issues with the email recipients or attachments, such as blocked attachments.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "email_notifications",
@@ -574,7 +562,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -585,7 +572,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -596,7 +582,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -605,7 +591,16 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who last updated the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -614,7 +609,6 @@
 				"displayName": "Activity Type",
 				"description": "Shows the type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "activitypointer_activitytypecode",
@@ -691,7 +685,7 @@
 				"displayName": "Is Regular Activity",
 				"description": "Information regarding whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -700,7 +694,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the email activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -709,7 +703,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -719,7 +712,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -730,7 +722,7 @@
 				"displayName": "Sender",
 				"description": "Shows the sender of the email.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -739,7 +731,6 @@
 				"displayName": "Senders Account",
 				"description": "Shows the parent account of the sender of the email.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
 				}
 			},
@@ -749,7 +740,6 @@
 				"displayName": "Attachment Count",
 				"description": "Shows the umber of attachments of the email message.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -760,7 +750,16 @@
 				"displayName": "Sender's Mailbox",
 				"description": "Select the mailbox associated with the sender of the email message.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "deliveryprioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "deliveryprioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -769,7 +768,6 @@
 				"displayName": "Delivery Priority",
 				"description": "Select the priority of delivery of the email to the email server.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "activitypointer_deliveryprioritycode",
@@ -798,7 +796,6 @@
 				"displayName": "Parent Activity Id",
 				"description": "Select the activity that the email is associated with.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Object.Relationship.Parent"
 				}
 			},
@@ -808,7 +805,6 @@
 				"displayName": "In Reply To Message",
 				"description": "Type the ID of the email message that this email activity is a response to.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 320
 				}
@@ -819,7 +815,6 @@
 				"displayName": "Conversation Index (Hash)",
 				"description": "Hash of base of conversation index.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -830,9 +825,17 @@
 				"displayName": "Conversation Index",
 				"description": "Identifier for all the email responses for this conversation.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 2048
+				}
+			},
+			{
+				"name": "correlationmethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "correlationmethod",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -841,7 +844,6 @@
 				"displayName": "Correlation Method",
 				"description": "Shows how an email is matched to an existing email in Microsoft Dynamics 365. For system use only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "email_correlationmethod",
@@ -890,7 +892,6 @@
 				"displayName": "Date Sent",
 				"description": "Shows the date and time that the email was sent.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -900,7 +901,6 @@
 				"displayName": "Delay email processing until",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -910,7 +910,6 @@
 				"displayName": "Process",
 				"description": "Shows the ID of the process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -920,7 +919,6 @@
 				"displayName": "Process Stage",
 				"description": "Shows the ID of the stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -930,7 +928,6 @@
 				"displayName": "Additional Parameters",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192
 				}
@@ -941,7 +938,6 @@
 				"displayName": "IsUnsafe",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -952,7 +948,7 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the email record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -961,7 +957,7 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this email. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -970,7 +966,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -981,7 +976,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -991,7 +985,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -1002,7 +995,6 @@
 				"displayName": "Attachment Open Count",
 				"description": "Shows the number of times an email attachment has been viewed.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1013,7 +1005,6 @@
 				"displayName": "Conversation Tracking Id",
 				"description": "Conversation Tracking Id.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1023,7 +1014,6 @@
 				"displayName": "Send Later",
 				"description": "Enter the expected date and time when email will be sent.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -1033,7 +1023,6 @@
 				"displayName": "Last Opened Time",
 				"description": "Shows the latest date and time when email was opened.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -1043,7 +1032,6 @@
 				"displayName": "Links Clicked Count",
 				"description": "Shows the number of times a link in an email has been clicked.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1054,7 +1042,6 @@
 				"displayName": "Open Count",
 				"description": "Shows the number of times an email has been opened.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1065,7 +1052,6 @@
 				"displayName": "Reply Count",
 				"description": "Shows the number of replies received for an email.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -1076,7 +1062,6 @@
 				"displayName": "Email Tracking Id",
 				"description": "Email Tracking Id.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1086,7 +1071,7 @@
 				"displayName": "Following",
 				"description": "Select whether the email allows following recipient activities sent from Microsoft Dynamics 365.This is user preference state which can be overridden by system evaluated state.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1095,7 +1080,7 @@
 				"displayName": "Followed",
 				"description": "For internal use only. Shows whether this email is followed. This is evaluated state which overrides user selection of follow email.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1104,8 +1089,16 @@
 				"displayName": "Email Reminder Expiry Time",
 				"description": "Shows the date and time when an email reminder expires.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "emailremindertype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "emailremindertype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1114,7 +1107,6 @@
 				"displayName": "Email Reminder Type",
 				"description": "Shows the type of the email reminder.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "email_remindertype",
@@ -1138,12 +1130,20 @@
 				}
 			},
 			{
+				"name": "emailreminderstatus_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "emailreminderstatus",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "emailreminderstatus",
 				"dataType": "String",
 				"displayName": "Email Reminder Status",
 				"description": "Shows the status of the email reminder.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "email_reminderstatus",
@@ -1176,7 +1176,6 @@
 				"displayName": "Email Reminder Text",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 1250
 				}
@@ -1187,7 +1186,7 @@
 				"displayName": "ID for template used.",
 				"description": "For internal use only. ID for template used in email.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1196,7 +1195,6 @@
 				"displayName": "Reminder Action Card Id.",
 				"description": "Reminder Action Card Id.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1206,7 +1204,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -1216,7 +1213,7 @@
 				"displayName": "Reminder Set",
 				"description": "For internal use only. Shows whether this email Reminder is Set.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			}
 		]
@@ -1228,8 +1225,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1242,8 +1239,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -1259,8 +1256,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1273,8 +1270,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -1290,8 +1287,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1304,43 +1301,12 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
 						"name": "accountid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Email_EmailTemplate",
-			"referencing": {
-				"entity": {
-					"type": "Email",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
-				},
-				"attributes": [
-					{
-						"name": "templateid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Template",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "64f2033d-b2ed-0f95-b595-c9217ee97d6b"
-				},
-				"attributes": [
-					{
-						"name": "templateid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1352,8 +1318,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1366,8 +1332,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1383,8 +1349,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1397,8 +1363,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1414,8 +1380,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1428,8 +1394,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -1445,8 +1411,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1459,43 +1425,12 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
 						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "email_sendermailboxid_mailbox",
-			"referencing": {
-				"entity": {
-					"type": "Email",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
-				},
-				"attributes": [
-					{
-						"name": "sendermailboxid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fa2639d2-488f-3997-9e89-f4513353eb49"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1507,8 +1442,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1521,8 +1456,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -1538,8 +1473,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1552,8 +1487,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1569,8 +1504,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1583,8 +1518,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -1600,8 +1535,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1614,8 +1549,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -1631,8 +1566,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -1645,8 +1580,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b9161e62-db25-8fe0-93cb-7fc16edcd6df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a4bffdb6-ba01-b1c1-25a5-4bc71b67ad8c"
 				},
 				"attributes": [
 					{

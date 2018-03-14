@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Site",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-				"semanticVersion": "0.4.0",
-				"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+				"semanticVersion": "0.5.0",
+				"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
 			}
 		},
 		"description": "Location or branch office where an organization does business. An organization can have multiple sites.",
@@ -18,7 +18,6 @@
 				"displayName": "Site",
 				"description": "Unique identifier of the site.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the site was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -39,7 +37,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the site.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -48,7 +46,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the site was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -58,7 +55,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the site.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -67,7 +64,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the site.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -76,7 +73,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the site.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -85,7 +82,6 @@
 				"displayName": "Organization Id",
 				"description": "Unique identifier for the organization",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -95,7 +91,7 @@
 				"displayName": "Version Number",
 				"description": "Version Number",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -104,7 +100,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -115,7 +110,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -125,7 +119,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -136,7 +129,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -147,7 +139,6 @@
 				"displayName": "Name",
 				"description": "Name of the site.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 160
 				}
@@ -158,8 +149,16 @@
 				"displayName": "Address 1: ID",
 				"description": "Unique identifier for address 1.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address1_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_addresstypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -168,7 +167,6 @@
 				"displayName": "Address 1: Address Type",
 				"description": "Type of address for address 1, such as billing, shipping, or primary address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "site_address1_addresstypecode",
@@ -189,7 +187,6 @@
 				"displayName": "City",
 				"description": "City name for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 80
 				}
@@ -200,7 +197,6 @@
 				"displayName": "Country/Region",
 				"description": "Country/region name for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 80
 				}
@@ -211,7 +207,6 @@
 				"displayName": "Address 1: County",
 				"description": "County name for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 50
 				}
@@ -222,7 +217,6 @@
 				"displayName": "Fax",
 				"description": "Fax number for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -233,7 +227,6 @@
 				"displayName": "Address 1: Latitude",
 				"description": "Latitude for address 1.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90
@@ -245,7 +238,6 @@
 				"displayName": "Street 1",
 				"description": "First line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -256,7 +248,6 @@
 				"displayName": "Street 2",
 				"description": "Second line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -267,7 +258,6 @@
 				"displayName": "Street 3",
 				"description": "Third line for entering address 1 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -278,7 +268,6 @@
 				"displayName": "Address 1: Longitude",
 				"description": "Longitude for address 1.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180
@@ -290,7 +279,6 @@
 				"displayName": "Address 1: Name",
 				"description": "Name to enter for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -301,7 +289,6 @@
 				"displayName": "ZIP/Postal Code",
 				"description": "ZIP Code or postal code for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 20
 				}
@@ -312,9 +299,17 @@
 				"displayName": "Address 1: Post Office Box",
 				"description": "Post office box number for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_shippingmethodcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -323,7 +318,6 @@
 				"displayName": "Address 1: Shipping Method",
 				"description": "Method of shipment for address 1.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "site_address1_shippingmethodcode",
@@ -344,7 +338,6 @@
 				"displayName": "State/Province",
 				"description": "State or province for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 50
 				}
@@ -355,7 +348,6 @@
 				"displayName": "Main Phone",
 				"description": "First telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -366,7 +358,6 @@
 				"displayName": "Other Phone",
 				"description": "Second telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -377,7 +368,6 @@
 				"displayName": "Address 1: Telephone 3",
 				"description": "Third telephone number associated with address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -388,7 +378,6 @@
 				"displayName": "Address 1: UPS Zone",
 				"description": "United Parcel Service (UPS) zone for address 1.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4
 				}
@@ -399,7 +388,6 @@
 				"displayName": "Address 1: UTC Offset",
 				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
@@ -411,8 +399,16 @@
 				"displayName": "Address 2: ID",
 				"description": "Unique identifier for address 2.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address2_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_addresstypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -421,7 +417,6 @@
 				"displayName": "Address 2: Address Type",
 				"description": "Type of address for address 2, such as billing, shipping, or primary address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "site_address2_addresstypecode",
@@ -442,7 +437,6 @@
 				"displayName": "Address 2: City",
 				"description": "City name for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 80
 				}
@@ -453,7 +447,6 @@
 				"displayName": "Address 2: Country/Region",
 				"description": "Country/region name for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 80
 				}
@@ -464,7 +457,6 @@
 				"displayName": "Address 2: County",
 				"description": "County name for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 50
 				}
@@ -475,7 +467,6 @@
 				"displayName": "Address 2: Fax",
 				"description": "Fax number for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -486,7 +477,6 @@
 				"displayName": "Address 2: Latitude",
 				"description": "Latitude for address 2.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90
@@ -498,7 +488,6 @@
 				"displayName": "Address 2: Street 1",
 				"description": "First line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -509,7 +498,6 @@
 				"displayName": "Address 2: Street 2",
 				"description": "Second line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -520,7 +508,6 @@
 				"displayName": "Address 2: Street 3",
 				"description": "Third line for entering address 2 information.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -531,7 +518,6 @@
 				"displayName": "Address 2: Longitude",
 				"description": "Longitude for address 2.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180
@@ -543,7 +529,6 @@
 				"displayName": "Address 2: Name",
 				"description": "Name to enter for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -554,7 +539,6 @@
 				"displayName": "Address 2: ZIP/Postal Code",
 				"description": "ZIP Code or postal code for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 20
 				}
@@ -565,9 +549,17 @@
 				"displayName": "Address 2: Post Office Box",
 				"description": "Post office box number for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_shippingmethodcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -576,7 +568,6 @@
 				"displayName": "Address 2: Shipping Method",
 				"description": "Method of shipment for address 2.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "site_address2_shippingmethodcode",
@@ -597,7 +588,6 @@
 				"displayName": "Address 2: State/Province",
 				"description": "State or province for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 50
 				}
@@ -608,7 +598,6 @@
 				"displayName": "Address 2: Telephone 1",
 				"description": "First telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -619,7 +608,6 @@
 				"displayName": "Address 2: Telephone 2",
 				"description": "Second telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -630,7 +618,6 @@
 				"displayName": "Address 2: Telephone 3",
 				"description": "Third telephone number associated with address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -641,7 +628,6 @@
 				"displayName": "Address 2: UPS Zone",
 				"description": "United Parcel Service (UPS) zone for address 2.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4
 				}
@@ -652,7 +638,6 @@
 				"displayName": "Address 2: UTC Offset",
 				"description": "UTC offset for address 2. This is the difference between local time and standard Coordinated Universal Time.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
@@ -664,7 +649,6 @@
 				"displayName": "Email",
 				"description": "Email address for the site.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100
 				}
@@ -675,7 +659,6 @@
 				"displayName": "Time Zone",
 				"description": "Local time zone for the site.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
@@ -690,8 +673,8 @@
 				"entity": {
 					"type": "Site",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
 				},
 				"attributes": [
 					{
@@ -704,8 +687,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -721,8 +704,8 @@
 				"entity": {
 					"type": "Site",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
 				},
 				"attributes": [
 					{
@@ -735,8 +718,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{

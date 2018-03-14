@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "BookableResourceCategory",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-				"semanticVersion": "0.4.0",
-				"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+				"semanticVersion": "0.5.0",
+				"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 			}
 		},
 		"description": "Categorize resources that have capacity into categories such as roles.",
@@ -18,7 +18,6 @@
 				"displayName": "Resource Category",
 				"description": "Unique identifier of the resource category.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -39,7 +37,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -48,7 +46,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -58,7 +55,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -67,7 +64,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -76,7 +73,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -85,7 +82,7 @@
 				"displayName": "Owner",
 				"description": "Owner Id",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -94,7 +91,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier for the business unit that owns the record",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -103,7 +100,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier for the user that owns the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -112,7 +109,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier for the team that owns the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -121,7 +118,7 @@
 				"displayName": "Version Number",
 				"description": "Version Number",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -130,7 +127,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -141,7 +137,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -151,7 +146,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -162,7 +156,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -173,7 +166,6 @@
 				"displayName": "Name",
 				"description": "Type the name of the resource category.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -184,9 +176,17 @@
 				"displayName": "Description",
 				"description": "Type a detailed description of what the categorization is about.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -195,7 +195,6 @@
 				"displayName": "Status",
 				"description": "Status of the Resource Category",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "bookableresourcecategory_statecode",
@@ -215,14 +214,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the Resource Category",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "bookableresourcecategory_statuscode",
 						"displayName": "Status Reason",
@@ -231,16 +237,12 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -252,7 +254,6 @@
 				"displayName": "ExchangeRate",
 				"description": "Exchange rate for the currency associated with the bookableresourcecategory with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -263,7 +264,6 @@
 				"displayName": "Currency",
 				"description": "Exchange rate for the currency associated with the BookableResourceCategory with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			}
@@ -276,8 +276,8 @@
 				"entity": {
 					"type": "BookableResourceCategory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 				},
 				"attributes": [
 					{
@@ -290,8 +290,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -307,8 +307,8 @@
 				"entity": {
 					"type": "BookableResourceCategory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 				},
 				"attributes": [
 					{
@@ -321,8 +321,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
@@ -338,8 +338,8 @@
 				"entity": {
 					"type": "BookableResourceCategory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 				},
 				"attributes": [
 					{
@@ -352,8 +352,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -369,8 +369,8 @@
 				"entity": {
 					"type": "BookableResourceCategory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 				},
 				"attributes": [
 					{
@@ -383,8 +383,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -400,8 +400,8 @@
 				"entity": {
 					"type": "BookableResourceCategory",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c84f1b0-6c38-2013-0b19-daaf3d320f16"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d804cd18-3f8a-b7f0-0f1e-5affc59ba5fc"
 				},
 				"attributes": [
 					{
@@ -414,8 +414,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

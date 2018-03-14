@@ -1,18 +1,18 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
-      "class": {
-        "type": "Contact",
-        "namespace": "core.applicationCommon",
-        "semanticVersion": "0.4.0",
-        "semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
-      },
+			"class": {
+				"type": "Contact",
+				"namespace": "core.applicationCommon",
+				"semanticVersion": "0.5.0",
+				"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
+			},
 			"extends": {
 				"type": "Customer",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+				"semanticVersion": "0.5.0",
+				"semanticId": "f4bc7ee4-cb15-9116-7ce0-7efd4bd9ab27"
 			}
 		},
 		"description": "Person with whom a business unit has a relationship, such as customer, supplier, and colleague.",
@@ -24,9 +24,17 @@
 				"displayName": "Contact",
 				"description": "Unique identifier of the contact.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "customersizecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "customersizecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -35,7 +43,6 @@
 				"displayName": "Customer Size",
 				"description": "Select the size of the contact's company for segmentation and reporting purposes.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_customersizecode",
@@ -51,12 +58,20 @@
 				}
 			},
 			{
+				"name": "customertypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "customertypecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "customertypecode",
 				"dataType": "String",
 				"displayName": "Relationship Type",
 				"description": "Select the category that best describes the relationship between the contact and your organization.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_customertypecode",
@@ -72,12 +87,20 @@
 				}
 			},
 			{
+				"name": "preferredcontactmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredcontactmethodcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "preferredcontactmethodcode",
 				"dataType": "String",
 				"displayName": "Preferred Method of Contact",
 				"description": "Select the preferred method of contact.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_preferredcontactmethodcode",
@@ -109,12 +132,20 @@
 				}
 			},
 			{
+				"name": "leadsourcecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "leadsourcecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "leadsourcecode",
 				"dataType": "String",
 				"displayName": "Lead Source",
 				"description": "Select the primary marketing source that directed the contact to your organization.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_leadsourcecode",
@@ -135,7 +166,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -144,7 +175,16 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "paymenttermscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "paymenttermscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -153,7 +193,6 @@
 				"displayName": "Payment Terms",
 				"description": "Select the payment terms to indicate when the customer needs to pay the total amount.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_paymenttermscode",
@@ -181,12 +220,20 @@
 				}
 			},
 			{
+				"name": "shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "shippingmethodcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "shippingmethodcode",
 				"dataType": "String",
 				"displayName": "Shipping Method",
 				"description": "Select a shipping method for deliveries sent to this address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_shippingmethodcode",
@@ -207,7 +254,6 @@
 				"displayName": "Account",
 				"description": "Unique identifier of the account with which the contact is associated.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Account"
 				}
 			},
@@ -217,7 +263,7 @@
 				"displayName": "Participates in Workflow",
 				"description": "Shows whether the contact participates in workflow rules.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -226,7 +272,7 @@
 				"displayName": "Back Office Customer",
 				"description": "Select whether the contact exists in a separate accounting or other system, such as Microsoft Dynamics GP or another ERP database, for use in integration processes.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -235,7 +281,6 @@
 				"displayName": "Salutation",
 				"description": "Type the salutation of the contact to make sure the contact is addressed correctly in sales calls, email messages, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100
 				}
@@ -246,7 +291,6 @@
 				"displayName": "Job Title",
 				"description": "Type the job title of the contact to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 100
 				}
@@ -257,7 +301,6 @@
 				"displayName": "First Name",
 				"description": "Type the contact's first name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.FirstName",
 					"maxLength": 50
 				}
@@ -268,7 +311,6 @@
 				"displayName": "Department",
 				"description": "Type the department or business unit where the contact works in the parent company or business.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100
 				}
@@ -279,7 +321,6 @@
 				"displayName": "Nickname",
 				"description": "Type the contact's nickname.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -290,7 +331,6 @@
 				"displayName": "Middle Name",
 				"description": "Type the contact's middle name or initial to make sure the contact is addressed correctly.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.MiddleName",
 					"maxLength": 50
 				}
@@ -301,7 +341,6 @@
 				"displayName": "Last Name",
 				"description": "Type the contact's last name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.LastName",
 					"maxLength": 50
 				}
@@ -312,7 +351,6 @@
 				"displayName": "Suffix",
 				"description": "Type the suffix used in the contact's name, such as Jr. or Sr. to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 10
 				}
@@ -323,7 +361,6 @@
 				"displayName": "Yomi First Name",
 				"description": "Type the phonetic spelling of the contact's first name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 150
 				}
@@ -334,7 +371,6 @@
 				"displayName": "Full Name",
 				"description": "Combines and shows the contact's first and last names so that the full name can be displayed in views and reports.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Person.FullName",
 					"maxLength": 160
 				}
@@ -345,7 +381,6 @@
 				"displayName": "Yomi Middle Name",
 				"description": "Type the phonetic spelling of the contact's middle name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 150
 				}
@@ -356,7 +391,6 @@
 				"displayName": "Yomi Last Name",
 				"description": "Type the phonetic spelling of the contact's last name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 150
 				}
@@ -367,7 +401,6 @@
 				"displayName": "Anniversary",
 				"description": "Enter the date of the contact's wedding or service anniversary for use in customer gift programs or other communications.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -377,7 +410,6 @@
 				"displayName": "Birthday",
 				"description": "Enter the contact's birthday for use in customer gift programs or other communications.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -387,7 +419,6 @@
 				"displayName": "Government",
 				"description": "Type the passport number or other government ID for the contact for use in documents or reports.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.GovernmentID",
 					"maxLength": 50
 				}
@@ -398,7 +429,6 @@
 				"displayName": "Yomi Full Name",
 				"description": "Shows the combined Yomi first and last names of the contact so that the full phonetic name can be displayed in views and reports.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Phonetic",
 					"maxLength": 450
 				}
@@ -409,7 +439,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the contact, such as an excerpt from the company's website.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 2000
 				}
@@ -420,9 +449,17 @@
 				"displayName": "Employee",
 				"description": "Type the employee ID or number for the contact for reference in orders, service cases, or other communications with the contact's organization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
+				}
+			},
+			{
+				"name": "gendercode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "gendercode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -431,7 +468,6 @@
 				"displayName": "Gender",
 				"description": "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_gendercode",
@@ -456,10 +492,18 @@
 				"displayName": "Annual Income",
 				"description": "Type the contact's annual income for use in profiling and financial analysis.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": 0,
 					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "haschildrencode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "haschildrencode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -468,7 +512,6 @@
 				"displayName": "Has Children",
 				"description": "Select whether the contact has any children for reference in follow-up phone calls and other communications.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_haschildrencode",
@@ -484,12 +527,20 @@
 				}
 			},
 			{
+				"name": "educationcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "educationcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "educationcode",
 				"dataType": "String",
 				"displayName": "Education",
 				"description": "Select the contact's highest level of education for use in segmentation and analysis.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_educationcode",
@@ -510,9 +561,17 @@
 				"displayName": "Website",
 				"description": "Type the contact's professional or personal website or blog URL.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.URL",
 					"maxLength": 200
+				}
+			},
+			{
+				"name": "familystatuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "familystatuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -521,7 +580,6 @@
 				"displayName": "Marital Status",
 				"description": "Select the marital status of the contact for reference in follow-up phone calls and other communications.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_familystatuscode",
@@ -554,7 +612,6 @@
 				"displayName": "FTP Site",
 				"description": "Type the URL for the contact's FTP site to enable users to access data and share documents.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.URL",
 					"maxLength": 200
 				}
@@ -565,7 +622,6 @@
 				"displayName": "Email",
 				"description": "Type the primary email address for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100
 				}
@@ -576,7 +632,6 @@
 				"displayName": "Spouse/Partner Name",
 				"description": "Type the name of the contact's spouse or partner for reference during calls, events, or other communications with the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -587,7 +642,6 @@
 				"displayName": "Assistant",
 				"description": "Type the name of the contact's assistant.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -598,7 +652,6 @@
 				"displayName": "Email Address 2",
 				"description": "Type the secondary email address for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100
 				}
@@ -609,7 +662,6 @@
 				"displayName": "Assistant Phone",
 				"description": "Type the phone number for the contact's assistant.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -620,7 +672,6 @@
 				"displayName": "Email Address 3",
 				"description": "Type an alternate email address for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100
 				}
@@ -631,7 +682,7 @@
 				"displayName": "Do not allow Phone Calls",
 				"description": "Select whether the contact accepts phone calls. If Do Not Allow is selected, the contact will be excluded from any phone call activities distributed in marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -640,7 +691,6 @@
 				"displayName": "Manager",
 				"description": "Type the name of the contact's manager for use in escalating issues or other follow-up communications with the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -651,7 +701,6 @@
 				"displayName": "Manager Phone",
 				"description": "Type the phone number for the contact's manager.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -662,7 +711,7 @@
 				"displayName": "Do not allow Faxes",
 				"description": "Select whether the contact allows faxes. If Do Not Allow is selected, the contact will be excluded from any fax activities distributed in marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -671,7 +720,7 @@
 				"displayName": "Do not allow Emails",
 				"description": "Select whether the contact allows direct email sent from Microsoft Dynamics 365. If Do Not Allow is selected, Microsoft Dynamics 365 will not send the email.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -680,7 +729,7 @@
 				"displayName": "Do not allow Mails",
 				"description": "Select whether the contact allows direct mail. If Do Not Allow is selected, the contact will be excluded from letter activities distributed in marketing campaigns.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -689,7 +738,7 @@
 				"displayName": "Do not allow Bulk Emails",
 				"description": "Select whether the contact accepts bulk email sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the email.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -698,7 +747,16 @@
 				"displayName": "Do not allow Bulk Mails",
 				"description": "Select whether the contact accepts bulk postal mail sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the letters.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "accountrolecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "accountrolecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -707,7 +765,6 @@
 				"displayName": "Role",
 				"description": "Select the contact's role within the company or sales process, such as decision maker, employee, or influencer.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_accountrolecode",
@@ -731,12 +788,20 @@
 				}
 			},
 			{
+				"name": "territorycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "territorycode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "territorycode",
 				"dataType": "String",
 				"displayName": "Territory",
 				"description": "Select a region or territory for the contact for use in segmentation and analysis.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_territorycode",
@@ -757,7 +822,6 @@
 				"displayName": "Credit Limit",
 				"description": "Type the credit limit of the contact for reference when you address invoice and accounting issues with the customer.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": 0,
 					"maxValue": 100000000000000
@@ -769,7 +833,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -779,7 +842,7 @@
 				"displayName": "Credit Hold",
 				"description": "Select whether the contact is on a credit hold, for reference when addressing invoice and accounting issues.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -788,7 +851,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -797,7 +860,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -807,7 +869,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -816,7 +878,6 @@
 				"displayName": "No. of Children",
 				"description": "Type the number of children the contact has for reference in follow-up phone calls and other communications.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -827,7 +888,6 @@
 				"displayName": "Children's Names",
 				"description": "Type the names of the contact's children for reference in communications and client programs.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 255
 				}
@@ -838,7 +898,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the contact.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -847,7 +907,6 @@
 				"displayName": "Mobile Phone",
 				"description": "Type the mobile phone number for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -858,7 +917,6 @@
 				"displayName": "Pager",
 				"description": "Type the pager number for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -869,7 +927,6 @@
 				"displayName": "Business Phone",
 				"description": "Type the main phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -880,7 +937,6 @@
 				"displayName": "Home Phone",
 				"description": "Type a second phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -891,7 +947,6 @@
 				"displayName": "Telephone 3",
 				"description": "Type a third phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -902,7 +957,6 @@
 				"displayName": "Fax",
 				"description": "Type the fax number for the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -913,10 +967,18 @@
 				"displayName": "Aging 30",
 				"description": "For system use only.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": 0,
 					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -925,7 +987,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the contact is active or inactive. Inactive contacts are read-only and can't be edited unless they are reactivated.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "contact_statecode",
@@ -950,10 +1011,18 @@
 				"displayName": "Aging 60",
 				"description": "For system use only.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": 0,
 					"maxValue": 100000000000000
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -962,9 +1031,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the contact's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "contact_statuscode",
 						"displayName": "Status Reason",
@@ -973,16 +1040,12 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -994,7 +1057,6 @@
 				"displayName": "Aging 90",
 				"description": "For system use only.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": 0,
 					"maxValue": 100000000000000
@@ -1006,7 +1068,6 @@
 				"displayName": "Parent Contact",
 				"description": "Unique identifier of the parent contact.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Contact"
 				}
 			},
@@ -1016,8 +1077,16 @@
 				"displayName": "Address 1: ID",
 				"description": "Unique identifier for address 1.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address1_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_addresstypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1026,7 +1095,6 @@
 				"displayName": "Address 1: Address Type",
 				"description": "Select the primary address type.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address1_addresstypecode",
@@ -1059,7 +1127,6 @@
 				"displayName": "Address 1: Name",
 				"description": "Type a descriptive name for the primary address, such as Corporate Headquarters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 200
 				}
@@ -1070,7 +1137,6 @@
 				"displayName": "Address 1: Primary Contact Name",
 				"description": "Type the name of the main contact at the account's primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -1081,7 +1147,6 @@
 				"displayName": "Address 1: Street 1",
 				"description": "Type the first line of the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1092,7 +1157,6 @@
 				"displayName": "Address 1: Street 2",
 				"description": "Type the second line of the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1103,7 +1167,6 @@
 				"displayName": "Address 1: Street 3",
 				"description": "Type the third line of the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1114,7 +1177,6 @@
 				"displayName": "Address 1: City",
 				"description": "Type the city for the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 80
 				}
@@ -1125,7 +1187,6 @@
 				"displayName": "Address 1: State/Province",
 				"description": "Type the state or province of the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 50
 				}
@@ -1136,7 +1197,6 @@
 				"displayName": "Address 1: County",
 				"description": "Type the county for the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 50
 				}
@@ -1147,7 +1207,6 @@
 				"displayName": "Address 1: Country/Region",
 				"description": "Type the country or region for the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 80
 				}
@@ -1158,7 +1217,6 @@
 				"displayName": "Address 1: Post Office Box",
 				"description": "Type the post office box number of the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -1169,7 +1227,6 @@
 				"displayName": "Address 1: ZIP/Postal Code",
 				"description": "Type the ZIP Code or postal code for the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 20
 				}
@@ -1180,10 +1237,18 @@
 				"displayName": "Address 1: UTC Offset",
 				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address1_freighttermscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_freighttermscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1192,7 +1257,6 @@
 				"displayName": "Address 1: Freight Terms",
 				"description": "Select the freight terms for the primary address to make sure shipping orders are processed correctly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address1_freighttermscode",
@@ -1217,7 +1281,6 @@
 				"displayName": "Address 1: UPS Zone",
 				"description": "Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4
 				}
@@ -1228,7 +1291,6 @@
 				"displayName": "Address 1: Latitude",
 				"description": "Type the latitude value for the primary address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90
@@ -1240,7 +1302,6 @@
 				"displayName": "Address 1: Phone",
 				"description": "Type the main phone number associated with the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1251,10 +1312,18 @@
 				"displayName": "Address 1: Longitude",
 				"description": "Type the longitude value for the primary address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180
+				}
+			},
+			{
+				"name": "address1_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address1_shippingmethodcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1263,7 +1332,6 @@
 				"displayName": "Address 1: Shipping Method",
 				"description": "Select a shipping method for deliveries sent to this address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address1_shippingmethodcode",
@@ -1308,7 +1376,6 @@
 				"displayName": "Address 1: Telephone 2",
 				"description": "Type a second phone number associated with the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1319,7 +1386,6 @@
 				"displayName": "Address 1: Telephone 3",
 				"description": "Type a third phone number associated with the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1330,7 +1396,6 @@
 				"displayName": "Address 1: Fax",
 				"description": "Type the fax number associated with the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -1341,8 +1406,16 @@
 				"displayName": "Address 2: ID",
 				"description": "Unique identifier for address 2.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer"
+				}
+			},
+			{
+				"name": "address2_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_addresstypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1351,7 +1424,6 @@
 				"displayName": "Address 2: Address Type",
 				"description": "Select the secondary address type.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address2_addresstypecode",
@@ -1372,7 +1444,6 @@
 				"displayName": "Address 2: Name",
 				"description": "Type a descriptive name for the secondary address, such as Corporate Headquarters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -1383,7 +1454,6 @@
 				"displayName": "Address 2: Primary Contact Name",
 				"description": "Type the name of the main contact at the account's secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -1394,7 +1464,6 @@
 				"displayName": "Address 2: Street 1",
 				"description": "Type the first line of the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1405,7 +1474,6 @@
 				"displayName": "Address 2: Street 2",
 				"description": "Type the second line of the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1416,7 +1484,6 @@
 				"displayName": "Address 2: Street 3",
 				"description": "Type the third line of the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -1427,7 +1494,6 @@
 				"displayName": "Address 2: City",
 				"description": "Type the city for the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 80
 				}
@@ -1438,7 +1504,6 @@
 				"displayName": "Address 2: State/Province",
 				"description": "Type the state or province of the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 50
 				}
@@ -1449,7 +1514,6 @@
 				"displayName": "Address 2: County",
 				"description": "Type the county for the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 50
 				}
@@ -1460,7 +1524,6 @@
 				"displayName": "Address 2: Country/Region",
 				"description": "Type the country or region for the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 80
 				}
@@ -1471,7 +1534,6 @@
 				"displayName": "Address 2: Post Office Box",
 				"description": "Type the post office box number of the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -1482,7 +1544,6 @@
 				"displayName": "Address 2: ZIP/Postal Code",
 				"description": "Type the ZIP Code or postal code for the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 20
 				}
@@ -1493,10 +1554,18 @@
 				"displayName": "Address 2: UTC Offset",
 				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
+				}
+			},
+			{
+				"name": "address2_freighttermscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_freighttermscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1505,7 +1574,6 @@
 				"displayName": "Address 2: Freight Terms",
 				"description": "Select the freight terms for the secondary address to make sure shipping orders are processed correctly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address2_freighttermscode",
@@ -1526,7 +1594,6 @@
 				"displayName": "Address 2: UPS Zone",
 				"description": "Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4
 				}
@@ -1537,7 +1604,6 @@
 				"displayName": "Address 2: Latitude",
 				"description": "Type the latitude value for the secondary address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90
@@ -1549,7 +1615,6 @@
 				"displayName": "Address 2: Telephone 1",
 				"description": "Type the main phone number associated with the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1560,10 +1625,18 @@
 				"displayName": "Address 2: Longitude",
 				"description": "Type the longitude value for the secondary address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180
+				}
+			},
+			{
+				"name": "address2_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address2_shippingmethodcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1572,7 +1645,6 @@
 				"displayName": "Address 2: Shipping Method",
 				"description": "Select a shipping method for deliveries sent to this address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address2_shippingmethodcode",
@@ -1593,7 +1665,6 @@
 				"displayName": "Address 2: Telephone 2",
 				"description": "Type a second phone number associated with the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1604,7 +1675,6 @@
 				"displayName": "Address 2: Telephone 3",
 				"description": "Type a third phone number associated with the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -1615,7 +1685,6 @@
 				"displayName": "Address 2: Fax",
 				"description": "Type the fax number associated with the secondary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -1626,7 +1695,7 @@
 				"displayName": "Owner",
 				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -1635,7 +1704,7 @@
 				"displayName": "Preferred User",
 				"description": "Choose the regular or preferred customer service representative for reference when scheduling service activities for the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1644,7 +1713,16 @@
 				"displayName": "Master ID",
 				"description": "Unique identifier of the master contact for merge.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "preferredappointmentdaycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredappointmentdaycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -1653,7 +1731,6 @@
 				"displayName": "Preferred Day",
 				"description": "Select the preferred day of the week for service appointments.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_preferredappointmentdaycode",
@@ -1693,12 +1770,20 @@
 				}
 			},
 			{
+				"name": "preferredappointmenttimecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "preferredappointmenttimecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "preferredappointmenttimecode",
 				"dataType": "String",
 				"displayName": "Preferred Time",
 				"description": "Select the preferred time of day for service appointments.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_preferredappointmenttimecode",
@@ -1727,7 +1812,7 @@
 				"displayName": "Send Marketing Materials",
 				"description": "Select whether the contact accepts marketing materials, such as brochures or catalogs. Contacts that opt out can be excluded from marketing initiatives.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1736,7 +1821,6 @@
 				"displayName": "Company Name",
 				"description": "Select the parent account or parent contact for the contact to provide a quick link to additional details, such as financial information, activities, and opportunities.",
 				"semanticDomain": {
-					"structuralType": "customer",
 					"semanticType": "Idea.Customer"
 				}
 			},
@@ -1746,7 +1830,7 @@
 				"displayName": "Merged",
 				"description": "Shows whether the account has been merged with a master contact.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -1755,7 +1839,6 @@
 				"displayName": "External User Identifier",
 				"description": "Identifier for an external user.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
 				}
@@ -1766,7 +1849,6 @@
 				"displayName": "Last Date Included in Campaign",
 				"description": "Shows the date when the contact was last included in a marketing campaign or quick campaign.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -1776,7 +1858,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -1786,7 +1867,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -1796,7 +1876,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -1807,7 +1886,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -1818,7 +1896,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -1829,7 +1906,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -1840,7 +1916,6 @@
 				"displayName": "Annual Income (Base)",
 				"description": "Shows the Annual Income field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": -922337203685477,
 					"maxValue": 922337203685477
@@ -1852,7 +1927,6 @@
 				"displayName": "Credit Limit (Base)",
 				"description": "Shows the Credit Limit field converted to the system's default base currency for reporting purposes. The calculations use the exchange rate specified in the Currencies area.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": -922337203685477,
 					"maxValue": 922337203685477
@@ -1864,7 +1938,6 @@
 				"displayName": "Aging 60 (Base)",
 				"description": "Shows the Aging 60 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": -922337203685477,
 					"maxValue": 922337203685477
@@ -1876,7 +1949,6 @@
 				"displayName": "Aging 90 (Base)",
 				"description": "Shows the Aging 90 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": -922337203685477,
 					"maxValue": 922337203685477
@@ -1888,7 +1960,6 @@
 				"displayName": "Aging 30 (Base)",
 				"description": "Shows the Aging 30 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
 				"semanticDomain": {
-					"structuralType": "money",
 					"semanticType": "Measurement.Currency",
 					"minValue": -922337203685477,
 					"maxValue": 922337203685477
@@ -1900,7 +1971,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1909,7 +1980,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Shows who last updated the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1918,7 +1989,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the contact.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1927,7 +1998,6 @@
 				"displayName": "Process Stage",
 				"description": "Shows the ID of the stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1937,7 +2007,6 @@
 				"displayName": "Process",
 				"description": "Shows the ID of the process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1947,7 +2016,6 @@
 				"displayName": "Address 2",
 				"description": "Shows the complete secondary address.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 1000
 				}
@@ -1958,7 +2026,6 @@
 				"displayName": "Address 1",
 				"description": "Shows the complete primary address.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 1000
 				}
@@ -1969,7 +2036,6 @@
 				"displayName": "Entity Image Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -1979,7 +2045,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -1990,7 +2055,7 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the Contact record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -1999,7 +2064,7 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this case. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -2008,7 +2073,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -2019,7 +2083,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -2029,7 +2092,7 @@
 				"displayName": "Follow Email Activity",
 				"description": "Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the contact.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -2038,7 +2101,6 @@
 				"displayName": "Time Spent by me",
 				"description": "Total time spent for emails (read and write) and meetings by me in relation to the contact record.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 1250
 				}
@@ -2049,7 +2111,6 @@
 				"displayName": "Address3: Country/Region",
 				"description": "the country or region for the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Country",
 					"maxLength": 80
 				}
@@ -2060,7 +2121,6 @@
 				"displayName": "Address3: Street 1",
 				"description": "the first line of the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -2071,7 +2131,6 @@
 				"displayName": "Address3: Street 2",
 				"description": "the second line of the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -2082,7 +2141,6 @@
 				"displayName": "Address3: Street 3",
 				"description": "the third line of the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.Address.Street",
 					"maxLength": 250
 				}
@@ -2093,7 +2151,6 @@
 				"displayName": "Address3: ZIP/Postal Code",
 				"description": "the ZIP Code or postal code for the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.PostalCode",
 					"maxLength": 20
 				}
@@ -2104,7 +2161,6 @@
 				"displayName": "Address 3: Post Office Box",
 				"description": "the post office box number of the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 20
 				}
@@ -2115,7 +2171,6 @@
 				"displayName": "Address3: State/Province",
 				"description": "the state or province of the third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.State",
 					"maxLength": 50
 				}
@@ -2126,7 +2181,6 @@
 				"displayName": "Address 3: City",
 				"description": "Type the city for the 3rd address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.City",
 					"maxLength": 80
 				}
@@ -2137,7 +2191,6 @@
 				"displayName": "Business Phone 2",
 				"description": "Type a second business phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2148,7 +2201,6 @@
 				"displayName": "Callback Number",
 				"description": "Type a callback phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2159,7 +2211,6 @@
 				"displayName": "Company Phone",
 				"description": "Type the company phone of the contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2170,7 +2221,6 @@
 				"displayName": "Home Phone 2",
 				"description": "Type a second home phone number for this contact.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2181,7 +2231,6 @@
 				"displayName": "Address 3: ID",
 				"description": "Unique identifier for address 3.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer"
 				}
 			},
@@ -2191,7 +2240,6 @@
 				"displayName": "Address 3",
 				"description": "Shows the complete third address.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 1000
 				}
@@ -2202,9 +2250,17 @@
 				"displayName": "Address 3: Fax",
 				"description": "Type the fax number associated with the third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 50
+				}
+			},
+			{
+				"name": "address3_freighttermscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address3_freighttermscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2213,7 +2269,6 @@
 				"displayName": "Address 3: Freight Terms",
 				"description": "Select the freight terms for the third address to make sure shipping orders are processed correctly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address3_freighttermscode",
@@ -2234,7 +2289,6 @@
 				"displayName": "Address 3: Latitude",
 				"description": "Type the latitude value for the third address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Latitude",
 					"minValue": -90,
 					"maxValue": 90
@@ -2246,7 +2300,6 @@
 				"displayName": "Address 3: Longitude",
 				"description": "Type the longitude value for the third address for use in mapping and other applications.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"semanticType": "Location.Longitude",
 					"minValue": -180,
 					"maxValue": 180
@@ -2258,7 +2311,6 @@
 				"displayName": "Address 3: Name",
 				"description": "Type a descriptive name for the third address, such as Corporate Headquarters.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 200
 				}
@@ -2269,9 +2321,17 @@
 				"displayName": "Address 3: Primary Contact Name",
 				"description": "Type the name of the main contact at the account's third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
+				}
+			},
+			{
+				"name": "address3_shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address3_shippingmethodcode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2280,7 +2340,6 @@
 				"displayName": "Address 3: Shipping Method",
 				"description": "Select a shipping method for deliveries sent to this address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address3_shippingmethodcode",
@@ -2301,7 +2360,6 @@
 				"displayName": "Address 3: Telephone1",
 				"description": "Type the main phone number associated with the third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2312,7 +2370,6 @@
 				"displayName": "Address 3: Telephone2",
 				"description": "Type a second phone number associated with the third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2323,7 +2380,6 @@
 				"displayName": "Address 3: Telephone3",
 				"description": "Type a third phone number associated with the primary address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Phone",
 					"maxLength": 50
 				}
@@ -2334,7 +2390,6 @@
 				"displayName": "Address 3: UPS Zone",
 				"description": "Type the UPS zone of the third address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4
 				}
@@ -2345,7 +2400,6 @@
 				"displayName": "Address 3: UTC Offset",
 				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Location.Timezone",
 					"minValue": -1500,
 					"maxValue": 1500
@@ -2357,9 +2411,17 @@
 				"displayName": "Address 3: County",
 				"description": "Type the county for the third address.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Location.County",
 					"maxLength": 50
+				}
+			},
+			{
+				"name": "address3_addresstypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "address3_addresstypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -2368,7 +2430,6 @@
 				"displayName": "Address 3: Address Type",
 				"description": "Select the third address type.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "contact_address3_addresstypecode",
@@ -2389,7 +2450,7 @@
 				"displayName": "Created By (External Party)",
 				"description": "Shows the external party who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -2398,7 +2459,7 @@
 				"displayName": "Modified By (External Party)",
 				"description": "Shows the external party who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -2407,7 +2468,7 @@
 				"displayName": "Marketing Only",
 				"description": "Whether is only for marketing",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			}
 		]
@@ -2419,8 +2480,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2433,8 +2494,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -2450,8 +2511,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2464,8 +2525,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -2481,8 +2542,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2495,8 +2556,8 @@
 				"entity": {
 					"type": "Customer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f4bc7ee4-cb15-9116-7ce0-7efd4bd9ab27"
 				},
 				"attributes": [
 					{
@@ -2512,8 +2573,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2526,8 +2587,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -2543,8 +2604,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2557,8 +2618,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -2574,8 +2635,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2588,8 +2649,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2605,8 +2666,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2619,8 +2680,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
@@ -2636,8 +2697,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2650,8 +2711,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -2667,8 +2728,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -2681,8 +2742,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{

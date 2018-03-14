@@ -1,18 +1,18 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "Queue",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+				"semanticVersion": "0.5.0",
+				"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 			},
 			"extends": {
 				"type": "Queue",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "b9161e62-db25-8fe0-93cb-7fc16edcd6df"
+				"semanticVersion": "0.5.0",
+				"semanticId": "a4bffdb6-ba01-b1c1-25a5-4bc71b67ad8c"
 			}
 		},
 		"description": "A list of records that require action, such as accounts, activities, and cases.",
@@ -24,7 +24,6 @@
 				"displayName": "Queue",
 				"description": "Unique identifier of the queue.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true,
 					"inherited": true
@@ -36,7 +35,6 @@
 				"displayName": "Business Unit",
 				"description": "Unique identifier of the business unit with which the queue is associated.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -46,7 +44,6 @@
 				"displayName": "Organization",
 				"description": "Unique identifier of the organization associated with the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization",
 					"inherited": true
 				}
@@ -57,7 +54,6 @@
 				"displayName": "Incoming Email",
 				"description": "Email address that is associated with the queue.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 100,
 					"inherited": true
@@ -69,7 +65,16 @@
 				"displayName": "Owner (deprecated)",
 				"description": "Unique identifier of the owner of the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "queuetypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "queuetypecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -79,7 +84,6 @@
 				"displayName": "Queue Type",
 				"description": "Type of queue that is automatically assigned when a user or queue is created. The type can be public, private, or work in process.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -101,7 +105,6 @@
 				"displayName": "Name",
 				"description": "Name of the queue.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 200,
 					"inherited": true
@@ -113,7 +116,6 @@
 				"displayName": "Description",
 				"description": "Description of the queue.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000,
 					"inherited": true
 				}
@@ -124,7 +126,6 @@
 				"displayName": "Queue Semantics",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000,
 					"inherited": true
@@ -136,7 +137,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the queue was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -147,7 +147,6 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the queue record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -157,7 +156,6 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -167,7 +165,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the queue was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify",
 					"inherited": true
 				}
@@ -178,7 +175,6 @@
 				"displayName": "Version Number",
 				"description": "Version number of the queue.",
 				"semanticDomain": {
-					"structuralType": "timestamp",
 					"inherited": true
 				}
 			},
@@ -188,7 +184,6 @@
 				"displayName": "Convert To Email Activities",
 				"description": "Information that specifies whether a queue is to ignore unsolicited email (deprecated).",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -198,7 +193,6 @@
 				"displayName": "Fax Queue",
 				"description": "Indication of whether a queue is the fax delivery queue.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -208,9 +202,18 @@
 				"displayName": "Password (Obsolete)",
 				"description": "This attribute is no longer used. The data is now in the Mailbox.Password attribute.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "incomingemaildeliverymethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "incomingemaildeliverymethod",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -220,7 +223,6 @@
 				"displayName": "Incoming Email Delivery Method",
 				"description": "Incoming email delivery method for the queue.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -250,9 +252,18 @@
 				"displayName": "User Name (Obsolete)",
 				"description": "This attribute is no longer used. The data is now in the Mailbox.UserName attribute.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Service.Email",
 					"maxLength": 200,
+					"inherited": true
+				}
+			},
+			{
+				"name": "outgoingemaildeliverymethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "outgoingemaildeliverymethod",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -262,7 +273,6 @@
 				"displayName": "Outgoing Email Delivery Method",
 				"description": "Outgoing email delivery method for the queue.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -288,7 +298,16 @@
 				"displayName": "Allow to Use Credentials for Email Processing (Obsolete)",
 				"description": "This attribute is no longer used. The data is now in the Mailbox.AllowEmailConnectorToUseCredentials attribute.",
 				"semanticDomain": {
-					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "incomingemailfilteringmethod_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "incomingemailfilteringmethod",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -298,7 +317,6 @@
 				"displayName": "Convert Incoming Email To Activities",
 				"description": "Convert Incoming Email To Activities",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -332,7 +350,6 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the queue.",
 				"semanticDomain": {
-					"structuralType": "owner",
 					"inherited": true
 				}
 			},
@@ -342,8 +359,17 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -353,9 +379,7 @@
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the queue.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"inherited": true,
 					"constrainedList": {
 						"name": "queue_statuscode",
@@ -365,16 +389,12 @@
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							}
 						]
 					}
@@ -386,7 +406,6 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -396,7 +415,16 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -406,7 +434,6 @@
 				"displayName": "Status",
 				"description": "Status of the queue.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"inherited": true,
 					"constrainedList": {
@@ -432,7 +459,6 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -442,7 +468,6 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -452,7 +477,6 @@
 				"displayName": "Queue Items",
 				"description": "Number of Queue items associated with the queue.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -464,7 +488,6 @@
 				"displayName": "No. of Members",
 				"description": "Number of Members associated with the queue.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -476,7 +499,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -488,7 +510,6 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -498,7 +519,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the currency associated with the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type",
 					"inherited": true
 				}
@@ -509,9 +529,18 @@
 				"displayName": "Exchange Rate",
 				"description": "Exchange rate for the currency associated with the queue with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000,
+					"inherited": true
+				}
+			},
+			{
+				"name": "emailrouteraccessapproval_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "emailrouteraccessapproval",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -521,7 +550,6 @@
 				"displayName": "Primary Email Status",
 				"description": "Shows the status of the primary email address.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -555,7 +583,6 @@
 				"displayName": "Mailbox",
 				"description": "Select the mailbox associated with this queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -565,7 +592,6 @@
 				"displayName": "Entity Image Id",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -576,7 +602,16 @@
 				"displayName": "Email Address O365 Admin Approval Status",
 				"description": "Shows the status of approval of the email address by O365 Admin.",
 				"semanticDomain": {
-					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "queueviewtype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "queueviewtype",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -586,7 +621,6 @@
 				"displayName": "Type",
 				"description": "Select whether the queue is public or private. A public queue can be viewed by all. A private queue can be viewed only by the members added to the queue.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -615,8 +649,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -629,8 +663,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -646,8 +680,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -660,43 +694,12 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
 						"name": "teamid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "queue_defaultmailbox_mailbox",
-			"referencing": {
-				"entity": {
-					"type": "Queue",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
-				},
-				"attributes": [
-					{
-						"name": "defaultmailbox",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -708,8 +711,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -722,8 +725,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -739,8 +742,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -753,8 +756,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -770,8 +773,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -784,8 +787,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -801,8 +804,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "bcfeab57-ff7c-019e-2210-45684ea21540"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1375cd30-8db0-23d8-9f53-4c13e38b0175"
 				},
 				"attributes": [
 					{
@@ -815,8 +818,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{

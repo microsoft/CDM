@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "EmailSignature",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+				"semanticVersion": "0.5.0",
+				"semanticId": "235daeed-9895-4ef6-57eb-a433b2ee8d6e"
 			}
 		},
 		"description": "Signature for email message",
@@ -18,7 +18,6 @@
 				"displayName": "Email Signature",
 				"description": "Unique identifier of the email signature.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -38,7 +37,7 @@
 				"displayName": "Viewable By",
 				"description": "Information about whether the email signature is personal or is available to all users.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -47,7 +46,6 @@
 				"displayName": "Mime Type",
 				"description": "MIME type of the email signature.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 256
 				}
@@ -58,7 +56,6 @@
 				"displayName": "Body",
 				"description": "Body text of the email signature.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -69,7 +66,6 @@
 				"displayName": "Title",
 				"description": "Title of the email signature.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 200
 				}
@@ -80,7 +76,6 @@
 				"displayName": "Description",
 				"description": "Description of the email signature.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -90,7 +85,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -99,7 +94,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -108,7 +103,6 @@
 				"displayName": "Presentation XML",
 				"description": "XML data for the body of the email signature.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823
 				}
@@ -119,7 +113,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the email signature was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -129,7 +122,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -138,7 +131,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the email signature was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -148,7 +140,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the email signature for the email activity.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -157,7 +149,6 @@
 				"displayName": "Generation Type Code",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -168,7 +159,6 @@
 				"displayName": "Language",
 				"description": "Language of the email signature.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Idea.Language",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -180,7 +170,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -191,8 +180,16 @@
 				"displayName": "Record Overwrite Time",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "componentstate_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "componentstate",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -201,7 +198,6 @@
 				"displayName": "Component State",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "componentstate",
@@ -234,7 +230,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -243,7 +239,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -252,7 +248,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team who owns the email signature.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -261,7 +257,7 @@
 				"displayName": "Customizable",
 				"description": "Information that specifies whether this component can be customized.",
 				"semanticDomain": {
-					"structuralType": "managedproperty"
+
 				}
 			},
 			{
@@ -270,7 +266,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -280,7 +275,7 @@
 				"displayName": "Is Default",
 				"description": "Information that specifies whether the email signature is default to the user.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			}
 		]
@@ -292,8 +287,8 @@
 				"entity": {
 					"type": "EmailSignature",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "235daeed-9895-4ef6-57eb-a433b2ee8d6e"
 				},
 				"attributes": [
 					{
@@ -306,8 +301,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -323,8 +318,8 @@
 				"entity": {
 					"type": "EmailSignature",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "235daeed-9895-4ef6-57eb-a433b2ee8d6e"
 				},
 				"attributes": [
 					{
@@ -337,8 +332,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -354,8 +349,8 @@
 				"entity": {
 					"type": "EmailSignature",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "235daeed-9895-4ef6-57eb-a433b2ee8d6e"
 				},
 				"attributes": [
 					{
@@ -368,8 +363,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -385,8 +380,8 @@
 				"entity": {
 					"type": "EmailSignature",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0a6a4e02-9f94-bd63-1cfd-b3c33c3f92d5"
+					"semanticVersion": "0.5.0",
+					"semanticId": "235daeed-9895-4ef6-57eb-a433b2ee8d6e"
 				},
 				"attributes": [
 					{
@@ -399,8 +394,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{

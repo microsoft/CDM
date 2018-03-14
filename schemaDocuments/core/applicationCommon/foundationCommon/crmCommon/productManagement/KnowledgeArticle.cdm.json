@@ -1,18 +1,18 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "KnowledgeArticle",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-				"semanticVersion": "0.4.0",
-				"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+				"semanticVersion": "0.5.0",
+				"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 			},
 			"extends": {
 				"type": "KnowledgeArticle",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+				"semanticVersion": "0.5.0",
+				"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 			}
 		},
 		"description": "Organizational knowledge for internal and external use.",
@@ -24,7 +24,6 @@
 				"displayName": "Knowledge Article",
 				"description": "Unique identifier for entity instances",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true,
 					"inherited": true
@@ -36,7 +35,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -47,7 +45,6 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -57,7 +54,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify",
 					"inherited": true
 				}
@@ -68,7 +64,6 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -78,7 +73,6 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -88,7 +82,6 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -98,7 +91,6 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the record.",
 				"semanticDomain": {
-					"structuralType": "owner",
 					"inherited": true
 				}
 			},
@@ -108,7 +100,6 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier for the business unit that owns the record",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -118,7 +109,6 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier for the user that owns the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -128,7 +118,16 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier for the team that owns the record.",
 				"semanticDomain": {
-					"structuralType": "lookup",
+					"inherited": true
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -138,7 +137,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the article is a draft or is published, archived, or discarded. Draft articles aren't available externally and can be edited. Published articles are available externally, based on applicable permissions, but can't be edited. All metadata changes are reflected in the published version. Archived and discarded articles aren't available externally and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"inherited": true,
 					"constrainedList": {
@@ -179,14 +177,22 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true,
+					"inherited": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Select the article's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"inherited": true,
 					"constrainedList": {
 						"name": "knowledgearticle_statuscode",
@@ -196,100 +202,72 @@
 							{
 								"value": 1,
 								"displayName": "Proposed",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Draft",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 3,
 								"displayName": "Needs review",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 4,
 								"displayName": "In review",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 5,
 								"displayName": "Approved",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 6,
 								"displayName": "Scheduled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 7,
 								"displayName": "Published",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 8,
 								"displayName": "Needs review",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 9,
 								"displayName": "Updating",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 10,
 								"displayName": "Expired",
-								"annotations": [
-									"whenStateIs:4"
-								]
+								"correlationValue:": "4"
 							},
 							{
 								"value": 11,
 								"displayName": "Rejected",
-								"annotations": [
-									"whenStateIs:4"
-								]
+								"correlationValue:": "4"
 							},
 							{
 								"value": 12,
 								"displayName": "Archived",
-								"annotations": [
-									"whenStateIs:5"
-								]
+								"correlationValue:": "5"
 							},
 							{
 								"value": 13,
 								"displayName": "Discarded",
-								"annotations": [
-									"whenStateIs:6"
-								]
+								"correlationValue:": "6"
 							},
 							{
 								"value": 14,
 								"displayName": "Rejected",
-								"annotations": [
-									"whenStateIs:6"
-								]
+								"correlationValue:": "6"
 							}
 						]
 					}
@@ -299,7 +277,6 @@
 				"name": "versionnumber",
 				"dataType": "Int64",
 				"semanticDomain": {
-					"structuralType": "timestamp",
 					"inherited": true
 				}
 			},
@@ -309,7 +286,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -321,7 +297,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation",
 					"inherited": true
 				}
@@ -332,7 +307,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -344,7 +318,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -356,7 +329,6 @@
 				"displayName": "Process Id",
 				"description": "Contains the id of the process associated with the entity.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -367,7 +339,6 @@
 				"displayName": "Stage Id",
 				"description": "Contains the id of the stage where the entity is located.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference",
 					"inherited": true
 				}
@@ -378,7 +349,6 @@
 				"displayName": "Traversed Path",
 				"description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250,
 					"inherited": true
@@ -390,7 +360,6 @@
 				"displayName": "ExchangeRate",
 				"description": "Exchange rate for the currency associated with the KnowledgeArticle with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000,
 					"inherited": true
@@ -402,7 +371,6 @@
 				"displayName": "Currency",
 				"description": "Exchange rate for the currency associated with the KnowledgeArticle with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type",
 					"inherited": true
 				}
@@ -413,7 +381,6 @@
 				"displayName": "Title",
 				"description": "Type a title for the article.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 4000,
 					"inherited": true
@@ -425,7 +392,6 @@
 				"displayName": "Content",
 				"description": "Shows the body of the article stored in HTML format.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "internalextentdata",
 					"maxLength": 1073741823,
 					"inherited": true
@@ -437,7 +403,6 @@
 				"displayName": "Keywords",
 				"description": "Type keywords to be used for searches in knowledge base articles. Separate keywords by using commas.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 4000,
 					"inherited": true
 				}
@@ -448,7 +413,6 @@
 				"displayName": "Publish On",
 				"description": "Date and time when the record was published.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date",
 					"inherited": true
 				}
@@ -459,7 +423,6 @@
 				"displayName": "Expiration Date",
 				"description": "Enter an expiration date for the article. Leave this field blank for no expiration date.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence",
 					"inherited": true
 				}
@@ -470,7 +433,6 @@
 				"displayName": "Parent Article Content Id",
 				"description": "Contains the id of the parent article content associated with the entity.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Object.Relationship.Parent",
 					"inherited": true
 				}
@@ -481,7 +443,6 @@
 				"displayName": "Knowledge Article Views",
 				"description": "Shows the total number of article views.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -493,7 +454,6 @@
 				"displayName": "Description",
 				"description": "A short overview of the article, primarily used in search results and for search engine optimization.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.Description",
 					"maxLength": 155,
 					"inherited": true
@@ -505,7 +465,6 @@
 				"displayName": "Major Version Number",
 				"description": "Shows the major version number of this article's content.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -517,7 +476,6 @@
 				"displayName": "Minor Version Number",
 				"description": "Shows the minor version number of this article's content.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -529,7 +487,6 @@
 				"displayName": "Language",
 				"description": "Select the language that the article's content is in.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -539,7 +496,6 @@
 				"displayName": "Scheduled Status",
 				"description": "Contains the id of the scheduled status of the entity.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -551,7 +507,6 @@
 				"displayName": "Expired Status",
 				"description": "Contains the id of the expiration status of the entity.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -563,7 +518,6 @@
 				"displayName": "Published Status",
 				"description": "Publish Status of the Article.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -575,7 +529,6 @@
 				"displayName": "Primary Article",
 				"description": "Select whether the article is the primary article.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -585,7 +538,16 @@
 				"displayName": "Ready For Review",
 				"description": "Ready For Review",
 				"semanticDomain": {
-					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "review_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "review",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -595,7 +557,6 @@
 				"displayName": "Review",
 				"description": "Review",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -621,7 +582,16 @@
 				"displayName": "Update Content",
 				"description": "Update Content",
 				"semanticDomain": {
-					"structuralType": "bit",
+					"inherited": true
+				}
+			},
+			{
+				"name": "expiredreviewoptions_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "expiredreviewoptions",
+					"isReadOnly": true,
 					"inherited": true
 				}
 			},
@@ -631,7 +601,6 @@
 				"displayName": "Expired Review Options",
 				"description": "Expired Review Options",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"inherited": true,
 					"constrainedList": {
@@ -661,7 +630,6 @@
 				"displayName": "Subject",
 				"description": "Choose the subject of the article to assist with article searches. You can configure subjects under Business Management in the Settings area.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -671,7 +639,6 @@
 				"displayName": "Primary Author Id",
 				"description": "Contains the id of the primary author associated with the article.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -681,7 +648,6 @@
 				"displayName": "Root Article",
 				"description": "Select whether the article is the root article.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -691,7 +657,6 @@
 				"displayName": "Previous Article Content ID",
 				"description": "Shows the version that the current article was restored from.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -701,7 +666,6 @@
 				"displayName": "Article Public Number",
 				"description": "Shows the automatically generated ID exposed to customers, partners, and other external users to reference and look up articles.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 4000,
 					"inherited": true
@@ -713,7 +677,6 @@
 				"displayName": "Is Latest Version",
 				"description": "Shows which version of the knowledge article is the latest version.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -723,7 +686,6 @@
 				"displayName": "Root Article Id",
 				"description": "Contains the id of the root article.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"inherited": true
 				}
 			},
@@ -733,7 +695,6 @@
 				"displayName": "Knowledge Article View(Last Updated Time)",
 				"description": "The date time for Knowledge Article View.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence",
 					"inherited": true
 				}
@@ -744,7 +705,6 @@
 				"displayName": "Knowledge Article View(State)",
 				"description": "State of Knowledge Article View.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -756,7 +716,6 @@
 				"displayName": "Rating",
 				"description": "Information which specifies how helpful the related record was.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": -100000000000,
 					"maxValue": 100000000000,
 					"inherited": true
@@ -768,7 +727,6 @@
 				"displayName": "Rating(Last Updated Time)",
 				"description": "The date time for Rating.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence",
 					"inherited": true
 				}
@@ -779,7 +737,6 @@
 				"displayName": "Rating(State)",
 				"description": "State of Rating",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -791,7 +748,6 @@
 				"displayName": "Rating(sum)",
 				"description": "Total sum of Rating",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 0,
 					"maxValue": 1000000000,
 					"inherited": true
@@ -803,7 +759,6 @@
 				"displayName": "Rating(Count)",
 				"description": "Rating Count",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -815,7 +770,6 @@
 				"displayName": "Internal",
 				"description": "Shows whether this article is only visible internally.",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -825,7 +779,6 @@
 				"displayName": "Set Category Associations",
 				"description": "Shows whether category associations have been set",
 				"semanticDomain": {
-					"structuralType": "bit",
 					"inherited": true
 				}
 			},
@@ -835,7 +788,6 @@
 				"displayName": "Expiration State Id",
 				"description": "Contains the id of the expiration state of the entity.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647,
 					"inherited": true
@@ -847,7 +799,7 @@
 				"displayName": "Set Product Associations",
 				"description": "Set Product Associations",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			}
 		]
@@ -859,8 +811,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -873,8 +825,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -890,8 +842,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -904,8 +856,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
@@ -921,8 +873,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -935,8 +887,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -952,8 +904,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -966,8 +918,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -983,8 +935,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -997,8 +949,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1014,8 +966,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "53b49c50-21f9-f55c-7bce-553afb973916"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7e7cb861-ef66-6887-bdb3-cbf805888bc0"
 				},
 				"attributes": [
 					{
@@ -1028,8 +980,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{

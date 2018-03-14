@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "ConnectionRole",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+				"semanticVersion": "0.5.0",
+				"semanticId": "46189f48-078f-cbe6-1a7f-df007a25bd1c"
 			}
 		},
 		"description": "Role describing a relationship between a two records.",
@@ -18,7 +18,6 @@
 				"displayName": "Connection Role",
 				"description": "Unique identifier of the connection role.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the connection role.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -38,7 +37,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the connection role was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -48,7 +46,6 @@
 				"displayName": "Name",
 				"description": "Name of the connection role.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -59,9 +56,17 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -70,7 +75,6 @@
 				"displayName": "Status",
 				"description": "Status of the connection role.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "connectionrole_statecode",
@@ -90,14 +94,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the connection role.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "connectionrole_statuscode",
 						"displayName": "Status Reason",
@@ -106,16 +117,12 @@
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -127,7 +134,16 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the relationship role.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "category_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "category",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -136,7 +152,6 @@
 				"displayName": "Connection Role Category",
 				"description": "Categories for connection roles.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "connectionrole_category",
@@ -185,7 +200,6 @@
 				"displayName": "Organization",
 				"description": "Unique identifier of the organization that this connection role belongs to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -195,7 +209,6 @@
 				"displayName": "Description",
 				"description": "Description of the connection role.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1000
 				}
@@ -206,7 +219,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the connection role was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -216,7 +228,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the connection role.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -225,8 +237,16 @@
 				"displayName": "Solution",
 				"description": "Unique identifier of the associated solution.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "componentstate_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "componentstate",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -235,7 +255,6 @@
 				"displayName": "Component State",
 				"description": "State of the component.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "componentstate",
@@ -268,7 +287,6 @@
 				"displayName": "Overwritten On",
 				"description": "Date and time when the record was last overwritten.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -278,7 +296,6 @@
 				"displayName": "Unique ID",
 				"description": "Unique identifier of the published or unpublished connection role record.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -288,7 +305,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who modified the relationship role.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -297,7 +314,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the relationship role.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -306,7 +323,7 @@
 				"displayName": "State",
 				"description": "Indicates whether the solution component is part of a managed solution.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -315,7 +332,7 @@
 				"displayName": "Customizable",
 				"description": "Information that specifies whether this component can be customized.",
 				"semanticDomain": {
-					"structuralType": "managedproperty"
+
 				}
 			},
 			{
@@ -324,7 +341,6 @@
 				"displayName": "Introduced Version",
 				"description": "Version in which the form is introduced.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Measurement.Version",
 					"maxLength": 48
 				}
@@ -338,8 +354,8 @@
 				"entity": {
 					"type": "ConnectionRole",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+					"semanticVersion": "0.5.0",
+					"semanticId": "46189f48-078f-cbe6-1a7f-df007a25bd1c"
 				},
 				"attributes": [
 					{
@@ -352,8 +368,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -369,8 +385,8 @@
 				"entity": {
 					"type": "ConnectionRole",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ce81d640-1407-fb98-480e-dd0adeb46407"
+					"semanticVersion": "0.5.0",
+					"semanticId": "46189f48-078f-cbe6-1a7f-df007a25bd1c"
 				},
 				"attributes": [
 					{
@@ -383,8 +399,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{

@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "SocialActivity",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+				"semanticVersion": "0.5.0",
+				"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 			}
 		},
 		"description": "For internal use only.",
@@ -18,9 +18,17 @@
 				"displayName": "Activity",
 				"description": "Unique identifier of the activity.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -29,7 +37,6 @@
 				"displayName": "Activity Type",
 				"description": "Type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "activitypointer_activitytypecode",
@@ -106,7 +113,6 @@
 				"displayName": "Actual Duration",
 				"description": "Actual duration of the activity in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -118,7 +124,6 @@
 				"displayName": "Actual End",
 				"description": "Actual end time of the activity.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -128,7 +133,6 @@
 				"displayName": "Actual Start",
 				"description": "Actual start time of the activity.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -138,7 +142,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -147,7 +151,6 @@
 				"displayName": "Created Date",
 				"description": "Date and time when the activity was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -157,7 +160,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the activitypointer.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -166,7 +169,6 @@
 				"displayName": "Post Description",
 				"description": "Shows information about the social post content. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -176,7 +178,6 @@
 				"displayName": "From",
 				"description": "Person who the activity is from.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -186,7 +187,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -197,7 +197,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -208,7 +207,7 @@
 				"displayName": "Is Billed",
 				"description": "Information regarding whether the activity was billed as part of resolving a case.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -217,7 +216,7 @@
 				"displayName": "Is Regular Activity",
 				"description": "Information regarding whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -226,7 +225,7 @@
 				"displayName": "Is Workflow Created",
 				"description": "Information regarding whether the activity was created from a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -235,7 +234,7 @@
 				"displayName": "Modified By",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -244,7 +243,6 @@
 				"displayName": "Last Updated",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -254,7 +252,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -263,7 +261,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -273,7 +270,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the activity.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -282,7 +279,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the Activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -291,7 +288,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -300,7 +297,16 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -309,7 +315,6 @@
 				"displayName": "Priority",
 				"description": "Shows the priority so that preferred customers or critical issues are handled quickly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "socialactivity_prioritycode",
@@ -338,7 +343,6 @@
 				"displayName": "Process",
 				"description": "Unique identifier of the Process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -348,7 +352,6 @@
 				"displayName": "Resources",
 				"description": "Users or facility/equipment that are required for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -358,7 +361,6 @@
 				"displayName": "Scheduled Duration",
 				"description": "Scheduled duration of the activity, specified in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -370,7 +372,6 @@
 				"displayName": "Due Date",
 				"description": "Scheduled end time of the activity.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -380,7 +381,6 @@
 				"displayName": "Start Date",
 				"description": "Scheduled start time of the activity.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -390,8 +390,16 @@
 				"displayName": "Process Stage",
 				"description": "Unique identifier of the Stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -400,7 +408,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the social activity completed. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "socialactivity_statecode",
@@ -424,14 +431,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Shows whether the social activity is completed, failed, or processing. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "socialactivity_statuscode",
 						"displayName": "Status Reason",
@@ -440,37 +454,27 @@
 							{
 								"value": 1,
 								"displayName": "Completed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 2,
 								"displayName": "Failed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 3,
 								"displayName": "Processing",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 4,
 								"displayName": "Open",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 5,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							}
 						]
 					}
@@ -482,7 +486,6 @@
 				"displayName": "Subject",
 				"description": "Subject associated with the activity.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -493,7 +496,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -504,7 +506,6 @@
 				"displayName": "To",
 				"description": "Person who is the receiver of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -514,7 +515,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -525,7 +525,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the social activity.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -534,7 +534,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -544,7 +543,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -555,8 +553,16 @@
 				"displayName": "Regarding",
 				"description": "Shows the record that the social activity relates to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "community_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "community",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -565,7 +571,6 @@
 				"displayName": "Social Channel",
 				"description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "socialprofile_community",
@@ -594,7 +599,6 @@
 				"displayName": "Sentiment Value",
 				"description": "Value derived after assessing words commonly associated with a negative, neutral, or positive sentiment that occurs in a social post. Sentiment information can also be reported as numeric values.",
 				"semanticDomain": {
-					"structuralType": "float",
 					"minValue": -100000000000,
 					"maxValue": 100000000000
 				}
@@ -605,7 +609,6 @@
 				"displayName": "Created On",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -615,7 +618,6 @@
 				"displayName": "Post URL",
 				"description": "Shows the URL of the post.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Reference.URL",
 					"maxLength": 200
 				}
@@ -626,9 +628,17 @@
 				"displayName": "In Response To",
 				"description": "Unique identifier for the responses to a post. For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 160
+				}
+			},
+			{
+				"name": "postmessagetype_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "postmessagetype",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -637,7 +647,6 @@
 				"displayName": "Received As",
 				"description": "Shows if the social post originated as a private or public message.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "socialactivity_postmessagetype",
@@ -662,7 +671,6 @@
 				"displayName": "Post ID",
 				"description": "Unique identifier of the post. For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 160
 				}
@@ -673,7 +681,6 @@
 				"displayName": "Thread ID",
 				"description": "Unique identifier of the social conversation. For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 160
 				}
@@ -684,7 +691,7 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this Social Activity. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -693,7 +700,7 @@
 				"displayName": "Direction",
 				"description": "Select the direction of the post as incoming or outbound.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -702,7 +709,7 @@
 				"displayName": "Posted By",
 				"description": "Shows the author of the post on the corresponding social channel.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -711,7 +718,6 @@
 				"displayName": "Posted To",
 				"description": "Shows the recipients of the social post.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -722,7 +728,6 @@
 				"displayName": "Post Author Account",
 				"description": "Shows the parent account of the author of the post.",
 				"semanticDomain": {
-					"structuralType": "customer",
 					"semanticType": "Idea.Customer"
 				}
 			},
@@ -732,7 +737,6 @@
 				"displayName": "Post Author",
 				"description": "Shows the contact or account that authored the post.",
 				"semanticDomain": {
-					"structuralType": "customer",
 					"semanticType": "Idea.Customer"
 				}
 			},
@@ -742,7 +746,6 @@
 				"displayName": "Social Additional Parameters",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192
 				}
@@ -753,7 +756,6 @@
 				"displayName": "Additional Parameters",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192
 				}
@@ -764,7 +766,7 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the Social Activity record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -773,7 +775,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -784,7 +785,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -794,7 +794,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			}
@@ -807,8 +806,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -821,8 +820,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -838,8 +837,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -852,8 +851,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -869,8 +868,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -883,8 +882,8 @@
 				"entity": {
 					"type": "Customer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "47abe04e-126d-ecac-1cca-6cde2d98b881"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f4bc7ee4-cb15-9116-7ce0-7efd4bd9ab27"
 				},
 				"attributes": [
 					{
@@ -900,8 +899,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -914,8 +913,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b08939a8-c153-267f-f883-0463327dae74"
+					"semanticVersion": "0.5.0",
+					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
 				},
 				"attributes": [
 					{
@@ -931,8 +930,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -945,8 +944,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "6394865f-3ba0-f954-afa9-c8ee14664b85"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
 				},
 				"attributes": [
 					{
@@ -962,8 +961,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -976,8 +975,8 @@
 				"entity": {
 					"type": "SocialProfile",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "480f9880-9675-d412-a13f-b765b9f745ab"
+					"semanticVersion": "0.5.0",
+					"semanticId": "734ebb15-a303-2154-8ba8-2a88da8b1149"
 				},
 				"attributes": [
 					{
@@ -993,8 +992,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1007,8 +1006,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -1024,8 +1023,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1038,8 +1037,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1055,8 +1054,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1069,8 +1068,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -1086,8 +1085,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1100,8 +1099,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1117,8 +1116,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1131,8 +1130,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -1148,8 +1147,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -1162,8 +1161,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

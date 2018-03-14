@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "PriceLevel",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-				"semanticVersion": "0.4.0",
-				"semanticId": "efd18f68-8431-2ce4-a9c0-72e940075c60"
+				"semanticVersion": "0.5.0",
+				"semanticId": "4a960307-c03e-817a-5dcf-a026c9f8dcf8"
 			}
 		},
 		"description": "Entity that defines pricing levels.",
@@ -18,7 +18,6 @@
 				"displayName": "Price List",
 				"description": "Unique identifier of the price list.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,6 @@
 				"displayName": "Created On",
 				"description": "Date and time when the record was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -39,7 +37,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the price list.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -48,7 +46,6 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the record was modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -58,7 +55,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of the user who last modified the price list.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -67,7 +64,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the pricelevel.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -76,7 +73,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the pricelevel.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -85,7 +82,6 @@
 				"displayName": "Organization Id",
 				"description": "Unique identifier for the organization",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -95,7 +91,7 @@
 				"displayName": "Version Number",
 				"description": "Version Number",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -104,7 +100,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -115,7 +110,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -125,7 +119,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -136,7 +129,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -147,7 +139,6 @@
 				"displayName": "Name",
 				"description": "Name of the price list.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Name",
 					"maxLength": 100
 				}
@@ -158,7 +149,6 @@
 				"displayName": "Start Date",
 				"description": "Date on which the price list becomes effective.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -168,7 +158,6 @@
 				"displayName": "Description",
 				"description": "Description of the price list.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -178,8 +167,16 @@
 				"displayName": "End Date",
 				"description": "Date that is the last day the price list is valid.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
+				}
+			},
+			{
+				"name": "freighttermscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "freighttermscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -188,7 +185,6 @@
 				"displayName": "Freight Terms",
 				"description": "Freight terms for the price list.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "pricelevel_freighttermscode",
@@ -204,12 +200,20 @@
 				}
 			},
 			{
+				"name": "paymentmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "paymentmethodcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "paymentmethodcode",
 				"dataType": "String",
 				"displayName": "Payment Method ",
 				"description": "Payment terms to use with the price list.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "pricelevel_paymentmethodcode",
@@ -225,12 +229,20 @@
 				}
 			},
 			{
+				"name": "shippingmethodcode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "shippingmethodcode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "shippingmethodcode",
 				"dataType": "String",
 				"displayName": "Shipping Method",
 				"description": "Method of shipment for products in the price list.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "pricelevel_shippingmethodcode",
@@ -246,12 +258,20 @@
 				}
 			},
 			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statecode",
 				"dataType": "String",
 				"displayName": "Status ",
 				"description": "Status of the price list.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "pricelevel_statecode",
@@ -271,14 +291,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Reason for the status of the price list.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "pricelevel_statuscode",
 						"displayName": "Status Reason",
@@ -287,16 +314,12 @@
 							{
 								"value": 100001,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 100002,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							}
 						]
 					}
@@ -308,7 +331,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -319,7 +341,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the currency associated with the price level.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			}
@@ -332,8 +353,8 @@
 				"entity": {
 					"type": "PriceLevel",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "efd18f68-8431-2ce4-a9c0-72e940075c60"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4a960307-c03e-817a-5dcf-a026c9f8dcf8"
 				},
 				"attributes": [
 					{
@@ -346,8 +367,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{
@@ -363,8 +384,8 @@
 				"entity": {
 					"type": "PriceLevel",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "efd18f68-8431-2ce4-a9c0-72e940075c60"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4a960307-c03e-817a-5dcf-a026c9f8dcf8"
 				},
 				"attributes": [
 					{
@@ -377,8 +398,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -394,8 +415,8 @@
 				"entity": {
 					"type": "PriceLevel",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.productManagement",
-					"semanticVersion": "0.4.0",
-					"semanticId": "efd18f68-8431-2ce4-a9c0-72e940075c60"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4a960307-c03e-817a-5dcf-a026c9f8dcf8"
 				},
 				"attributes": [
 					{
@@ -408,8 +429,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{

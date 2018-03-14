@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "BulkOperation",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-				"semanticVersion": "0.4.0",
-				"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+				"semanticVersion": "0.5.0",
+				"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 			}
 		},
 		"description": "System operation used to perform lengthy and asynchronous operations on large data sets, such as distributing a campaign activity or quick campaign.",
@@ -18,7 +18,7 @@
 				"displayName": "Service",
 				"description": "Unique identifier for an associated service.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -27,7 +27,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -36,7 +36,6 @@
 				"displayName": "Actual End",
 				"description": "Shows the date and time when the quick campaign was completed or canceled.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -46,7 +45,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the activity.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -55,7 +54,6 @@
 				"displayName": "Activity",
 				"description": "Unique identifier of the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -66,7 +64,7 @@
 				"displayName": "Is Billed",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -75,7 +73,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -84,7 +82,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the quick campaign, such as the products or services offered.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 2000
 				}
@@ -95,8 +92,16 @@
 				"displayName": "Modified On",
 				"description": "Date and time when the bulk operation was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -105,7 +110,6 @@
 				"displayName": "Activity Type",
 				"description": "Type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -117,12 +121,20 @@
 				}
 			},
 			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statecode",
 				"dataType": "String",
 				"displayName": "Status",
 				"description": "Shows whether the quick campaign is open, closed, or canceled.  Closed or canceled quick campaigns are read-only and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "bulkoperation_statecode",
@@ -151,7 +163,6 @@
 				"displayName": "Due Date",
 				"description": "Scheduled end date and time of the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -161,7 +172,6 @@
 				"displayName": "Scheduled Duration",
 				"description": "Scheduled duration of the bulk operation, specified in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
 				}
@@ -172,9 +182,17 @@
 				"displayName": "Actual Duration",
 				"description": "Actual duration of the bulk operation in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -183,9 +201,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the quick campaign's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "bulkoperation_statuscode",
 						"displayName": "Status Reason",
@@ -194,37 +210,27 @@
 							{
 								"value": 1,
 								"displayName": "Pending",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "In Progress",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 3,
 								"displayName": "Aborted",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 4,
 								"displayName": "Completed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 5,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							}
 						]
 					}
@@ -236,7 +242,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the activity.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -245,7 +251,6 @@
 				"displayName": "Actual Start",
 				"description": "Shows the date and time when the activity was started or created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -255,8 +260,16 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
+				}
+			},
+			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -265,7 +278,6 @@
 				"displayName": "Priority",
 				"description": "Priority of the activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "none_bulkoperation_prioritycode",
@@ -294,7 +306,7 @@
 				"displayName": "Import File Name",
 				"description": "Choose the campaign from which the campaign activities were bulk-distributed.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -303,7 +315,6 @@
 				"displayName": "Subject",
 				"description": "Type a short description about the objective or primary topic of the quick campaign.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -314,7 +325,7 @@
 				"displayName": "Is Workflow Created",
 				"description": "Specifies if the bulk operation was created from a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -323,7 +334,6 @@
 				"displayName": "Start Date",
 				"description": "Scheduled start date and time of the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -333,7 +343,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -342,7 +352,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -351,7 +361,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -362,9 +371,17 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
+				}
+			},
+			{
+				"name": "instancetypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "instancetypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -373,7 +390,6 @@
 				"displayName": "Recurring Instance Type",
 				"description": "Type of instance of a recurring series.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "none_bulkoperation_instancetypecode",
@@ -410,7 +426,6 @@
 				"displayName": "Series Id",
 				"description": "Uniqueidentifier specifying the id of recurring series of an instance.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -420,7 +435,7 @@
 				"displayName": "Is Regular Activity",
 				"description": "Information regarding whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -429,7 +444,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -438,7 +453,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -447,7 +462,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -456,7 +471,6 @@
 				"displayName": "Currency",
 				"description": "Unique identifier of the currency associated with the activitypointer.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -466,7 +480,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Exchange rate for the currency associated with the activitypointer with respect to the base currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -477,7 +490,16 @@
 				"displayName": "Left Voice Mail",
 				"description": "Left the voice mail",
 				"semanticDomain": {
-					"structuralType": "bit"
+
+				}
+			},
+			{
+				"name": "community_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "community",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -486,7 +508,6 @@
 				"displayName": "Social Channel",
 				"description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -503,7 +524,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -514,7 +534,7 @@
 				"displayName": "Is Private",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -523,7 +543,6 @@
 				"displayName": "Exchange WebLink",
 				"description": "Shows the web link of Activity of type email.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -534,9 +553,17 @@
 				"displayName": "Exchange Item ID",
 				"description": "The message id of activity which is returned from Exchange Server.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
+				}
+			},
+			{
+				"name": "deliveryprioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "deliveryprioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -545,7 +572,6 @@
 				"displayName": "Delivery Priority",
 				"description": "Priority of delivery of the activity to the email server.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -562,7 +588,6 @@
 				"displayName": "Date Sent",
 				"description": "Date and time when the activity was sent.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -572,7 +597,6 @@
 				"displayName": "Date Delivery Last Attempted",
 				"description": "Date and time when the delivery of the activity was last attempted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -582,7 +606,7 @@
 				"displayName": "Sender's Mailbox",
 				"description": "Unique identifier of the mailbox associated with the sender of the email message.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -591,7 +615,6 @@
 				"displayName": "Delay activity processing until",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -601,7 +624,6 @@
 				"displayName": "Process",
 				"description": "Unique identifier of the Process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -611,7 +633,6 @@
 				"displayName": "Process Stage",
 				"description": "Unique identifier of the Stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -621,7 +642,6 @@
 				"displayName": "Activity Additional Parameters",
 				"description": "Additional information provided by the external application as JSON. For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192
 				}
@@ -632,7 +652,7 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -641,7 +661,7 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this case. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -650,7 +670,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -661,7 +680,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -671,7 +689,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -681,7 +698,6 @@
 				"displayName": "From",
 				"description": "Person who the activity is from.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -691,7 +707,6 @@
 				"displayName": "To",
 				"description": "Person who is the receiver of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -701,7 +716,6 @@
 				"displayName": "CC",
 				"description": "Carbon-copy (cc) recipients of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -711,7 +725,6 @@
 				"displayName": "BCC",
 				"description": "Blind Carbon-copy (bcc) recipients of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -721,7 +734,6 @@
 				"displayName": "Required Attendees",
 				"description": "List of required attendees for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -731,7 +743,6 @@
 				"displayName": "Optional Attendees",
 				"description": "List of optional attendees for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -741,7 +752,6 @@
 				"displayName": "Organizer",
 				"description": "Person who organized the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -751,7 +761,6 @@
 				"displayName": "Resources",
 				"description": "Users or facility/equipment that are required for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -761,7 +770,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -772,7 +780,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -782,7 +789,6 @@
 				"displayName": "Customers",
 				"description": "Customer with which the activity is associated.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -792,7 +798,6 @@
 				"displayName": "Outsource Vendors",
 				"description": "Outsource vendor with which activity is associated.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -802,9 +807,17 @@
 				"displayName": "Bulk Operation Number",
 				"description": "Shows the number for the quick campaign record, used to identify the quick campaign.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 32
+				}
+			},
+			{
+				"name": "createdrecordtypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "createdrecordtypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -813,7 +826,6 @@
 				"displayName": "Activity Type",
 				"description": "Choose the activity to create that determines how target prospects or customers in this quick campaign are contacted.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "bulkoperation_createdrecordtypecode",
@@ -854,7 +866,6 @@
 				"displayName": "Error Number",
 				"description": "Shows the error code that is used to troubleshoot issues in the quick campaign.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -865,9 +876,17 @@
 				"displayName": "No. of Failures",
 				"description": "Number of records which failed in the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "operationtypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "operationtypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -876,7 +895,6 @@
 				"displayName": "Operation",
 				"description": "Select the type of bulk operation process, such as quick campaign or campaign activity distribution.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "bulkoperation_operationtypecode",
@@ -917,7 +935,6 @@
 				"displayName": "Workflow information",
 				"description": "Information for bulk operation workflow.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 100000
 				}
@@ -928,7 +945,6 @@
 				"displayName": "Parameters",
 				"description": "XML string that contains the parameters to the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 100000
 				}
 			},
@@ -938,9 +954,17 @@
 				"displayName": "No. of Successes",
 				"description": "Number of records which succeeded in the bulk operation.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
+				}
+			},
+			{
+				"name": "targetedrecordtypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "targetedrecordtypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -949,7 +973,6 @@
 				"displayName": "Members Type",
 				"description": "Select the type of records targeted in the quick campaign to identify the target audience.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "bulkoperation_targetedrecordtypecode",
@@ -978,7 +1001,6 @@
 				"displayName": "Total Members",
 				"description": "Number of members to target.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -992,8 +1014,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1006,8 +1028,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -1023,8 +1045,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1037,8 +1059,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
@@ -1054,8 +1076,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1068,8 +1090,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -1085,8 +1107,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1099,8 +1121,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -1116,8 +1138,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1130,8 +1152,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1147,8 +1169,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1161,8 +1183,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+					"semanticVersion": "0.5.0",
+					"semanticId": "df394c24-7e33-6d24-83f6-e4ddb6829d9c"
 				},
 				"attributes": [
 					{
@@ -1178,8 +1200,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1192,8 +1214,8 @@
 				"entity": {
 					"type": "CampaignActivity",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "76b04004-ab55-9f5d-ba3a-8f1eacdf1eed"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4f529503-0844-3591-e359-165a738450f0"
 				},
 				"attributes": [
 					{
@@ -1209,8 +1231,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1223,8 +1245,8 @@
 				"entity": {
 					"type": "BookableResourceBookingHeader",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "55a1ba00-ba94-5607-a6c1-eb625236c9f7"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b29edd5c-b425-022d-fcb7-30789570573d"
 				},
 				"attributes": [
 					{
@@ -1240,8 +1262,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1254,8 +1276,8 @@
 				"entity": {
 					"type": "BookableResourceBooking",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "e459aa4c-e193-78fd-8cc8-2c542eb2935d"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8097cfff-6fcc-ec39-cb54-6e875b3b1594"
 				},
 				"attributes": [
 					{
@@ -1271,8 +1293,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1285,8 +1307,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "dfe39730-95bb-3b41-54f6-5dd514a36d1f"
 				},
 				"attributes": [
 					{
@@ -1302,8 +1324,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1316,8 +1338,8 @@
 				"entity": {
 					"type": "Lead",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7be0e6ca-0e97-e54f-9b5c-80c8c20ab225"
+					"semanticVersion": "0.5.0",
+					"semanticId": "50a78564-684d-1c8a-19b0-54b12a36cec7"
 				},
 				"attributes": [
 					{
@@ -1333,8 +1355,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1347,8 +1369,8 @@
 				"entity": {
 					"type": "List",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5aed4c08-ea2d-8a53-5eb3-74d8ddf9e204"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3c53d07e-2e31-7257-5904-5938d95ec947"
 				},
 				"attributes": [
 					{
@@ -1364,8 +1386,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1378,8 +1400,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1395,8 +1417,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1409,43 +1431,12 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
 						"name": "knowledgebaserecordid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "bulkoperation_mailbox_sendermailboxid",
-			"referencing": {
-				"entity": {
-					"type": "BulkOperation",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
-				},
-				"attributes": [
-					{
-						"name": "sendermailboxid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1457,8 +1448,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1471,8 +1462,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -1488,8 +1479,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1502,8 +1493,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{

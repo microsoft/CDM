@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "QueueItem",
 				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.4.0",
-				"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+				"semanticVersion": "0.5.0",
+				"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 			}
 		},
 		"description": "A specific item in a queue, such as a case record or an activity record.",
@@ -18,7 +18,6 @@
 				"displayName": "Queue Item",
 				"description": "Unique identifier of the queue item.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
 				}
@@ -29,7 +28,7 @@
 				"displayName": "Queue",
 				"description": "Choose the queue that the item is assigned to.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -38,8 +37,16 @@
 				"displayName": "Object",
 				"description": "Choose the activity, case, or article assigned to the queue.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
+				}
+			},
+			{
+				"name": "objecttypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "objecttypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -48,7 +55,6 @@
 				"displayName": "Type",
 				"description": "Select the type of the queue item, such as activity, case, or appointment.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "queueitem_objecttypecode",
@@ -69,7 +75,6 @@
 				"displayName": "Title",
 				"description": "Shows the title or name that describes the queue record. This value is copied from the record that was assigned to the queue.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Identity.Title",
 					"maxLength": 300
 				}
@@ -80,7 +85,6 @@
 				"displayName": "Entered Queue",
 				"description": "Shows the date the record was assigned to the queue.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -90,7 +94,6 @@
 				"displayName": "Priority",
 				"description": "Priority of the queue item.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -101,7 +104,6 @@
 				"displayName": "Status (deprecated)",
 				"description": "Status of the queue item.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -112,7 +114,6 @@
 				"displayName": "Status Reason (deprecated)",
 				"description": "Reason for the status of the queue item.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": 0,
 					"maxValue": 1000000000
 				}
@@ -123,7 +124,6 @@
 				"displayName": "Created On",
 				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -133,7 +133,7 @@
 				"displayName": "Created By",
 				"description": "Shows who created the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -142,7 +142,7 @@
 				"displayName": "Modified By",
 				"description": "Shows who last updated the record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -151,7 +151,6 @@
 				"displayName": "Modified On",
 				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -161,7 +160,6 @@
 				"displayName": "To",
 				"description": "Recipients listed on the To line of the message for email queue items.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500
 				}
@@ -172,7 +170,6 @@
 				"displayName": "From",
 				"description": "Sender who created the queue item.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 250
 				}
@@ -183,7 +180,6 @@
 				"displayName": "Organization",
 				"description": "Unique identifier of the organization with which the queue item is associated.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Idea.Organization"
 				}
 			},
@@ -193,7 +189,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the queue item.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -202,7 +198,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -213,7 +208,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -1,
 					"maxValue": 2147483647
 				}
@@ -224,7 +218,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -234,7 +227,6 @@
 				"displayName": "Worked On",
 				"description": "Shows the date and time when the queue item was last assigned to a user.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -244,7 +236,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the queue item.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -253,7 +245,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user who owns the queue item.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -262,7 +254,7 @@
 				"displayName": "Worked By",
 				"description": "Shows who is working on the queue item.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -271,7 +263,16 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the queue item.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
+				}
+			},
+			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -280,9 +281,7 @@
 				"displayName": "Status Reason",
 				"description": "Select the item's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "queueitem_statuscode",
 						"displayName": "Status Reason",
@@ -291,19 +290,24 @@
 							{
 								"value": 2,
 								"displayName": "Inactive",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 1,
 								"displayName": "Active",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							}
 						]
 					}
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -312,7 +316,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the queue record is active or inactive. Inactive queue records are read-only and can't be edited unless they are reactivated.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "queueitem_statecode",
@@ -337,7 +340,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Shows who created the record on behalf of another user.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -346,7 +349,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the queueitem.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -355,7 +358,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -365,7 +367,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -376,7 +377,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Unique identifier of the data import or data migration that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -390,8 +390,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -404,8 +404,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c3ec51c-0bae-05a0-e9bd-02bce2d2dea1"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
 				},
 				"attributes": [
 					{
@@ -421,8 +421,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -435,8 +435,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "4c9d3171-9121-bd0f-7e55-af62d8bd9782"
+					"semanticVersion": "0.5.0",
+					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
 				},
 				"attributes": [
 					{
@@ -452,8 +452,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -466,8 +466,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -483,8 +483,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -497,8 +497,8 @@
 				"entity": {
 					"type": "Queue",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b9161e62-db25-8fe0-93cb-7fc16edcd6df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a4bffdb6-ba01-b1c1-25a5-4bc71b67ad8c"
 				},
 				"attributes": [
 					{
@@ -514,8 +514,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -528,8 +528,8 @@
 				"entity": {
 					"type": "RecurringAppointmentMaster",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "5972bba0-b79b-f14b-14ed-2cdb81862557"
+					"semanticVersion": "0.5.0",
+					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
 				},
 				"attributes": [
 					{
@@ -545,8 +545,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -559,8 +559,8 @@
 				"entity": {
 					"type": "Fax",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1b662506-1bc7-4927-aa31-c3bc72413fc3"
+					"semanticVersion": "0.5.0",
+					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
 				},
 				"attributes": [
 					{
@@ -576,8 +576,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -590,8 +590,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -607,8 +607,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -621,8 +621,8 @@
 				"entity": {
 					"type": "SocialActivity",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "530c1a02-f117-05f5-5346-2cc28db98c73"
+					"semanticVersion": "0.5.0",
+					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
 				},
 				"attributes": [
 					{
@@ -638,8 +638,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -652,8 +652,8 @@
 				"entity": {
 					"type": "Task",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "61dffda4-ce8d-527d-448a-fe0fa8418f00"
+					"semanticVersion": "0.5.0",
+					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
 				},
 				"attributes": [
 					{
@@ -669,8 +669,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -683,8 +683,8 @@
 				"entity": {
 					"type": "PhoneCall",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "edb76fc4-cb3e-86c5-e84b-38b26fd3e221"
+					"semanticVersion": "0.5.0",
+					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
 				},
 				"attributes": [
 					{
@@ -700,8 +700,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -714,8 +714,8 @@
 				"entity": {
 					"type": "Email",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "40bf9cc8-b0a7-c680-64aa-2540418926cc"
+					"semanticVersion": "0.5.0",
+					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
 				},
 				"attributes": [
 					{
@@ -731,8 +731,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -745,8 +745,8 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8c12653f-20dd-9747-cc63-cd9ef68f5c96"
+					"semanticVersion": "0.5.0",
+					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
 				},
 				"attributes": [
 					{
@@ -762,8 +762,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -776,8 +776,8 @@
 				"entity": {
 					"type": "Letter",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "fd446ac6-2d51-ef78-4b82-0d59cd1509df"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
 				},
 				"attributes": [
 					{
@@ -793,8 +793,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -807,8 +807,8 @@
 				"entity": {
 					"type": "Appointment",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "cbc4c152-9ad5-13d1-d7d3-3db95531d4d0"
+					"semanticVersion": "0.5.0",
+					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
 				},
 				"attributes": [
 					{
@@ -824,8 +824,8 @@
 				"entity": {
 					"type": "QueueItem",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "96a54064-b3ca-4231-b46b-0f33e4b6b6a6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
 				},
 				"attributes": [
 					{
@@ -838,8 +838,8 @@
 				"entity": {
 					"type": "Organization",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "a4947b8f-13b4-1ddd-eadd-9a2311ab5b0c"
+					"semanticVersion": "0.5.0",
+					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
 				},
 				"attributes": [
 					{

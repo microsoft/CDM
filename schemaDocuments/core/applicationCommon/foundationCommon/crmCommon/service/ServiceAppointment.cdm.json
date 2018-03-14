@@ -1,12 +1,12 @@
 {
-	"jsonSchemaSemanticVersion": "0.4.0",
+	"jsonSchemaSemanticVersion": "0.5.0",
 	"entity": {
 		"semanticDomain": {
 			"class": {
 				"type": "ServiceAppointment",
 				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-				"semanticVersion": "0.4.0",
-				"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+				"semanticVersion": "0.5.0",
+				"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 			}
 		},
 		"description": "Activity offered by the organization to satisfy its customer's needs. Each service activity includes date, time, duration, and required resources.",
@@ -18,7 +18,6 @@
 				"displayName": "Additional Parameters",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"semanticType": "Reference.Description",
 					"maxLength": 8192
 				}
@@ -29,9 +28,17 @@
 				"displayName": "Service Activity",
 				"description": "Unique identifier of the service activity.",
 				"semanticDomain": {
-					"structuralType": "primarykey",
 					"semanticType": "Object.Identity.UniqueIdentifer",
 					"isPrimaryKey": true
+				}
+			},
+			{
+				"name": "activitytypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "activitytypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -40,7 +47,6 @@
 				"displayName": "Activity Type",
 				"description": "Shows the type of activity.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -57,7 +63,6 @@
 				"displayName": "Actual Duration",
 				"description": "Shows the value selected in the Duration field on the service activity at the time the service activity is closed as completed. The duration is used to report the time spent on the activity.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -69,7 +74,6 @@
 				"displayName": "Actual End",
 				"description": "Enter the actual end date and time of the service activity. By default, it displays when the activity was closed or canceled.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -79,8 +83,16 @@
 				"displayName": "Actual Start",
 				"description": "Enter the actual start date and time for the service activity. By default, it displays when the activity was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "community_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "community",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -89,7 +101,6 @@
 				"displayName": "Social Channel",
 				"description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -106,7 +117,7 @@
 				"displayName": "Created By",
 				"description": "Unique identifier of the user who created the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -115,7 +126,6 @@
 				"displayName": "Date Created",
 				"description": "Date and time when the activity was created.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -125,7 +135,7 @@
 				"displayName": "Created By (Delegate)",
 				"description": "Unique identifier of the delegate user who created the activitypointer.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -134,8 +144,16 @@
 				"displayName": "Date Delivery Last Attempted",
 				"description": "Date and time when the delivery of the activity was last attempted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "deliveryprioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "deliveryprioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -144,7 +162,6 @@
 				"displayName": "Delivery Priority",
 				"description": "Priority of delivery of the activity to the email server.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"items": [
@@ -161,7 +178,6 @@
 				"displayName": "Description",
 				"description": "Type additional information to describe the service activity, such as key talking points or objectives.",
 				"semanticDomain": {
-					"structuralType": "ntext",
 					"maxLength": 2000
 				}
 			},
@@ -171,7 +187,6 @@
 				"displayName": "Exchange Item ID",
 				"description": "The message id of activity which is returned from Exchange Server.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -182,7 +197,6 @@
 				"displayName": "Exchange Rate",
 				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
 				"semanticDomain": {
-					"structuralType": "decimal",
 					"minValue": 1E-10,
 					"maxValue": 100000000000
 				}
@@ -193,9 +207,17 @@
 				"displayName": "Exchange WebLink",
 				"description": "Shows the web link of Activity of type email.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
+				}
+			},
+			{
+				"name": "instancetypecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "instancetypecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -204,7 +226,6 @@
 				"displayName": "Recurring Instance Type",
 				"description": "Type of instance of a recurring series.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "none_serviceappointment_instancetypecode",
@@ -241,7 +262,7 @@
 				"displayName": "Is Billed",
 				"description": "Information which specifies whether the service activity was billed as part of resolving a case.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -250,7 +271,7 @@
 				"displayName": "Is Private",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -259,7 +280,7 @@
 				"displayName": "Is Regular Activity",
 				"description": "Information regarding whether the activity is a regular activity type or event type.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -268,7 +289,7 @@
 				"displayName": "Is Workflow Created",
 				"description": "Information which specifies if the service activity was created from a workflow rule.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -277,7 +298,6 @@
 				"displayName": "Last On Hold Time",
 				"description": "Contains the date and time stamp of the last on hold time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -287,7 +307,7 @@
 				"displayName": "Left Voice Mail",
 				"description": "Left the voice mail",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -296,7 +316,7 @@
 				"displayName": "Modified By",
 				"description": "Unique identifier of user who last modified the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -305,7 +325,6 @@
 				"displayName": "Last Updated",
 				"description": "Date and time when activity was last modified.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Modify"
 				}
 			},
@@ -315,7 +334,7 @@
 				"displayName": "Modified By (Delegate)",
 				"description": "Unique identifier of the delegate user who last modified the activitypointer.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -324,7 +343,6 @@
 				"displayName": "On Hold Time (Minutes)",
 				"description": "Shows how long, in minutes, that the record was on hold.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -335,7 +353,7 @@
 				"displayName": "Owner",
 				"description": "Unique identifier of the user or team who owns the activity.",
 				"semanticDomain": {
-					"structuralType": "owner"
+
 				}
 			},
 			{
@@ -344,7 +362,7 @@
 				"displayName": "Owning Business Unit",
 				"description": "Unique identifier of the business unit that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -353,7 +371,7 @@
 				"displayName": "Owning Team",
 				"description": "Unique identifier of the team that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -362,7 +380,7 @@
 				"displayName": "Owning User",
 				"description": "Unique identifier of the user that owns the activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -371,8 +389,16 @@
 				"displayName": "Delay activity processing until",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
+				}
+			},
+			{
+				"name": "prioritycode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.OptionCode.Display",
+					"inSupportOf": "prioritycode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -381,7 +407,6 @@
 				"displayName": "Priority",
 				"description": "Select the priority so that preferred customers or critical issues are handled quickly.",
 				"semanticDomain": {
-					"structuralType": "picklist",
 					"semanticType": "Measurement.OptionCode",
 					"constrainedList": {
 						"name": "serviceappointment_prioritycode",
@@ -410,7 +435,6 @@
 				"displayName": "Process",
 				"description": "Unique identifier of the Process.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -420,7 +444,6 @@
 				"displayName": "Regarding",
 				"description": "Choose the record that the service activity relates to.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Reference.Regarding"
 				}
 			},
@@ -430,7 +453,6 @@
 				"displayName": "Scheduled Duration",
 				"description": "Shows the expected duration of the service activity, in minutes.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"semanticType": "Measurement.Duration",
 					"minValue": 0,
 					"maxValue": 2147483647
@@ -442,7 +464,6 @@
 				"displayName": "Scheduled End",
 				"description": "Enter the expected due date and time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -452,7 +473,6 @@
 				"displayName": "Scheduled Start",
 				"description": "Enter the expected due date and time.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -462,7 +482,7 @@
 				"displayName": "Sender's Mailbox",
 				"description": "Unique identifier of the mailbox associated with the sender of the email message.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -471,7 +491,6 @@
 				"displayName": "Date Sent",
 				"description": "Date and time when the activity was sent.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date"
 				}
 			},
@@ -481,7 +500,6 @@
 				"displayName": "Series Id",
 				"description": "Uniqueidentifier specifying the id of recurring series of an instance.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
 				}
 			},
@@ -491,7 +509,7 @@
 				"displayName": "Service",
 				"description": "Choose the service scheduled to be performed during the service activity.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -500,7 +518,7 @@
 				"displayName": "SLA",
 				"description": "Choose the service level agreement (SLA) that you want to apply to the service appointment record.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -509,7 +527,7 @@
 				"displayName": "Last SLA applied",
 				"description": "Last SLA that was applied to this email. This field is for internal use only.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -518,7 +536,6 @@
 				"displayName": "Sort Date",
 				"description": "Shows the date and time by which the activities are sorted.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Occurrence"
 				}
 			},
@@ -528,8 +545,16 @@
 				"displayName": "Process Stage",
 				"description": "Unique identifier of the Stage.",
 				"semanticDomain": {
-					"structuralType": "uniqueidentifier",
 					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
+				}
+			},
+			{
+				"name": "statecode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.State.Display",
+					"inSupportOf": "statecode",
+					"isReadOnly": true
 				}
 			},
 			{
@@ -538,7 +563,6 @@
 				"displayName": "Status",
 				"description": "Shows whether the service activity is open, completed, or canceled. Completed and canceled service activities are read-only and can't be edited.",
 				"semanticDomain": {
-					"structuralType": "state",
 					"semanticType": "Measurement.State",
 					"constrainedList": {
 						"name": "serviceappointment_statecode",
@@ -566,14 +590,21 @@
 				}
 			},
 			{
+				"name": "statuscode_display",
+				"dataType": "String",
+				"semanticDomain": {
+					"semanticType": "Measurement.Status.Display",
+					"inSupportOf": "statuscode",
+					"isReadOnly": true
+				}
+			},
+			{
 				"name": "statuscode",
 				"dataType": "String",
 				"displayName": "Status Reason",
 				"description": "Select the service activity's status.",
 				"semanticDomain": {
-					"structuralType": "status",
 					"semanticType": "Measurement.Status",
-					"inSupportOf": "state",
 					"constrainedList": {
 						"name": "serviceappointment_statuscode",
 						"displayName": "Status Reason",
@@ -582,65 +613,47 @@
 							{
 								"value": 1,
 								"displayName": "Requested",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 2,
 								"displayName": "Tentative",
-								"annotations": [
-									"whenStateIs:0"
-								]
+								"correlationValue:": "0"
 							},
 							{
 								"value": 3,
 								"displayName": "Pending",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 4,
 								"displayName": "Reserved",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 6,
 								"displayName": "In Progress",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 7,
 								"displayName": "Arrived",
-								"annotations": [
-									"whenStateIs:3"
-								]
+								"correlationValue:": "3"
 							},
 							{
 								"value": 8,
 								"displayName": "Completed",
-								"annotations": [
-									"whenStateIs:1"
-								]
+								"correlationValue:": "1"
 							},
 							{
 								"value": 9,
 								"displayName": "Canceled",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							},
 							{
 								"value": 10,
 								"displayName": "No Show",
-								"annotations": [
-									"whenStateIs:2"
-								]
+								"correlationValue:": "2"
 							}
 						]
 					}
@@ -652,7 +665,6 @@
 				"displayName": "Subject",
 				"description": "Type a short description about the objective or primary topic of the service activity.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 200
 				}
@@ -663,7 +675,6 @@
 				"displayName": "Time Zone Rule Version Number",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -674,7 +685,6 @@
 				"displayName": "Currency",
 				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
 				"semanticDomain": {
-					"structuralType": "lookup",
 					"semanticType": "Measurement.Currency.Type"
 				}
 			},
@@ -684,7 +694,6 @@
 				"displayName": "Traversed Path",
 				"description": "For internal use only.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 1250
 				}
@@ -695,7 +704,6 @@
 				"displayName": "UTC Conversion Time Zone Code",
 				"description": "Time zone code that was in use when the record was created.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -706,7 +714,7 @@
 				"displayName": "Version Number",
 				"description": "Version number of the activity.",
 				"semanticDomain": {
-					"structuralType": "timestamp"
+
 				}
 			},
 			{
@@ -715,7 +723,6 @@
 				"displayName": "From",
 				"description": "Person who the activity is from.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -725,7 +732,6 @@
 				"displayName": "To",
 				"description": "Person who is the receiver of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -735,7 +741,6 @@
 				"displayName": "CC",
 				"description": "Carbon-copy (cc) recipients of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -745,7 +750,6 @@
 				"displayName": "BCC",
 				"description": "Blind Carbon-copy (bcc) recipients of the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -755,7 +759,6 @@
 				"displayName": "Required Attendees",
 				"description": "List of required attendees for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -765,7 +768,6 @@
 				"displayName": "Optional Attendees",
 				"description": "List of optional attendees for the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -775,7 +777,6 @@
 				"displayName": "Organizer",
 				"description": "Person who organized the activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -785,7 +786,6 @@
 				"displayName": "Resources",
 				"description": "Enter the user, facility, or equipment required to complete the service activity.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -795,7 +795,6 @@
 				"displayName": "Import Sequence Number",
 				"description": "Sequence number of the import that created this record.",
 				"semanticDomain": {
-					"structuralType": "int",
 					"minValue": -2147483648,
 					"maxValue": 2147483647
 				}
@@ -806,7 +805,6 @@
 				"displayName": "Record Created On",
 				"description": "Date and time that the record was migrated.",
 				"semanticDomain": {
-					"structuralType": "datetime",
 					"semanticType": "Measurement.Date.Creation"
 				}
 			},
@@ -816,7 +814,6 @@
 				"displayName": "Customers",
 				"description": "Enter the accounts and contacts for whom the service activity is being performed.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -826,7 +823,6 @@
 				"displayName": "Outsource Vendors",
 				"description": "Outsource vendor with which activity is associated.",
 				"semanticDomain": {
-					"structuralType": "partylist",
 					"semanticType": "Activity.Party"
 				}
 			},
@@ -836,7 +832,6 @@
 				"displayName": "Category",
 				"description": "Type a category to identify the service activity type, such as routine maintenance or service call, to tie the service activity to a business group or function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -847,7 +842,7 @@
 				"displayName": "All Day Event",
 				"description": "Select whether the service activity is an all-day event to make sure the required resources are scheduled for the full day.",
 				"semanticDomain": {
-					"structuralType": "bit"
+
 				}
 			},
 			{
@@ -856,7 +851,6 @@
 				"displayName": "Delivery Location",
 				"description": "Type the location where the service activity will take place, such as a conference room, customer office, or other venue.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "text",
 					"maxLength": 500
 				}
@@ -867,7 +861,7 @@
 				"displayName": "Site",
 				"description": "Choose the site or location where the service activity will be performed.",
 				"semanticDomain": {
-					"structuralType": "lookup"
+
 				}
 			},
 			{
@@ -876,7 +870,6 @@
 				"displayName": "Sub-Category",
 				"description": "Type a subcategory to identify the service activity type and relate the activity to a specific product, service region, business group, or other function.",
 				"semanticDomain": {
-					"structuralType": "nvarchar",
 					"semanticType": "Object.Category",
 					"maxLength": 250
 				}
@@ -890,8 +883,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -904,8 +897,8 @@
 				"entity": {
 					"type": "SystemUser",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "580b06dd-e613-7786-9327-f1ef2a152ba6"
+					"semanticVersion": "0.5.0",
+					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
 				},
 				"attributes": [
 					{
@@ -921,8 +914,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -935,8 +928,8 @@
 				"entity": {
 					"type": "Team",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "3fb790f7-fe1a-4e99-f9ef-202904789f40"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f3aa2545-6085-cc5d-1f98-5ca5ca9545a8"
 				},
 				"attributes": [
 					{
@@ -952,8 +945,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -966,8 +959,8 @@
 				"entity": {
 					"type": "Service",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f96f3d60-518d-282b-e9d2-a0e41a5f587e"
+					"semanticVersion": "0.5.0",
+					"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
 				},
 				"attributes": [
 					{
@@ -983,8 +976,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -997,8 +990,8 @@
 				"entity": {
 					"type": "SLA",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "34da414e-dc2f-dfc3-b1f2-391cd2f8a398"
+					"semanticVersion": "0.5.0",
+					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
 				},
 				"attributes": [
 					{
@@ -1014,8 +1007,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1028,8 +1021,8 @@
 				"entity": {
 					"type": "BusinessUnit",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0b210439-67d9-aed1-633e-b6dc23d57d0b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
 				},
 				"attributes": [
 					{
@@ -1045,8 +1038,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1059,43 +1052,12 @@
 				"entity": {
 					"type": "ActivityPointer",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f8933236-f276-4bb5-ffb1-d31fd98f6199"
+					"semanticVersion": "0.5.0",
+					"semanticId": "900527a9-8536-27bf-3dbb-3f844bc8fbc1"
 				},
 				"attributes": [
 					{
 						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "serviceappointment_mailbox_sendermailboxid",
-			"referencing": {
-				"entity": {
-					"type": "ServiceAppointment",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
-				},
-				"attributes": [
-					{
-						"name": "sendermailboxid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Mailbox",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f1451cd0-6134-9001-a819-1f4709dc3829"
-				},
-				"attributes": [
-					{
-						"name": "mailboxid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1107,8 +1069,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1121,8 +1083,8 @@
 				"entity": {
 					"type": "Account",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "b81a7f80-dbc2-b426-cc5a-4c07a01f4959"
+					"semanticVersion": "0.5.0",
+					"semanticId": "df394c24-7e33-6d24-83f6-e4ddb6829d9c"
 				},
 				"attributes": [
 					{
@@ -1138,8 +1100,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1152,8 +1114,8 @@
 				"entity": {
 					"type": "BulkOperation",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "09d8c0f8-eb83-8978-b817-18cf169fe3ec"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0be76f15-07fc-7fc4-0d8d-3f52e04e20b9"
 				},
 				"attributes": [
 					{
@@ -1169,8 +1131,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1183,8 +1145,8 @@
 				"entity": {
 					"type": "CampaignActivity",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "76b04004-ab55-9f5d-ba3a-8f1eacdf1eed"
+					"semanticVersion": "0.5.0",
+					"semanticId": "4f529503-0844-3591-e359-165a738450f0"
 				},
 				"attributes": [
 					{
@@ -1200,8 +1162,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1214,8 +1176,8 @@
 				"entity": {
 					"type": "BookableResourceBookingHeader",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "55a1ba00-ba94-5607-a6c1-eb625236c9f7"
+					"semanticVersion": "0.5.0",
+					"semanticId": "b29edd5c-b425-022d-fcb7-30789570573d"
 				},
 				"attributes": [
 					{
@@ -1231,8 +1193,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1245,8 +1207,8 @@
 				"entity": {
 					"type": "BookableResourceBooking",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.solutions.msSolutions.scheduling",
-					"semanticVersion": "0.4.0",
-					"semanticId": "e459aa4c-e193-78fd-8cc8-2c542eb2935d"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8097cfff-6fcc-ec39-cb54-6e875b3b1594"
 				},
 				"attributes": [
 					{
@@ -1262,8 +1224,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1276,8 +1238,8 @@
 				"entity": {
 					"type": "Campaign",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.marketing",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0a3b0551-2870-096d-5db0-c869729e49a4"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2e6d6792-ce22-cc81-4c17-ea2524ddbcc0"
 				},
 				"attributes": [
 					{
@@ -1293,8 +1255,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1307,8 +1269,8 @@
 				"entity": {
 					"type": "KnowledgeArticle",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "1936925b-a042-e5b5-b69d-6e040f68422f"
+					"semanticVersion": "0.5.0",
+					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
 				},
 				"attributes": [
 					{
@@ -1324,8 +1286,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1338,8 +1300,8 @@
 				"entity": {
 					"type": "KnowledgeBaseRecord",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "8133e69f-3ca5-dca9-3bb0-ab654f311d12"
+					"semanticVersion": "0.5.0",
+					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
 				},
 				"attributes": [
 					{
@@ -1355,8 +1317,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1369,8 +1331,8 @@
 				"entity": {
 					"type": "Lead",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7be0e6ca-0e97-e54f-9b5c-80c8c20ab225"
+					"semanticVersion": "0.5.0",
+					"semanticId": "50a78564-684d-1c8a-19b0-54b12a36cec7"
 				},
 				"attributes": [
 					{
@@ -1386,8 +1348,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1400,8 +1362,8 @@
 				"entity": {
 					"type": "Site",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "ddd0776f-c6ab-2097-d5c9-23c6b4ddd708"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
 				},
 				"attributes": [
 					{
@@ -1417,8 +1379,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1431,8 +1393,8 @@
 				"entity": {
 					"type": "Contact",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "74e4ef2b-39e9-e798-5e07-3095ec1b5f1b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "dfe39730-95bb-3b41-54f6-5dd514a36d1f"
 				},
 				"attributes": [
 					{
@@ -1448,8 +1410,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1462,8 +1424,8 @@
 				"entity": {
 					"type": "Contract",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7ce080eb-5e88-d5af-fac7-656ea2914c8e"
+					"semanticVersion": "0.5.0",
+					"semanticId": "7f01ae8a-aa15-bf65-6257-199c48448fd3"
 				},
 				"attributes": [
 					{
@@ -1479,8 +1441,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1493,43 +1455,12 @@
 				"entity": {
 					"type": "Entitlement",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "0e1e923c-73ab-193e-1f77-ca51e49eef30"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2ae201f2-9075-733d-dbc6-c96e7ae2795c"
 				},
 				"attributes": [
 					{
 						"name": "entitlementid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "entitlementtemplate_ServiceAppointments",
-			"referencing": {
-				"entity": {
-					"type": "ServiceAppointment",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
-				},
-				"attributes": [
-					{
-						"name": "regardingobjectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "EntitlementTemplate",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "27b2c278-f860-4e97-fc0b-a1dd0bebe978"
-				},
-				"attributes": [
-					{
-						"name": "entitlementtemplateid",
 						"comparisonOrder": 0
 					}
 				]
@@ -1541,8 +1472,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1555,8 +1486,8 @@
 				"entity": {
 					"type": "Incident",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "c2ea8f24-aa95-f0a1-429c-8ad1659f33ce"
+					"semanticVersion": "0.5.0",
+					"semanticId": "d6e874a6-8d1d-5af8-fb75-e3b884b0c466"
 				},
 				"attributes": [
 					{
@@ -1572,8 +1503,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1586,8 +1517,8 @@
 				"entity": {
 					"type": "TransactionCurrency",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "7d75b002-b097-be3c-9e2e-3c3a86ceac9b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
 				},
 				"attributes": [
 					{
@@ -1603,8 +1534,8 @@
 				"entity": {
 					"type": "ServiceAppointment",
 					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.4.0",
-					"semanticId": "49f348db-2c41-9829-eb97-b5a5c7bcb115"
+					"semanticVersion": "0.5.0",
+					"semanticId": "2292781c-50a0-f0e5-f921-902692cf89ae"
 				},
 				"attributes": [
 					{
@@ -1617,8 +1548,8 @@
 				"entity": {
 					"type": "Owner",
 					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.4.0",
-					"semanticId": "f60e3c77-c3ea-1f47-5d05-ea5376a1d24b"
+					"semanticVersion": "0.5.0",
+					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
 				},
 				"attributes": [
 					{
