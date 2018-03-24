@@ -17,11 +17,11 @@ There are two primary ways to consume the information in this repository:
 
 # Versioning
 
-Maintaining forward and backwards compatibility is a key goal of the CDM. Therefore, the CDM uses purely additive versioning, which means any revision of the CDM following an initial release will not:
+Maintaining forward and backwards compatibility is a key goal of the CDM. Therefore, the CDM uses purely additive versioning, which means any revision of the CDM following a "1.0" release will not:
 
-* Introduce new mandatory properties on existing entities
-* Rename existing properties or existing entities
-* Remove previously defined properties
+* Introduce new mandatory attributes on existing entities, or change an optional attribute to be mandatory
+* Rename existing attributes or existing entities
+* Remove previously defined attributes
 
 # Contributing
 
