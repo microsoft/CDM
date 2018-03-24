@@ -21,7 +21,7 @@ Maintaining forward and backward compatibility is a key goal of the CDM. Therefo
 
 * Introduce new mandatory attributes on previously published entities, or change an optional attribute to be mandatory
 * Rename previously published attributes or entities
-* Remove previously defined attributes
+* Remove previously published attributes
 
 # Contributing
 
