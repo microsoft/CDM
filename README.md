@@ -10,17 +10,17 @@ The CDM is undergoing a specification effort driven by Microsoft. The documents 
 
 # Repository Layout
 
-There are two primary ways to consume the information in this repository:
+There are two ways to consume the information in this repository:
 
 1. [Entity Reference Index](schemaDocuments#directory-of-cdm-entities)
 2. [Visual Entity Navigator](schemaDocuments/readme.md) for interactively exploring entities, entity extensions/inheritance, attributes, and relationships
 
 # Versioning
 
-Maintaining forward and backwards compatibility is a key goal of the CDM. Therefore, the CDM uses purely additive versioning, which means any revision of the CDM following a "1.0" release will not:
+Maintaining forward and backward compatibility is a key goal of the CDM. Therefore, the CDM uses only additive versioning, which means any revision of the CDM following a "1.0" release will not:
 
-* Introduce new mandatory attributes on existing entities, or change an optional attribute to be mandatory
-* Rename existing attributes or existing entities
+* Introduce new mandatory attributes on previously published entities, or change an optional attribute to be mandatory
+* Rename previously published attributes or entities
 * Remove previously defined attributes
 
 # Contributing
