@@ -1,458 +1,2758 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "CompetitorAddress",
-				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-				"semanticVersion": "0.5.0",
-				"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-			}
-		},
-		"description": "Additional addresses for a competitor. The first two addresses are stored in the competitor object.",
-		"displayName": "Competitor Address",
-		"attributes": [
-			{
-				"name": "competitoraddressid",
-				"dataType": "Guid",
-				"displayName": "Competitor Address",
-				"description": "Unique identifier of the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the competitor address was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the competitor address was last modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who last modified the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version Number",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Sequence number of the import that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Address Name",
-				"description": "Name used to identify the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 200
-				}
-			},
-			{
-				"name": "addressnumber",
-				"dataType": "Int32",
-				"displayName": "Address Number",
-				"description": "Information about which competitor address is applicable.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "addresstypecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "addresstypecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "addresstypecode",
-				"dataType": "String",
-				"displayName": "Address Type",
-				"description": "Type of address for the competitor, such as primary address.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "competitoraddress_addresstypecode",
-						"displayName": "competitoraddress_addresstypecode",
-						"description": "Type of address for the competitor, such as primary address.",
-						"items": [
-							{
-								"value": 0
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "city",
-				"dataType": "String",
-				"displayName": "City",
-				"description": "City name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "composite",
-				"dataType": "String",
-				"displayName": "Address",
-				"description": "Shows the complete address.",
-				"semanticDomain": {
-					"semanticType": "Reference.Description",
-					"maxLength": 1000
-				}
-			},
-			{
-				"name": "country",
-				"dataType": "String",
-				"displayName": "Country/Region",
-				"description": "Country/region name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "county",
-				"dataType": "String",
-				"displayName": "County",
-				"description": "County name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "fax",
-				"dataType": "String",
-				"displayName": "Fax",
-				"description": "Fax number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "latitude",
-				"dataType": "Double",
-				"displayName": "Latitude",
-				"description": "Latitude for the competitor address.",
-				"semanticDomain": {
-					"minValue": -90,
-					"maxValue": 90
-				}
-			},
-			{
-				"name": "line1",
-				"dataType": "String",
-				"displayName": "Street 1",
-				"description": "First line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "line2",
-				"dataType": "String",
-				"displayName": "Street 2",
-				"description": "Second line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "line3",
-				"dataType": "String",
-				"displayName": "Street 3",
-				"description": "Third line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "longitude",
-				"dataType": "Double",
-				"displayName": "Longitude",
-				"description": "Longitude for the address for the competitor.",
-				"semanticDomain": {
-					"minValue": -180,
-					"maxValue": 180
-				}
-			},
-			{
-				"name": "parentid",
-				"dataType": "Guid",
-				"displayName": "Parent",
-				"description": "Unique identifier of the parent object with which the competitor address is associated.",
-				"semanticDomain": {
-					"semanticType": "Object.Relationship.Parent"
-				}
-			},
-			{
-				"name": "postalcode",
-				"dataType": "String",
-				"displayName": "ZIP/Postal Code",
-				"description": "ZIP Code or postal code in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "postofficebox",
-				"dataType": "String",
-				"displayName": "Post Office Box",
-				"description": "Post office box number in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "shippingmethodcode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "shippingmethodcode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "shippingmethodcode",
-				"dataType": "String",
-				"displayName": "Shipping Method",
-				"description": "Method of shipment for the competitor.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "competitoraddress_shippingmethodcode",
-						"displayName": "competitoraddress_shippingmethodcode",
-						"description": "Method of shipment for the competitor.",
-						"items": [
-							{
-								"value": 0
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "stateorprovince",
-				"dataType": "String",
-				"displayName": "State/Province",
-				"description": "State or province in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone1",
-				"dataType": "String",
-				"displayName": "Main Phone",
-				"description": "First telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone2",
-				"dataType": "String",
-				"displayName": "Phone 2",
-				"description": "Second telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone3",
-				"dataType": "String",
-				"displayName": "Phone 3",
-				"description": "Third telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "upszone",
-				"dataType": "String",
-				"displayName": "UPS Zone",
-				"description": "United Parcel Service (UPS) zone for the address of the competitor.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 4
-				}
-			},
-			{
-				"name": "utcoffset",
-				"dataType": "Int32",
-				"displayName": "UTC Offset",
-				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "lk_competitoraddressbase_createdonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "CompetitorAddress",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-				},
-				"attributes": [
-					{
-						"name": "createdonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "competitor_addresses",
-			"referencing": {
-				"entity": {
-					"type": "CompetitorAddress",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-				},
-				"attributes": [
-					{
-						"name": "parentid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Competitor",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "6b76b000-0b01-ae09-bc4b-0980f17a6943"
-				},
-				"attributes": [
-					{
-						"name": "competitorid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "CompetitorAddress",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Competitor Address"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Additional addresses for a competitor. The first two addresses are stored in the competitor object."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDST.named",
+                    "arguments": [
+                        "CompetitorAddress"
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "allAttributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": {
+                                    "traitName": "is.CDM.Id.core.applicationCommon.foundationCommon.crmCommon.sales.CompetitorAddress.baseAttributes.all",
+                                    "extendsTrait": {
+                                        "traitReference": "is.CDM.Id"
+                                    }
+                                }
+                            }
+                        ],
+                        "members": [
+                            {
+                                "attributeGroupReference": {
+                                    "attributeGroupName": "requiredAttributesAddedAtThisScope",
+                                    "exhibitsTraits": [
+                                        {
+                                            "traitReference": {
+                                                "traitName": "is.CDM.Id.core.applicationCommon.foundationCommon.crmCommon.sales.CompetitorAddress.baseAttributes.required",
+                                                "extendsTrait": {
+                                                    "traitReference": "is.CDM.Id"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "members": [
+                                        {
+                                            "name": "competitorAddressId",
+                                            "relationship": "identifiedBy",
+                                            "dataType": "entityId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "competitoraddressid"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "10000"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Competitor Address"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the competitor address."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "relationship": {
+                                                "relationshipReference": "referencesA",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                                        "arguments": [
+                                                            {
+                                                                "explanation": "This 'referencesA' relationship to the entity 'Competitor' adds the 'parentId' attribute below to the 'CompetitorAddress' entity as a key",
+                                                                "name": "addedAttribute",
+                                                                "value": {
+                                                                    "name": "parentId",
+                                                                    "relationship": "hasA",
+                                                                    "dataType": "entityId",
+                                                                    "appliedTraits": [
+                                                                        {
+                                                                            "traitReference": "is.CDST.named",
+                                                                            "arguments": [
+                                                                                "parentid"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.ordered",
+                                                                            "arguments": [
+                                                                                "10034"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.lookup",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "style",
+                                                                                    "value": "single"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.requiredAtLevel",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "level",
+                                                                                    "value": "systemrequired"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.displayedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "Parent"
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.describedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "Unique identifier of the parent object with which the competitor address is associated."
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "entity": {
+                                                "entityReference": "Competitor",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "is.identifiedBy",
+                                                        "arguments": [
+                                                            "Competitor/(resolvedAttributes)/competitorId"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "createdOn",
+                                "relationship": "createdOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "createdon"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10001"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Created On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Date and time when the competitor address was created."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'CompetitorAddress' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "createdby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "10002"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the user who created the competitor address."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "modifiedOn",
+                                "relationship": "modifiedOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "modifiedon"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10003"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Modified On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Date and time when the competitor address was last modified."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'CompetitorAddress' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "modifiedby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "10004"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the user who last modified the competitor address."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'CompetitorAddress' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "createdonbehalfby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "10005"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the delegate user who created the competitor address."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'CompetitorAddress' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "modifiedonbehalfby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "10006"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the delegate user who last modified the competitor address."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "versionNumber",
+                                "relationship": "hasA",
+                                "dataType": "bigInteger",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "versionnumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10015"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "importSequenceNumber",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "importsequencenumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-2147483648"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10016"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Import Sequence Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Sequence number of the import that created this record."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "overriddenCreatedOn",
+                                "relationship": "createdOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "overriddencreatedon"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10017"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Record Created On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Date and time that the record was migrated."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "timeZoneRuleVersionNumber",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "timezoneruleversionnumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-1"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10018"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Time Zone Rule Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "UTCConversionTimeZoneCode",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "utcconversiontimezonecode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-1"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10019"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "UTC Conversion Time Zone Code"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Time zone code that was in use when the record was created."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "name",
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "name"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "200"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10020"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Address Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name used to identify the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "addressNumber",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "addressnumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-2147483648"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10021"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Address Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Information about which competitor address is applicable."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "addressTypeCode",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": []
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'addressTypeCode_display' is added to the 'CompetitorAddress' entity to provide the localized display text for the value of the listLookup attribute 'addressTypeCode'",
+                                                    "name": "addressTypeCode_display",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "addresstypecode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10022"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Address Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type of address for the competitor, such as primary address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "city",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "city"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "80"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10024"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "City"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "City name in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "composite",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "composite"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "1000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10025"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Address"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the complete address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "country",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "country"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "80"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10026"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Country/Region"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Country/region name in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "county",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "county"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10027"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "County"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "County name in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "fax",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "fax"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10028"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Fax"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Fax number for the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "latitude",
+                                "relationship": "hasA",
+                                "dataType": "double",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "latitude"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-90"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "90"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10029"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Latitude"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Latitude for the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "line1",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "line1"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "250"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10030"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Street 1"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "First line for entering address information."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "line2",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "line2"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "250"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10031"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Street 2"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Second line for entering address information."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "line3",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "line3"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "250"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10032"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Street 3"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Third line for entering address information."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "longitude",
+                                "relationship": "hasA",
+                                "dataType": "double",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "longitude"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-180"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "180"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10033"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Longitude"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Longitude for the address for the competitor."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "postalCode",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "postalcode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "20"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10035"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "ZIP/Postal Code"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "ZIP Code or postal code in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "postOfficeBox",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "postofficebox"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "20"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10036"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Post Office Box"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Post office box number in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "shippingMethodCode",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": []
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'shippingMethodCode_display' is added to the 'CompetitorAddress' entity to provide the localized display text for the value of the listLookup attribute 'shippingMethodCode'",
+                                                    "name": "shippingMethodCode_display",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "shippingmethodcode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10037"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shipping Method"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Method of shipment for the competitor."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "stateOrProvince",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "stateorprovince"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10039"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "State/Province"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "State or province in the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "telephone1",
+                                "relationship": "hasA",
+                                "dataType": "phone",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "telephone1"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10040"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Main Phone"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "First telephone number for the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "telephone2",
+                                "relationship": "hasA",
+                                "dataType": "phone",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "telephone2"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10041"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Phone 2"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Second telephone number for the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "telephone3",
+                                "relationship": "hasA",
+                                "dataType": "phone",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "telephone3"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "50"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10042"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Phone 3"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Third telephone number for the competitor address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "UPSZone",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "upszone"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "4"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10043"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "UPS Zone"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "United Parcel Service (UPS) zone for the address of the competitor."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "UTCOffset",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "utcoffset"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-2147483648"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "10044"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "UTC Offset"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
 }

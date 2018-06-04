@@ -1,448 +1,2288 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "SLAItem",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
-			}
-		},
-		"description": "Contains information about a tracked support KPI for a specific customer.",
-		"displayName": "SLA Item",
-		"attributes": [
-			{
-				"name": "slaitemid",
-				"dataType": "Guid",
-				"displayName": "SLA Item",
-				"description": "Unique identifier of the SLA Item.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Name",
-				"description": "Type a descriptive name of the service level agreement (SLA) item.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "owningbusinessunit",
-				"dataType": "Guid",
-				"displayName": "Owning Business Unit",
-				"description": "Unique identifier for the business unit that owns the record",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "description",
-				"dataType": "String",
-				"displayName": "Description",
-				"description": "Type additional information to describe the SLA Item",
-				"semanticDomain": {
-					"semanticType": "Reference.Description",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "relatedfield",
-				"dataType": "String",
-				"displayName": "Related Case Field",
-				"description": "Select the service level agreement (SLA) key performance indicator (KPI) that this SLA Item is created for.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "slaid",
-				"dataType": "Guid",
-				"displayName": "SLA",
-				"description": "Unique identifier for SLA associated with SLA Item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Shows who created the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Shows who last updated the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "Exchange Rate",
-				"description": "Exchange rate between the currency associated with the SLA Item record and the base currency.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version number of the SLA Item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Unique identifier of the currency associated with the SLA Item record.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "applicablewhenxml",
-				"dataType": "String",
-				"displayName": "ApplicableWhenXml",
-				"description": "Condition for SLA item",
-				"semanticDomain": {
-					"semanticType": "internalextentdata",
-					"maxLength": 1073741823
-				}
-			},
-			{
-				"name": "successconditionsxml",
-				"dataType": "String",
-				"displayName": "SuccessConditionsXml",
-				"description": "Condition for SLA item",
-				"semanticDomain": {
-					"semanticType": "internalextentdata",
-					"maxLength": 1073741823
-				}
-			},
-			{
-				"name": "solutionid",
-				"dataType": "Guid",
-				"displayName": "Solution",
-				"description": "Unique identifier of the associated solution.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "componentstate_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.State.Display",
-					"inSupportOf": "componentstate",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "componentstate",
-				"dataType": "String",
-				"displayName": "Component State",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "componentstate",
-						"displayName": "Component State",
-						"description": "The state of this component.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Published"
-							},
-							{
-								"value": 1,
-								"displayName": "Unpublished"
-							},
-							{
-								"value": 2,
-								"displayName": "Deleted"
-							},
-							{
-								"value": 3,
-								"displayName": "Deleted Unpublished"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "overwritetime",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Overwrite Time",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "ismanaged",
-				"dataType": "Boolean",
-				"displayName": "Is Managed",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "slaitemidunique",
-				"dataType": "Guid",
-				"displayName": "Unique Id",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "sequencenumber",
-				"dataType": "Int32",
-				"displayName": "Sequence",
-				"description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 1500
-				}
-			},
-			{
-				"name": "failureafter",
-				"dataType": "Int32",
-				"displayName": "Failure After",
-				"description": "Select how soon the success criteria must be met until the SLA item is considered failed and failure actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Duration",
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "warnafter",
-				"dataType": "Int32",
-				"displayName": "Warn After",
-				"description": "Select how soon the success criteria must be met before warning actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Duration",
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "owninguser",
-				"dataType": "Guid",
-				"displayName": "Owning User",
-				"description": "Unique identifier of the user who owns the SLA Item record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "ownerid",
-				"dataType": "Guid",
-				"displayName": "Owner",
-				"description": "Enter the user or team who owns the SLA. This field is updated every time the item is assigned to a different user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "workflowid",
-				"dataType": "Guid",
-				"displayName": "Workflow ID",
-				"description": "Workflow associated with the SLA Item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Shows who created the record on behalf of another user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Shows who created the record on behalf of another user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "workflowactionsclientdata",
-				"dataType": "String",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "internalextentdata",
-					"maxLength": 1073741823
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "implicit_user",
-			"referencing": {
-				"entity": {
-					"type": "SLAItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "implicit_team",
-			"referencing": {
-				"entity": {
-					"type": "SLAItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "teamid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "sla_slaitem_slaId",
-			"referencing": {
-				"entity": {
-					"type": "SLAItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
-				},
-				"attributes": [
-					{
-						"name": "slaid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SLA",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "11d00209-93ba-012e-7d61-e503551b1170"
-				},
-				"attributes": [
-					{
-						"name": "slaid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_SLAItem",
-			"referencing": {
-				"entity": {
-					"type": "SLAItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8f9a64b1-081e-cb8f-77de-298659e4bac1"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SLAItem",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "SLA Item"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Contains information about a tracked support KPI for a specific customer."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDST.named",
+                    "arguments": [
+                        "SLAItem"
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "allAttributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": {
+                                    "traitName": "is.CDM.Id.core.applicationCommon.SLAItem.baseAttributes.all",
+                                    "extendsTrait": {
+                                        "traitReference": "is.CDM.Id"
+                                    }
+                                }
+                            }
+                        ],
+                        "members": [
+                            {
+                                "attributeGroupReference": {
+                                    "attributeGroupName": "requiredAttributesAddedAtThisScope",
+                                    "exhibitsTraits": [
+                                        {
+                                            "traitReference": {
+                                                "traitName": "is.CDM.Id.core.applicationCommon.SLAItem.baseAttributes.required",
+                                                "extendsTrait": {
+                                                    "traitReference": "is.CDM.Id"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "members": [
+                                        {
+                                            "name": "SLAItemId",
+                                            "relationship": "identifiedBy",
+                                            "dataType": "entityId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "slaitemid"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "1"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "SLA Item"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the SLA Item."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "name",
+                                            "relationship": "hasA",
+                                            "dataType": "name",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "name"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.constrained",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "maximumLength",
+                                                            "value": "100"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "2"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Name"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Type a descriptive name of the service level agreement (SLA) item."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "relationship": {
+                                                "relationshipReference": "referencesA",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                                        "arguments": [
+                                                            {
+                                                                "explanation": "This 'referencesA' relationship to the entity 'SLA' adds the 'SLAId' attribute below to the 'SLAItem' entity as a key",
+                                                                "name": "addedAttribute",
+                                                                "value": {
+                                                                    "name": "SLAId",
+                                                                    "relationship": "hasA",
+                                                                    "dataType": "entityId",
+                                                                    "appliedTraits": [
+                                                                        {
+                                                                            "traitReference": "is.CDST.named",
+                                                                            "arguments": [
+                                                                                "slaid"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.ordered",
+                                                                            "arguments": [
+                                                                                "38"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.lookup",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "style",
+                                                                                    "value": "single"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.nullable"
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.requiredAtLevel",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "level",
+                                                                                    "value": "systemrequired"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.displayedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "SLA"
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.describedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "Unique identifier for SLA associated with SLA Item."
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "entity": {
+                                                "entityReference": "SLA",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "is.identifiedBy",
+                                                        "arguments": [
+                                                            "SLA/(resolvedAttributes)/SLAId"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "applicableWhenXml",
+                                            "relationship": "hasA",
+                                            "dataType": "string",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "applicablewhenxml"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.constrained",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "maximumLength",
+                                                            "value": "1073741823"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "60"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.nullable"
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "ApplicableWhenXml"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Condition for SLA item"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "successConditionsXml",
+                                            "relationship": "hasA",
+                                            "dataType": "string",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "successconditionsxml"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.constrained",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "maximumLength",
+                                                            "value": "1073741823"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "61"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.nullable"
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "SuccessConditionsXml"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Condition for SLA item"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "solutionId",
+                                            "relationship": "hasA",
+                                            "dataType": "guid",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "solutionid"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "62"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Solution"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the associated solution."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "componentState",
+                                            "relationship": "hasA",
+                                            "dataType": {
+                                                "dataTypeReference": "listLookup",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "does.haveDefault",
+                                                        "arguments": [
+                                                            {
+                                                                "entityReference": {
+                                                                    "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                                    "entityShape": "listLookupValues",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "Published",
+                                                                            "0",
+                                                                            "0"
+                                                                        ],
+                                                                        [
+                                                                            "en",
+                                                                            "Unpublished",
+                                                                            "1",
+                                                                            "1"
+                                                                        ],
+                                                                        [
+                                                                            "en",
+                                                                            "Deleted",
+                                                                            "2",
+                                                                            "2"
+                                                                        ],
+                                                                        [
+                                                                            "en",
+                                                                            "Deleted Unpublished",
+                                                                            "3",
+                                                                            "3"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "traitReference": "does.addSupportingAttribute",
+                                                        "arguments": [
+                                                            {
+                                                                "explanation": "This attribute 'componentState_display' is added to the 'SLAItem' entity to provide the localized display text for the value of the listLookup attribute 'componentState'",
+                                                                "name": "componentState_display",
+                                                                "relationship": "hasA",
+                                                                "dataType": "localizedDisplayText"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "componentstate"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "64"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Component State"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "For internal use only."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "overwriteTime",
+                                            "relationship": "hasA",
+                                            "dataType": "dateTime",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "overwritetime"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "65"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Record Overwrite Time"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "For internal use only."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "isManaged",
+                                            "relationship": "hasA",
+                                            "dataType": "boolean",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "ismanaged"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "66"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Is Managed"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "For internal use only."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "SLAItemIdUnique",
+                                            "relationship": "hasA",
+                                            "dataType": "guid",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDST.named",
+                                                    "arguments": [
+                                                        "slaitemidunique"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.CDST.ordered",
+                                                    "arguments": [
+                                                        "67"
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique Id"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "For internal use only."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "relationship": {
+                                                "relationshipReference": "referencesOwner",
+                                                "appliedTraits": [
+                                                    {
+                                                        "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                                        "arguments": [
+                                                            {
+                                                                "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'SLAItem' entity as a key",
+                                                                "name": "addedAttribute",
+                                                                "value": {
+                                                                    "name": "ownerId",
+                                                                    "relationship": "hasA",
+                                                                    "dataType": "entityId",
+                                                                    "appliedTraits": [
+                                                                        {
+                                                                            "traitReference": "is.CDST.named",
+                                                                            "arguments": [
+                                                                                "ownerid"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.ordered",
+                                                                            "arguments": [
+                                                                                "123"
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.CDST.lookup",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "style",
+                                                                                    "value": "single"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.nullable"
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.requiredAtLevel",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "name": "level",
+                                                                                    "value": "required"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.displayedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "Owner"
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "traitReference": "is.localized.describedAs",
+                                                                            "arguments": [
+                                                                                {
+                                                                                    "entityReference": {
+                                                                                        "entityShape": "localizedTable",
+                                                                                        "constantValues": [
+                                                                                            [
+                                                                                                "en",
+                                                                                                "Enter the user or team who owns the SLA. This field is updated every time the item is assigned to a different user."
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "entity": [
+                                                {
+                                                    "entityReference": "User",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "User/(resolvedAttributes)/systemUserId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "entityReference": "Team",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Team/(resolvedAttributes)/teamId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "owningBusinessUnit",
+                                "relationship": "hasA",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "owningbusinessunit"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "24"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "single"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Owning Business Unit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for the business unit that owns the record"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "description",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "description"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "26"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type additional information to describe the SLA Item"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "relatedField",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "relatedfield"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "35"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Related Case Field"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Select the service level agreement (SLA) key performance indicator (KPI) that this SLA Item is created for."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "createdOn",
+                                "relationship": "createdOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "createdon"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "51"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Created On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'SLAItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "createdby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "52"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Shows who created the record."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "modifiedOn",
+                                "relationship": "modifiedOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "modifiedon"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "53"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Modified On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'SLAItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "modifiedby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "54"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Shows who last updated the record."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "exchangeRate",
+                                "relationship": "hasA",
+                                "dataType": "decimal",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "exchangerate"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "1E-10"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "100000000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "55"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange rate between the currency associated with the SLA Item record and the base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "versionNumber",
+                                "relationship": "hasA",
+                                "dataType": "bigInteger",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "versionnumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "56"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version number of the SLA Item."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Currency' adds the 'transactionCurrencyId' attribute below to the 'SLAItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "transactionCurrencyId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "transactioncurrencyid"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "58"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Currency"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the currency associated with the SLA Item record."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "sequenceNumber",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "sequencenumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "1500"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "86"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Sequence"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "failureAfter",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "integer",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "means.measurement.duration"
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "failureafter"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "87"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Failure After"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Select how soon the success criteria must be met until the SLA item is considered failed and failure actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "warnAfter",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "integer",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "means.measurement.duration"
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "warnafter"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "88"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Warn After"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Select how soon the success criteria must be met before warning actions are initiated. The actual duration is based on the business hours as specified in the associated SLA record."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "owningUser",
+                                "relationship": "hasA",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "owninguser"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "118"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "single"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Owning User"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier of the user who owns the SLA Item record."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "workflowId",
+                                "relationship": "hasA",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDST.named",
+                                        "arguments": [
+                                            "workflowid"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.ordered",
+                                        "arguments": [
+                                            "161"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.CDST.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.nullable"
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Workflow ID"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Workflow associated with the SLA Item."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'SLAItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "createdonbehalfby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "200"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Shows who created the record on behalf of another user."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'SLAItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "modifiedonbehalfby"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "204"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Shows who created the record on behalf of another user."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
 }

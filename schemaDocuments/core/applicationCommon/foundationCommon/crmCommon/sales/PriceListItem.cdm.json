@@ -1,0 +1,148 @@
+{
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "PriceListItem",
+            "extendsEntity": "base_PriceListItem/PriceListItem",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "allAttributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": {
+                                    "traitName": "is.CDM.Id.core.applicationCommon.foundationCommon.crmCommon.sales.PriceListItem.extensionAttributes.all",
+                                    "extendsTrait": {
+                                        "traitReference": "is.CDM.Id"
+                                    }
+                                }
+                            }
+                        ],
+                        "members": [
+                            {
+                                "attributeGroupReference": {
+                                    "attributeGroupName": "requiredAttributesAddedAtThisScope",
+                                    "exhibitsTraits": [
+                                        {
+                                            "traitReference": {
+                                                "traitName": "is.CDM.Id.core.applicationCommon.foundationCommon.crmCommon.sales.PriceListItem.extensionAttributes.required",
+                                                "extendsTrait": {
+                                                    "traitReference": "is.CDM.Id"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "members": []
+                                }
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'DiscountList' adds the 'discountTypeId' attribute below to the 'PriceListItem' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "discountTypeId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDST.named",
+                                                                "arguments": [
+                                                                    "discounttypeid"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.ordered",
+                                                                "arguments": [
+                                                                    "10049"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.CDST.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.nullable"
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Discount List"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the discount list associated with the price list."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "DiscountList",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DiscountList/(resolvedAttributes)/discountTypeId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

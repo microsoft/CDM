@@ -1,0 +1,68 @@
+{
+    "$schema": "../../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "is.CDST",
+            "extendsTrait": "is",
+            "explanation": "Base trait for descriptions of CDS for Applications specific properties or ideas."
+        },
+        {
+            "traitName": "is.CDST.named",
+            "extendsTrait": "is.CDST",
+            "explanation": "the unique name that identifies this object in CDS for Applications.",
+            "hasParameters": [
+                {
+                    "name": "name",
+                    "dataType": "string",
+                    "direction": "both"
+                }
+            ]
+        },
+        {
+            "traitName": "is.CDST.ordered",
+            "extendsTrait": "is.CDST",
+            "explanation": "the column number for an attribute with an entity in CDS for Applications.",
+            "hasParameters": [
+                {
+                    "name": "ordinal",
+                    "dataType": "integer",
+                    "direction": "both"
+                }
+            ]
+        },
+        {
+            "traitName": "is.CDST.lookup",
+            "extendsTrait": "is.CDST",
+            "explanation": "The attribute represents a style of lookup in CDS for Applications",
+            "hasParameters": [
+                {
+                    "name": "style",
+                    "dataType": "string",
+                    "direction": "both"
+                }
+            ]
+        },
+        {
+            "relationshipName": "referencesCustomer",
+            "extendsRelationship": "referencesA",
+            "explanation": "The Account and Contact entities are used together as a referenced attribute to indicate the single idea of 'customer'."
+        },
+        {
+            "relationshipName": "referencesOwner",
+            "extendsRelationship": "referencesA",
+            "explanation": "The SystemUser and Team entities are used together as a referenced attribute to indicate the owner of the entity instance."
+        },
+        {
+            "dataTypeName": "partylist",
+            "extendsDataType": "guid",
+            "explanation": "An implicit lookup into the ActivityParty entity to find the set of party members with the associated kind of participationTypeMask"
+        }
+        
+    ]
+}
