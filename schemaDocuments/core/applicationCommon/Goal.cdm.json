@@ -1,1535 +1,1699 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "Goal",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-			}
-		},
-		"description": "Target objective for a user or a team for a specified time period.",
-		"displayName": "Goal",
-		"attributes": [
-			{
-				"name": "goalid",
-				"dataType": "Guid",
-				"displayName": "Goal",
-				"description": "Unique identifier of the goal.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Shows who created the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Shows who last updated the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Shows who created the record on behalf of another user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Shows who last updated the record on behalf of another user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "ownerid",
-				"dataType": "Guid",
-				"displayName": "Manager",
-				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owningbusinessunit",
-				"dataType": "Guid",
-				"displayName": "Owning Business Unit",
-				"description": "Unique identifier for the business unit that owns the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owninguser",
-				"dataType": "Guid",
-				"displayName": "Owning User",
-				"description": "Unique identifier for the user who owns the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "statecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.State.Display",
-					"inSupportOf": "statecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "statecode",
-				"dataType": "String",
-				"displayName": "Status",
-				"description": "Shows whether the goal is open, completed, or canceled. Completed and canceled goals are read-only and can't be edited.",
-				"semanticDomain": {
-					"semanticType": "Measurement.State",
-					"constrainedList": {
-						"name": "goal_statecode",
-						"displayName": "Status",
-						"description": "Status of the Goal",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Active"
-							},
-							{
-								"value": 1,
-								"displayName": "Inactive"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "statuscode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status.Display",
-					"inSupportOf": "statuscode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "statuscode",
-				"dataType": "String",
-				"displayName": "Status Reason",
-				"description": "Select the goal's status.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status",
-					"constrainedList": {
-						"name": "goal_statuscode",
-						"displayName": "Status Reason",
-						"description": "Reason for the status of the Goal",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Open",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 1,
-								"displayName": "Closed",
-								"correlationValue:": "1"
-							},
-							{
-								"value": 2,
-								"displayName": "Discarded",
-								"correlationValue:": "1"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version number of the goal.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Sequence number of the import that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "title",
-				"dataType": "String",
-				"displayName": "Name",
-				"description": "Type a title or name that describes the goal.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Title",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "fiscalperiod_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "fiscalperiod",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "fiscalperiod",
-				"dataType": "String",
-				"displayName": "Fiscal Period",
-				"description": "Select the fiscal period for the goal.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "goal_fiscalperiod",
-						"displayName": "Fiscal Period",
-						"description": "Fiscal Period of Goal",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Quarter 1"
-							},
-							{
-								"value": 2,
-								"displayName": "Quarter 2"
-							},
-							{
-								"value": 3,
-								"displayName": "Quarter 3"
-							},
-							{
-								"value": 4,
-								"displayName": "Quarter 4"
-							},
-							{
-								"value": 101,
-								"displayName": "January"
-							},
-							{
-								"value": 102,
-								"displayName": "February"
-							},
-							{
-								"value": 103,
-								"displayName": "March"
-							},
-							{
-								"value": 104,
-								"displayName": "April"
-							},
-							{
-								"value": 105,
-								"displayName": "May"
-							},
-							{
-								"value": 106,
-								"displayName": "June"
-							},
-							{
-								"value": 107,
-								"displayName": "July"
-							},
-							{
-								"value": 108,
-								"displayName": "August"
-							},
-							{
-								"value": 109,
-								"displayName": "September"
-							},
-							{
-								"value": 110,
-								"displayName": "October"
-							},
-							{
-								"value": 111,
-								"displayName": "November"
-							},
-							{
-								"value": 112,
-								"displayName": "December"
-							},
-							{
-								"value": 201,
-								"displayName": "Semester 1"
-							},
-							{
-								"value": 202,
-								"displayName": "Semester 2"
-							},
-							{
-								"value": 301,
-								"displayName": "Annual"
-							},
-							{
-								"value": 401,
-								"displayName": "P1"
-							},
-							{
-								"value": 402,
-								"displayName": "P2"
-							},
-							{
-								"value": 403,
-								"displayName": "P3"
-							},
-							{
-								"value": 404,
-								"displayName": "P4"
-							},
-							{
-								"value": 405,
-								"displayName": "P5"
-							},
-							{
-								"value": 406,
-								"displayName": "P6"
-							},
-							{
-								"value": 407,
-								"displayName": "P7"
-							},
-							{
-								"value": 408,
-								"displayName": "P8"
-							},
-							{
-								"value": 409,
-								"displayName": "P9"
-							},
-							{
-								"value": 410,
-								"displayName": "P10"
-							},
-							{
-								"value": 411,
-								"displayName": "P11"
-							},
-							{
-								"value": 412,
-								"displayName": "P12"
-							},
-							{
-								"value": 413,
-								"displayName": "P13"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "fiscalyear_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "fiscalyear",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "fiscalyear",
-				"dataType": "String",
-				"displayName": "Fiscal Year",
-				"description": "Select the fiscal year for the goal that's being tracked.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "goal_fiscalyear",
-						"displayName": "Fiscal Year",
-						"description": "Fiscal Year of Goal",
-						"items": [
-							{
-								"value": 2038,
-								"displayName": "FY2038"
-							},
-							{
-								"value": 2037,
-								"displayName": "FY2037"
-							},
-							{
-								"value": 2036,
-								"displayName": "FY2036"
-							},
-							{
-								"value": 2035,
-								"displayName": "FY2035"
-							},
-							{
-								"value": 2034,
-								"displayName": "FY2034"
-							},
-							{
-								"value": 2033,
-								"displayName": "FY2033"
-							},
-							{
-								"value": 2032,
-								"displayName": "FY2032"
-							},
-							{
-								"value": 2031,
-								"displayName": "FY2031"
-							},
-							{
-								"value": 2030,
-								"displayName": "FY2030"
-							},
-							{
-								"value": 2029,
-								"displayName": "FY2029"
-							},
-							{
-								"value": 2028,
-								"displayName": "FY2028"
-							},
-							{
-								"value": 2027,
-								"displayName": "FY2027"
-							},
-							{
-								"value": 2026,
-								"displayName": "FY2026"
-							},
-							{
-								"value": 2025,
-								"displayName": "FY2025"
-							},
-							{
-								"value": 2024,
-								"displayName": "FY2024"
-							},
-							{
-								"value": 2023,
-								"displayName": "FY2023"
-							},
-							{
-								"value": 2022,
-								"displayName": "FY2022"
-							},
-							{
-								"value": 2021,
-								"displayName": "FY2021"
-							},
-							{
-								"value": 2020,
-								"displayName": "FY2020"
-							},
-							{
-								"value": 2019,
-								"displayName": "FY2019"
-							},
-							{
-								"value": 2018,
-								"displayName": "FY2018"
-							},
-							{
-								"value": 2017,
-								"displayName": "FY2017"
-							},
-							{
-								"value": 2016,
-								"displayName": "FY2016"
-							},
-							{
-								"value": 2015,
-								"displayName": "FY2015"
-							},
-							{
-								"value": 2014,
-								"displayName": "FY2014"
-							},
-							{
-								"value": 2013,
-								"displayName": "FY2013"
-							},
-							{
-								"value": 2012,
-								"displayName": "FY2012"
-							},
-							{
-								"value": 2011,
-								"displayName": "FY2011"
-							},
-							{
-								"value": 2010,
-								"displayName": "FY2010"
-							},
-							{
-								"value": 2009,
-								"displayName": "FY2009"
-							},
-							{
-								"value": 2008,
-								"displayName": "FY2008"
-							},
-							{
-								"value": 2007,
-								"displayName": "FY2007"
-							},
-							{
-								"value": 2006,
-								"displayName": "FY2006"
-							},
-							{
-								"value": 2005,
-								"displayName": "FY2005"
-							},
-							{
-								"value": 2004,
-								"displayName": "FY2004"
-							},
-							{
-								"value": 2003,
-								"displayName": "FY2003"
-							},
-							{
-								"value": 2002,
-								"displayName": "FY2002"
-							},
-							{
-								"value": 2001,
-								"displayName": "FY2001"
-							},
-							{
-								"value": 2000,
-								"displayName": "FY2000"
-							},
-							{
-								"value": 1999,
-								"displayName": "FY1999"
-							},
-							{
-								"value": 1998,
-								"displayName": "FY1998"
-							},
-							{
-								"value": 1997,
-								"displayName": "FY1997"
-							},
-							{
-								"value": 1996,
-								"displayName": "FY1996"
-							},
-							{
-								"value": 1995,
-								"displayName": "FY1995"
-							},
-							{
-								"value": 1994,
-								"displayName": "FY1994"
-							},
-							{
-								"value": 1993,
-								"displayName": "FY1993"
-							},
-							{
-								"value": 1992,
-								"displayName": "FY1992"
-							},
-							{
-								"value": 1991,
-								"displayName": "FY1991"
-							},
-							{
-								"value": 1990,
-								"displayName": "FY1990"
-							},
-							{
-								"value": 1989,
-								"displayName": "FY1989"
-							},
-							{
-								"value": 1988,
-								"displayName": "FY1988"
-							},
-							{
-								"value": 1987,
-								"displayName": "FY1987"
-							},
-							{
-								"value": 1986,
-								"displayName": "FY1986"
-							},
-							{
-								"value": 1985,
-								"displayName": "FY1985"
-							},
-							{
-								"value": 1984,
-								"displayName": "FY1984"
-							},
-							{
-								"value": 1983,
-								"displayName": "FY1983"
-							},
-							{
-								"value": 1982,
-								"displayName": "FY1982"
-							},
-							{
-								"value": 1981,
-								"displayName": "FY1981"
-							},
-							{
-								"value": 1980,
-								"displayName": "FY1980"
-							},
-							{
-								"value": 1979,
-								"displayName": "FY1979"
-							},
-							{
-								"value": 1978,
-								"displayName": "FY1978"
-							},
-							{
-								"value": 1977,
-								"displayName": "FY1977"
-							},
-							{
-								"value": 1976,
-								"displayName": "FY1976"
-							},
-							{
-								"value": 1975,
-								"displayName": "FY1975"
-							},
-							{
-								"value": 1974,
-								"displayName": "FY1974"
-							},
-							{
-								"value": 1973,
-								"displayName": "FY1973"
-							},
-							{
-								"value": 1972,
-								"displayName": "FY1972"
-							},
-							{
-								"value": 1971,
-								"displayName": "FY1971"
-							},
-							{
-								"value": 1970,
-								"displayName": "FY1970"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "goalstartdate",
-				"dataType": "DateTimeOffset",
-				"displayName": "From",
-				"description": "Enter the date and time when the period for tracking the goal begins.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Occurrence"
-				}
-			},
-			{
-				"name": "goalenddate",
-				"dataType": "DateTimeOffset",
-				"displayName": "To",
-				"description": "Enter the date when the goal ends.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Occurrence"
-				}
-			},
-			{
-				"name": "goalownerid",
-				"dataType": "Guid",
-				"displayName": "Goal Owner",
-				"description": "Choose the user or team responsible for meeting the goal.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "parentgoalid",
-				"dataType": "Guid",
-				"displayName": "Parent Goal",
-				"description": "Choose a parent goal if the current goal is a child goal. This sets up a parent-child relationship for reporting and analytics.",
-				"semanticDomain": {
-					"semanticType": "Object.Relationship.Parent"
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "Exchange Rate",
-				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "metricid",
-				"dataType": "Guid",
-				"displayName": "Goal Metric",
-				"description": "Choose the metric for the goal. This metric determines how the goal is tracked.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "treeid",
-				"dataType": "Guid",
-				"displayName": "Tree ID",
-				"description": "Unique identifier of the goal tree.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "depth",
-				"dataType": "Int32",
-				"displayName": "Depth",
-				"description": "Depth of the goal in the tree.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "stretchtargetmoney",
-				"dataType": "Decimal",
-				"displayName": "Stretch Target (Money)",
-				"description": "Select stretch target (money) of the goal to define a higher or difficult level of goal than the usual ones.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": 0,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "stretchtargetmoney_base",
-				"dataType": "Decimal",
-				"displayName": "Stretch Target (Money) (Base)",
-				"description": "Shows the stretch target (money) in base currency to indicate a higher or difficult level of goal than the usual ones.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "stretchtargetdecimal",
-				"dataType": "Decimal",
-				"displayName": "Stretch Target (Decimal)",
-				"description": "Select a stretch target (decimal) of the goal to define a higher or difficult level of goal than the usual ones.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "stretchtargetinteger",
-				"dataType": "Int32",
-				"displayName": "Stretch Target (Integer)",
-				"description": "Select the stretch target (integer) of the goal to define a higher or difficult level of goal than the usual ones.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "targetmoney",
-				"dataType": "Decimal",
-				"displayName": "Target (Money)",
-				"description": "Select a goal target (money) to track a monetary amount such as revenue from a product.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": 0,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "targetmoney_base",
-				"dataType": "Decimal",
-				"displayName": "Target (Money) (Base)",
-				"description": "Shows the goal target of the money type in base currency.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "targetdecimal",
-				"dataType": "Decimal",
-				"displayName": "Target (Decimal)",
-				"description": "Select a goal target of the decimal type to use for tracking data that include partial numbers, such as pounds sold of a product sold by weight.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "targetinteger",
-				"dataType": "Int32",
-				"displayName": "Target (Integer)",
-				"description": "Select a goal target of the integer type to use for tracking anything countable in whole numbers, such as units sold.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "actualmoney",
-				"dataType": "Decimal",
-				"displayName": "Actual (Money)",
-				"description": "Shows the actual value (Money type) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount and the amount data type is Money.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "actualmoney_base",
-				"dataType": "Decimal",
-				"displayName": "Actual (Money) (Base)",
-				"description": "Shows the actual value (money type) in base currency to track goal results against the target.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "customrollupfieldmoney",
-				"dataType": "Decimal",
-				"displayName": "Custom Rollup Field (Money)",
-				"description": "Indicates a placeholder rollup field for a money value to track a third category of results other than actuals and in-progress results.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "customrollupfieldmoney_base",
-				"dataType": "Decimal",
-				"displayName": "Custom Rollup Field (Money) (Base)",
-				"description": "Indicates a placeholder rollup field for a money value in base currency to track a third category of results other than actuals and in-progress results.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "inprogressmoney",
-				"dataType": "Decimal",
-				"displayName": "In-progress (Money)",
-				"description": "Shows the in-progress value (money) against the target. This value could contribute to a goal, but is not counted yet as actual.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "inprogressmoney_base",
-				"dataType": "Decimal",
-				"displayName": "In-progress (Money) (Base)",
-				"description": "Shows the in-progress value (money) in base currency to track goal results against the target.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "actualdecimal",
-				"dataType": "Decimal",
-				"displayName": "Actual (Decimal)",
-				"description": "Shows the actual value (Decimal type) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount and the amount data type is Decimal.",
-				"semanticDomain": {
-					"minValue": -100000000000,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "customrollupfielddecimal",
-				"dataType": "Decimal",
-				"displayName": "Custom Rollup Field (Decimal)",
-				"description": "Indicates a placeholder rollup field for a decimal value to track a third category of results other than actuals and in-progress results.",
-				"semanticDomain": {
-					"minValue": -100000000000,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "inprogressdecimal",
-				"dataType": "Decimal",
-				"displayName": "In-progress (Decimal)",
-				"description": "Shows the in-progress value (decimal) against the target. This value could contribute to a goal, but is not counted yet as actual.",
-				"semanticDomain": {
-					"minValue": -100000000000,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "actualinteger",
-				"dataType": "Int32",
-				"displayName": "Actual (Integer)",
-				"description": "Shows the actual value (integer) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount or Count and the amount data type is Integer.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "customrollupfieldinteger",
-				"dataType": "Int32",
-				"displayName": "Custom Rollup Field (Integer)",
-				"description": "Indicates a placeholder rollup field for an integer value to track a third category of results other than actuals and in-progress results.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "inprogressinteger",
-				"dataType": "Int32",
-				"displayName": "In-progress (Integer)",
-				"description": "Shows the in-progress value (integer) against the target. This value could contribute to a goal, but is not counted yet as actual.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "percentage",
-				"dataType": "Decimal",
-				"displayName": "Percentage Achieved",
-				"description": "Shows the percentage achieved against the target goal.",
-				"semanticDomain": {
-					"minValue": -100000000000,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "isfiscalperiodgoal",
-				"dataType": "Boolean",
-				"displayName": "Goal Period Type",
-				"description": "Select whether the goal period is a fiscal period or custom period.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "consideronlygoalownersrecords",
-				"dataType": "Boolean",
-				"displayName": "Record Set for Rollup",
-				"description": "Select whether only the goal owner's records, or all records, should be rolled up for goal results.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "lastrolledupdate",
-				"dataType": "DateTimeOffset",
-				"displayName": "Last Rolled Up Date",
-				"description": "Shows the date and time when the goal was last rolled up. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Occurrence"
-				}
-			},
-			{
-				"name": "targetstring",
-				"dataType": "String",
-				"displayName": "Target",
-				"description": "Target value of the goal.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "stretchtargetstring",
-				"dataType": "String",
-				"displayName": "Stretched Target",
-				"description": "Stretch target value for all data types.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "actualstring",
-				"dataType": "String",
-				"displayName": "Actual",
-				"description": "Actual Value of the goal.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "customrollupfieldstring",
-				"dataType": "String",
-				"displayName": "Custom Rollup Field",
-				"description": "Placeholder rollup field for the goal.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "inprogressstring",
-				"dataType": "String",
-				"displayName": "In-Progress",
-				"description": "In-progress value of the goal.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "owningteam",
-				"dataType": "Guid",
-				"displayName": "Owning Team",
-				"description": "Unique identifier of the team who owns the goal.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "amountdatatype_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "amountdatatype",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "amountdatatype",
-				"dataType": "String",
-				"displayName": "Amount Data Type",
-				"description": "Data type of the amount.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "metric_goaltype",
-						"displayName": "Goal Type",
-						"description": "Data type of the amount.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Money"
-							},
-							{
-								"value": 1,
-								"displayName": "Decimal"
-							},
-							{
-								"value": 2,
-								"displayName": "Integer"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "isamount",
-				"dataType": "Boolean",
-				"displayName": "Metric Type",
-				"description": "Indicates whether the metric type is Count or Amount.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryactualintegerid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Actual(Integer)",
-				"description": "Choose the query that will be used to calculate the actual data for the goal (integer).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryactualmoneyid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Actual(Money)",
-				"description": "Choose the query that will be used to calculate the actual data for the goal (money).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryactualdecimalid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Actual(Decimal)",
-				"description": "Choose the query that will be used to calculate the actual data for the goal (decimal).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupquerycustomintegerid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Custom Rollup Field (Integer)",
-				"description": "Choose the query that will be used to calculate data for the custom rollup field (integer).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupquerycustommoneyid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Custom Rollup Field (Money)",
-				"description": "Choose the query that will be used to calculate data for the custom rollup field (money).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupquerycustomdecimalid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - Custom Rollup Field (Decimal)",
-				"description": "Choose the query that will be used to calculate data for the custom rollup field (decimal).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryinprogressintegerid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - In-progress(Integer)",
-				"description": "Choose the query that will be used to calculate data for the in-progress rollup field (integer).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryinprogressmoneyid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - In-progress(Money)",
-				"description": "Choose the query that will be used to calculate data for the in-progress rollup field (money).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rollupqueryinprogressdecimalid",
-				"dataType": "Guid",
-				"displayName": "Rollup Query - In-progress(Decimal)",
-				"description": "Choose the query that will be used to calculate data for the in-progress rollup field (decimal).",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rolluponlyfromchildgoals",
-				"dataType": "Boolean",
-				"displayName": "Roll Up Only from Child Goals",
-				"description": "Select whether the data should be rolled up only from the child goals.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "goalwitherrorid",
-				"dataType": "Guid",
-				"displayName": "Goal With Error",
-				"description": "Unique identifier of the goal that caused an error in the rollup of the goal hierarchy.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "rolluperrorcode",
-				"dataType": "Int32",
-				"displayName": "Rollup Error Code",
-				"description": "Error code associated with rollup.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "computedtargetasoftodaypercentageachieved",
-				"dataType": "Decimal",
-				"displayName": "Today's Target (Percentage Achieved)",
-				"description": "Shows the expected value for percentage achieved against the target goal as of the current date.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "computedtargetasoftodaymoney",
-				"dataType": "Decimal",
-				"displayName": "Today's Target (Money)",
-				"description": "Shows the expected amount for actual value (money type) against the target goal as of the current date.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": 0,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "computedtargetasoftodaymoney_base",
-				"dataType": "Decimal",
-				"displayName": "Today's Target (Money) (Base)",
-				"description": "Shows the expected amount in base currency for actual value (money type) against the target goal as of the current date.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency",
-					"minValue": -922337203685477,
-					"maxValue": 922337203685477
-				}
-			},
-			{
-				"name": "computedtargetasoftodaydecimal",
-				"dataType": "Decimal",
-				"displayName": "Today's Target (Decimal)",
-				"description": "Shows the expected amount for actual value (decimal type) against the target goal.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "computedtargetasoftodayinteger",
-				"dataType": "Int32",
-				"displayName": "Today's Target (Integer)",
-				"description": "Shows the expected amount for actual value (integer type) against the target goal as of the current date.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "isoverride",
-				"dataType": "Boolean",
-				"displayName": "Override",
-				"description": "Indicates whether the values of system rollup fields can be updated.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "isoverridden",
-				"dataType": "Boolean",
-				"displayName": "Overridden",
-				"description": "Select whether the system rollup fields are updated. If set to Yes, the next system rollup will not update the values of the rollup fields with the system calculated values.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "entityimageid",
-				"dataType": "Guid",
-				"displayName": "Entity Image Id",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "implicit_user",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "implicit_team",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "teamid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_Goal",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "owner_goal",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Owner",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "business_unit_goal",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "owningbusinessunit",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "BusinessUnit",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
-				},
-				"attributes": [
-					{
-						"name": "businessunitid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "metric_goal",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "metricid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Metric",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "3f038bdb-2156-8ebf-2bd8-d4433388dce9"
-				},
-				"attributes": [
-					{
-						"name": "metricid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "goal_rolluperror_goal",
-			"referencing": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "goalwitherrorid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Goal",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb0daa43-f622-578d-ac1b-f48d34eeeaf2"
-				},
-				"attributes": [
-					{
-						"name": "goalid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Goal",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Target objective for a user or a team for a specified time period.",
+    "displayName": "Goal",
+    "cdsSourceName": "Goal",
+    "attributes": [
+      {
+        "name": "goalId",
+        "description": "Unique identifier of the goal.",
+        "displayName": "Goal",
+        "cdsSourceName": "goalid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Manager",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the goal is open, completed, or canceled. Completed and canceled goals are read-only and can't be edited.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "title",
+        "description": "Type a title or name that describes the goal.",
+        "displayName": "Name",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "goalOwnerId",
+        "description": "Choose the user or team responsible for meeting the goal.",
+        "displayName": "Goal Owner",
+        "cdsSourceName": "goalownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "metricId",
+        "description": "Choose the metric for the goal. This metric determines how the goal is tracked.",
+        "displayName": "Goal Metric",
+        "cdsSourceName": "metricid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "considerOnlyGoalOwnersRecords",
+        "description": "Select whether only the goal owner's records, or all records, should be rolled up for goal results.",
+        "displayName": "Record Set for Rollup",
+        "cdsSourceName": "consideronlygoalownersrecords",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isAmount",
+        "description": "Indicates whether the metric type is Count or Amount.",
+        "displayName": "Metric Type",
+        "cdsSourceName": "isamount",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "rollupOnlyFromChildGoals",
+        "description": "Select whether the data should be rolled up only from the child goals.",
+        "displayName": "Roll Up Only from Child Goals",
+        "cdsSourceName": "rolluponlyfromchildgoals",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdOn",
+        "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Shows who last updated the record on behalf of another user.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier for the business unit that owns the record.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier for the user who owns the record.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the goal's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Closed",
+                "value": "1",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Discarded",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the goal.",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "fiscalPeriod",
+        "description": "Select the fiscal period for the goal.",
+        "displayName": "Fiscal Period",
+        "cdsSourceName": "fiscalperiod",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "August",
+                "value": "108"
+              },
+              {
+                "displayName": "Semester 2",
+                "value": "202"
+              },
+              {
+                "displayName": "March",
+                "value": "103"
+              },
+              {
+                "displayName": "April",
+                "value": "104"
+              },
+              {
+                "displayName": "May",
+                "value": "105"
+              },
+              {
+                "displayName": "June",
+                "value": "106"
+              },
+              {
+                "displayName": "July",
+                "value": "107"
+              },
+              {
+                "displayName": "P5",
+                "value": "405"
+              },
+              {
+                "displayName": "September",
+                "value": "109"
+              },
+              {
+                "displayName": "October",
+                "value": "110"
+              },
+              {
+                "displayName": "November",
+                "value": "111"
+              },
+              {
+                "displayName": "December",
+                "value": "112"
+              },
+              {
+                "displayName": "Semester 1",
+                "value": "201"
+              },
+              {
+                "displayName": "P11",
+                "value": "411"
+              },
+              {
+                "displayName": "Annual",
+                "value": "301"
+              },
+              {
+                "displayName": "P1",
+                "value": "401"
+              },
+              {
+                "displayName": "P2",
+                "value": "402"
+              },
+              {
+                "displayName": "P3",
+                "value": "403"
+              },
+              {
+                "displayName": "P4",
+                "value": "404"
+              },
+              {
+                "displayName": "P13",
+                "value": "413"
+              },
+              {
+                "displayName": "P6",
+                "value": "406"
+              },
+              {
+                "displayName": "P7",
+                "value": "407"
+              },
+              {
+                "displayName": "P8",
+                "value": "408"
+              },
+              {
+                "displayName": "P9",
+                "value": "409"
+              },
+              {
+                "displayName": "P10",
+                "value": "410"
+              },
+              {
+                "displayName": "Quarter 2",
+                "value": "2"
+              },
+              {
+                "displayName": "Quarter 3",
+                "value": "3"
+              },
+              {
+                "displayName": "Quarter 4",
+                "value": "4"
+              },
+              {
+                "displayName": "January",
+                "value": "101"
+              },
+              {
+                "displayName": "February",
+                "value": "102"
+              },
+              {
+                "displayName": "P12",
+                "value": "412"
+              },
+              {
+                "displayName": "Quarter 1",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "fiscalPeriod_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fiscalYear",
+        "description": "Select the fiscal year for the goal that's being tracked.",
+        "displayName": "Fiscal Year",
+        "cdsSourceName": "fiscalyear",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "FY1970",
+                "value": "1970"
+              },
+              {
+                "displayName": "FY1971",
+                "value": "1971"
+              },
+              {
+                "displayName": "FY1972",
+                "value": "1972"
+              },
+              {
+                "displayName": "FY1973",
+                "value": "1973"
+              },
+              {
+                "displayName": "FY1975",
+                "value": "1975"
+              },
+              {
+                "displayName": "FY1976",
+                "value": "1976"
+              },
+              {
+                "displayName": "FY1977",
+                "value": "1977"
+              },
+              {
+                "displayName": "FY1978",
+                "value": "1978"
+              },
+              {
+                "displayName": "FY1979",
+                "value": "1979"
+              },
+              {
+                "displayName": "FY1981",
+                "value": "1981"
+              },
+              {
+                "displayName": "FY1982",
+                "value": "1982"
+              },
+              {
+                "displayName": "FY1983",
+                "value": "1983"
+              },
+              {
+                "displayName": "FY1984",
+                "value": "1984"
+              },
+              {
+                "displayName": "FY1985",
+                "value": "1985"
+              },
+              {
+                "displayName": "FY1974",
+                "value": "1974"
+              },
+              {
+                "displayName": "FY1987",
+                "value": "1987"
+              },
+              {
+                "displayName": "FY1988",
+                "value": "1988"
+              },
+              {
+                "displayName": "FY1989",
+                "value": "1989"
+              },
+              {
+                "displayName": "FY1990",
+                "value": "1990"
+              },
+              {
+                "displayName": "FY1991",
+                "value": "1991"
+              },
+              {
+                "displayName": "FY1980",
+                "value": "1980"
+              },
+              {
+                "displayName": "FY1993",
+                "value": "1993"
+              },
+              {
+                "displayName": "FY1994",
+                "value": "1994"
+              },
+              {
+                "displayName": "FY1995",
+                "value": "1995"
+              },
+              {
+                "displayName": "FY1996",
+                "value": "1996"
+              },
+              {
+                "displayName": "FY1997",
+                "value": "1997"
+              },
+              {
+                "displayName": "FY1986",
+                "value": "1986"
+              },
+              {
+                "displayName": "FY1999",
+                "value": "1999"
+              },
+              {
+                "displayName": "FY2000",
+                "value": "2000"
+              },
+              {
+                "displayName": "FY2001",
+                "value": "2001"
+              },
+              {
+                "displayName": "FY2002",
+                "value": "2002"
+              },
+              {
+                "displayName": "FY2003",
+                "value": "2003"
+              },
+              {
+                "displayName": "FY1992",
+                "value": "1992"
+              },
+              {
+                "displayName": "FY2005",
+                "value": "2005"
+              },
+              {
+                "displayName": "FY2006",
+                "value": "2006"
+              },
+              {
+                "displayName": "FY2007",
+                "value": "2007"
+              },
+              {
+                "displayName": "FY2008",
+                "value": "2008"
+              },
+              {
+                "displayName": "FY2009",
+                "value": "2009"
+              },
+              {
+                "displayName": "FY1998",
+                "value": "1998"
+              },
+              {
+                "displayName": "FY2011",
+                "value": "2011"
+              },
+              {
+                "displayName": "FY2012",
+                "value": "2012"
+              },
+              {
+                "displayName": "FY2013",
+                "value": "2013"
+              },
+              {
+                "displayName": "FY2014",
+                "value": "2014"
+              },
+              {
+                "displayName": "FY2015",
+                "value": "2015"
+              },
+              {
+                "displayName": "FY2004",
+                "value": "2004"
+              },
+              {
+                "displayName": "FY2017",
+                "value": "2017"
+              },
+              {
+                "displayName": "FY2018",
+                "value": "2018"
+              },
+              {
+                "displayName": "FY2019",
+                "value": "2019"
+              },
+              {
+                "displayName": "FY2020",
+                "value": "2020"
+              },
+              {
+                "displayName": "FY2021",
+                "value": "2021"
+              },
+              {
+                "displayName": "FY2010",
+                "value": "2010"
+              },
+              {
+                "displayName": "FY2023",
+                "value": "2023"
+              },
+              {
+                "displayName": "FY2024",
+                "value": "2024"
+              },
+              {
+                "displayName": "FY2025",
+                "value": "2025"
+              },
+              {
+                "displayName": "FY2026",
+                "value": "2026"
+              },
+              {
+                "displayName": "FY2027",
+                "value": "2027"
+              },
+              {
+                "displayName": "FY2016",
+                "value": "2016"
+              },
+              {
+                "displayName": "FY2029",
+                "value": "2029"
+              },
+              {
+                "displayName": "FY2030",
+                "value": "2030"
+              },
+              {
+                "displayName": "FY2031",
+                "value": "2031"
+              },
+              {
+                "displayName": "FY2032",
+                "value": "2032"
+              },
+              {
+                "displayName": "FY2033",
+                "value": "2033"
+              },
+              {
+                "displayName": "FY2022",
+                "value": "2022"
+              },
+              {
+                "displayName": "FY2034",
+                "value": "2034"
+              },
+              {
+                "displayName": "FY2035",
+                "value": "2035"
+              },
+              {
+                "displayName": "FY2036",
+                "value": "2036"
+              },
+              {
+                "displayName": "FY2037",
+                "value": "2037"
+              },
+              {
+                "displayName": "FY2038",
+                "value": "2038"
+              },
+              {
+                "displayName": "FY2028",
+                "value": "2028"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "fiscalYear_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "goalStartDate",
+        "description": "Enter the date and time when the period for tracking the goal begins.",
+        "displayName": "From",
+        "cdsSourceName": "goalstartdate",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "goalEndDate",
+        "description": "Enter the date when the goal ends.",
+        "displayName": "To",
+        "cdsSourceName": "goalenddate",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "parentGoalId",
+        "description": "Choose a parent goal if the current goal is a child goal. This sets up a parent-child relationship for reporting and analytics.",
+        "displayName": "Parent Goal",
+        "cdsSourceName": "parentgoalid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "treeId",
+        "description": "Unique identifier of the goal tree.",
+        "displayName": "Tree ID",
+        "cdsSourceName": "treeid",
+        "dataType": "String"
+      },
+      {
+        "name": "depth",
+        "description": "Depth of the goal in the tree.",
+        "displayName": "Depth",
+        "cdsSourceName": "depth",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stretchTargetMoney",
+        "description": "Select stretch target (money) of the goal to define a higher or difficult level of goal than the usual ones.",
+        "displayName": "Stretch Target (Money)",
+        "cdsSourceName": "stretchtargetmoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "stretchTargetMoneyBase",
+        "description": "Shows the stretch target (money) in base currency to indicate a higher or difficult level of goal than the usual ones.",
+        "displayName": "Stretch Target (Money) (Base)",
+        "cdsSourceName": "stretchtargetmoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "stretchTargetDecimal",
+        "description": "Select a stretch target (decimal) of the goal to define a higher or difficult level of goal than the usual ones.",
+        "displayName": "Stretch Target (Decimal)",
+        "cdsSourceName": "stretchtargetdecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "stretchTargetInteger",
+        "description": "Select the stretch target (integer) of the goal to define a higher or difficult level of goal than the usual ones.",
+        "displayName": "Stretch Target (Integer)",
+        "cdsSourceName": "stretchtargetinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "targetMoney",
+        "description": "Select a goal target (money) to track a monetary amount such as revenue from a product.",
+        "displayName": "Target (Money)",
+        "cdsSourceName": "targetmoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "targetMoneyBase",
+        "description": "Shows the goal target of the money type in base currency.",
+        "displayName": "Target (Money) (Base)",
+        "cdsSourceName": "targetmoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "targetDecimal",
+        "description": "Select a goal target of the decimal type to use for tracking data that include partial numbers, such as pounds sold of a product sold by weight.",
+        "displayName": "Target (Decimal)",
+        "cdsSourceName": "targetdecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "targetInteger",
+        "description": "Select a goal target of the integer type to use for tracking anything countable in whole numbers, such as units sold.",
+        "displayName": "Target (Integer)",
+        "cdsSourceName": "targetinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "actualMoney",
+        "description": "Shows the actual value (Money type) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount and the amount data type is Money.",
+        "displayName": "Actual (Money)",
+        "cdsSourceName": "actualmoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "actualMoneyBase",
+        "description": "Shows the actual value (money type) in base currency to track goal results against the target.",
+        "displayName": "Actual (Money) (Base)",
+        "cdsSourceName": "actualmoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "customRollupFieldMoney",
+        "description": "Indicates a placeholder rollup field for a money value to track a third category of results other than actuals and in-progress results.",
+        "displayName": "Custom Rollup Field (Money)",
+        "cdsSourceName": "customrollupfieldmoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "customRollupFieldMoneyBase",
+        "description": "Indicates a placeholder rollup field for a money value in base currency to track a third category of results other than actuals and in-progress results.",
+        "displayName": "Custom Rollup Field (Money) (Base)",
+        "cdsSourceName": "customrollupfieldmoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "inProgressMoney",
+        "description": "Shows the in-progress value (money) against the target. This value could contribute to a goal, but is not counted yet as actual.",
+        "displayName": "In-progress (Money)",
+        "cdsSourceName": "inprogressmoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "inProgressMoneyBase",
+        "description": "Shows the in-progress value (money) in base currency to track goal results against the target.",
+        "displayName": "In-progress (Money) (Base)",
+        "cdsSourceName": "inprogressmoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "actualDecimal",
+        "description": "Shows the actual value (Decimal type) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount and the amount data type is Decimal.",
+        "displayName": "Actual (Decimal)",
+        "cdsSourceName": "actualdecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "customRollupFieldDecimal",
+        "description": "Indicates a placeholder rollup field for a decimal value to track a third category of results other than actuals and in-progress results.",
+        "displayName": "Custom Rollup Field (Decimal)",
+        "cdsSourceName": "customrollupfielddecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "inProgressDecimal",
+        "description": "Shows the in-progress value (decimal) against the target. This value could contribute to a goal, but is not counted yet as actual.",
+        "displayName": "In-progress (Decimal)",
+        "cdsSourceName": "inprogressdecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "actualInteger",
+        "description": "Shows the actual value (integer) achieved towards the target as of the last rolled-up date. This field appears when the metric type of the goal is Amount or Count and the amount data type is Integer.",
+        "displayName": "Actual (Integer)",
+        "cdsSourceName": "actualinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "customRollupFieldInteger",
+        "description": "Indicates a placeholder rollup field for an integer value to track a third category of results other than actuals and in-progress results.",
+        "displayName": "Custom Rollup Field (Integer)",
+        "cdsSourceName": "customrollupfieldinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "inProgressInteger",
+        "description": "Shows the in-progress value (integer) against the target. This value could contribute to a goal, but is not counted yet as actual.",
+        "displayName": "In-progress (Integer)",
+        "cdsSourceName": "inprogressinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "percentage",
+        "description": "Shows the percentage achieved against the target goal.",
+        "displayName": "Percentage Achieved",
+        "cdsSourceName": "percentage",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "isFiscalPeriodGoal",
+        "description": "Select whether the goal period is a fiscal period or custom period.",
+        "displayName": "Goal Period Type",
+        "cdsSourceName": "isfiscalperiodgoal",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "lastRolledupDate",
+        "description": "Shows the date and time when the goal was last rolled up. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Last Rolled Up Date",
+        "cdsSourceName": "lastrolledupdate",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "targetString",
+        "description": "Target value of the goal.",
+        "displayName": "Target",
+        "cdsSourceName": "targetstring",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stretchTargetString",
+        "description": "Stretch target value for all data types.",
+        "displayName": "Stretched Target",
+        "cdsSourceName": "stretchtargetstring",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "actualString",
+        "description": "Actual Value of the goal.",
+        "displayName": "Actual",
+        "cdsSourceName": "actualstring",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "customRollupFieldString",
+        "description": "Placeholder rollup field for the goal.",
+        "displayName": "Custom Rollup Field",
+        "cdsSourceName": "customrollupfieldstring",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "inProgressString",
+        "description": "In-progress value of the goal.",
+        "displayName": "In-Progress",
+        "cdsSourceName": "inprogressstring",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier of the team who owns the goal.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "dataType": "Guid"
+      },
+      {
+        "name": "amountDataType",
+        "description": "Data type of the amount.",
+        "displayName": "Amount Data Type",
+        "cdsSourceName": "amountdatatype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Money",
+                "value": "0"
+              },
+              {
+                "displayName": "Decimal",
+                "value": "1"
+              },
+              {
+                "displayName": "Integer",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "amountDataType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "rollupQueryActualIntegerId",
+        "description": "Choose the query that will be used to calculate the actual data for the goal (integer).",
+        "displayName": "Rollup Query - Actual(Integer)",
+        "cdsSourceName": "rollupqueryactualintegerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryActualMoneyId",
+        "description": "Choose the query that will be used to calculate the actual data for the goal (money).",
+        "displayName": "Rollup Query - Actual(Money)",
+        "cdsSourceName": "rollupqueryactualmoneyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryActualDecimalId",
+        "description": "Choose the query that will be used to calculate the actual data for the goal (decimal).",
+        "displayName": "Rollup Query - Actual(Decimal)",
+        "cdsSourceName": "rollupqueryactualdecimalid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryCustomIntegerId",
+        "description": "Choose the query that will be used to calculate data for the custom rollup field (integer).",
+        "displayName": "Rollup Query - Custom Rollup Field (Integer)",
+        "cdsSourceName": "rollupquerycustomintegerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryCustomMoneyId",
+        "description": "Choose the query that will be used to calculate data for the custom rollup field (money).",
+        "displayName": "Rollup Query - Custom Rollup Field (Money)",
+        "cdsSourceName": "rollupquerycustommoneyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryCustomDecimalId",
+        "description": "Choose the query that will be used to calculate data for the custom rollup field (decimal).",
+        "displayName": "Rollup Query - Custom Rollup Field (Decimal)",
+        "cdsSourceName": "rollupquerycustomdecimalid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryInprogressIntegerId",
+        "description": "Choose the query that will be used to calculate data for the in-progress rollup field (integer).",
+        "displayName": "Rollup Query - In-progress(Integer)",
+        "cdsSourceName": "rollupqueryinprogressintegerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryInprogressMoneyId",
+        "description": "Choose the query that will be used to calculate data for the in-progress rollup field (money).",
+        "displayName": "Rollup Query - In-progress(Money)",
+        "cdsSourceName": "rollupqueryinprogressmoneyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollUpQueryInprogressDecimalId",
+        "description": "Choose the query that will be used to calculate data for the in-progress rollup field (decimal).",
+        "displayName": "Rollup Query - In-progress(Decimal)",
+        "cdsSourceName": "rollupqueryinprogressdecimalid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "goalWithErrorId",
+        "description": "Unique identifier of the goal that caused an error in the rollup of the goal hierarchy.",
+        "displayName": "Goal With Error",
+        "cdsSourceName": "goalwitherrorid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "rollupErrorCode",
+        "description": "Error code associated with rollup.",
+        "displayName": "Rollup Error Code",
+        "cdsSourceName": "rolluperrorcode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "computedTargetAsOfTodayPercentageAchieved",
+        "description": "Shows the expected value for percentage achieved against the target goal as of the current date.",
+        "displayName": "Today's Target (Percentage Achieved)",
+        "cdsSourceName": "computedtargetasoftodaypercentageachieved",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "computedTargetAsOfTodayMoney",
+        "description": "Shows the expected amount for actual value (money type) against the target goal as of the current date.",
+        "displayName": "Today's Target (Money)",
+        "cdsSourceName": "computedtargetasoftodaymoney",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "computedTargetAsOfTodayMoneyBase",
+        "description": "Shows the expected amount in base currency for actual value (money type) against the target goal as of the current date.",
+        "displayName": "Today's Target (Money) (Base)",
+        "cdsSourceName": "computedtargetasoftodaymoney_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "computedTargetAsOfTodayDecimal",
+        "description": "Shows the expected amount for actual value (decimal type) against the target goal.",
+        "displayName": "Today's Target (Decimal)",
+        "cdsSourceName": "computedtargetasoftodaydecimal",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "computedTargetAsOfTodayInteger",
+        "description": "Shows the expected amount for actual value (integer type) against the target goal as of the current date.",
+        "displayName": "Today's Target (Integer)",
+        "cdsSourceName": "computedtargetasoftodayinteger",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "isOverride",
+        "description": "Indicates whether the values of system rollup fields can be updated.",
+        "displayName": "Override",
+        "cdsSourceName": "isoverride",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isOverridden",
+        "description": "Select whether the system rollup fields are updated. If set to Yes, the next system rollup will not update the values of the rollup fields with the system calculated values.",
+        "displayName": "Overridden",
+        "cdsSourceName": "isoverridden",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "entityImageId",
+        "description": "For internal use only.",
+        "displayName": "Entity Image Id",
+        "cdsSourceName": "entityimageid",
+        "dataType": "String"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "goalOwnerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "goalOwnerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "metricId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "metricId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "GoalMetric",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentGoalId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "goalId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "goalWithErrorId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "goalId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Goal",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
 }

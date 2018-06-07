@@ -1,0 +1,1297 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "QuoteProduct",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+      }
+    },
+    "description": "Product line item in a quote. The details include such information as product ID, description, quantity, and cost.",
+    "displayName": "Quote Product",
+    "cdsSourceName": "QuoteDetail",
+    "attributes": [
+      {
+        "name": "quoteDetailId",
+        "description": "Unique identifier of the product line item in the quote.",
+        "displayName": "Quote Product",
+        "cdsSourceName": "quotedetailid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier for the business unit that owns the record",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier for the user that owns the record.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "productTypeCode",
+        "description": "Product Type",
+        "displayName": "Product type",
+        "cdsSourceName": "producttypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Project-based Service",
+                "value": "5"
+              },
+              {
+                "displayName": "Product",
+                "value": "1"
+              },
+              {
+                "displayName": "Bundle",
+                "value": "2"
+              },
+              {
+                "displayName": "Required Bundle Product",
+                "value": "3"
+              },
+              {
+                "displayName": "Optional Bundle Product",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "productTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "quantity",
+        "description": "Type the amount or quantity of the product requested by the customer.",
+        "displayName": "Quantity",
+        "cdsSourceName": "quantity",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "quoteId",
+        "description": "Unique identifier of the quote for the quote product.",
+        "displayName": "Quote",
+        "cdsSourceName": "quoteid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "quoteStateCode",
+        "description": "Status of the quote product.",
+        "displayName": "Quote Status",
+        "cdsSourceName": "quotestatecode",
+        "dataType": "Int32"
+      },
+      {
+        "name": "quoteStateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "propertyConfigurationStatus",
+        "description": "Status of the property configuration.",
+        "displayName": "Property Configuration",
+        "cdsSourceName": "propertyconfigurationstatus",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Configured",
+                "value": "2"
+              },
+              {
+                "displayName": "Edit",
+                "value": "0"
+              },
+              {
+                "displayName": "Rectify",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "propertyConfigurationStatus_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Shows who last updated the record on behalf of another user.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier for the team that owns the record.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "baseAmount",
+        "description": "Shows the total price of the quote product, based on the price per unit, volume discount, and quantity.",
+        "displayName": "Amount",
+        "cdsSourceName": "baseamount",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "baseAmountBase",
+        "description": "Value of the Amount in base currency.",
+        "displayName": "Amount (Base)",
+        "cdsSourceName": "baseamount_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "description",
+        "description": "Type additional information to describe the quote product, such as manufacturing details or acceptable substitutions.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "extendedAmount",
+        "description": "Shows the total amount due for the quote product, based on the sum of the unit price, quantity, discounts ,and tax.",
+        "displayName": "Extended Amount",
+        "cdsSourceName": "extendedamount",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "extendedAmountBase",
+        "description": "Value of the Extended Amount in base currency.",
+        "displayName": "Extended Amount (Base)",
+        "cdsSourceName": "extendedamount_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "isPriceOverridden",
+        "description": "Select whether the price per unit is fixed at the value in the specified price list or can be overridden by users who have edit rights to the quote product.",
+        "displayName": "Price Overridden",
+        "cdsSourceName": "ispriceoverridden",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isProductOverridden",
+        "description": "Select whether the product exists in the Microsoft Dynamics 365 product catalog or is a write-in product specific to the quote.",
+        "displayName": "Select Product",
+        "cdsSourceName": "isproductoverridden",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "lineItemNumber",
+        "description": "Type the line item number for the quote product to easily identify the product in the quote and make sure it's listed in the correct order.",
+        "displayName": "Line Item Number",
+        "cdsSourceName": "lineitemnumber",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "manualDiscountAmount",
+        "description": "Type the manual discount amount for the quote product to deduct any negotiated or other savings from the product total on the quote.",
+        "displayName": "Manual Discount",
+        "cdsSourceName": "manualdiscountamount",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 1000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "manualDiscountAmountBase",
+        "description": "Value of the Manual Discount in base currency.",
+        "displayName": "Manual Discount (Base)",
+        "cdsSourceName": "manualdiscountamount_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "parentBundleId",
+        "description": "Choose the parent bundle associated with this product",
+        "displayName": "Parent Bundle",
+        "cdsSourceName": "parentbundleid",
+        "dataType": "String"
+      },
+      {
+        "name": "productAssociationId",
+        "description": "Unique identifier of the product line item association with bundle in the quote",
+        "displayName": "Bundle Item Association",
+        "cdsSourceName": "productassociationid",
+        "dataType": "String"
+      },
+      {
+        "name": "pricePerUnit",
+        "description": "Type the price per unit of the quote product. The default is to the value in the price list specified on the quote for existing products.",
+        "displayName": "Price Per Unit",
+        "cdsSourceName": "priceperunit",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "pricePerUnitBase",
+        "description": "Value of the Price Per Unit in base currency.",
+        "displayName": "Price Per Unit (Base)",
+        "cdsSourceName": "priceperunit_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "pricingErrorCode",
+        "description": "Select the type of pricing error, such as a missing or invalid product, or missing quantity.",
+        "displayName": "Pricing Error ",
+        "cdsSourceName": "pricingerrorcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Missing Pricing Code",
+                "value": "8"
+              },
+              {
+                "displayName": "Invalid Pricing Code",
+                "value": "9"
+              },
+              {
+                "displayName": "Missing Price",
+                "value": "14"
+              },
+              {
+                "displayName": "Missing Current Cost",
+                "value": "15"
+              },
+              {
+                "displayName": "Missing Quantity",
+                "value": "4"
+              },
+              {
+                "displayName": "Missing Unit Price",
+                "value": "5"
+              },
+              {
+                "displayName": "Missing Product",
+                "value": "6"
+              },
+              {
+                "displayName": "Invalid Product",
+                "value": "7"
+              },
+              {
+                "displayName": "Invalid Current Cost",
+                "value": "20"
+              },
+              {
+                "displayName": "Invalid Standard Cost",
+                "value": "21"
+              },
+              {
+                "displayName": "Missing UOM",
+                "value": "10"
+              },
+              {
+                "displayName": "Product Not In Price Level",
+                "value": "11"
+              },
+              {
+                "displayName": "Missing Price Level Amount",
+                "value": "12"
+              },
+              {
+                "displayName": "Missing Price Level Percentage",
+                "value": "13"
+              },
+              {
+                "displayName": "Invalid Discount Type",
+                "value": "26"
+              },
+              {
+                "displayName": "Discount Type Invalid State",
+                "value": "27"
+              },
+              {
+                "displayName": "Missing Standard Cost",
+                "value": "16"
+              },
+              {
+                "displayName": "Invalid Price Level Amount",
+                "value": "17"
+              },
+              {
+                "displayName": "Invalid Price Level Percentage",
+                "value": "18"
+              },
+              {
+                "displayName": "Invalid Price",
+                "value": "19"
+              },
+              {
+                "displayName": "Missing Product UOM Schedule ",
+                "value": "32"
+              },
+              {
+                "displayName": "Inactive Discount Type",
+                "value": "33"
+              },
+              {
+                "displayName": "Invalid Rounding Policy",
+                "value": "22"
+              },
+              {
+                "displayName": "Invalid Rounding Option",
+                "value": "23"
+              },
+              {
+                "displayName": "Invalid Rounding Amount",
+                "value": "24"
+              },
+              {
+                "displayName": "Price Calculation Error",
+                "value": "25"
+              },
+              {
+                "displayName": "Base Currency Attribute Overflow",
+                "value": "36"
+              },
+              {
+                "displayName": "Base Currency Attribute Underflow",
+                "value": "37"
+              },
+              {
+                "displayName": "Invalid Discount",
+                "value": "28"
+              },
+              {
+                "displayName": "Invalid Quantity",
+                "value": "29"
+              },
+              {
+                "displayName": "Invalid Pricing Precision",
+                "value": "30"
+              },
+              {
+                "displayName": "Missing Product Default UOM",
+                "value": "31"
+              },
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Detail Error",
+                "value": "1"
+              },
+              {
+                "displayName": "Missing Price Level",
+                "value": "2"
+              },
+              {
+                "displayName": "Inactive Price Level",
+                "value": "3"
+              },
+              {
+                "displayName": "Invalid Price Level Currency",
+                "value": "34"
+              },
+              {
+                "displayName": "Price Attribute Out Of Range",
+                "value": "35"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "pricingErrorCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "productDescription",
+        "description": "Type a name or description to identify the type of write-in product included in the quote.",
+        "displayName": "Write-In Product",
+        "cdsSourceName": "productdescription",
+        "semanticDomain": {
+          "maxLength": 500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "productName",
+        "description": "Calculated field that will be populated by name and description of the product.",
+        "displayName": "Product Name",
+        "cdsSourceName": "productname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "productId",
+        "description": "Choose the product to include on the quote to link the product's pricing and other information to the quote.",
+        "displayName": "Existing Product",
+        "cdsSourceName": "productid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "requestDeliveryBy",
+        "description": "Enter the delivery date requested by the customer for the quote product.",
+        "displayName": "Requested Delivery Date",
+        "cdsSourceName": "requestdeliveryby",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "salesRepId",
+        "description": "Choose the user responsible for the sale of the quote product.",
+        "displayName": "Salesperson",
+        "cdsSourceName": "salesrepid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "shipToAddressId",
+        "description": "Unique identifier of the shipping address.",
+        "displayName": "Ship To Address ID",
+        "cdsSourceName": "shipto_addressid",
+        "dataType": "String"
+      },
+      {
+        "name": "shipToCity",
+        "description": "Type the city for the customer's shipping address.",
+        "displayName": "Ship To City",
+        "cdsSourceName": "shipto_city",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToContactName",
+        "description": "Type the primary contact name at the customer's shipping address.",
+        "displayName": "Ship To Contact Name",
+        "cdsSourceName": "shipto_contactname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToCountry",
+        "description": "Type the country or region for the customer's shipping address.",
+        "displayName": "Ship To Country/Region",
+        "cdsSourceName": "shipto_country",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToFax",
+        "description": "Type the fax number for the customer's shipping address.",
+        "displayName": "Ship To Fax",
+        "cdsSourceName": "shipto_fax",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToFreightTermsCode",
+        "description": "Select the freight terms to make sure shipping orders are processed correctly.",
+        "displayName": "Freight Terms",
+        "cdsSourceName": "shipto_freighttermscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "FOB",
+                "value": "1"
+              },
+              {
+                "displayName": "No Charge",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "shipToFreightTermsCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToLine1",
+        "description": "Type the first line of the customer's shipping address.",
+        "displayName": "Ship To Street 1",
+        "cdsSourceName": "shipto_line1",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToLine2",
+        "description": "Type the second line of the customer's shipping address.",
+        "displayName": "Ship To Street 2",
+        "cdsSourceName": "shipto_line2",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToLine3",
+        "description": "Type the third line of the shipping address.",
+        "displayName": "Ship To Street 3",
+        "cdsSourceName": "shipto_line3",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToName",
+        "description": "Type a name for the customer's shipping address, such as \"Headquarters\" or \"Field office\",  to identify the address.",
+        "displayName": "Ship To Name",
+        "cdsSourceName": "shipto_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToPostalCode",
+        "description": "Type the ZIP Code or postal code for the shipping address.",
+        "displayName": "Ship To ZIP/Postal Code",
+        "cdsSourceName": "shipto_postalcode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToStateOrProvince",
+        "description": "Type the state or province for the shipping address.",
+        "displayName": "Ship To State/Province",
+        "cdsSourceName": "shipto_stateorprovince",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shipToTelephone",
+        "description": "Type the phone number for the customer's shipping address.",
+        "displayName": "Ship To Phone",
+        "cdsSourceName": "shipto_telephone",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "tax",
+        "description": "Type the tax amount for the quote product.",
+        "displayName": "Tax",
+        "cdsSourceName": "tax",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 1000000000000,
+          "minValue": -1000000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "taxBase",
+        "description": "Value of the Tax in base currency.",
+        "displayName": "Tax (Base)",
+        "cdsSourceName": "tax_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "uoMId",
+        "description": "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen.",
+        "displayName": "Unit",
+        "cdsSourceName": "uomid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "volumeDiscountAmount",
+        "description": "Shows the discount amount per unit if a specified volume is purchased. Configure volume discounts in the Product Catalog in the Settings area.",
+        "displayName": "Volume Discount",
+        "cdsSourceName": "volumediscountamount",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "volumeDiscountAmountBase",
+        "description": "Value of the Volume Discount in base currency.",
+        "displayName": "Volume Discount (Base)",
+        "cdsSourceName": "volumediscountamount_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "willCall",
+        "description": "Select whether the quote product should be shipped to the specified address or held until the customer calls with further pick up or delivery instructions.",
+        "displayName": "Ship To",
+        "cdsSourceName": "willcall",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "sequenceNumber",
+        "description": "Unique identifier of the data that maintains the sequence.",
+        "displayName": "Sequence Number",
+        "cdsSourceName": "sequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "quoteId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "quoteId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Quote",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentBundleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "quoteDetailId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "productAssociationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "productAssociationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ProductAssociation",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "productId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "productId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Product",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "salesRepId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "uoMId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuoteProduct",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "uoMId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Unit",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      }
+    ]
+  }
+}

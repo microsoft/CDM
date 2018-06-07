@@ -1,0 +1,783 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "CustomerJourney",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+      }
+    },
+    "displayName": "Customer Journey",
+    "cdsSourceName": "msdyncrm_customerjourney",
+    "attributes": [
+      {
+        "name": "customerjourneyId",
+        "description": "Unique ID for entity instances.",
+        "displayName": "Customer journey",
+        "cdsSourceName": "msdyncrm_customerjourneyid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner ID",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the customer journey",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "name",
+        "description": "The name of the customer journey.",
+        "displayName": "Name",
+        "cdsSourceName": "msdyncrm_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created on",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique ID of the user who created the record",
+        "displayName": "Created by",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified on",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique ID of the user who modified the record",
+        "displayName": "Modified by",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique ID of the delegate user who created the record",
+        "displayName": "Created by (delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique ID of the delegate user who modified the record",
+        "displayName": "Modified by (delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique ID of the business unit that owns the record.",
+        "displayName": "Owning business unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique ID of the user who owns the record.",
+        "displayName": "Owning user",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique ID of the team that owns the record.",
+        "displayName": "Owning team",
+        "cdsSourceName": "owningteam",
+        "dataType": "Guid"
+      },
+      {
+        "name": "statusCode",
+        "description": "Reason for the status of the customer journey.",
+        "displayName": "Status reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Live, Editable",
+                "value": "192350003",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Expired",
+                "value": "192350004",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Error",
+                "value": "192350005",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Going live",
+                "value": "192350006",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Stopping",
+                "value": "192350007",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Draft",
+                "value": "192350000",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Live",
+                "value": "192350001",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Stopped",
+                "value": "192350002",
+                "correlationValue": "0"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import sequence number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record created on",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time-zone rule version number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time-zone code that was in use when the record was created.",
+        "displayName": "UTC conversion time-zone code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "contentSettingsId",
+        "description": "Content settings that apply to this customer journey.",
+        "displayName": "Content settings",
+        "cdsSourceName": "msdyncrm_contentsettingsid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "customerJourneyDesignerState",
+        "description": "The state of customer journey.",
+        "displayName": "Customer journey designer state",
+        "cdsSourceName": "msdyncrm_customerjourneydesignerstate",
+        "semanticDomain": {
+          "maxLength": 100000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "customerJourneyTemplate",
+        "description": "The template used to create the initial layout of the customer journey.",
+        "displayName": "Customer journey template",
+        "cdsSourceName": "msdyncrm_customerjourneytemplate",
+        "dataType": "Guid"
+      },
+      {
+        "name": "customerJourneyTimeZone",
+        "description": "Effective time zone for this customer journey",
+        "displayName": "Time zone",
+        "cdsSourceName": "msdyncrm_customerjourneytimezone",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "description",
+        "description": "Enter additional information to describe this customer journey.",
+        "displayName": "Description",
+        "cdsSourceName": "msdyncrm_description",
+        "semanticDomain": {
+          "maxLength": 5000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "endDateTime",
+        "description": "The end date of customer journey",
+        "displayName": "End date and time",
+        "cdsSourceName": "msdyncrm_enddatetime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "insightsPlaceholder",
+        "displayName": "Insights",
+        "cdsSourceName": "msdyncrm_insights_placeholder",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRecurring",
+        "description": "Tells whether the customer journey is recurring or not.",
+        "displayName": "Is recurring",
+        "cdsSourceName": "msdyncrm_isrecurring",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "publishedBy",
+        "description": "Unique ID of the user who published the customer journey",
+        "displayName": "Published by",
+        "cdsSourceName": "msdyncrm_publishedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "purpose",
+        "displayName": "Purpose",
+        "cdsSourceName": "msdyncrm_purpose",
+        "semanticDomain": {
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "recurrenceCount",
+        "description": "The number of iterations.",
+        "displayName": "Recurrence count",
+        "cdsSourceName": "msdyncrm_recurrencecount",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "recurrenceIntervalDays",
+        "description": "The duration of the iteration (in days)",
+        "displayName": "Recurrence interval (days)",
+        "cdsSourceName": "msdyncrm_recurrenceintervaldays",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "startDateTime",
+        "description": "The start date of the customer journey.",
+        "displayName": "Start date and time",
+        "cdsSourceName": "msdyncrm_startdatetime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "suppressionSegmentId",
+        "description": "A segment that defines a list of contacts that are excluded from this customer journey.",
+        "displayName": "Suppression segment",
+        "cdsSourceName": "msdyncrm_suppressionsegmentid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "type",
+        "displayName": "Type",
+        "cdsSourceName": "msdyncrm_type",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Automated",
+                "value": "192350000"
+              },
+              {
+                "displayName": "LinkedIn",
+                "value": "192350001"
+              },
+              {
+                "displayName": "Automated",
+                "value": "192350000"
+              },
+              {
+                "displayName": "LinkedIn",
+                "value": "192350001"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "type_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "validationResults",
+        "displayName": "Error check results",
+        "cdsSourceName": "msdyncrm_validationresults",
+        "semanticDomain": {
+          "maxLength": 1048576
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "workflowDefinition",
+        "description": "The customer journey design definition.",
+        "displayName": "Workflow definition",
+        "cdsSourceName": "msdyncrm_workflowdefinition",
+        "semanticDomain": {
+          "maxLength": 1048576
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "linkedInCampaign",
+        "description": "Link to LinkedIn Campaign",
+        "displayName": "LinkedIn Campaign",
+        "cdsSourceName": "msdyncr2_linkedincampaign",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "contentSettingsId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contentsettingsId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ContentSettings",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "suppressionSegmentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "segmentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Segment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "linkedInCampaign",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerJourney",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "linkedincampaignId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LinkedInCampaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,458 +1,514 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "CompetitorAddress",
-				"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-				"semanticVersion": "0.5.0",
-				"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-			}
-		},
-		"description": "Additional addresses for a competitor. The first two addresses are stored in the competitor object.",
-		"displayName": "Competitor Address",
-		"attributes": [
-			{
-				"name": "competitoraddressid",
-				"dataType": "Guid",
-				"displayName": "Competitor Address",
-				"description": "Unique identifier of the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the competitor address was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the competitor address was last modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who last modified the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the competitor address.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version Number",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Sequence number of the import that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Address Name",
-				"description": "Name used to identify the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 200
-				}
-			},
-			{
-				"name": "addressnumber",
-				"dataType": "Int32",
-				"displayName": "Address Number",
-				"description": "Information about which competitor address is applicable.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "addresstypecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "addresstypecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "addresstypecode",
-				"dataType": "String",
-				"displayName": "Address Type",
-				"description": "Type of address for the competitor, such as primary address.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "competitoraddress_addresstypecode",
-						"displayName": "competitoraddress_addresstypecode",
-						"description": "Type of address for the competitor, such as primary address.",
-						"items": [
-							{
-								"value": 0
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "city",
-				"dataType": "String",
-				"displayName": "City",
-				"description": "City name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "composite",
-				"dataType": "String",
-				"displayName": "Address",
-				"description": "Shows the complete address.",
-				"semanticDomain": {
-					"semanticType": "Reference.Description",
-					"maxLength": 1000
-				}
-			},
-			{
-				"name": "country",
-				"dataType": "String",
-				"displayName": "Country/Region",
-				"description": "Country/region name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "county",
-				"dataType": "String",
-				"displayName": "County",
-				"description": "County name in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "fax",
-				"dataType": "String",
-				"displayName": "Fax",
-				"description": "Fax number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "latitude",
-				"dataType": "Double",
-				"displayName": "Latitude",
-				"description": "Latitude for the competitor address.",
-				"semanticDomain": {
-					"minValue": -90,
-					"maxValue": 90
-				}
-			},
-			{
-				"name": "line1",
-				"dataType": "String",
-				"displayName": "Street 1",
-				"description": "First line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "line2",
-				"dataType": "String",
-				"displayName": "Street 2",
-				"description": "Second line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "line3",
-				"dataType": "String",
-				"displayName": "Street 3",
-				"description": "Third line for entering address information.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "longitude",
-				"dataType": "Double",
-				"displayName": "Longitude",
-				"description": "Longitude for the address for the competitor.",
-				"semanticDomain": {
-					"minValue": -180,
-					"maxValue": 180
-				}
-			},
-			{
-				"name": "parentid",
-				"dataType": "Guid",
-				"displayName": "Parent",
-				"description": "Unique identifier of the parent object with which the competitor address is associated.",
-				"semanticDomain": {
-					"semanticType": "Object.Relationship.Parent"
-				}
-			},
-			{
-				"name": "postalcode",
-				"dataType": "String",
-				"displayName": "ZIP/Postal Code",
-				"description": "ZIP Code or postal code in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "postofficebox",
-				"dataType": "String",
-				"displayName": "Post Office Box",
-				"description": "Post office box number in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "shippingmethodcode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "shippingmethodcode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "shippingmethodcode",
-				"dataType": "String",
-				"displayName": "Shipping Method",
-				"description": "Method of shipment for the competitor.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "competitoraddress_shippingmethodcode",
-						"displayName": "competitoraddress_shippingmethodcode",
-						"description": "Method of shipment for the competitor.",
-						"items": [
-							{
-								"value": 0
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "stateorprovince",
-				"dataType": "String",
-				"displayName": "State/Province",
-				"description": "State or province in the competitor address.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone1",
-				"dataType": "String",
-				"displayName": "Main Phone",
-				"description": "First telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone2",
-				"dataType": "String",
-				"displayName": "Phone 2",
-				"description": "Second telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "telephone3",
-				"dataType": "String",
-				"displayName": "Phone 3",
-				"description": "Third telephone number for the competitor address.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "upszone",
-				"dataType": "String",
-				"displayName": "UPS Zone",
-				"description": "United Parcel Service (UPS) zone for the address of the competitor.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 4
-				}
-			},
-			{
-				"name": "utcoffset",
-				"dataType": "Int32",
-				"displayName": "UTC Offset",
-				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "lk_competitoraddressbase_createdonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "CompetitorAddress",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-				},
-				"attributes": [
-					{
-						"name": "createdonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "competitor_addresses",
-			"referencing": {
-				"entity": {
-					"type": "CompetitorAddress",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "c948c7f0-5774-4474-a678-437dcc3bdd33"
-				},
-				"attributes": [
-					{
-						"name": "parentid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Competitor",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.sales",
-					"semanticVersion": "0.5.0",
-					"semanticId": "6b76b000-0b01-ae09-bc4b-0980f17a6943"
-				},
-				"attributes": [
-					{
-						"name": "competitorid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "CompetitorAddress",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+      }
+    },
+    "description": "Additional addresses for a competitor. The first two addresses are stored in the competitor object.",
+    "displayName": "Competitor Address",
+    "cdsSourceName": "CompetitorAddress",
+    "attributes": [
+      {
+        "name": "competitorAddressId",
+        "description": "Unique identifier of the competitor address.",
+        "displayName": "Competitor Address",
+        "cdsSourceName": "competitoraddressid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "parentId",
+        "description": "Unique identifier of the parent object with which the competitor address is associated.",
+        "displayName": "Parent",
+        "cdsSourceName": "parentid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the competitor address was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the competitor address.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the competitor address was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the competitor address.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the competitor address.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the competitor address.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "description": "Name used to identify the competitor address.",
+        "displayName": "Address Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "addressNumber",
+        "description": "Information about which competitor address is applicable.",
+        "displayName": "Address Number",
+        "cdsSourceName": "addressnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "addressTypeCode",
+        "description": "Type of address for the competitor, such as primary address.",
+        "displayName": "Address Type",
+        "cdsSourceName": "addresstypecode",
+        "dataType": "Int32"
+      },
+      {
+        "name": "addressTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "city",
+        "description": "City name in the competitor address.",
+        "displayName": "City",
+        "cdsSourceName": "city",
+        "semanticDomain": {
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "composite",
+        "description": "Shows the complete address.",
+        "displayName": "Address",
+        "cdsSourceName": "composite",
+        "semanticDomain": {
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "country",
+        "description": "Country/region name in the competitor address.",
+        "displayName": "Country/Region",
+        "cdsSourceName": "country",
+        "semanticDomain": {
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "county",
+        "description": "County name in the competitor address.",
+        "displayName": "County",
+        "cdsSourceName": "county",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fax",
+        "description": "Fax number for the competitor address.",
+        "displayName": "Fax",
+        "cdsSourceName": "fax",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "latitude",
+        "description": "Latitude for the competitor address.",
+        "displayName": "Latitude",
+        "cdsSourceName": "latitude",
+        "semanticDomain": {
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "line1",
+        "description": "First line for entering address information.",
+        "displayName": "Street 1",
+        "cdsSourceName": "line1",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "line2",
+        "description": "Second line for entering address information.",
+        "displayName": "Street 2",
+        "cdsSourceName": "line2",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "line3",
+        "description": "Third line for entering address information.",
+        "displayName": "Street 3",
+        "cdsSourceName": "line3",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "longitude",
+        "description": "Longitude for the address for the competitor.",
+        "displayName": "Longitude",
+        "cdsSourceName": "longitude",
+        "semanticDomain": {
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "postalCode",
+        "description": "ZIP Code or postal code in the competitor address.",
+        "displayName": "ZIP/Postal Code",
+        "cdsSourceName": "postalcode",
+        "semanticDomain": {
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "postOfficeBox",
+        "description": "Post office box number in the competitor address.",
+        "displayName": "Post Office Box",
+        "cdsSourceName": "postofficebox",
+        "semanticDomain": {
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shippingMethodCode",
+        "description": "Method of shipment for the competitor.",
+        "displayName": "Shipping Method",
+        "cdsSourceName": "shippingmethodcode",
+        "dataType": "Int32"
+      },
+      {
+        "name": "shippingMethodCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateOrProvince",
+        "description": "State or province in the competitor address.",
+        "displayName": "State/Province",
+        "cdsSourceName": "stateorprovince",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone1",
+        "description": "First telephone number for the competitor address.",
+        "displayName": "Main Phone",
+        "cdsSourceName": "telephone1",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone2",
+        "description": "Second telephone number for the competitor address.",
+        "displayName": "Phone 2",
+        "cdsSourceName": "telephone2",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone3",
+        "description": "Third telephone number for the competitor address.",
+        "displayName": "Phone 3",
+        "cdsSourceName": "telephone3",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "UPSZone",
+        "description": "United Parcel Service (UPS) zone for the address of the competitor.",
+        "displayName": "UPS Zone",
+        "cdsSourceName": "upszone",
+        "semanticDomain": {
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "UTCOffset",
+        "description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
+        "displayName": "UTC Offset",
+        "cdsSourceName": "utcoffset",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CompetitorAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "competitorId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Competitor",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CompetitorAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CompetitorAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CompetitorAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CompetitorAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
 }

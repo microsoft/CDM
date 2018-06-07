@@ -1,0 +1,1628 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "CampaignResponse",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+      }
+    },
+    "description": "Response from an existing or a potential new customer for a campaign.",
+    "displayName": "Campaign Response",
+    "cdsSourceName": "CampaignResponse",
+    "attributes": [
+      {
+        "name": "activityId",
+        "description": "Unique identifier of the campaign response.",
+        "displayName": "Campaign Response",
+        "cdsSourceName": "activityid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "activityTypeCode",
+        "description": "Type of activity.",
+        "displayName": "Activity Type",
+        "cdsSourceName": "activitytypecode",
+        "dataType": "Int32"
+      },
+      {
+        "name": "activityTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the campaign response is open, closed, or canceled. Closed and canceled campaign responses are read-only and can't be edited.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0"
+              },
+              {
+                "displayName": "Closed",
+                "value": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the activity.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "regardingObjectId",
+        "description": "Choose the parent campaign so that the campaign's response rate is tracked correctly.",
+        "displayName": "Parent Campaign",
+        "cdsSourceName": "regardingobjectid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "subject",
+        "description": "Type a short description about the objective or primary topic of the campaign response.",
+        "displayName": "Subject",
+        "cdsSourceName": "subject",
+        "semanticDomain": {
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring series.",
+        "displayName": "Recurring Instance Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the activity.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "actualEnd",
+        "description": "Enter the date when the campaign response was actually completed.",
+        "displayName": "Actual End",
+        "cdsSourceName": "actualend",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the activity.",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "isBilled",
+        "description": "Specifies whether the campaign response was billed as part of resolving a case.",
+        "displayName": "Is Billed",
+        "cdsSourceName": "isbilled",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the activity.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "description",
+        "description": "Type additional information to describe the campaign response, such as key discussion points or objectives.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when activity was last modified.",
+        "displayName": "Last Updated",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "scheduledEnd",
+        "description": "Enter the expected due date and time for the activity to be completed to provide details about the timing of the campaign response.",
+        "displayName": "Close By",
+        "cdsSourceName": "scheduledend",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "scheduledDurationMinutes",
+        "description": "Scheduled duration of the campaign response in minutes.",
+        "displayName": "Scheduled Duration",
+        "cdsSourceName": "scheduleddurationminutes",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "actualDurationMinutes",
+        "description": "Type the number of minutes spent on this activity. The duration is used in reporting.",
+        "displayName": "Actual Duration ",
+        "cdsSourceName": "actualdurationminutes",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the campaign response's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Closed",
+                "value": "2",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "3",
+                "correlationValue": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "actualStart",
+        "description": "Enter the actual start date and time for the campaign response.",
+        "displayName": "Actual Start",
+        "cdsSourceName": "actualstart",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the activity was created.",
+        "displayName": "Date Created",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "priorityCode",
+        "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+        "displayName": "Priority",
+        "cdsSourceName": "prioritycode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Low",
+                "value": "0"
+              },
+              {
+                "displayName": "Normal",
+                "value": "1"
+              },
+              {
+                "displayName": "High",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "priorityCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isWorkflowCreated",
+        "description": "Specifies whether the campaign response is created by a workflow rule.",
+        "displayName": "Is Workflow Created",
+        "cdsSourceName": "isworkflowcreated",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "scheduledStart",
+        "description": "Enter the expected start date and time for the activity to provide details about the timing of the campaign response.",
+        "displayName": "Scheduled Start",
+        "cdsSourceName": "scheduledstart",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of user who last modified the activity.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier of the user that owns the activity.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "seriesId",
+        "description": "Uniqueidentifier specifying the id of recurring series of an instance.",
+        "displayName": "Series Id",
+        "cdsSourceName": "seriesid",
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the activitypointer.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the activitypointer.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier of the team that owns the activity.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "leftVoiceMail",
+        "description": "Left the voice mail",
+        "displayName": "Left Voice Mail",
+        "cdsSourceName": "leftvoicemail",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "community",
+        "description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
+        "displayName": "Social Channel",
+        "cdsSourceName": "community",
+        "dataType": "Int32"
+      },
+      {
+        "name": "community_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "traversedPath",
+        "description": "For internal use only.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isMapiPrivate",
+        "description": "For internal use only.",
+        "displayName": "Is Private",
+        "cdsSourceName": "ismapiprivate",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "exchangeWebLink",
+        "description": "Shows the web link of Activity of type email.",
+        "displayName": "Exchange WebLink",
+        "cdsSourceName": "exchangeweblink",
+        "semanticDomain": {
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "exchangeItemId",
+        "description": "The message id of activity which is returned from Exchange Server.",
+        "displayName": "Exchange Item ID",
+        "cdsSourceName": "exchangeitemid",
+        "semanticDomain": {
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "deliveryPriorityCode",
+        "description": "Priority of delivery of the activity to the email server.",
+        "displayName": "Delivery Priority",
+        "cdsSourceName": "deliveryprioritycode",
+        "dataType": "Int32"
+      },
+      {
+        "name": "deliveryPriorityCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "sentOn",
+        "description": "Date and time when the activity was sent.",
+        "displayName": "Date Sent",
+        "cdsSourceName": "senton",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "deliveryLastAttemptedOn",
+        "description": "Date and time when the delivery of the activity was last attempted.",
+        "displayName": "Date Delivery Last Attempted",
+        "cdsSourceName": "deliverylastattemptedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "senderMailboxId",
+        "description": "Unique identifier of the mailbox associated with the sender of the email message.",
+        "displayName": "Sender's Mailbox",
+        "cdsSourceName": "sendermailboxid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "postponeActivityProcessingUntil",
+        "description": "For internal use only.",
+        "displayName": "Delay activity processing until",
+        "cdsSourceName": "postponeactivityprocessinguntil",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "processId",
+        "description": "Unique identifier of the Process.",
+        "displayName": "Process",
+        "cdsSourceName": "processid",
+        "dataType": "String"
+      },
+      {
+        "name": "stageId",
+        "description": "Unique identifier of the Stage.",
+        "displayName": "Process Stage",
+        "cdsSourceName": "stageid",
+        "dataType": "String"
+      },
+      {
+        "name": "activityAdditionalParams",
+        "description": "For internal use only.",
+        "displayName": "Additional Parameters",
+        "cdsSourceName": "activityadditionalparams",
+        "semanticDomain": {
+          "maxLength": 8192
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "SLAId",
+        "description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
+        "displayName": "SLA",
+        "cdsSourceName": "slaid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "SLAInvokedId",
+        "description": "Last SLA that was applied to this case. This field is for internal use only.",
+        "displayName": "Last SLA applied",
+        "cdsSourceName": "slainvokedid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "onHoldTime",
+        "description": "Shows how long, in minutes, that the record was on hold.",
+        "displayName": "On Hold Time (Minutes)",
+        "cdsSourceName": "onholdtime",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "lastOnHoldTime",
+        "description": "Contains the date and time stamp of the last on hold time.",
+        "displayName": "Last On Hold Time",
+        "cdsSourceName": "lastonholdtime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "sortDate",
+        "description": "Shows the date and time by which the activities are sorted.",
+        "displayName": "Sort Date",
+        "cdsSourceName": "sortdate",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "from",
+        "description": "For system use only.",
+        "displayName": "From",
+        "cdsSourceName": "from",
+        "dataType": "String"
+      },
+      {
+        "name": "to",
+        "description": "Person who is the receiver of the activity.",
+        "displayName": "To",
+        "cdsSourceName": "to",
+        "dataType": "String"
+      },
+      {
+        "name": "CC",
+        "description": "Carbon-copy (cc) recipients of the activity.",
+        "displayName": "CC",
+        "cdsSourceName": "cc",
+        "dataType": "String"
+      },
+      {
+        "name": "BCC",
+        "description": "Blind Carbon-copy (bcc) recipients of the activity.",
+        "displayName": "BCC",
+        "cdsSourceName": "bcc",
+        "dataType": "String"
+      },
+      {
+        "name": "requiredAttendees",
+        "description": "List of required attendees for the activity.",
+        "displayName": "Required Attendees",
+        "cdsSourceName": "requiredattendees",
+        "dataType": "String"
+      },
+      {
+        "name": "optionalAttendees",
+        "description": "List of optional attendees for the activity.",
+        "displayName": "Optional Attendees",
+        "cdsSourceName": "optionalattendees",
+        "dataType": "String"
+      },
+      {
+        "name": "organizer",
+        "description": "Person who organized the activity.",
+        "displayName": "Organizer",
+        "cdsSourceName": "organizer",
+        "dataType": "String"
+      },
+      {
+        "name": "resources",
+        "description": "Users or facility/equipment that are required for the activity.",
+        "displayName": "Resources",
+        "cdsSourceName": "resources",
+        "dataType": "String"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "customers",
+        "description": "Customer with which the activity is associated.",
+        "displayName": "Customers",
+        "cdsSourceName": "customers",
+        "dataType": "String"
+      },
+      {
+        "name": "partners",
+        "description": "Outsource vendor with which activity is associated.",
+        "displayName": "Outsource Vendors",
+        "cdsSourceName": "partners",
+        "dataType": "String"
+      },
+      {
+        "name": "category",
+        "description": "Type a category to identify the campaign response type, such as new business development or customer retention, to tie the campaign response to a business group or function.",
+        "displayName": "Category",
+        "cdsSourceName": "category",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "channelTypeCode",
+        "description": "Select how the response was received, such as phone, letter, fax, or email.",
+        "displayName": "Channel",
+        "cdsSourceName": "channeltypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Email",
+                "value": "1"
+              },
+              {
+                "displayName": "Phone",
+                "value": "2"
+              },
+              {
+                "displayName": "Fax",
+                "value": "3"
+              },
+              {
+                "displayName": "Letter",
+                "value": "4"
+              },
+              {
+                "displayName": "Appointment",
+                "value": "5"
+              },
+              {
+                "displayName": "Others",
+                "value": "6"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "channelTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "companyName",
+        "description": "Type the name of the company if the campaign response was received from a new prospect or customer.",
+        "displayName": "Company Name",
+        "cdsSourceName": "companyname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "customer",
+        "description": "Enter the account, contact, or lead that submitted the campaign response, if it was received from an existing prospect or customer.",
+        "displayName": "Customer",
+        "cdsSourceName": "customer",
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress",
+        "description": "Type the responder's email address.",
+        "displayName": "Email",
+        "cdsSourceName": "emailaddress",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fax",
+        "description": "Type the responder's fax number.",
+        "displayName": "Fax",
+        "cdsSourceName": "fax",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "firstName",
+        "description": "Type the responder's first name if the campaign response was received from a new prospect or customer.",
+        "displayName": "First Name",
+        "cdsSourceName": "firstname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.person.firstName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastName",
+        "description": "Type the responder's last name if the campaign response was received from a new prospect or customer.",
+        "displayName": "Last Name",
+        "cdsSourceName": "lastname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.person.lastName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "originatingActivityId",
+        "description": "Choose the phone call, email, fax, letter, or appointment activity that led the prospect or customer to respond to the campaign.",
+        "displayName": "Originating Activity",
+        "cdsSourceName": "originatingactivityid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "partner",
+        "description": "Enter the vendor account or contact to capture any third-party used to obtain the campaign response.",
+        "displayName": "Outsource Vendor",
+        "cdsSourceName": "partner",
+        "dataType": "String"
+      },
+      {
+        "name": "promotionCodeName",
+        "description": "Type a promotional code to track sales related to the campaign response or to allow the responder to redeem a discount offer.",
+        "displayName": "Promotion Code",
+        "cdsSourceName": "promotioncodename",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "receivedOn",
+        "description": "Enter the date when the campaign response was received.",
+        "displayName": "Received On",
+        "cdsSourceName": "receivedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "responseCode",
+        "description": "Select the type of response from the prospect or customer to indicate their interest in the campaign.",
+        "displayName": "Response Code",
+        "cdsSourceName": "responsecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Interested",
+                "value": "1"
+              },
+              {
+                "displayName": "Not Interested",
+                "value": "2"
+              },
+              {
+                "displayName": "Do Not Send Marketing Materials",
+                "value": "3"
+              },
+              {
+                "displayName": "Error",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "responseCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "subcategory",
+        "description": "Type a subcategory to identify the campaign response type and relate the activity to a specific product, sales region, business group, or other function.",
+        "displayName": "Sub-Category",
+        "cdsSourceName": "subcategory",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone",
+        "description": "Type the responder's primary phone number.",
+        "displayName": "Phone",
+        "cdsSourceName": "telephone",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiCompanyName",
+        "description": "Type the phonetic spelling of the company name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications.",
+        "displayName": "Yomi Company Name",
+        "cdsSourceName": "yomicompanyname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name, means.reference.phonetic",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiFirstName",
+        "description": "Type the phonetic spelling of the campaign responder's first name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications.",
+        "displayName": "Yomi First Name",
+        "cdsSourceName": "yomifirstname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.person.firstName, means.reference.phonetic",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiLastName",
+        "description": "Type the phonetic spelling of the campaign responder's last name, if specified in Japanese, to make sure the name is pronounced correctly in phone calls and other communications.",
+        "displayName": "Yomi Last Name",
+        "cdsSourceName": "yomilastname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.person.lastName, means.reference.phonetic",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "serviceId",
+        "description": "Unique identifier for the associated service.",
+        "displayName": "Service",
+        "cdsSourceName": "serviceid",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Activity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "bookableResourceBookingId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceBooking",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "bookableResourceBookingHeaderId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceBookingHeader",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "campaignId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Campaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QuickCampaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SLA",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "SLAInvokedId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SLA",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Email",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Fax",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Letter",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "PhoneCall",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Appointment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "originatingActivityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignResponse",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Activity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      }
+    ]
+  }
+}

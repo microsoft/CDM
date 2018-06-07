@@ -1,0 +1,1644 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "RecurringAppointment",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+      },
+      "extends": {
+        "semanticVersion": "0.5.5",
+        "type": "RecurringAppointment",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "The Master appointment of a recurring appointment series.",
+    "displayName": "Recurring Appointment",
+    "cdsSourceName": "RecurringAppointmentMaster",
+    "attributes": [
+      {
+        "name": "isWeekDayPattern",
+        "description": "Indicates whether the weekly recurrence pattern is a daily weekday pattern. Valid for weekly recurrence pattern only.",
+        "displayName": "Every Weekday",
+        "cdsSourceName": "isweekdaypattern",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isNthYearly",
+        "description": "Indicates whether the recurring appointment series should occur after every N years. Valid for yearly recurrence pattern only.",
+        "displayName": "Nth Yearly",
+        "cdsSourceName": "isnthyearly",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the recurring appointment is open, scheduled, completed, or canceled. Completed and canceled appointments are read-only and can't be edited.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0"
+              },
+              {
+                "displayName": "Completed",
+                "value": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "2"
+              },
+              {
+                "displayName": "Scheduled",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "groupId",
+        "description": "Unique identifier of the recurring appointment series for which the recurrence information was updated. ",
+        "displayName": "Group Id",
+        "cdsSourceName": "groupid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "patternStartDate",
+        "description": "Start date of the recurrence range.",
+        "displayName": "Recurrence Range Start",
+        "cdsSourceName": "patternstartdate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring appointment series.",
+        "displayName": "Appointment Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRegenerate",
+        "description": "For internal use only.",
+        "displayName": "Regenerate",
+        "cdsSourceName": "isregenerate",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "recurrencePatternType",
+        "description": "Select the pattern type for the recurring appointment to indicate whether the appointment occurs daily, weekly, monthly, or yearly.",
+        "displayName": "Recurrence Frequency",
+        "cdsSourceName": "recurrencepatterntype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Daily",
+                "value": "0"
+              },
+              {
+                "displayName": "Weekly",
+                "value": "1"
+              },
+              {
+                "displayName": "Monthly",
+                "value": "2"
+              },
+              {
+                "displayName": "Yearly",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "recurrencePatternType_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "expansionStateCode",
+        "description": "State code to indicate whether the recurring appointment series is expanded fully or partially.",
+        "displayName": "Expansion State Code",
+        "cdsSourceName": "expansionstatecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Full",
+                "value": "2"
+              },
+              {
+                "displayName": "Unexpanded",
+                "value": "0"
+              },
+              {
+                "displayName": "Partial",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "expansionStateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "isNthMonthly",
+        "description": "Indicates whether the recurring appointment series should occur after every N months. Valid for monthly recurrence pattern only.",
+        "displayName": "Nth Monthly",
+        "cdsSourceName": "isnthmonthly",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "subject",
+        "description": "Type a short description about the objective or primary topic of the recurring appointment.",
+        "displayName": "Subject",
+        "cdsSourceName": "subject",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "activityId",
+        "description": "Unique identifier of the recurring appointment series.",
+        "displayName": "Recurring Appointment",
+        "cdsSourceName": "activityid",
+        "semanticDomain": {
+          "inherited": true,
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "activityTypeCode",
+        "description": "Type of activity.",
+        "displayName": "Activity Type",
+        "cdsSourceName": "activitytypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Survey Activity",
+                "value": "10196"
+              },
+              {
+                "displayName": "Recurring Appointment",
+                "value": "4251"
+              },
+              {
+                "displayName": "Campaign Response",
+                "value": "4401"
+              },
+              {
+                "displayName": "Campaign Activity",
+                "value": "4402"
+              },
+              {
+                "displayName": "Quick Campaign",
+                "value": "4406"
+              },
+              {
+                "displayName": "Alert Subscription",
+                "value": "10022"
+              },
+              {
+                "displayName": "Service Activity",
+                "value": "4214"
+              },
+              {
+                "displayName": "Appointment",
+                "value": "4201"
+              },
+              {
+                "displayName": "Email",
+                "value": "4202"
+              },
+              {
+                "displayName": "Fax",
+                "value": "4204"
+              },
+              {
+                "displayName": "Case Resolution",
+                "value": "4206"
+              },
+              {
+                "displayName": "Letter",
+                "value": "4207"
+              },
+              {
+                "displayName": "Invite Redemption",
+                "value": "10025"
+              },
+              {
+                "displayName": "Opportunity Close",
+                "value": "4208"
+              },
+              {
+                "displayName": "Order Close",
+                "value": "4209"
+              },
+              {
+                "displayName": "Phone Call",
+                "value": "4210"
+              },
+              {
+                "displayName": "Quote Close",
+                "value": "4211"
+              },
+              {
+                "displayName": "Task",
+                "value": "4212"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "activityTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Indicates whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "patternEndType",
+        "description": "Select the type of end date for the recurring appointment, such as no end date or the number of occurrences.",
+        "displayName": "Pattern End Type",
+        "cdsSourceName": "patternendtype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "No End Date",
+                "value": "1"
+              },
+              {
+                "displayName": "Occurrences",
+                "value": "2"
+              },
+              {
+                "displayName": "Pattern End Date",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "patternEndType_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ruleId",
+        "description": "Unique identifier of the recurrence rule that is associated with the recurring appointment series.",
+        "displayName": "Recurrence Rule",
+        "cdsSourceName": "ruleid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the recurring appointment series.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "optionalAttendees",
+        "description": "Enter the account, contact, lead, user, or other equipment resources that are not needed at the recurring appointment, but can optionally attend.",
+        "displayName": "Optional Attendees",
+        "cdsSourceName": "optionalattendees",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastExpandedInstanceDate",
+        "description": "Date of last expanded instance of a recurring appointment series.",
+        "displayName": "Last Expanded Instance Date",
+        "cdsSourceName": "lastexpandedinstancedate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "effectiveEndDate",
+        "description": "Actual end date of the recurring appointment series based on the specified end date and recurrence pattern.",
+        "displayName": "Effective End Date",
+        "cdsSourceName": "effectiveenddate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "isWorkflowCreated",
+        "description": "Indicates whether the recurring appointment series was created from a workflow rule.",
+        "displayName": "Is Workflow Created",
+        "cdsSourceName": "isworkflowcreated",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "firstDayOfWeek",
+        "description": "First day of week for the recurrence pattern.",
+        "displayName": "First Day Of Week",
+        "cdsSourceName": "firstdayofweek",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 6,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "subcategory",
+        "description": "Type a subcategory to identify the recurring appointment type and relate the activity to a specific product, sales region, business group, or other function.",
+        "displayName": "Sub-Category",
+        "cdsSourceName": "subcategory",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "category",
+        "description": "Type a category to identify the recurring appointment type, such as status meeting or service call, to tie the appointment to a business group or function.",
+        "displayName": "Category",
+        "cdsSourceName": "category",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "outlookOwnerApptId",
+        "description": "Unique identifier of the Microsoft Office Outlook recurring appointment series owner that correlates to the PR_OWNER_APPT_ID MAPI property.",
+        "displayName": "Outlook Recurring Appointment Master Owner",
+        "cdsSourceName": "outlookownerapptid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "nextExpansionInstanceDate",
+        "description": "Date of the next expanded instance of a recurring appointment series.",
+        "displayName": "Next Expanded Instance Date",
+        "cdsSourceName": "nextexpansioninstancedate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "priorityCode",
+        "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+        "displayName": "Priority",
+        "cdsSourceName": "prioritycode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Low",
+                "value": "0"
+              },
+              {
+                "displayName": "Normal",
+                "value": "1"
+              },
+              {
+                "displayName": "High",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "priorityCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isBilled",
+        "description": "Indicates whether the recurring appointment series was billed as part of resolving a case.",
+        "displayName": "Is Billed",
+        "cdsSourceName": "isbilled",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "patternEndDate",
+        "description": "End date of the recurrence range.",
+        "displayName": "Recurrence Range End",
+        "cdsSourceName": "patternenddate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "globalObjectId",
+        "description": "Unique Outlook identifier to correlate recurring appointment series across Exchange mailboxes.",
+        "displayName": "Outlook Recurring Appointment Master",
+        "cdsSourceName": "globalobjectid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 300
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "effectiveStartDate",
+        "description": "Actual start date of the recurring appointment series based on the specified start date and recurrence pattern.",
+        "displayName": "Effective Start Date",
+        "cdsSourceName": "effectivestartdate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "dayOfMonth",
+        "description": "The day of the month on which the recurring appointment occurs.",
+        "displayName": "Day Of Month",
+        "cdsSourceName": "dayofmonth",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 31,
+          "minValue": 1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the recurring appointment's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Free",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Tentative",
+                "value": "2",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Completed",
+                "value": "3",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "4",
+                "correlationValue": "2"
+              },
+              {
+                "displayName": "Busy",
+                "value": "5",
+                "correlationValue": "3"
+              },
+              {
+                "displayName": "Out of Office",
+                "value": "6",
+                "correlationValue": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "organizer",
+        "description": "Enter the user who is in charge of coordinating or leading the recurring appointment to make sure the appointment is displayed in the user's My Activities view.",
+        "displayName": "Organizer",
+        "cdsSourceName": "organizer",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "startTime",
+        "description": "Start time of the recurring appointment series.",
+        "displayName": "Pattern Start Time",
+        "cdsSourceName": "starttime",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "occurrences",
+        "description": "Number of appointment occurrences in a recurring appointment series.",
+        "displayName": "Occurrences",
+        "cdsSourceName": "occurrences",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 999,
+          "minValue": 1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "regardingObjectId",
+        "description": "Choose the record that the recurring appointment series relates to.",
+        "displayName": "Regarding",
+        "cdsSourceName": "regardingobjectid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "isAllDayEvent",
+        "description": "Select whether the recurring appointment is an all-day event to make sure that the required resources are scheduled for the full day.",
+        "displayName": "All Day Event",
+        "cdsSourceName": "isalldayevent",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "seriesStatus",
+        "description": "Indicates whether the recurring appointment series is active or inactive.",
+        "displayName": "Series Status",
+        "cdsSourceName": "seriesstatus",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdOn",
+        "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier of the user who owns the recurring appointment series.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "endTime",
+        "description": "End time of the associated activity.",
+        "displayName": "Pattern End Time",
+        "cdsSourceName": "endtime",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "daysOfWeekMask",
+        "description": "Bitmask that represents the days of the week on which the recurring appointment occurs.",
+        "displayName": "Days Of Week Mask",
+        "cdsSourceName": "daysofweekmask",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 127,
+          "minValue": 1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "description",
+        "description": "Type additional information to describe the recurring appointment, such as key talking points or objectives.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "requiredAttendees",
+        "description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the recurring appointment.",
+        "displayName": "Required Attendees",
+        "cdsSourceName": "requiredattendees",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "instance",
+        "description": "Specifies the recurring appointment series to occur on every Nth day of a month. Valid for monthly and yearly recurrence patterns only.",
+        "displayName": "Instance",
+        "cdsSourceName": "instance",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "First",
+                "value": "1"
+              },
+              {
+                "displayName": "Second",
+                "value": "2"
+              },
+              {
+                "displayName": "Third",
+                "value": "3"
+              },
+              {
+                "displayName": "Fourth",
+                "value": "4"
+              },
+              {
+                "displayName": "Last",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instance_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "deletedExceptionsList",
+        "description": "List of deleted instances of the recurring appointment series.",
+        "displayName": "Deleted Appointments",
+        "cdsSourceName": "deletedexceptionslist",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1073741823
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "cdsSourceName": "versionnumber",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Int64"
+      },
+      {
+        "name": "interval",
+        "description": "Number of units of a given recurrence type between occurrences.",
+        "displayName": "Interval",
+        "cdsSourceName": "interval",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 1000,
+          "minValue": 1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "duration",
+        "description": "Duration of the recurring appointment series in minutes.",
+        "displayName": "Duration",
+        "cdsSourceName": "duration",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.duration",
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "monthOfYear",
+        "description": "Indicates the month of the year for the recurrence pattern.",
+        "displayName": "Month Of Year",
+        "cdsSourceName": "monthofyear",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "November",
+                "value": "11"
+              },
+              {
+                "displayName": "December",
+                "value": "12"
+              },
+              {
+                "displayName": "June",
+                "value": "6"
+              },
+              {
+                "displayName": "July",
+                "value": "7"
+              },
+              {
+                "displayName": "August",
+                "value": "8"
+              },
+              {
+                "displayName": "September",
+                "value": "9"
+              },
+              {
+                "displayName": "October",
+                "value": "10"
+              },
+              {
+                "displayName": "Invalid Month Of Year",
+                "value": "0"
+              },
+              {
+                "displayName": "January",
+                "value": "1"
+              },
+              {
+                "displayName": "February",
+                "value": "2"
+              },
+              {
+                "displayName": "March",
+                "value": "3"
+              },
+              {
+                "displayName": "April",
+                "value": "4"
+              },
+              {
+                "displayName": "May",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "monthOfYear_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "location",
+        "description": "Type the location where the recurring appointment will take place, such as a conference room or customer office.",
+        "displayName": "Location",
+        "cdsSourceName": "location",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "scheduledStart",
+        "description": "Scheduled start time of the recurring appointment series.",
+        "displayName": "Start Time",
+        "cdsSourceName": "scheduledstart",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "scheduledEnd",
+        "description": "Scheduled end time of the recurring appointment series.",
+        "displayName": "End Time",
+        "cdsSourceName": "scheduledend",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Shows who last updated the record on behalf of another user.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier of the team who owns the recurring appointment series.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "isMapiPrivate",
+        "description": "For internal use only.",
+        "displayName": "Is Private",
+        "cdsSourceName": "ismapiprivate",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "processId",
+        "description": "Shows the ID of the process.",
+        "displayName": "Process",
+        "cdsSourceName": "processid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stageId",
+        "description": "Shows the ID of the stage.",
+        "displayName": "Process Stage",
+        "cdsSourceName": "stageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "traversedPath",
+        "description": "For internal use only.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "sortDate",
+        "description": "Shows the date and time by which the activities are sorted.",
+        "displayName": "Sort Date",
+        "cdsSourceName": "sortdate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "serviceId",
+        "description": "Unique identifier for an associated service.",
+        "displayName": "Service",
+        "cdsSourceName": "serviceid",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Activity",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "accountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Account",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgeBaseRecordId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "serviceId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "serviceId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
+}

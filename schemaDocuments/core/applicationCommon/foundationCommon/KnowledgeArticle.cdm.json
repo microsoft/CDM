@@ -1,0 +1,1231 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "KnowledgeArticle",
+        "namespace": "core.applicationCommon/foundationCommon"
+      },
+      "extends": {
+        "semanticVersion": "0.5.5",
+        "type": "KnowledgeArticle",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Organizational knowledge for internal and external use.",
+    "displayName": "Knowledge Article",
+    "cdsSourceName": "KnowledgeArticle",
+    "attributes": [
+      {
+        "name": "knowledgearticleId",
+        "description": "Unique identifier for entity instances",
+        "displayName": "Knowledge Article",
+        "cdsSourceName": "knowledgearticleid",
+        "semanticDomain": {
+          "inherited": true,
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the record.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the article is a draft or is published, archived, or discarded. Draft articles aren't available externally and can be edited. Published articles are available externally, based on applicable permissions, but can't be edited. All metadata changes are reflected in the published version. Archived and discarded articles aren't available externally and can't be edited.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Discarded",
+                "value": "6"
+              },
+              {
+                "displayName": "Draft",
+                "value": "0"
+              },
+              {
+                "displayName": "Approved",
+                "value": "1"
+              },
+              {
+                "displayName": "Scheduled",
+                "value": "2"
+              },
+              {
+                "displayName": "Published",
+                "value": "3"
+              },
+              {
+                "displayName": "Expired",
+                "value": "4"
+              },
+              {
+                "displayName": "Archived",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "title",
+        "description": "Type a title for the article.",
+        "displayName": "Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "keywords",
+        "description": "Type keywords to be used for searches in knowledge base articles. Separate keywords by using commas.",
+        "displayName": "Keywords",
+        "cdsSourceName": "keywords",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "majorVersionNumber",
+        "description": "Shows the major version number of this article's content.",
+        "displayName": "Major Version Number",
+        "cdsSourceName": "majorversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "minorVersionNumber",
+        "description": "Shows the minor version number of this article's content.",
+        "displayName": "Minor Version Number",
+        "cdsSourceName": "minorversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "languageLocaleId",
+        "description": "Select the language that the article's content is in.",
+        "displayName": "Language",
+        "cdsSourceName": "languagelocaleid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "isRootArticle",
+        "description": "Select whether the article is the root article.",
+        "displayName": "Root Article",
+        "cdsSourceName": "isrootarticle",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "articlePublicNumber",
+        "description": "Shows the automatically generated ID exposed to customers, partners, and other external users to reference and look up articles.",
+        "displayName": "Article Public Number",
+        "cdsSourceName": "articlepublicnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isLatestVersion",
+        "description": "Shows which version of the knowledge article is the latest version.",
+        "displayName": "Is Latest Version",
+        "cdsSourceName": "islatestversion",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who modified the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the record.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who modified the record.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier for the business unit that owns the record",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier for the user that owns the record.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier for the team that owns the record.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the article's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Updating",
+                "value": "9",
+                "correlationValue": "3"
+              },
+              {
+                "displayName": "Expired",
+                "value": "10",
+                "correlationValue": "4"
+              },
+              {
+                "displayName": "Discarded",
+                "value": "13",
+                "correlationValue": "6"
+              },
+              {
+                "displayName": "Rejected",
+                "value": "14",
+                "correlationValue": "6"
+              },
+              {
+                "displayName": "Approved",
+                "value": "5",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Scheduled",
+                "value": "6",
+                "correlationValue": "2"
+              },
+              {
+                "displayName": "Published",
+                "value": "7",
+                "correlationValue": "3"
+              },
+              {
+                "displayName": "Needs review",
+                "value": "8",
+                "correlationValue": "3"
+              },
+              {
+                "displayName": "Proposed",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Draft",
+                "value": "2",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Needs review",
+                "value": "3",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "In review",
+                "value": "4",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Rejected",
+                "value": "11",
+                "correlationValue": "4"
+              },
+              {
+                "displayName": "Archived",
+                "value": "12",
+                "correlationValue": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "cdsSourceName": "versionnumber",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "processId",
+        "description": "Contains the id of the process associated with the entity.",
+        "displayName": "Process Id",
+        "cdsSourceName": "processid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stageId",
+        "description": "Contains the id of the stage where the entity is located.",
+        "displayName": "Stage Id",
+        "cdsSourceName": "stageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "traversedPath",
+        "description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Exchange rate for the currency associated with the KnowledgeArticle with respect to the base currency.",
+        "displayName": "ExchangeRate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Exchange rate for the currency associated with the KnowledgeArticle with respect to the base currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "content",
+        "description": "Shows the body of the article stored in HTML format.",
+        "displayName": "Content",
+        "cdsSourceName": "content",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1073741823
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "publishOn",
+        "description": "Date and time when the record was published.",
+        "displayName": "Publish On",
+        "cdsSourceName": "publishon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "expirationDate",
+        "description": "Enter an expiration date for the article. Leave this field blank for no expiration date.",
+        "displayName": "Expiration Date",
+        "cdsSourceName": "expirationdate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "parentArticleContentId",
+        "description": "Contains the id of the parent article content associated with the entity.",
+        "displayName": "Parent Article Content Id",
+        "cdsSourceName": "parentarticlecontentid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "knowledgeArticleViews",
+        "description": "Shows the total number of article views.",
+        "displayName": "Knowledge Article Views",
+        "cdsSourceName": "knowledgearticleviews",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "description",
+        "description": "A short overview of the article, primarily used in search results and for search engine optimization.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 155
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "scheduledStatusId",
+        "description": "Contains the id of the scheduled status of the entity.",
+        "displayName": "Scheduled Status",
+        "cdsSourceName": "scheduledstatusid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "expirationStatusId",
+        "description": "Contains the id of the expiration status of the entity.",
+        "displayName": "Expired Status",
+        "cdsSourceName": "expirationstatusid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "publishStatusId",
+        "description": "Publish Status of the Article.",
+        "displayName": "Published Status",
+        "cdsSourceName": "publishstatusid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "isPrimary",
+        "description": "Select whether the article is the primary article.",
+        "displayName": "Primary Article",
+        "cdsSourceName": "isprimary",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "readyForReview",
+        "description": "Ready For Review",
+        "displayName": "Ready For Review",
+        "cdsSourceName": "readyforreview",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "review",
+        "description": "Review",
+        "displayName": "Review",
+        "cdsSourceName": "review",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Approved",
+                "value": "0"
+              },
+              {
+                "displayName": "Rejected",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "review_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "updateContent",
+        "description": "Update Content",
+        "displayName": "Update Content",
+        "cdsSourceName": "updatecontent",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "expiredReviewOptions",
+        "description": "Expired Review Options",
+        "displayName": "Expired Review Options",
+        "cdsSourceName": "expiredreviewoptions",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Needs Updating",
+                "value": "0"
+              },
+              {
+                "displayName": "Republish",
+                "value": "1"
+              },
+              {
+                "displayName": "Archive",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "expiredReviewOptions_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "subjectId",
+        "description": "Choose the subject of the article to assist with article searches. You can configure subjects under Business Management in the Settings area.",
+        "displayName": "Subject",
+        "cdsSourceName": "subjectid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "primaryAuthorId",
+        "description": "Contains the id of the primary author associated with the article.",
+        "displayName": "Primary Author Id",
+        "cdsSourceName": "primaryauthorid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "previousArticleContentId",
+        "description": "Shows the version that the current article was restored from.",
+        "displayName": "Previous Article Content ID",
+        "cdsSourceName": "previousarticlecontentid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "rootArticleId",
+        "description": "Contains the id of the root article.",
+        "displayName": "Root Article Id",
+        "cdsSourceName": "rootarticleid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "knowledgeArticleViewsDate",
+        "description": "The date time for Knowledge Article View.",
+        "displayName": "Knowledge Article View(Last Updated Time)",
+        "cdsSourceName": "knowledgearticleviews_date",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "knowledgeArticleViewsState",
+        "description": "State of Knowledge Article View.",
+        "displayName": "Knowledge Article View(State)",
+        "cdsSourceName": "knowledgearticleviews_state",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "rating",
+        "description": "Information which specifies how helpful the related record was.",
+        "displayName": "Rating",
+        "cdsSourceName": "rating",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 100000000000,
+          "minValue": -100000000000
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "ratingDate",
+        "description": "The date time for Rating.",
+        "displayName": "Rating(Last Updated Time)",
+        "cdsSourceName": "rating_date",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "ratingState",
+        "description": "State of Rating",
+        "displayName": "Rating(State)",
+        "cdsSourceName": "rating_state",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "ratingSum",
+        "description": "Total sum of Rating",
+        "displayName": "Rating(sum)",
+        "cdsSourceName": "rating_sum",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "ratingCount",
+        "description": "Rating Count",
+        "displayName": "Rating(Count)",
+        "cdsSourceName": "rating_count",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "isInternal",
+        "description": "Shows whether this article is only visible internally.",
+        "displayName": "Internal",
+        "cdsSourceName": "isinternal",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "setCategoryAssociations",
+        "description": "Shows whether category associations have been set",
+        "displayName": "Set Category Associations",
+        "cdsSourceName": "setcategoryassociations",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "expirationStateId",
+        "description": "Contains the id of the expiration state of the entity.",
+        "displayName": "Expiration State Id",
+        "cdsSourceName": "expirationstateid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "setProductAssociations",
+        "description": "Set Product Associations",
+        "displayName": "Set Product Associations",
+        "cdsSourceName": "setproductassociations",
+        "dataType": "Boolean"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentArticleContentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "primaryAuthorId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "previousArticleContentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "rootArticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
+}

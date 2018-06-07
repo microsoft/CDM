@@ -1,0 +1,2116 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "User",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+      },
+      "extends": {
+        "semanticVersion": "0.5.5",
+        "type": "User",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Person with access to the Microsoft CRM system and who owns objects in the Microsoft CRM database.",
+    "displayName": "User",
+    "cdsSourceName": "SystemUser",
+    "attributes": [
+      {
+        "name": "systemUserId",
+        "description": "Unique identifier for the user.",
+        "displayName": "User",
+        "cdsSourceName": "systemuserid",
+        "semanticDomain": {
+          "inherited": true,
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization associated with the user.",
+        "displayName": "Organization ",
+        "cdsSourceName": "organizationid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "businessUnitId",
+        "description": "Unique identifier of the business unit with which the user is associated.",
+        "displayName": "Business Unit",
+        "cdsSourceName": "businessunitid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "firstName",
+        "description": "First name of the user.",
+        "displayName": "First Name",
+        "cdsSourceName": "firstname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.firstName",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastName",
+        "description": "Last name of the user.",
+        "displayName": "Last Name",
+        "cdsSourceName": "lastname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.lastName",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "domainName",
+        "description": "Active Directory domain of which the user is a member.",
+        "displayName": "User Name",
+        "cdsSourceName": "domainname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "setupUser",
+        "description": "Check if user is a setup user.",
+        "displayName": "Restricted Access Mode",
+        "cdsSourceName": "setupuser",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "incomingEmailDeliveryMethod",
+        "description": "Incoming email delivery method for the user.",
+        "displayName": "Incoming Email Delivery Method",
+        "cdsSourceName": "incomingemaildeliverymethod",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Microsoft Dynamics 365 for Outlook",
+                "value": "1"
+              },
+              {
+                "displayName": "Server-Side Synchronization or Email Router",
+                "value": "2"
+              },
+              {
+                "displayName": "Forward Mailbox",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "incomingEmailDeliveryMethod_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "outgoingEmailDeliveryMethod",
+        "description": "Outgoing email delivery method for the user.",
+        "displayName": "Outgoing Email Delivery Method",
+        "cdsSourceName": "outgoingemaildeliverymethod",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Microsoft Dynamics 365 for Outlook",
+                "value": "1"
+              },
+              {
+                "displayName": "Server-Side Synchronization or Email Router",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "outgoingEmailDeliveryMethod_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "accessMode",
+        "description": "Type of user.",
+        "displayName": "Access Mode",
+        "cdsSourceName": "accessmode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Read-Write",
+                "value": "0"
+              },
+              {
+                "displayName": "Administrative",
+                "value": "1"
+              },
+              {
+                "displayName": "Read",
+                "value": "2"
+              },
+              {
+                "displayName": "Support User",
+                "value": "3"
+              },
+              {
+                "displayName": "Non-interactive",
+                "value": "4"
+              },
+              {
+                "displayName": "Delegated Admin",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "accessMode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "inviteStatusCode",
+        "description": "User invitation status.",
+        "displayName": "Invitation Status",
+        "cdsSourceName": "invitestatuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Invitation Rejected",
+                "value": "5"
+              },
+              {
+                "displayName": "Invitation Revoked",
+                "value": "6"
+              },
+              {
+                "displayName": "Invitation Not Sent",
+                "value": "0"
+              },
+              {
+                "displayName": "Invited",
+                "value": "1"
+              },
+              {
+                "displayName": "Invitation Near Expired",
+                "value": "2"
+              },
+              {
+                "displayName": "Invitation Expired",
+                "value": "3"
+              },
+              {
+                "displayName": "Invitation Accepted",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "inviteStatusCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isIntegrationUser",
+        "description": "Check if user is an integration user.",
+        "displayName": "Integration user mode",
+        "cdsSourceName": "isintegrationuser",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "defaultFiltersPopulated",
+        "description": "Indicates if default outlook filters have been populated.",
+        "displayName": "Default Filters Populated",
+        "cdsSourceName": "defaultfilterspopulated",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "emailRouterAccessApproval",
+        "description": "Shows the status of the primary email address.",
+        "displayName": "Primary Email Status",
+        "cdsSourceName": "emailrouteraccessapproval",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Empty",
+                "value": "0"
+              },
+              {
+                "displayName": "Approved",
+                "value": "1"
+              },
+              {
+                "displayName": "Pending Approval",
+                "value": "2"
+              },
+              {
+                "displayName": "Rejected",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "emailRouterAccessApproval_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "CALType",
+        "description": "License type of user.",
+        "displayName": "License Type",
+        "cdsSourceName": "caltype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Field Service",
+                "value": "11"
+              },
+              {
+                "displayName": "Project Service",
+                "value": "12"
+              },
+              {
+                "displayName": "Device Essential",
+                "value": "6"
+              },
+              {
+                "displayName": "Enterprise",
+                "value": "7"
+              },
+              {
+                "displayName": "Device Enterprise",
+                "value": "8"
+              },
+              {
+                "displayName": "Sales",
+                "value": "9"
+              },
+              {
+                "displayName": "Service",
+                "value": "10"
+              },
+              {
+                "displayName": "Professional",
+                "value": "0"
+              },
+              {
+                "displayName": "Administrative",
+                "value": "1"
+              },
+              {
+                "displayName": "Basic",
+                "value": "2"
+              },
+              {
+                "displayName": "Device Professional",
+                "value": "3"
+              },
+              {
+                "displayName": "Device Basic",
+                "value": "4"
+              },
+              {
+                "displayName": "Essential",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "CALType_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isLicensed",
+        "description": "Information about whether the user is licensed.",
+        "displayName": "User Licensed",
+        "cdsSourceName": "islicensed",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isSyncWithDirectory",
+        "description": "Information about whether the user is synced with the directory.",
+        "displayName": "User Synced",
+        "cdsSourceName": "issyncwithdirectory",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "userLicenseType",
+        "description": "Shows the type of user license.",
+        "displayName": "User License Type",
+        "cdsSourceName": "userlicensetype",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "isEmailAddressApprovedByO365Admin",
+        "description": "Shows the status of approval of the email address by O365 Admin.",
+        "displayName": "Email Address O365 Admin Approval Status",
+        "cdsSourceName": "isemailaddressapprovedbyo365admin",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "defaultOdbFolderName",
+        "description": "Type a default folder name for the user's OneDrive For Business location.",
+        "displayName": "Default OneDrive for Business Folder Name",
+        "cdsSourceName": "defaultodbfoldername",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "identityId",
+        "description": "For internal use only.",
+        "displayName": "Unique user identity id",
+        "cdsSourceName": "identityid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "parentSystemUserId",
+        "description": "Unique identifier of the manager of the user.",
+        "displayName": "Manager",
+        "cdsSourceName": "parentsystemuserid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "salutation",
+        "description": "Salutation for correspondence with the user.",
+        "displayName": "Salutation",
+        "cdsSourceName": "salutation",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "middleName",
+        "description": "Middle name of the user.",
+        "displayName": "Middle Name",
+        "cdsSourceName": "middlename",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.middleName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "personalEMailAddress",
+        "description": "Personal email address of the user.",
+        "displayName": "Email 2",
+        "cdsSourceName": "personalemailaddress",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fullName",
+        "description": "Full name of the user.",
+        "displayName": "Full Name",
+        "cdsSourceName": "fullname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.fullName",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "nickName",
+        "description": "Nickname of the user.",
+        "displayName": "Nickname",
+        "cdsSourceName": "nickname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "title",
+        "description": "Title of the user.",
+        "displayName": "Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "internalEMailAddress",
+        "description": "Internal email address for the user.",
+        "displayName": "Primary Email",
+        "cdsSourceName": "internalemailaddress",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "jobTitle",
+        "description": "Job title of the user.",
+        "displayName": "Job Title",
+        "cdsSourceName": "jobtitle",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "mobileAlertEMail",
+        "description": "Mobile alert email address for the user.",
+        "displayName": "Mobile Alert Email",
+        "cdsSourceName": "mobilealertemail",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredEmailCode",
+        "description": "Preferred email address for the user.",
+        "displayName": "Preferred Email",
+        "cdsSourceName": "preferredemailcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredEmailCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "homePhone",
+        "description": "Home phone number for the user.",
+        "displayName": "Home Phone",
+        "cdsSourceName": "homephone",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "mobilePhone",
+        "description": "Mobile phone number for the user.",
+        "displayName": "Mobile Phone",
+        "cdsSourceName": "mobilephone",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredPhoneCode",
+        "description": "Preferred phone number for the user.",
+        "displayName": "Preferred Phone",
+        "cdsSourceName": "preferredphonecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Main Phone",
+                "value": "1"
+              },
+              {
+                "displayName": "Other Phone",
+                "value": "2"
+              },
+              {
+                "displayName": "Home Phone",
+                "value": "3"
+              },
+              {
+                "displayName": "Mobile Phone",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredPhoneCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredAddressCode",
+        "description": "Preferred address for the user.",
+        "displayName": "Preferred Address",
+        "cdsSourceName": "preferredaddresscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Mailing Address",
+                "value": "1"
+              },
+              {
+                "displayName": "Other Address",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredAddressCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "photoUrl",
+        "description": "URL for the Website on which a photo of the user is located.",
+        "displayName": "Photo URL",
+        "cdsSourceName": "photourl",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "passportLo",
+        "description": "For internal use only.",
+        "displayName": "Passport Lo",
+        "cdsSourceName": "passportlo",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the user was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "passportHi",
+        "description": "For internal use only.",
+        "displayName": "Passport Hi",
+        "cdsSourceName": "passporthi",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "disabledReason",
+        "description": "Reason for disabling the user.",
+        "displayName": "Disabled Reason",
+        "cdsSourceName": "disabledreason",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the user was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the user.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "employeeId",
+        "description": "Employee identifier for the user.",
+        "displayName": "Employee",
+        "cdsSourceName": "employeeid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the user.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "isDisabled",
+        "description": "Information about whether the user is enabled.",
+        "displayName": "Status",
+        "cdsSourceName": "isdisabled",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "governmentId",
+        "description": "Government identifier for the user.",
+        "displayName": "Government",
+        "cdsSourceName": "governmentid",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.governmentID",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the user.",
+        "displayName": "Version number",
+        "cdsSourceName": "versionnumber",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Int64"
+      },
+      {
+        "name": "address1AddressId",
+        "description": "Unique identifier for address 1.",
+        "displayName": "Address 1: ID",
+        "cdsSourceName": "address1_addressid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address1AddressTypeCode",
+        "description": "Type of address for address 1, such as billing, shipping, or primary address.",
+        "displayName": "Address 1: Address Type",
+        "cdsSourceName": "address1_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1AddressTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Name",
+        "description": "Name to enter for address 1.",
+        "displayName": "Address 1: Name",
+        "cdsSourceName": "address1_name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line1",
+        "description": "First line for entering address 1 information.",
+        "displayName": "Street 1",
+        "cdsSourceName": "address1_line1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line2",
+        "description": "Second line for entering address 1 information.",
+        "displayName": "Street 2",
+        "cdsSourceName": "address1_line2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line3",
+        "description": "Third line for entering address 1 information.",
+        "displayName": "Street 3",
+        "cdsSourceName": "address1_line3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1City",
+        "description": "City name for address 1.",
+        "displayName": "City",
+        "cdsSourceName": "address1_city",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.city",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1StateOrProvince",
+        "description": "State or province for address 1.",
+        "displayName": "State/Province",
+        "cdsSourceName": "address1_stateorprovince",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1County",
+        "description": "County name for address 1.",
+        "displayName": "Address 1: County",
+        "cdsSourceName": "address1_county",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.county",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Country",
+        "description": "Country/region name in address 1.",
+        "displayName": "Country/Region",
+        "cdsSourceName": "address1_country",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.country",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostOfficeBox",
+        "description": "Post office box number for address 1.",
+        "displayName": "Address 1: Post Office Box",
+        "cdsSourceName": "address1_postofficebox",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 40
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostalCode",
+        "description": "ZIP Code or postal code for address 1.",
+        "displayName": "ZIP/Postal Code",
+        "cdsSourceName": "address1_postalcode",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 40
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UTCOffset",
+        "description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
+        "displayName": "Address 1: UTC Offset",
+        "cdsSourceName": "address1_utcoffset",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UPSZone",
+        "description": "United Parcel Service (UPS) zone for address 1.",
+        "displayName": "Address 1: UPS Zone",
+        "cdsSourceName": "address1_upszone",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Latitude",
+        "description": "Latitude for address 1.",
+        "displayName": "Address 1: Latitude",
+        "cdsSourceName": "address1_latitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1Telephone1",
+        "description": "First telephone number associated with address 1.",
+        "displayName": "Main Phone",
+        "cdsSourceName": "address1_telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Longitude",
+        "description": "Longitude for address 1.",
+        "displayName": "Address 1: Longitude",
+        "cdsSourceName": "address1_longitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1ShippingMethodCode",
+        "description": "Method of shipment for address 1.",
+        "displayName": "Address 1: Shipping Method",
+        "cdsSourceName": "address1_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1ShippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone2",
+        "description": "Second telephone number associated with address 1.",
+        "displayName": "Other Phone",
+        "cdsSourceName": "address1_telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone3",
+        "description": "Third telephone number associated with address 1.",
+        "displayName": "Pager",
+        "cdsSourceName": "address1_telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Fax",
+        "description": "Fax number for address 1.",
+        "displayName": "Address 1: Fax",
+        "cdsSourceName": "address1_fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2AddressId",
+        "description": "Unique identifier for address 2.",
+        "displayName": "Address 2: ID",
+        "cdsSourceName": "address2_addressid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address2AddressTypeCode",
+        "description": "Type of address for address 2, such as billing, shipping, or primary address.",
+        "displayName": "Address 2: Address Type",
+        "cdsSourceName": "address2_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2AddressTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Name",
+        "description": "Name to enter for address 2.",
+        "displayName": "Address 2: Name",
+        "cdsSourceName": "address2_name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line1",
+        "description": "First line for entering address 2 information.",
+        "displayName": "Other Street 1",
+        "cdsSourceName": "address2_line1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line2",
+        "description": "Second line for entering address 2 information.",
+        "displayName": "Other Street 2",
+        "cdsSourceName": "address2_line2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line3",
+        "description": "Third line for entering address 2 information.",
+        "displayName": "Other Street 3",
+        "cdsSourceName": "address2_line3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2City",
+        "description": "City name for address 2.",
+        "displayName": "Other City",
+        "cdsSourceName": "address2_city",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.city",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2StateOrProvince",
+        "description": "State or province for address 2.",
+        "displayName": "Other State/Province",
+        "cdsSourceName": "address2_stateorprovince",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2County",
+        "description": "County name for address 2.",
+        "displayName": "Address 2: County",
+        "cdsSourceName": "address2_county",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.county",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Country",
+        "description": "Country/region name in address 2.",
+        "displayName": "Other Country/Region",
+        "cdsSourceName": "address2_country",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.country",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostOfficeBox",
+        "description": "Post office box number for address 2.",
+        "displayName": "Address 2: Post Office Box",
+        "cdsSourceName": "address2_postofficebox",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 40
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostalCode",
+        "description": "ZIP Code or postal code for address 2.",
+        "displayName": "Other ZIP/Postal Code",
+        "cdsSourceName": "address2_postalcode",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 40
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UTCOffset",
+        "description": "UTC offset for address 2. This is the difference between local time and standard Coordinated Universal Time.",
+        "displayName": "Address 2: UTC Offset",
+        "cdsSourceName": "address2_utcoffset",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UPSZone",
+        "description": "United Parcel Service (UPS) zone for address 2.",
+        "displayName": "Address 2: UPS Zone",
+        "cdsSourceName": "address2_upszone",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Latitude",
+        "description": "Latitude for address 2.",
+        "displayName": "Address 2: Latitude",
+        "cdsSourceName": "address2_latitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2Telephone1",
+        "description": "First telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 1",
+        "cdsSourceName": "address2_telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Longitude",
+        "description": "Longitude for address 2.",
+        "displayName": "Address 2: Longitude",
+        "cdsSourceName": "address2_longitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2ShippingMethodCode",
+        "description": "Method of shipment for address 2.",
+        "displayName": "Address 2: Shipping Method",
+        "cdsSourceName": "address2_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2ShippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone2",
+        "description": "Second telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 2",
+        "cdsSourceName": "address2_telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone3",
+        "description": "Third telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 3",
+        "cdsSourceName": "address2_telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Fax",
+        "description": "Fax number for address 2.",
+        "displayName": "Address 2: Fax",
+        "cdsSourceName": "address2_fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "skills",
+        "description": "Skill set of the user.",
+        "displayName": "Skills",
+        "cdsSourceName": "skills",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "displayInServiceViews",
+        "description": "Whether to display the user in service views.",
+        "displayName": "Display in Service Views",
+        "cdsSourceName": "displayinserviceviews",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "calendarId",
+        "description": "Fiscal calendar associated with the user.",
+        "displayName": "Calendar",
+        "cdsSourceName": "calendarid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "windowsLiveID",
+        "description": "Windows Live ID",
+        "displayName": "Windows Live ID",
+        "cdsSourceName": "windowsliveid",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "yomiFullName",
+        "description": "Pronunciation of the full name of the user, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi Full Name",
+        "cdsSourceName": "yomifullname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.fullName, means.reference.phonetic",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiLastName",
+        "description": "Pronunciation of the last name of the user, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi Last Name",
+        "cdsSourceName": "yomilastname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.lastName, means.reference.phonetic",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiMiddleName",
+        "description": "Pronunciation of the middle name of the user, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi Middle Name",
+        "cdsSourceName": "yomimiddlename",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.middleName, means.reference.phonetic",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiFirstName",
+        "description": "Pronunciation of the first name of the user, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi First Name",
+        "cdsSourceName": "yomifirstname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.firstName, means.reference.phonetic",
+          "maxLength": 64
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the systemuser.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "queueId",
+        "description": "Unique identifier of the default queue for the user.",
+        "displayName": "Default Queue",
+        "cdsSourceName": "queueid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the systemuser.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Unique identifier of the currency associated with the systemuser.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Exchange rate for the currency associated with the systemuser with respect to the base currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "yammerEmailAddress",
+        "description": "User's Yammer login email address",
+        "displayName": "Yammer Email",
+        "cdsSourceName": "yammeremailaddress",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yammerUserId",
+        "description": "User's Yammer ID",
+        "displayName": "Yammer User ID",
+        "cdsSourceName": "yammeruserid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "defaultMailbox",
+        "description": "Select the mailbox associated with this user.",
+        "displayName": "Mailbox",
+        "cdsSourceName": "defaultmailbox",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "entityImageId",
+        "description": "For internal use only.",
+        "displayName": "Entity Image Id",
+        "cdsSourceName": "entityimageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Composite",
+        "description": "Shows the complete secondary address.",
+        "displayName": "Other Address",
+        "cdsSourceName": "address2_composite",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Composite",
+        "description": "Shows the complete primary address.",
+        "displayName": "Address",
+        "cdsSourceName": "address1_composite",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "processId",
+        "description": "Shows the ID of the process.",
+        "displayName": "Process",
+        "cdsSourceName": "processid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stageId",
+        "description": "Shows the ID of the stage.",
+        "displayName": "Process Stage",
+        "cdsSourceName": "stageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "positionId",
+        "description": "User's position in hierarchical security model.",
+        "displayName": "Position",
+        "cdsSourceName": "positionid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "traversedPath",
+        "description": "For internal use only.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "sharePointEmailAddress",
+        "description": "SharePoint Work Email Address",
+        "displayName": "SharePoint Email Address",
+        "cdsSourceName": "sharepointemailaddress",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "mobileOfflineProfileId",
+        "description": "Items contained with a particular SystemUser.",
+        "displayName": "Mobile Offline Profile",
+        "cdsSourceName": "mobileofflineprofileid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "applicationId",
+        "description": "The identifier for the application. This is used to access data in another application.",
+        "displayName": "Application ID",
+        "cdsSourceName": "applicationid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "applicationIdUri",
+        "description": "The URI used as a unique logical identifier for the external app. This can be used to validate the application.",
+        "displayName": "Application ID URI",
+        "cdsSourceName": "applicationiduri",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "azureActiveDirectoryObjectId",
+        "description": "This is the application directory object Id.",
+        "displayName": "Azure AD Object ID",
+        "cdsSourceName": "azureactivedirectoryobjectid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "territoryId",
+        "description": "Unique identifier of the territory to which the user is assigned.",
+        "displayName": "Territory",
+        "cdsSourceName": "territoryid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "siteId",
+        "description": "Site at which the user is located.",
+        "displayName": "Site",
+        "cdsSourceName": "siteid",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentSystemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Queue",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "positionId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "positionId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Position",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "territoryId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "territoryId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Territory",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "siteId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "siteId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
+}
