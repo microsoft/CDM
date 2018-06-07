@@ -132,6 +132,9 @@ class Converter {
                 //     dpAtt.pii = "CustomerContent";
                 // if (ra.resolvedTraits.find("is.hidden"))
                 //     dpAtt.isHidden = true;                    
+                let mapTrait;
+                if (mapTrait = ra.resolvedTraits.find("is.CDS.sourceNamed"))
+                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").valueString;
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
                 dpEnt.attributes.push(dpAtt);
