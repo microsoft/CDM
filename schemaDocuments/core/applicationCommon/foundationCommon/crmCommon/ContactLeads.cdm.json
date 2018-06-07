@@ -1,0 +1,154 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "ContactLeads",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+      }
+    },
+    "displayName": "ContactLeads",
+    "cdsSourceName": "ContactLeads",
+    "attributes": [
+      {
+        "name": "contactLeadId",
+        "description": "Unique identifier of the leads for the contact.",
+        "cdsSourceName": "contactleadid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "name",
+        "displayName": "name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "contactId",
+        "cdsSourceName": "contactid",
+        "dataType": "String"
+      },
+      {
+        "name": "leadId",
+        "cdsSourceName": "leadid",
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ContactLeads",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "leadId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ContactLeads",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "leadId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Lead",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      }
+    ]
+  }
+}

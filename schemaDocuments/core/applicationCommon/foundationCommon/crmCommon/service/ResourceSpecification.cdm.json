@@ -1,0 +1,440 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "ResourceSpecification",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+      }
+    },
+    "description": "Selection rule that allows the scheduling engine to select a number of resources from a pool of resources. The rules can be associated with a service.",
+    "displayName": "Resource Specification",
+    "cdsSourceName": "ResourceSpec",
+    "attributes": [
+      {
+        "name": "resourceSpecId",
+        "description": "Unique identifier of the resource specification.",
+        "displayName": "Resource Spec",
+        "cdsSourceName": "resourcespecid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "businessUnitId",
+        "description": "Unique identifier of the business unit with which the resource specification is associated.",
+        "displayName": "Business Unit",
+        "cdsSourceName": "businessunitid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "Name of the resource specification.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "effortRequired",
+        "description": "Number that specifies the minimal effort required from resources.",
+        "displayName": "Effort Required",
+        "cdsSourceName": "effortrequired",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "groupObjectId",
+        "description": "Unique identifier of the scheduling group with which the resource specification is associated.",
+        "displayName": "Group Object",
+        "cdsSourceName": "groupobjectid",
+        "dataType": "String"
+      },
+      {
+        "name": "objectiveExpression",
+        "description": "Search strategy to use for the resource specification.",
+        "displayName": "Objective Expression",
+        "cdsSourceName": "objectiveexpression",
+        "semanticDomain": {
+          "maxLength": 1073741823
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "objectTypeCode",
+        "description": "Type of entity with which the resource specification is associated.",
+        "displayName": "Object Type ",
+        "cdsSourceName": "objecttypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "objectTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization with which the resource specification is associated.",
+        "displayName": "Organization",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "requiredCount",
+        "description": "Required number of resources that must be available. Use -1 to indicate all resources.",
+        "displayName": "Required Count",
+        "cdsSourceName": "requiredcount",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the resource specification was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the resource specification.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the resource specification was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the resource specification.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the resourcespec.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the resourcespec.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "constraints",
+        "description": "Additional constraints, specified as expressions, which are used to filter a set of valid resources.",
+        "displayName": "Constraints",
+        "cdsSourceName": "constraints",
+        "semanticDomain": {
+          "maxLength": 1073741823
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "description",
+        "description": "Selection rule that allows the scheduling engine to select a number of resources from a pool of resources. The rules can be associated with a service.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "sameSite",
+        "description": "Value that specifies that all valid and available resources must be in the same site.",
+        "displayName": "Same Site",
+        "cdsSourceName": "samesite",
+        "dataType": "Boolean"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "groupObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
+}

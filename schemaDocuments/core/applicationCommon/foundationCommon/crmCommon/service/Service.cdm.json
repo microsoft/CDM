@@ -1,407 +1,465 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "Service",
-				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-				"semanticVersion": "0.5.0",
-				"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
-			}
-		},
-		"description": "Activity that represents work done to satisfy a customer's need.",
-		"displayName": "Service",
-		"attributes": [
-			{
-				"name": "serviceid",
-				"dataType": "Guid",
-				"displayName": "Service",
-				"description": "Unique identifier of the associated service.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the service was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the service.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the service was last modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who last modified the service.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the service.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the service.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "organizationid",
-				"dataType": "Guid",
-				"displayName": "Organization Id",
-				"description": "Unique identifier for the organization",
-				"semanticDomain": {
-					"semanticType": "Idea.Organization"
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version Number",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Sequence number of the import that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Name",
-				"description": "Name of the service.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 160
-				}
-			},
-			{
-				"name": "anchoroffset",
-				"dataType": "Int32",
-				"displayName": "Anchor Offset",
-				"description": "Used in conjunction with granularity to describes when services can be performed in relation to midnight on a given day.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 1440
-				}
-			},
-			{
-				"name": "calendarid",
-				"dataType": "Guid",
-				"displayName": "Calendar",
-				"description": "Unique identifier of the calendar.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "description",
-				"dataType": "String",
-				"displayName": "Description",
-				"description": "Description of activity that represents work done to satisfy a customer's need.",
-				"semanticDomain": {
-					"maxLength": 2000
-				}
-			},
-			{
-				"name": "duration",
-				"dataType": "Int32",
-				"displayName": "Duration",
-				"description": "Duration of the service.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Duration",
-					"minValue": 0,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "granularity",
-				"dataType": "String",
-				"displayName": "Granularity",
-				"description": "Describes how often the service is performed.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "initialstatuscode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status.Display",
-					"inSupportOf": "initialstatuscode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "initialstatuscode",
-				"dataType": "String",
-				"displayName": "Initial Status Reason",
-				"description": "Initial status reason for the service activity.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status",
-					"constrainedList": {
-						"name": "service_initialstatuscode",
-						"displayName": "Initial Status Reason",
-						"description": "Initial status reason for the service activity.",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Requested",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 2,
-								"displayName": "Tentative",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 3,
-								"displayName": "Pending",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 4,
-								"displayName": "Reserved",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 6,
-								"displayName": "In Progress",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 7,
-								"displayName": "Arrived",
-								"correlationValue:": "0"
-							},
-							{
-								"value": 8,
-								"displayName": "Completed",
-								"correlationValue:": "1"
-							},
-							{
-								"value": 9,
-								"displayName": "Canceled",
-								"correlationValue:": "2"
-							},
-							{
-								"value": 10,
-								"displayName": "No Show",
-								"correlationValue:": "2"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "isschedulable",
-				"dataType": "Boolean",
-				"displayName": "Status",
-				"description": "Information about whether the service can be scheduled.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "isvisible",
-				"dataType": "Boolean",
-				"displayName": "Is Visible",
-				"description": "Information about whether the service is visible to users.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "resourcespecid",
-				"dataType": "Guid",
-				"displayName": "Required Resources",
-				"description": "Unique identifier of the resource specification with which the service is associated.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "showresources",
-				"dataType": "Boolean",
-				"displayName": "Show Resources",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "strategyid",
-				"dataType": "Guid",
-				"displayName": "Strategy",
-				"description": "Value that is taken from PluginTypeId in the Plugin Type record for the scheduling strategy. This is the ID of the scheduling strategy plug-in associated with the service.",
-				"semanticDomain": {
-
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "resource_spec_services",
-			"referencing": {
-				"entity": {
-					"type": "Service",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
-				},
-				"attributes": [
-					{
-						"name": "resourcespecid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "ResourceSpec",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "cb881985-576f-65a1-11b9-fc596b4ed558"
-				},
-				"attributes": [
-					{
-						"name": "resourcespecid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "organization_services",
-			"referencing": {
-				"entity": {
-					"type": "Service",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "lk_service_createdonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "Service",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "f6237acd-a47e-4354-db22-83c919e0a38b"
-				},
-				"attributes": [
-					{
-						"name": "createdonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Service",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+      }
+    },
+    "description": "Activity that represents work done to satisfy a customer's need.",
+    "displayName": "Service",
+    "cdsSourceName": "Service",
+    "attributes": [
+      {
+        "name": "serviceId",
+        "description": "Unique identifier of the associated service.",
+        "displayName": "Service",
+        "cdsSourceName": "serviceid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "Name of the service.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "anchorOffset",
+        "description": "Used in conjunction with granularity to describes when services can be performed in relation to midnight on a given day.",
+        "displayName": "Anchor Offset",
+        "cdsSourceName": "anchoroffset",
+        "semanticDomain": {
+          "maxValue": 1440,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "duration",
+        "description": "Duration of the service.",
+        "displayName": "Duration",
+        "cdsSourceName": "duration",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.duration",
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "granularity",
+        "description": "Describes how often the service is performed.",
+        "displayName": "Granularity",
+        "cdsSourceName": "granularity",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "initialStatusCode",
+        "description": "Initial status reason for the service activity.",
+        "displayName": "Initial Status Reason",
+        "cdsSourceName": "initialstatuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Requested",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Tentative",
+                "value": "2",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Pending",
+                "value": "3",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Reserved",
+                "value": "4",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "In Progress",
+                "value": "6",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Arrived",
+                "value": "7",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Completed",
+                "value": "8",
+                "correlationValue": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "9",
+                "correlationValue": "2"
+              },
+              {
+                "displayName": "No Show",
+                "value": "10",
+                "correlationValue": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "initialStatusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isSchedulable",
+        "description": "Information about whether the service can be scheduled.",
+        "displayName": "Status",
+        "cdsSourceName": "isschedulable",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "resourceSpecId",
+        "description": "Unique identifier of the resource specification with which the service is associated.",
+        "displayName": "Required Resources",
+        "cdsSourceName": "resourcespecid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "strategyId",
+        "description": "Value that is taken from PluginTypeId in the Plugin Type record for the scheduling strategy. This is the ID of the scheduling strategy plug-in associated with the service.",
+        "displayName": "Strategy",
+        "cdsSourceName": "strategyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the service was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the service.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the service was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the service.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the service.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the service.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "calendarId",
+        "description": "Unique identifier of the calendar.",
+        "displayName": "Calendar",
+        "cdsSourceName": "calendarid",
+        "dataType": "String"
+      },
+      {
+        "name": "description",
+        "description": "Description of activity that represents work done to satisfy a customer's need.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isVisible",
+        "description": "Information about whether the service is visible to users.",
+        "displayName": "Is Visible",
+        "cdsSourceName": "isvisible",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "showResources",
+        "description": "For internal use only.",
+        "displayName": "Show Resources",
+        "cdsSourceName": "showresources",
+        "dataType": "Boolean"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "resourceSpecId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "resourceSpecId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ResourceSpecification",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
 }

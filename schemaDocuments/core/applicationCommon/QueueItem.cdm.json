@@ -1,853 +1,953 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "QueueItem",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-			}
-		},
-		"description": "A specific item in a queue, such as a case record or an activity record.",
-		"displayName": "Queue Item",
-		"attributes": [
-			{
-				"name": "queueitemid",
-				"dataType": "Guid",
-				"displayName": "Queue Item",
-				"description": "Unique identifier of the queue item.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "queueid",
-				"dataType": "Guid",
-				"displayName": "Queue",
-				"description": "Choose the queue that the item is assigned to.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "objectid",
-				"dataType": "Guid",
-				"displayName": "Object",
-				"description": "Choose the activity, case, or article assigned to the queue.",
-				"semanticDomain": {
-					"semanticType": "Reference.Regarding"
-				}
-			},
-			{
-				"name": "objecttypecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "objecttypecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "objecttypecode",
-				"dataType": "String",
-				"displayName": "Type",
-				"description": "Select the type of the queue item, such as activity, case, or appointment.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "queueitem_objecttypecode",
-						"displayName": "Type",
-						"description": "Identifies the type of queue item, such as the specific activity type, case, or article.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Default Value"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "title",
-				"dataType": "String",
-				"displayName": "Title",
-				"description": "Shows the title or name that describes the queue record. This value is copied from the record that was assigned to the queue.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Title",
-					"maxLength": 300
-				}
-			},
-			{
-				"name": "enteredon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Entered Queue",
-				"description": "Shows the date the record was assigned to the queue.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "priority",
-				"dataType": "Int32",
-				"displayName": "Priority",
-				"description": "Priority of the queue item.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 1000000000
-				}
-			},
-			{
-				"name": "state",
-				"dataType": "Int32",
-				"displayName": "Status (deprecated)",
-				"description": "Status of the queue item.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 1000000000
-				}
-			},
-			{
-				"name": "status",
-				"dataType": "Int32",
-				"displayName": "Status Reason (deprecated)",
-				"description": "Reason for the status of the queue item.",
-				"semanticDomain": {
-					"minValue": 0,
-					"maxValue": 1000000000
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Shows who created the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Shows who last updated the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "torecipients",
-				"dataType": "String",
-				"displayName": "To",
-				"description": "Recipients listed on the To line of the message for email queue items.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 500
-				}
-			},
-			{
-				"name": "sender",
-				"dataType": "String",
-				"displayName": "From",
-				"description": "Sender who created the queue item.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "organizationid",
-				"dataType": "Guid",
-				"displayName": "Organization",
-				"description": "Unique identifier of the organization with which the queue item is associated.",
-				"semanticDomain": {
-					"semanticType": "Idea.Organization"
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version number of the queue item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "workeridmodifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Worked On",
-				"description": "Shows the date and time when the queue item was last assigned to a user.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "ownerid",
-				"dataType": "Guid",
-				"displayName": "Owner",
-				"description": "Unique identifier of the user or team who owns the queue item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owninguser",
-				"dataType": "Guid",
-				"displayName": "Owning User",
-				"description": "Unique identifier of the user who owns the queue item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "workerid",
-				"dataType": "Guid",
-				"displayName": "Worked By",
-				"description": "Shows who is working on the queue item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owningbusinessunit",
-				"dataType": "Guid",
-				"displayName": "Owning Business Unit",
-				"description": "Unique identifier of the business unit that owns the queue item.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "statuscode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status.Display",
-					"inSupportOf": "statuscode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "statuscode",
-				"dataType": "String",
-				"displayName": "Status Reason",
-				"description": "Select the item's status.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status",
-					"constrainedList": {
-						"name": "queueitem_statuscode",
-						"displayName": "Status Reason",
-						"description": "Reason for the status of the queue item.",
-						"items": [
-							{
-								"value": 2,
-								"displayName": "Inactive",
-								"correlationValue:": "1"
-							},
-							{
-								"value": 1,
-								"displayName": "Active",
-								"correlationValue:": "0"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "statecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.State.Display",
-					"inSupportOf": "statecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "statecode",
-				"dataType": "String",
-				"displayName": "Status",
-				"description": "Shows whether the queue record is active or inactive. Inactive queue records are read-only and can't be edited unless they are reactivated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.State",
-					"constrainedList": {
-						"name": "queueitem_statecode",
-						"displayName": "Status",
-						"description": "Status of the queue item.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Active"
-							},
-							{
-								"value": 1,
-								"displayName": "Inactive"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Shows who created the record on behalf of another user.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the queueitem.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "Exchange Rate",
-				"description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Unique identifier of the data import or data migration that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "implicit_user",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "implicit_team",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "teamid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "queue_entries",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "queueid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Queue",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "a4bffdb6-ba01-b1c1-25a5-4bc71b67ad8c"
-				},
-				"attributes": [
-					{
-						"name": "queueid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "RecurringAppointmentMaster_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "RecurringAppointmentMaster",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "00f24fd1-0929-0239-436e-0d055b2926e5"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Fax_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Fax",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "knowledgearticle_QueueItems",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "KnowledgeArticle",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
-				},
-				"attributes": [
-					{
-						"name": "knowledgearticleid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "SocialActivity_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SocialActivity",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Task_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Task",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "PhoneCall_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "PhoneCall",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Email_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Email",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "ActivityPointer_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "ActivityPointer",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Letter_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Letter",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "Appointment_QueueItem",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "objectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Appointment",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "organization_queueitems",
-			"referencing": {
-				"entity": {
-					"type": "QueueItem",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "5c18addc-5797-b267-d573-661ba5c9f6a3"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "QueueItem",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "A specific item in a queue, such as a case record or an activity record.",
+    "displayName": "Queue Item",
+    "cdsSourceName": "QueueItem",
+    "attributes": [
+      {
+        "name": "queueItemId",
+        "description": "Unique identifier of the queue item.",
+        "displayName": "Queue Item",
+        "cdsSourceName": "queueitemid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "queueId",
+        "description": "Choose the queue that the item is assigned to.",
+        "displayName": "Queue",
+        "cdsSourceName": "queueid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "objectId",
+        "description": "Choose the activity, case, or article assigned to the queue.",
+        "displayName": "Object",
+        "cdsSourceName": "objectid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization with which the queue item is associated.",
+        "displayName": "Organization",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the queue item.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier of the user who owns the queue item.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the queue item.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the item's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the queue record is active or inactive. Inactive queue records are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "objectTypeCode",
+        "description": "Select the type of the queue item, such as activity, case, or appointment.",
+        "displayName": "Type",
+        "cdsSourceName": "objecttypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "0"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "objectTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "title",
+        "description": "Shows the title or name that describes the queue record. This value is copied from the record that was assigned to the queue.",
+        "displayName": "Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "maxLength": 300
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "enteredOn",
+        "description": "Shows the date the record was assigned to the queue.",
+        "displayName": "Entered Queue",
+        "cdsSourceName": "enteredon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "priority",
+        "description": "Priority of the queue item.",
+        "displayName": "Priority",
+        "cdsSourceName": "priority",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "state",
+        "description": "Status of the queue item.",
+        "displayName": "Status (deprecated)",
+        "cdsSourceName": "state",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "status",
+        "description": "Reason for the status of the queue item.",
+        "displayName": "Status Reason (deprecated)",
+        "cdsSourceName": "status",
+        "semanticDomain": {
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "createdOn",
+        "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "toRecipients",
+        "description": "Recipients listed on the To line of the message for email queue items.",
+        "displayName": "To",
+        "cdsSourceName": "torecipients",
+        "semanticDomain": {
+          "maxLength": 500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "sender",
+        "description": "Sender who created the queue item.",
+        "displayName": "From",
+        "cdsSourceName": "sender",
+        "semanticDomain": {
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the queue item.",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "workerIdModifiedOn",
+        "description": "Shows the date and time when the queue item was last assigned to a user.",
+        "displayName": "Worked On",
+        "cdsSourceName": "workeridmodifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "workerId",
+        "description": "Shows who is working on the queue item.",
+        "displayName": "Worked By",
+        "cdsSourceName": "workerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the queueitem.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Queue",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Fax",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Appointment",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SocialActivity",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "RecurringAppointment",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "PhoneCall",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Task",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Email",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Letter",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "objectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Activity",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "workerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "workerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
 }

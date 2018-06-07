@@ -1,489 +1,556 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "Team",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-			}
-		},
-		"description": "Collection of system users that routinely collaborate. Teams can be used to simplify record sharing and provide team members with common access to organization data when team members belong to different Business Units.",
-		"displayName": "Team",
-		"attributes": [
-			{
-				"name": "teamid",
-				"dataType": "Guid",
-				"displayName": "Team",
-				"description": "Unique identifier for the team.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "organizationid",
-				"dataType": "Guid",
-				"displayName": "Organization ",
-				"description": "Unique identifier of the organization associated with the team.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "businessunitid",
-				"dataType": "Guid",
-				"displayName": "Business Unit",
-				"description": "Unique identifier of the business unit with which the team is associated.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Team Name",
-				"description": "Name of the team.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 160
-				}
-			},
-			{
-				"name": "description",
-				"dataType": "String",
-				"displayName": "Description",
-				"description": "Description of the team.",
-				"semanticDomain": {
-					"semanticType": "Reference.Description",
-					"maxLength": 2000
-				}
-			},
-			{
-				"name": "emailaddress",
-				"dataType": "String",
-				"displayName": "Email",
-				"description": "Email address for the team.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Email",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the team was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the team was last modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who last modified the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version number",
-				"description": "Version number of the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Unique identifier of the data import or data migration that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "administratorid",
-				"dataType": "Guid",
-				"displayName": "Administrator",
-				"description": "Unique identifier of the user primary responsible for the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "isdefault",
-				"dataType": "Boolean",
-				"displayName": "Is Default",
-				"description": "Information about whether the team is a default business unit team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "yominame",
-				"dataType": "String",
-				"displayName": "Yomi Name",
-				"description": "Pronunciation of the full name of the team, written in phonetic hiragana or katakana characters.",
-				"semanticDomain": {
-					"semanticType": "Reference.Phonetic",
-					"maxLength": 160
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "traversedpath",
-				"dataType": "String",
-				"displayName": "Traversed Path",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 1250
-				}
-			},
-			{
-				"name": "queueid",
-				"dataType": "Guid",
-				"displayName": "Default Queue",
-				"description": "Unique identifier of the default queue for the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Unique identifier of the currency associated with the team.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "Exchange Rate",
-				"description": "Exchange rate for the currency associated with the team with respect to the base currency.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "teamtype_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "teamtype",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "teamtype",
-				"dataType": "String",
-				"displayName": "Team Type",
-				"description": "Select the team type.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "team_type",
-						"displayName": "Team Type",
-						"description": "Information about team type.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "Owner"
-							},
-							{
-								"value": 1,
-								"displayName": "Access"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "teamtemplateid",
-				"dataType": "Guid",
-				"displayName": "Team Template Identifier",
-				"description": "Shows the team template that is associated with the team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "regardingobjectid",
-				"dataType": "Guid",
-				"displayName": "Regarding Object Id",
-				"description": "Choose the record that the team relates to.",
-				"semanticDomain": {
-					"semanticType": "Reference.Regarding"
-				}
-			},
-			{
-				"name": "systemmanaged",
-				"dataType": "Boolean",
-				"displayName": "Is System Managed",
-				"description": "Select whether the team will be managed by the system.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "stageid",
-				"dataType": "Guid",
-				"displayName": "Process Stage",
-				"description": "Shows the ID of the stage.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			},
-			{
-				"name": "processid",
-				"dataType": "Guid",
-				"displayName": "Process",
-				"description": "Shows the ID of the process.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer.Reference"
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "knowledgearticle_Teams",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "regardingobjectid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "KnowledgeArticle",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "a7328c56-01fd-9ec0-f16f-aab8964aa3f1"
-				},
-				"attributes": [
-					{
-						"name": "knowledgearticleid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "lk_teambase_modifiedonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "modifiedonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_Team",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "business_unit_teams",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "businessunitid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "BusinessUnit",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
-				},
-				"attributes": [
-					{
-						"name": "businessunitid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "queue_team",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "queueid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Queue",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "a4bffdb6-ba01-b1c1-25a5-4bc71b67ad8c"
-				},
-				"attributes": [
-					{
-						"name": "queueid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "organization_teams",
-			"referencing": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Team",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Collection of system users that routinely collaborate. Teams can be used to simplify record sharing and provide team members with common access to organization data when team members belong to different Business Units.",
+    "displayName": "Team",
+    "cdsSourceName": "Team",
+    "attributes": [
+      {
+        "name": "teamId",
+        "description": "Unique identifier for the team.",
+        "displayName": "Team",
+        "cdsSourceName": "teamid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization associated with the team.",
+        "displayName": "Organization ",
+        "cdsSourceName": "organizationid",
+        "dataType": "String"
+      },
+      {
+        "name": "businessUnitId",
+        "description": "Unique identifier of the business unit with which the team is associated.",
+        "displayName": "Business Unit",
+        "cdsSourceName": "businessunitid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "Name of the team.",
+        "displayName": "Team Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "administratorId",
+        "description": "Unique identifier of the user primary responsible for the team.",
+        "displayName": "Administrator",
+        "cdsSourceName": "administratorid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "isDefault",
+        "description": "Information about whether the team is a default business unit team.",
+        "displayName": "Is Default",
+        "cdsSourceName": "isdefault",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "teamType",
+        "description": "Select the team type.",
+        "displayName": "Team Type",
+        "cdsSourceName": "teamtype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Owner",
+                "value": "0"
+              },
+              {
+                "displayName": "Access",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "teamType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "systemManaged",
+        "description": "Select whether the team will be managed by the system.",
+        "displayName": "Is System Managed",
+        "cdsSourceName": "systemmanaged",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "description",
+        "description": "Description of the team.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress",
+        "description": "Email address for the team.",
+        "displayName": "Email",
+        "cdsSourceName": "emailaddress",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the team was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the team was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the team.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the team.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the team.",
+        "displayName": "Version number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "yomiName",
+        "description": "Pronunciation of the full name of the team, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi Name",
+        "cdsSourceName": "yominame",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name, means.reference.phonetic",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the team.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the team.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "traversedPath",
+        "description": "For internal use only.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "queueId",
+        "description": "Unique identifier of the default queue for the team.",
+        "displayName": "Default Queue",
+        "cdsSourceName": "queueid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Unique identifier of the currency associated with the team.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Exchange rate for the currency associated with the team with respect to the base currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "teamTemplateId",
+        "description": "Shows the team template that is associated with the team.",
+        "displayName": "Team Template Identifier",
+        "cdsSourceName": "teamtemplateid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "regardingObjectId",
+        "description": "Choose the record that the team relates to.",
+        "displayName": "Regarding Object Id",
+        "cdsSourceName": "regardingobjectid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "stageId",
+        "description": "Shows the ID of the stage.",
+        "displayName": "Process Stage",
+        "cdsSourceName": "stageid",
+        "dataType": "String"
+      },
+      {
+        "name": "processId",
+        "description": "Shows the ID of the process.",
+        "displayName": "Process",
+        "cdsSourceName": "processid",
+        "dataType": "String"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "administratorId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "queueId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Queue",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "regardingObjectId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
 }

@@ -1,261 +1,328 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "KnowledgeBaseRecord",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
-			}
-		},
-		"description": "Metadata of knowledge base (KB) articles associated with Microsoft Dynamics 365 entities.",
-		"displayName": "Knowledge Base Record",
-		"attributes": [
-			{
-				"name": "knowledgebaserecordid",
-				"dataType": "Guid",
-				"displayName": "ID",
-				"description": "This field will be used to store the Unique ID of the associated Knowledge Base records",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the record was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the record was modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who modified the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who modified the record.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "organizationid",
-				"dataType": "Guid",
-				"displayName": "Organization Id",
-				"description": "Unique identifier for the organization",
-				"semanticDomain": {
-					"semanticType": "Idea.Organization"
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "title",
-				"dataType": "String",
-				"displayName": "KB Record Title",
-				"description": "Shows the title of the knowledge base (KB) Record.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Title",
-					"maxLength": 4000
-				}
-			},
-			{
-				"name": "privateurl",
-				"dataType": "String",
-				"displayName": "Private URL",
-				"description": "Shows the internal Parature service desk URL of the knowledge base records.",
-				"semanticDomain": {
-					"semanticType": "Reference.URL",
-					"maxLength": 256
-				}
-			},
-			{
-				"name": "publicurl",
-				"dataType": "String",
-				"displayName": "Public URL",
-				"description": "Shows the public Parature portal URL of the knowledge base records.",
-				"semanticDomain": {
-					"semanticType": "Reference.URL",
-					"maxLength": 256
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "ExchangeRate",
-				"description": "Exchange rate for the currency associated with the knowledge base record with respect to the base currency.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Exchange rate for the currency associated with the Knowledge Base Record with respect to the base currency.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "uniqueid",
-				"dataType": "String",
-				"displayName": "Unique ID",
-				"description": "Shows the unique ID of the linked knowledge base (KB) article.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 256
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "lk_KnowledgeBaseRecord_createdonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "KnowledgeBaseRecord",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
-				},
-				"attributes": [
-					{
-						"name": "createdonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "organization_KnowledgeBaseRecord",
-			"referencing": {
-				"entity": {
-					"type": "KnowledgeBaseRecord",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_KnowledgeBaseRecord",
-			"referencing": {
-				"entity": {
-					"type": "KnowledgeBaseRecord",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8795744d-bd15-7bb1-5992-e8d1187ed134"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "KnowledgeBaseRecord",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Metadata of knowledge base (KB) articles associated with Microsoft Dynamics 365 entities.",
+    "displayName": "Knowledge Base Record",
+    "cdsSourceName": "KnowledgeBaseRecord",
+    "attributes": [
+      {
+        "name": "knowledgeBaseRecordId",
+        "description": "This field will be used to store the Unique ID of the associated Knowledge Base records",
+        "displayName": "ID",
+        "cdsSourceName": "knowledgebaserecordid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "title",
+        "description": "Shows the title of the knowledge base (KB) Record.",
+        "displayName": "KB Record Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "maxLength": 4000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "privateUrl",
+        "description": "Shows the internal Parature service desk URL of the knowledge base records.",
+        "displayName": "Private URL",
+        "cdsSourceName": "privateurl",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 256
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "uniqueId",
+        "description": "Shows the unique ID of the linked knowledge base (KB) article.",
+        "displayName": "Unique ID",
+        "cdsSourceName": "uniqueid",
+        "semanticDomain": {
+          "maxLength": 256
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who modified the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the record.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who modified the record.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "publicUrl",
+        "description": "Shows the public Parature portal URL of the knowledge base records.",
+        "displayName": "Public URL",
+        "cdsSourceName": "publicurl",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 256
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Exchange rate for the currency associated with the knowledge base record with respect to the base currency.",
+        "displayName": "ExchangeRate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Exchange rate for the currency associated with the Knowledge Base Record with respect to the base currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeBaseRecord",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
 }

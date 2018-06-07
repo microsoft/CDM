@@ -1,0 +1,170 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "ResourceExpansion",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+      }
+    },
+    "description": "Resource Expansions.",
+    "displayName": "Resource Expansion",
+    "cdsSourceName": "ResourceGroupExpansion",
+    "attributes": [
+      {
+        "name": "resourceGroupExpansionId",
+        "description": "Unique identifier of the resource expansion record.",
+        "displayName": "Resource Expansion",
+        "cdsSourceName": "resourcegroupexpansionid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "name",
+        "displayName": "name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "itemId",
+        "description": "Item that is part of expansion of resource identified by object ID. One object ID can have many item IDs.",
+        "displayName": "Item",
+        "cdsSourceName": "itemid",
+        "dataType": "String"
+      },
+      {
+        "name": "methodCode",
+        "description": "Code for retrieval method.",
+        "displayName": "Method",
+        "cdsSourceName": "methodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Participating Resources",
+                "value": "1"
+              },
+              {
+                "displayName": "Schedulable Resources",
+                "value": "2"
+              },
+              {
+                "displayName": "Supported Services",
+                "value": "3"
+              },
+              {
+                "displayName": "Resources",
+                "value": "4"
+              },
+              {
+                "displayName": "All Resources",
+                "value": "5"
+              },
+              {
+                "displayName": "Subgroups",
+                "value": "6"
+              },
+              {
+                "displayName": "Parent Groups",
+                "value": "7"
+              },
+              {
+                "displayName": "All Subgroups",
+                "value": "8"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "methodCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "objectId",
+        "description": "Object being expanded.",
+        "displayName": "Object",
+        "cdsSourceName": "objectid",
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      }
+    ]
+  }
+}

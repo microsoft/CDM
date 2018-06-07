@@ -1,0 +1,71 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "KnowledgeArticleCategory",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Category for a Knowledge Article.",
+    "displayName": "Knowledge Article Category",
+    "cdsSourceName": "KnowledgeArticlesCategories",
+    "attributes": [
+      {
+        "name": "knowledgeArticleId",
+        "cdsSourceName": "knowledgearticleid",
+        "dataType": "String"
+      },
+      {
+        "name": "categoryId",
+        "cdsSourceName": "categoryid",
+        "dataType": "String"
+      },
+      {
+        "name": "knowledgeArticleCategoryId",
+        "description": "Unique identifier of the Category for the knowledge article.",
+        "cdsSourceName": "knowledgearticlecategoryid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "knowledgeArticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticleCategory",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "knowledgearticleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      }
+    ]
+  }
+}

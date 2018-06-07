@@ -1,0 +1,63 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Owner",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Group of undeleted system users and undeleted teams. Owners can be used to control access to specific objects.",
+    "displayName": "Owner",
+    "cdsSourceName": "Owner",
+    "attributes": [
+      {
+        "name": "ownerId",
+        "description": "Unique identifier for the Owner: systemuserid or teamid.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "Name of the Owner.",
+        "displayName": "Owner Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ownerIdType",
+        "cdsSourceName": "owneridtype",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "versionNumber",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "yomiName",
+        "description": "Pronunciation of the name of the owner, written in phonetic hiragana or katakana characters.",
+        "displayName": "Yomi Name",
+        "cdsSourceName": "yominame",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name, means.reference.phonetic",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      }
+    ]
+  }
+}

@@ -1,0 +1,3198 @@
+{
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Contact",
+        "namespace": "core.applicationCommon/foundationCommon"
+      },
+      "extends": {
+        "semanticVersion": "0.5.5",
+        "type": "Contact",
+        "namespace": "core.applicationCommon"
+      }
+    },
+    "description": "Person with whom a business unit has a relationship, such as customer, supplier, and colleague.",
+    "displayName": "Contact",
+    "cdsSourceName": "Contact",
+    "attributes": [
+      {
+        "name": "contactId",
+        "description": "Unique identifier for Check-in associated with Contact.",
+        "displayName": "Contact",
+        "cdsSourceName": "msevtmgt_contactid",
+        "semanticDomain": {
+          "inherited": true,
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "firstName",
+        "description": "Type the contact's first name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+        "displayName": "First Name",
+        "cdsSourceName": "firstname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.firstName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastName",
+        "description": "Type the contact's last name to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+        "displayName": "Last Name",
+        "cdsSourceName": "lastname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.lastName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the contact is active or inactive. Inactive contacts are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              },
+              {
+                "displayName": "Active",
+                "value": "0"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "customerSizeCode",
+        "description": "Select the size of the contact's company for segmentation and reporting purposes.",
+        "displayName": "Customer Size",
+        "cdsSourceName": "customersizecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "customerSizeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "customerTypeCode",
+        "description": "Select the category that best describes the relationship between the contact and your organization.",
+        "displayName": "Relationship Type",
+        "cdsSourceName": "customertypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "customerTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredContactMethodCode",
+        "description": "Select the preferred method of contact.",
+        "displayName": "Preferred Method of Contact",
+        "cdsSourceName": "preferredcontactmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Any",
+                "value": "1"
+              },
+              {
+                "displayName": "Email",
+                "value": "2"
+              },
+              {
+                "displayName": "Phone",
+                "value": "3"
+              },
+              {
+                "displayName": "Fax",
+                "value": "4"
+              },
+              {
+                "displayName": "Mail",
+                "value": "5"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredContactMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "leadSourceCode",
+        "description": "Select the primary marketing source that directed the contact to your organization.",
+        "displayName": "Lead Source",
+        "cdsSourceName": "leadsourcecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "leadSourceCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the contact.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier of the user who owns the contact.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "paymentTermsCode",
+        "description": "Select the payment terms to indicate when the customer needs to pay the total amount.",
+        "displayName": "Payment Terms",
+        "cdsSourceName": "paymenttermscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Net 30",
+                "value": "1"
+              },
+              {
+                "displayName": "2% 10, Net 30",
+                "value": "2"
+              },
+              {
+                "displayName": "Net 45",
+                "value": "3"
+              },
+              {
+                "displayName": "Net 60",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "paymentTermsCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "shippingMethodCode",
+        "description": "Select a shipping method for deliveries sent to this address.",
+        "displayName": "Shipping Method",
+        "cdsSourceName": "shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "shippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "accountId",
+        "description": "Unique identifier of the account with which the contact is associated.",
+        "displayName": "Account",
+        "cdsSourceName": "accountid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "participatesInWorkflow",
+        "description": "Shows whether the contact participates in workflow rules.",
+        "displayName": "Participates in Workflow",
+        "cdsSourceName": "participatesinworkflow",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isBackofficeCustomer",
+        "description": "Select whether the contact exists in a separate accounting or other system, such as Microsoft Dynamics GP or another ERP database, for use in integration processes.",
+        "displayName": "Back Office Customer",
+        "cdsSourceName": "isbackofficecustomer",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "salutation",
+        "description": "Type the salutation of the contact to make sure the contact is addressed correctly in sales calls, email messages, and marketing campaigns.",
+        "displayName": "Salutation",
+        "cdsSourceName": "salutation",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "jobTitle",
+        "description": "Type the job title of the contact to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+        "displayName": "Job Title",
+        "cdsSourceName": "jobtitle",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "department",
+        "description": "Type the department or business unit where the contact works in the parent company or business.",
+        "displayName": "Department",
+        "cdsSourceName": "department",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "nickName",
+        "description": "Type the contact's nickname.",
+        "displayName": "Nickname",
+        "cdsSourceName": "nickname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "middleName",
+        "description": "Type the contact's middle name or initial to make sure the contact is addressed correctly.",
+        "displayName": "Middle Name",
+        "cdsSourceName": "middlename",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.middleName",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "suffix",
+        "description": "Type the suffix used in the contact's name, such as Jr. or Sr. to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+        "displayName": "Suffix",
+        "cdsSourceName": "suffix",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 10
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiFirstName",
+        "description": "Type the phonetic spelling of the contact's first name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
+        "displayName": "Yomi First Name",
+        "cdsSourceName": "yomifirstname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.firstName, means.reference.phonetic",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fullName",
+        "description": "Combines and shows the contact's first and last names so that the full name can be displayed in views and reports.",
+        "displayName": "Full Name",
+        "cdsSourceName": "fullname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.fullName",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiMiddleName",
+        "description": "Type the phonetic spelling of the contact's middle name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
+        "displayName": "Yomi Middle Name",
+        "cdsSourceName": "yomimiddlename",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.middleName, means.reference.phonetic",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiLastName",
+        "description": "Type the phonetic spelling of the contact's last name, if the name is specified in Japanese, to make sure the name is pronounced correctly in phone calls with the contact.",
+        "displayName": "Yomi Last Name",
+        "cdsSourceName": "yomilastname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.lastName, means.reference.phonetic",
+          "maxLength": 150
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "anniversary",
+        "description": "Enter the date of the contact's wedding or service anniversary for use in customer gift programs or other communications.",
+        "displayName": "Anniversary",
+        "cdsSourceName": "anniversary",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "birthDate",
+        "description": "Enter the contact's birthday for use in customer gift programs or other communications.",
+        "displayName": "Birthday",
+        "cdsSourceName": "birthdate",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "governmentId",
+        "description": "Type the passport number or other government ID for the contact for use in documents or reports.",
+        "displayName": "Government",
+        "cdsSourceName": "governmentid",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.governmentID",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "yomiFullName",
+        "description": "Shows the combined Yomi first and last names of the contact so that the full phonetic name can be displayed in views and reports.",
+        "displayName": "Yomi Full Name",
+        "cdsSourceName": "yomifullname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.person.fullName, means.reference.phonetic",
+          "maxLength": 450
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "description",
+        "description": "Type additional information to describe the contact, such as an excerpt from the company's website.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "employeeId",
+        "description": "Type the employee ID or number for the contact for reference in orders, service cases, or other communications with the contact's organization.",
+        "displayName": "Employee",
+        "cdsSourceName": "employeeid",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "genderCode",
+        "description": "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+        "displayName": "Gender",
+        "cdsSourceName": "gendercode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Male",
+                "value": "1"
+              },
+              {
+                "displayName": "Female",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "genderCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "annualIncome",
+        "description": "Type the contact's annual income for use in profiling and financial analysis.",
+        "displayName": "Annual Income",
+        "cdsSourceName": "annualincome",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 100000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "hasChildrenCode",
+        "description": "Select whether the contact has any children for reference in follow-up phone calls and other communications.",
+        "displayName": "Has Children",
+        "cdsSourceName": "haschildrencode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "hasChildrenCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "educationCode",
+        "description": "Select the contact's highest level of education for use in segmentation and analysis.",
+        "displayName": "Education",
+        "cdsSourceName": "educationcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "educationCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "webSiteUrl",
+        "description": "Type the contact's professional or personal website or blog URL.",
+        "displayName": "Website",
+        "cdsSourceName": "websiteurl",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "familyStatusCode",
+        "description": "Select the marital status of the contact for reference in follow-up phone calls and other communications.",
+        "displayName": "Marital Status",
+        "cdsSourceName": "familystatuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Single",
+                "value": "1"
+              },
+              {
+                "displayName": "Married",
+                "value": "2"
+              },
+              {
+                "displayName": "Divorced",
+                "value": "3"
+              },
+              {
+                "displayName": "Widowed",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "familyStatusCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ftpSiteUrl",
+        "description": "Type the URL for the contact's FTP site to enable users to access data and share documents.",
+        "displayName": "FTP Site",
+        "cdsSourceName": "ftpsiteurl",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress1",
+        "description": "Type the primary email address for the contact.",
+        "displayName": "Email",
+        "cdsSourceName": "emailaddress1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "spousesName",
+        "description": "Type the name of the contact's spouse or partner for reference during calls, events, or other communications with the contact.",
+        "displayName": "Spouse/Partner Name",
+        "cdsSourceName": "spousesname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "assistantName",
+        "description": "Type the name of the contact's assistant.",
+        "displayName": "Assistant",
+        "cdsSourceName": "assistantname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress2",
+        "description": "Type the secondary email address for the contact.",
+        "displayName": "Email Address 2",
+        "cdsSourceName": "emailaddress2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "assistantPhone",
+        "description": "Type the phone number for the contact's assistant.",
+        "displayName": "Assistant Phone",
+        "cdsSourceName": "assistantphone",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress3",
+        "description": "Type an alternate email address for the contact.",
+        "displayName": "Email Address 3",
+        "cdsSourceName": "emailaddress3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "doNotPhone",
+        "description": "Select whether the contact accepts phone calls. If Do Not Allow is selected, the contact will be excluded from any phone call activities distributed in marketing campaigns.",
+        "displayName": "Do not allow Phone Calls",
+        "cdsSourceName": "donotphone",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "managerName",
+        "description": "Type the name of the contact's manager for use in escalating issues or other follow-up communications with the contact.",
+        "displayName": "Manager",
+        "cdsSourceName": "managername",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "managerPhone",
+        "description": "Type the phone number for the contact's manager.",
+        "displayName": "Manager Phone",
+        "cdsSourceName": "managerphone",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "doNotFax",
+        "description": "Select whether the contact allows faxes. If Do Not Allow is selected, the contact will be excluded from any fax activities distributed in marketing campaigns.",
+        "displayName": "Do not allow Faxes",
+        "cdsSourceName": "donotfax",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "doNotEMail",
+        "description": "Select whether the contact allows direct email sent from Microsoft Dynamics 365. If Do Not Allow is selected, Microsoft Dynamics 365 will not send the email.",
+        "displayName": "Do not allow Emails",
+        "cdsSourceName": "donotemail",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "doNotPostalMail",
+        "description": "Select whether the contact allows direct mail. If Do Not Allow is selected, the contact will be excluded from letter activities distributed in marketing campaigns.",
+        "displayName": "Do not allow Mails",
+        "cdsSourceName": "donotpostalmail",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "doNotBulkEMail",
+        "description": "Select whether the contact accepts bulk email sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the email.",
+        "displayName": "Do not allow Bulk Emails",
+        "cdsSourceName": "donotbulkemail",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "doNotBulkPostalMail",
+        "description": "Select whether the contact accepts bulk postal mail sent through marketing campaigns or quick campaigns. If Do Not Allow is selected, the contact can be added to marketing lists, but will be excluded from the letters.",
+        "displayName": "Do not allow Bulk Mails",
+        "cdsSourceName": "donotbulkpostalmail",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "accountRoleCode",
+        "description": "Select the contact's role within the company or sales process, such as decision maker, employee, or influencer.",
+        "displayName": "Role",
+        "cdsSourceName": "accountrolecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Decision Maker",
+                "value": "1"
+              },
+              {
+                "displayName": "Employee",
+                "value": "2"
+              },
+              {
+                "displayName": "Influencer",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "accountRoleCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "territoryCode",
+        "description": "Select a region or territory for the contact for use in segmentation and analysis.",
+        "displayName": "Territory",
+        "cdsSourceName": "territorycode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "territoryCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "creditLimit",
+        "description": "Type the credit limit of the contact for reference when you address invoice and accounting issues with the customer.",
+        "displayName": "Credit Limit",
+        "cdsSourceName": "creditlimit",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 100000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "createdOn",
+        "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "creditOnHold",
+        "description": "Select whether the contact is on a credit hold, for reference when addressing invoice and accounting issues.",
+        "displayName": "Credit Hold",
+        "cdsSourceName": "creditonhold",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "numberOfChildren",
+        "description": "Type the number of children the contact has for reference in follow-up phone calls and other communications.",
+        "displayName": "No. of Children",
+        "cdsSourceName": "numberofchildren",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 1000000000,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "childrensNames",
+        "description": "Type the names of the contact's children for reference in communications and client programs.",
+        "displayName": "Children's Names",
+        "cdsSourceName": "childrensnames",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 255
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the contact.",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Int64"
+      },
+      {
+        "name": "mobilePhone",
+        "description": "Type the mobile phone number for the contact.",
+        "displayName": "Mobile Phone",
+        "cdsSourceName": "mobilephone",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "pager",
+        "description": "Type the pager number for the contact.",
+        "displayName": "Pager",
+        "cdsSourceName": "pager",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone1",
+        "description": "Type the main phone number for this contact.",
+        "displayName": "Business Phone",
+        "cdsSourceName": "telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone2",
+        "description": "Type a second phone number for this contact.",
+        "displayName": "Home Phone",
+        "cdsSourceName": "telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "telephone3",
+        "description": "Type a third phone number for this contact.",
+        "displayName": "Telephone 3",
+        "cdsSourceName": "telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "fax",
+        "description": "Type the fax number for the contact.",
+        "displayName": "Fax",
+        "cdsSourceName": "fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "aging30",
+        "description": "For system use only.",
+        "displayName": "Aging 30",
+        "cdsSourceName": "aging30",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 100000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "aging60",
+        "description": "For system use only.",
+        "displayName": "Aging 60",
+        "cdsSourceName": "aging60",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 100000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the contact's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "aging90",
+        "description": "For system use only.",
+        "displayName": "Aging 90",
+        "cdsSourceName": "aging90",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 100000000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "parentContactId",
+        "description": "Unique identifier of the parent contact.",
+        "displayName": "Parent Contact",
+        "cdsSourceName": "parentcontactid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address1AddressId",
+        "description": "Unique identifier for address 1.",
+        "displayName": "Address 1: ID",
+        "cdsSourceName": "address1_addressid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address1AddressTypeCode",
+        "description": "Select the primary address type.",
+        "displayName": "Address 1: Address Type",
+        "cdsSourceName": "address1_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Other",
+                "value": "4"
+              },
+              {
+                "displayName": "Bill To",
+                "value": "1"
+              },
+              {
+                "displayName": "Ship To",
+                "value": "2"
+              },
+              {
+                "displayName": "Primary",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1AddressTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Name",
+        "description": "Type a descriptive name for the primary address, such as Corporate Headquarters.",
+        "displayName": "Address 1: Name",
+        "cdsSourceName": "address1_name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PrimaryContactName",
+        "description": "Type the name of the main contact at the account's primary address.",
+        "displayName": "Address 1: Primary Contact Name",
+        "cdsSourceName": "address1_primarycontactname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line1",
+        "description": "Type the first line of the primary address.",
+        "displayName": "Address 1: Street 1",
+        "cdsSourceName": "address1_line1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line2",
+        "description": "Type the second line of the primary address.",
+        "displayName": "Address 1: Street 2",
+        "cdsSourceName": "address1_line2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line3",
+        "description": "Type the third line of the primary address.",
+        "displayName": "Address 1: Street 3",
+        "cdsSourceName": "address1_line3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1City",
+        "description": "Type the city for the primary address.",
+        "displayName": "Address 1: City",
+        "cdsSourceName": "address1_city",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1StateOrProvince",
+        "description": "Type the state or province of the primary address.",
+        "displayName": "Address 1: State/Province",
+        "cdsSourceName": "address1_stateorprovince",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1County",
+        "description": "Type the county for the primary address.",
+        "displayName": "Address 1: County",
+        "cdsSourceName": "address1_county",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.county",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Country",
+        "description": "Type the country or region for the primary address.",
+        "displayName": "Address 1: Country/Region",
+        "cdsSourceName": "address1_country",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostOfficeBox",
+        "description": "Type the post office box number of the primary address.",
+        "displayName": "Address 1: Post Office Box",
+        "cdsSourceName": "address1_postofficebox",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostalCode",
+        "description": "Type the ZIP Code or postal code for the primary address.",
+        "displayName": "Address 1: ZIP/Postal Code",
+        "cdsSourceName": "address1_postalcode",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UTCOffset",
+        "description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+        "displayName": "Address 1: UTC Offset",
+        "cdsSourceName": "address1_utcoffset",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1FreightTermsCode",
+        "description": "Select the freight terms for the primary address to make sure shipping orders are processed correctly.",
+        "displayName": "Address 1: Freight Terms",
+        "cdsSourceName": "address1_freighttermscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "FOB",
+                "value": "1"
+              },
+              {
+                "displayName": "No Charge",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1FreightTermsCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UPSZone",
+        "description": "Type the UPS zone of the primary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+        "displayName": "Address 1: UPS Zone",
+        "cdsSourceName": "address1_upszone",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Latitude",
+        "description": "Type the latitude value for the primary address for use in mapping and other applications.",
+        "displayName": "Address 1: Latitude",
+        "cdsSourceName": "address1_latitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1Telephone1",
+        "description": "Type the main phone number associated with the primary address.",
+        "displayName": "Address 1: Phone",
+        "cdsSourceName": "address1_telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Longitude",
+        "description": "Type the longitude value for the primary address for use in mapping and other applications.",
+        "displayName": "Address 1: Longitude",
+        "cdsSourceName": "address1_longitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1ShippingMethodCode",
+        "description": "Select a shipping method for deliveries sent to this address.",
+        "displayName": "Address 1: Shipping Method",
+        "cdsSourceName": "address1_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "FedEx",
+                "value": "3"
+              },
+              {
+                "displayName": "UPS",
+                "value": "4"
+              },
+              {
+                "displayName": "Postal Mail",
+                "value": "5"
+              },
+              {
+                "displayName": "Full Load",
+                "value": "6"
+              },
+              {
+                "displayName": "Will Call",
+                "value": "7"
+              },
+              {
+                "displayName": "Airborne",
+                "value": "1"
+              },
+              {
+                "displayName": "DHL",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1ShippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone2",
+        "description": "Type a second phone number associated with the primary address.",
+        "displayName": "Address 1: Telephone 2",
+        "cdsSourceName": "address1_telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone3",
+        "description": "Type a third phone number associated with the primary address.",
+        "displayName": "Address 1: Telephone 3",
+        "cdsSourceName": "address1_telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Fax",
+        "description": "Type the fax number associated with the primary address.",
+        "displayName": "Address 1: Fax",
+        "cdsSourceName": "address1_fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2AddressId",
+        "description": "Unique identifier for address 2.",
+        "displayName": "Address 2: ID",
+        "cdsSourceName": "address2_addressid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address2AddressTypeCode",
+        "description": "Select the secondary address type.",
+        "displayName": "Address 2: Address Type",
+        "cdsSourceName": "address2_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2AddressTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Name",
+        "description": "Type a descriptive name for the secondary address, such as Corporate Headquarters.",
+        "displayName": "Address 2: Name",
+        "cdsSourceName": "address2_name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PrimaryContactName",
+        "description": "Type the name of the main contact at the account's secondary address.",
+        "displayName": "Address 2: Primary Contact Name",
+        "cdsSourceName": "address2_primarycontactname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line1",
+        "description": "Type the first line of the secondary address.",
+        "displayName": "Address 2: Street 1",
+        "cdsSourceName": "address2_line1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line2",
+        "description": "Type the second line of the secondary address.",
+        "displayName": "Address 2: Street 2",
+        "cdsSourceName": "address2_line2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line3",
+        "description": "Type the third line of the secondary address.",
+        "displayName": "Address 2: Street 3",
+        "cdsSourceName": "address2_line3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2City",
+        "description": "Type the city for the secondary address.",
+        "displayName": "Address 2: City",
+        "cdsSourceName": "address2_city",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2StateOrProvince",
+        "description": "Type the state or province of the secondary address.",
+        "displayName": "Address 2: State/Province",
+        "cdsSourceName": "address2_stateorprovince",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2County",
+        "description": "Type the county for the secondary address.",
+        "displayName": "Address 2: County",
+        "cdsSourceName": "address2_county",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.county",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Country",
+        "description": "Type the country or region for the secondary address.",
+        "displayName": "Address 2: Country/Region",
+        "cdsSourceName": "address2_country",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostOfficeBox",
+        "description": "Type the post office box number of the secondary address.",
+        "displayName": "Address 2: Post Office Box",
+        "cdsSourceName": "address2_postofficebox",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostalCode",
+        "description": "Type the ZIP Code or postal code for the secondary address.",
+        "displayName": "Address 2: ZIP/Postal Code",
+        "cdsSourceName": "address2_postalcode",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UTCOffset",
+        "description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+        "displayName": "Address 2: UTC Offset",
+        "cdsSourceName": "address2_utcoffset",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2FreightTermsCode",
+        "description": "Select the freight terms for the secondary address to make sure shipping orders are processed correctly.",
+        "displayName": "Address 2: Freight Terms",
+        "cdsSourceName": "address2_freighttermscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2FreightTermsCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UPSZone",
+        "description": "Type the UPS zone of the secondary address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+        "displayName": "Address 2: UPS Zone",
+        "cdsSourceName": "address2_upszone",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Latitude",
+        "description": "Type the latitude value for the secondary address for use in mapping and other applications.",
+        "displayName": "Address 2: Latitude",
+        "cdsSourceName": "address2_latitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2Telephone1",
+        "description": "Type the main phone number associated with the secondary address.",
+        "displayName": "Address 2: Telephone 1",
+        "cdsSourceName": "address2_telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Longitude",
+        "description": "Type the longitude value for the secondary address for use in mapping and other applications.",
+        "displayName": "Address 2: Longitude",
+        "cdsSourceName": "address2_longitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2ShippingMethodCode",
+        "description": "Select a shipping method for deliveries sent to this address.",
+        "displayName": "Address 2: Shipping Method",
+        "cdsSourceName": "address2_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2ShippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone2",
+        "description": "Type a second phone number associated with the secondary address.",
+        "displayName": "Address 2: Telephone 2",
+        "cdsSourceName": "address2_telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone3",
+        "description": "Type a third phone number associated with the secondary address.",
+        "displayName": "Address 2: Telephone 3",
+        "cdsSourceName": "address2_telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Fax",
+        "description": "Type the fax number associated with the secondary address.",
+        "displayName": "Address 2: Fax",
+        "cdsSourceName": "address2_fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredSystemUserId",
+        "description": "Choose the regular or preferred customer service representative for reference when scheduling service activities for the contact.",
+        "displayName": "Preferred User",
+        "cdsSourceName": "preferredsystemuserid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "masterId",
+        "description": "Unique identifier of the master contact for merge.",
+        "displayName": "Master ID",
+        "cdsSourceName": "masterid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "preferredAppointmentDayCode",
+        "description": "Select the preferred day of the week for service appointments.",
+        "displayName": "Preferred Day",
+        "cdsSourceName": "preferredappointmentdaycode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Sunday",
+                "value": "0"
+              },
+              {
+                "displayName": "Monday",
+                "value": "1"
+              },
+              {
+                "displayName": "Tuesday",
+                "value": "2"
+              },
+              {
+                "displayName": "Wednesday",
+                "value": "3"
+              },
+              {
+                "displayName": "Thursday",
+                "value": "4"
+              },
+              {
+                "displayName": "Friday",
+                "value": "5"
+              },
+              {
+                "displayName": "Saturday",
+                "value": "6"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredAppointmentDayCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "preferredAppointmentTimeCode",
+        "description": "Select the preferred time of day for service appointments.",
+        "displayName": "Preferred Time",
+        "cdsSourceName": "preferredappointmenttimecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Morning",
+                "value": "1"
+              },
+              {
+                "displayName": "Afternoon",
+                "value": "2"
+              },
+              {
+                "displayName": "Evening",
+                "value": "3"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "preferredAppointmentTimeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "doNotSendMM",
+        "description": "Select whether the contact accepts marketing materials, such as brochures or catalogs. Contacts that opt out can be excluded from marketing initiatives.",
+        "displayName": "Send Marketing Materials",
+        "cdsSourceName": "donotsendmm",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "parentCustomerId",
+        "description": "Select the parent account or parent contact for the contact to provide a quick link to additional details, such as financial information, activities, and opportunities.",
+        "displayName": "Company Name",
+        "cdsSourceName": "parentcustomerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "merged",
+        "description": "Shows whether the account has been merged with a master contact.",
+        "displayName": "Merged",
+        "cdsSourceName": "merged",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "externalUserIdentifier",
+        "description": "Identifier for an external user.",
+        "displayName": "External User Identifier",
+        "cdsSourceName": "externaluseridentifier",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastUsedInCampaign",
+        "description": "Shows the date when the contact was last included in a marketing campaign or quick campaign.",
+        "displayName": "Last Date Included in Campaign",
+        "cdsSourceName": "lastusedincampaign",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "annualIncomeBase",
+        "description": "Shows the Annual Income field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
+        "displayName": "Annual Income (Base)",
+        "cdsSourceName": "annualincome_base",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "creditLimitBase",
+        "description": "Shows the Credit Limit field converted to the system's default base currency for reporting purposes. The calculations use the exchange rate specified in the Currencies area.",
+        "displayName": "Credit Limit (Base)",
+        "cdsSourceName": "creditlimit_base",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "aging60Base",
+        "description": "Shows the Aging 60 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
+        "displayName": "Aging 60 (Base)",
+        "cdsSourceName": "aging60_base",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "aging90Base",
+        "description": "Shows the Aging 90 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
+        "displayName": "Aging 90 (Base)",
+        "cdsSourceName": "aging90_base",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "aging30Base",
+        "description": "Shows the Aging 30 field converted to the system's default base currency. The calculations use the exchange rate specified in the Currencies area.",
+        "displayName": "Aging 30 (Base)",
+        "cdsSourceName": "aging30_base",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": -922337203685477
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Shows who last updated the record on behalf of another user.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier of the team who owns the contact.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "stageId",
+        "description": "Shows the ID of the stage.",
+        "displayName": "Process Stage",
+        "cdsSourceName": "stageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "processId",
+        "description": "Shows the ID of the process.",
+        "displayName": "Process",
+        "cdsSourceName": "processid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Composite",
+        "description": "Shows the complete secondary address.",
+        "displayName": "Address 2",
+        "cdsSourceName": "address2_composite",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Composite",
+        "description": "Shows the complete primary address.",
+        "displayName": "Address 1",
+        "cdsSourceName": "address1_composite",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "entityImageId",
+        "description": "For internal use only.",
+        "displayName": "Entity Image Id",
+        "cdsSourceName": "entityimageid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "traversedPath",
+        "description": "For internal use only.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "SLAId",
+        "description": "Choose the service level agreement (SLA) that you want to apply to the Contact record.",
+        "displayName": "SLA",
+        "cdsSourceName": "slaid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "SLAInvokedId",
+        "description": "Last SLA that was applied to this case. This field is for internal use only.",
+        "displayName": "Last SLA applied",
+        "cdsSourceName": "slainvokedid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "onHoldTime",
+        "description": "Shows how long, in minutes, that the record was on hold.",
+        "displayName": "On Hold Time (Minutes)",
+        "cdsSourceName": "onholdtime",
+        "semanticDomain": {
+          "inherited": true,
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "lastOnHoldTime",
+        "description": "Contains the date and time stamp of the last on hold time.",
+        "displayName": "Last On Hold Time",
+        "cdsSourceName": "lastonholdtime",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "followEmail",
+        "description": "Information about whether to allow following email activity like opens, attachment views and link clicks for emails sent to the contact.",
+        "displayName": "Follow Email Activity",
+        "cdsSourceName": "followemail",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "timeSpentByMeOnEmailAndMeetings",
+        "description": "Total time spent for emails (read and write) and meetings by me in relation to the contact record.",
+        "displayName": "Time Spent by me",
+        "cdsSourceName": "timespentbymeonemailandmeetings",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Country",
+        "description": "the country or region for the 3rd address.",
+        "displayName": "Address3: Country/Region",
+        "cdsSourceName": "address3_country",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Line1",
+        "description": "the first line of the 3rd address.",
+        "displayName": "Address3: Street 1",
+        "cdsSourceName": "address3_line1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Line2",
+        "description": "the second line of the 3rd address.",
+        "displayName": "Address3: Street 2",
+        "cdsSourceName": "address3_line2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Line3",
+        "description": "the third line of the 3rd address.",
+        "displayName": "Address3: Street 3",
+        "cdsSourceName": "address3_line3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3PostalCode",
+        "description": "the ZIP Code or postal code for the 3rd address.",
+        "displayName": "Address3: ZIP/Postal Code",
+        "cdsSourceName": "address3_postalcode",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3PostOfficeBox",
+        "description": "the post office box number of the 3rd address.",
+        "displayName": "Address 3: Post Office Box",
+        "cdsSourceName": "address3_postofficebox",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3StateOrProvince",
+        "description": "the state or province of the third address.",
+        "displayName": "Address3: State/Province",
+        "cdsSourceName": "address3_stateorprovince",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3City",
+        "description": "Type the city for the 3rd address.",
+        "displayName": "Address 3: City",
+        "cdsSourceName": "address3_city",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "business2",
+        "description": "Type a second business phone number for this contact.",
+        "displayName": "Business Phone 2",
+        "cdsSourceName": "business2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "callback",
+        "description": "Type a callback phone number for this contact.",
+        "displayName": "Callback Number",
+        "cdsSourceName": "callback",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "company",
+        "description": "Type the company phone of the contact.",
+        "displayName": "Company Phone",
+        "cdsSourceName": "company",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "home2",
+        "description": "Type a second home phone number for this contact.",
+        "displayName": "Home Phone 2",
+        "cdsSourceName": "home2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3AddressId",
+        "description": "Unique identifier for address 3.",
+        "displayName": "Address 3: ID",
+        "cdsSourceName": "address3_addressid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "address3Composite",
+        "description": "Shows the complete third address.",
+        "displayName": "Address 3",
+        "cdsSourceName": "address3_composite",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 1000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Fax",
+        "description": "Type the fax number associated with the third address.",
+        "displayName": "Address 3: Fax",
+        "cdsSourceName": "address3_fax",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3FreightTermsCode",
+        "description": "Select the freight terms for the third address to make sure shipping orders are processed correctly.",
+        "displayName": "Address 3: Freight Terms",
+        "cdsSourceName": "address3_freighttermscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address3FreightTermsCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Latitude",
+        "description": "Type the latitude value for the third address for use in mapping and other applications.",
+        "displayName": "Address 3: Latitude",
+        "cdsSourceName": "address3_latitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address3Longitude",
+        "description": "Type the longitude value for the third address for use in mapping and other applications.",
+        "displayName": "Address 3: Longitude",
+        "cdsSourceName": "address3_longitude",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address3Name",
+        "description": "Type a descriptive name for the third address, such as Corporate Headquarters.",
+        "displayName": "Address 3: Name",
+        "cdsSourceName": "address3_name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3PrimaryContactName",
+        "description": "Type the name of the main contact at the account's third address.",
+        "displayName": "Address 3: Primary Contact Name",
+        "cdsSourceName": "address3_primarycontactname",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3ShippingMethodCode",
+        "description": "Select a shipping method for deliveries sent to this address.",
+        "displayName": "Address 3: Shipping Method",
+        "cdsSourceName": "address3_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address3ShippingMethodCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Telephone1",
+        "description": "Type the main phone number associated with the third address.",
+        "displayName": "Address 3: Telephone1",
+        "cdsSourceName": "address3_telephone1",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Telephone2",
+        "description": "Type a second phone number associated with the third address.",
+        "displayName": "Address 3: Telephone2",
+        "cdsSourceName": "address3_telephone2",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3Telephone3",
+        "description": "Type a third phone number associated with the primary address.",
+        "displayName": "Address 3: Telephone3",
+        "cdsSourceName": "address3_telephone3",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3UPSZone",
+        "description": "Type the UPS zone of the third address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+        "displayName": "Address 3: UPS Zone",
+        "cdsSourceName": "address3_upszone",
+        "semanticDomain": {
+          "inherited": true,
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3UTCOffset",
+        "description": "Select the time zone, or UTC offset, for this address so that other people can reference it when they contact someone at this address.",
+        "displayName": "Address 3: UTC Offset",
+        "cdsSourceName": "address3_utcoffset",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3County",
+        "description": "Type the county for the third address.",
+        "displayName": "Address 3: County",
+        "cdsSourceName": "address3_county",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.location.county",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address3AddressTypeCode",
+        "description": "Select the third address type.",
+        "displayName": "Address 3: Address Type",
+        "cdsSourceName": "address3_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address3AddressTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdByExternalParty",
+        "description": "Shows the external party who created the record.",
+        "displayName": "Created By (External Party)",
+        "cdsSourceName": "createdbyexternalparty",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedByExternalParty",
+        "description": "Shows the external party who modified the record.",
+        "displayName": "Modified By (External Party)",
+        "cdsSourceName": "modifiedbyexternalparty",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "marketingOnly",
+        "description": "Whether is only for marketing",
+        "displayName": "Marketing Only",
+        "cdsSourceName": "marketingonly",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "defaultPriceLevelId",
+        "description": "Choose the default price list associated with the contact to make sure the correct product prices for this customer are applied in sales opportunities, quotes, and orders.",
+        "displayName": "Price List",
+        "cdsSourceName": "defaultpricelevelid",
+        "dataType": "Guid"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "preferredSystemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "masterId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentCustomerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentCustomerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "accountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Account",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningTeam",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SLA",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "SLAInvokedId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "SLAId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SLA",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "defaultPriceLevelId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "priceLevelId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "PriceList",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      }
+    ]
+  }
+}

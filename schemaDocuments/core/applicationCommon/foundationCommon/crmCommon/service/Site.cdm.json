@@ -1,733 +1,822 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "Site",
-				"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-				"semanticVersion": "0.5.0",
-				"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
-			}
-		},
-		"description": "Location or branch office where an organization does business. An organization can have multiple sites.",
-		"displayName": "Site",
-		"attributes": [
-			{
-				"name": "siteid",
-				"dataType": "Guid",
-				"displayName": "Site",
-				"description": "Unique identifier of the site.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "Date and time when the site was created.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "Unique identifier of the user who created the site.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "Date and time when the site was last modified.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "Unique identifier of the user who last modified the site.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "Unique identifier of the delegate user who created the site.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "Unique identifier of the delegate user who last modified the site.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "organizationid",
-				"dataType": "Guid",
-				"displayName": "Organization Id",
-				"description": "Unique identifier for the organization",
-				"semanticDomain": {
-					"semanticType": "Idea.Organization"
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "Version Number",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "importsequencenumber",
-				"dataType": "Int32",
-				"displayName": "Import Sequence Number",
-				"description": "Sequence number of the import that created this record.",
-				"semanticDomain": {
-					"minValue": -2147483648,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "overriddencreatedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Record Created On",
-				"description": "Date and time that the record was migrated.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "timezoneruleversionnumber",
-				"dataType": "Int32",
-				"displayName": "Time Zone Rule Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "utcconversiontimezonecode",
-				"dataType": "Int32",
-				"displayName": "UTC Conversion Time Zone Code",
-				"description": "Time zone code that was in use when the record was created.",
-				"semanticDomain": {
-					"minValue": -1,
-					"maxValue": 2147483647
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Name",
-				"description": "Name of the site.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 160
-				}
-			},
-			{
-				"name": "address1_addressid",
-				"dataType": "Guid",
-				"displayName": "Address 1: ID",
-				"description": "Unique identifier for address 1.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer"
-				}
-			},
-			{
-				"name": "address1_addresstypecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "address1_addresstypecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "address1_addresstypecode",
-				"dataType": "String",
-				"displayName": "Address 1: Address Type",
-				"description": "Type of address for address 1, such as billing, shipping, or primary address.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "site_address1_addresstypecode",
-						"displayName": "Address 1: Address Type",
-						"description": "Type of address for address 1, such as billing, shipping, or primary address.",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Default Value"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "address1_city",
-				"dataType": "String",
-				"displayName": "City",
-				"description": "City name for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.City",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "address1_country",
-				"dataType": "String",
-				"displayName": "Country/Region",
-				"description": "Country/region name for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.Country",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "address1_county",
-				"dataType": "String",
-				"displayName": "Address 1: County",
-				"description": "County name for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.County",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_fax",
-				"dataType": "String",
-				"displayName": "Fax",
-				"description": "Fax number for address 1.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_latitude",
-				"dataType": "Double",
-				"displayName": "Address 1: Latitude",
-				"description": "Latitude for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.Latitude",
-					"minValue": -90,
-					"maxValue": 90
-				}
-			},
-			{
-				"name": "address1_line1",
-				"dataType": "String",
-				"displayName": "Street 1",
-				"description": "First line for entering address 1 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address1_line2",
-				"dataType": "String",
-				"displayName": "Street 2",
-				"description": "Second line for entering address 1 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address1_line3",
-				"dataType": "String",
-				"displayName": "Street 3",
-				"description": "Third line for entering address 1 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address1_longitude",
-				"dataType": "Double",
-				"displayName": "Address 1: Longitude",
-				"description": "Longitude for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.Longitude",
-					"minValue": -180,
-					"maxValue": 180
-				}
-			},
-			{
-				"name": "address1_name",
-				"dataType": "String",
-				"displayName": "Address 1: Name",
-				"description": "Name to enter for address 1.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "address1_postalcode",
-				"dataType": "String",
-				"displayName": "ZIP/Postal Code",
-				"description": "ZIP Code or postal code for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.PostalCode",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "address1_postofficebox",
-				"dataType": "String",
-				"displayName": "Address 1: Post Office Box",
-				"description": "Post office box number for address 1.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "address1_shippingmethodcode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "address1_shippingmethodcode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "address1_shippingmethodcode",
-				"dataType": "String",
-				"displayName": "Address 1: Shipping Method",
-				"description": "Method of shipment for address 1.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "site_address1_shippingmethodcode",
-						"displayName": "Address 1: Shipping Method ",
-						"description": "Method of shipment for address 1.",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Default Value"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "address1_stateorprovince",
-				"dataType": "String",
-				"displayName": "State/Province",
-				"description": "State or province for address 1.",
-				"semanticDomain": {
-					"semanticType": "Location.State",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_telephone1",
-				"dataType": "String",
-				"displayName": "Main Phone",
-				"description": "First telephone number associated with address 1.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_telephone2",
-				"dataType": "String",
-				"displayName": "Other Phone",
-				"description": "Second telephone number associated with address 1.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_telephone3",
-				"dataType": "String",
-				"displayName": "Address 1: Telephone 3",
-				"description": "Third telephone number associated with address 1.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address1_upszone",
-				"dataType": "String",
-				"displayName": "Address 1: UPS Zone",
-				"description": "United Parcel Service (UPS) zone for address 1.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 4
-				}
-			},
-			{
-				"name": "address1_utcoffset",
-				"dataType": "Int32",
-				"displayName": "Address 1: UTC Offset",
-				"description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
-				"semanticDomain": {
-					"semanticType": "Location.Timezone",
-					"minValue": -1500,
-					"maxValue": 1500
-				}
-			},
-			{
-				"name": "address2_addressid",
-				"dataType": "Guid",
-				"displayName": "Address 2: ID",
-				"description": "Unique identifier for address 2.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer"
-				}
-			},
-			{
-				"name": "address2_addresstypecode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "address2_addresstypecode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "address2_addresstypecode",
-				"dataType": "String",
-				"displayName": "Address 2: Address Type",
-				"description": "Type of address for address 2, such as billing, shipping, or primary address.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "site_address2_addresstypecode",
-						"displayName": "Address 2: Address Type",
-						"description": "Type of address for address 2, such as billing, shipping, or primary address.",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Default Value"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "address2_city",
-				"dataType": "String",
-				"displayName": "Address 2: City",
-				"description": "City name for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.City",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "address2_country",
-				"dataType": "String",
-				"displayName": "Address 2: Country/Region",
-				"description": "Country/region name for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.Country",
-					"maxLength": 80
-				}
-			},
-			{
-				"name": "address2_county",
-				"dataType": "String",
-				"displayName": "Address 2: County",
-				"description": "County name for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.County",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_fax",
-				"dataType": "String",
-				"displayName": "Address 2: Fax",
-				"description": "Fax number for address 2.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_latitude",
-				"dataType": "Double",
-				"displayName": "Address 2: Latitude",
-				"description": "Latitude for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.Latitude",
-					"minValue": -90,
-					"maxValue": 90
-				}
-			},
-			{
-				"name": "address2_line1",
-				"dataType": "String",
-				"displayName": "Address 2: Street 1",
-				"description": "First line for entering address 2 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address2_line2",
-				"dataType": "String",
-				"displayName": "Address 2: Street 2",
-				"description": "Second line for entering address 2 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address2_line3",
-				"dataType": "String",
-				"displayName": "Address 2: Street 3",
-				"description": "Third line for entering address 2 information.",
-				"semanticDomain": {
-					"semanticType": "Location.Address.Street",
-					"maxLength": 250
-				}
-			},
-			{
-				"name": "address2_longitude",
-				"dataType": "Double",
-				"displayName": "Address 2: Longitude",
-				"description": "Longitude for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.Longitude",
-					"minValue": -180,
-					"maxValue": 180
-				}
-			},
-			{
-				"name": "address2_name",
-				"dataType": "String",
-				"displayName": "Address 2: Name",
-				"description": "Name to enter for address 2.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "address2_postalcode",
-				"dataType": "String",
-				"displayName": "Address 2: ZIP/Postal Code",
-				"description": "ZIP Code or postal code for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.PostalCode",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "address2_postofficebox",
-				"dataType": "String",
-				"displayName": "Address 2: Post Office Box",
-				"description": "Post office box number for address 2.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 20
-				}
-			},
-			{
-				"name": "address2_shippingmethodcode_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "address2_shippingmethodcode",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "address2_shippingmethodcode",
-				"dataType": "String",
-				"displayName": "Address 2: Shipping Method",
-				"description": "Method of shipment for address 2.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "site_address2_shippingmethodcode",
-						"displayName": "Address 2: Shipping Method ",
-						"description": "Method of shipment for address 2.",
-						"items": [
-							{
-								"value": 1,
-								"displayName": "Default Value"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "address2_stateorprovince",
-				"dataType": "String",
-				"displayName": "Address 2: State/Province",
-				"description": "State or province for address 2.",
-				"semanticDomain": {
-					"semanticType": "Location.State",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_telephone1",
-				"dataType": "String",
-				"displayName": "Address 2: Telephone 1",
-				"description": "First telephone number associated with address 2.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_telephone2",
-				"dataType": "String",
-				"displayName": "Address 2: Telephone 2",
-				"description": "Second telephone number associated with address 2.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_telephone3",
-				"dataType": "String",
-				"displayName": "Address 2: Telephone 3",
-				"description": "Third telephone number associated with address 2.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Phone",
-					"maxLength": 50
-				}
-			},
-			{
-				"name": "address2_upszone",
-				"dataType": "String",
-				"displayName": "Address 2: UPS Zone",
-				"description": "United Parcel Service (UPS) zone for address 2.",
-				"semanticDomain": {
-					"semanticType": "text",
-					"maxLength": 4
-				}
-			},
-			{
-				"name": "address2_utcoffset",
-				"dataType": "Int32",
-				"displayName": "Address 2: UTC Offset",
-				"description": "UTC offset for address 2. This is the difference between local time and standard Coordinated Universal Time.",
-				"semanticDomain": {
-					"semanticType": "Location.Timezone",
-					"minValue": -1500,
-					"maxValue": 1500
-				}
-			},
-			{
-				"name": "emailaddress",
-				"dataType": "String",
-				"displayName": "Email",
-				"description": "Email address for the site.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Service.Email",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "timezonecode",
-				"dataType": "Int32",
-				"displayName": "Time Zone",
-				"description": "Local time zone for the site.",
-				"semanticDomain": {
-					"semanticType": "Location.Timezone",
-					"minValue": -1500,
-					"maxValue": 1500
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "lk_sitebase_modifiedonbehalfby",
-			"referencing": {
-				"entity": {
-					"type": "Site",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
-				},
-				"attributes": [
-					{
-						"name": "modifiedonbehalfby",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "eb17dbf3-f109-c065-ece5-e141053d3a70"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "organization_sites",
-			"referencing": {
-				"entity": {
-					"type": "Site",
-					"namespace": "core.applicationCommon.foundationCommon.crmCommon.service",
-					"semanticVersion": "0.5.0",
-					"semanticId": "0c244a2f-016b-e271-f2aa-8c5d08d5bf1d"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Organization",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "1bfda46a-5b9e-5b87-ac9e-2a17c4d358bd"
-				},
-				"attributes": [
-					{
-						"name": "organizationid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+  "jsonSchemaSemanticVersion": "0.5.5",
+  "entity": {
+    "semanticDomain": {
+      "class": {
+        "semanticVersion": "0.5.5",
+        "type": "Site",
+        "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+      }
+    },
+    "description": "Location or branch office where an organization does business. An organization can have multiple sites.",
+    "displayName": "Site",
+    "cdsSourceName": "Site",
+    "attributes": [
+      {
+        "name": "siteId",
+        "description": "Unique identifier of the site.",
+        "displayName": "Site",
+        "cdsSourceName": "siteid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "name",
+        "description": "Name of the site.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "timeZoneCode",
+        "description": "Local time zone for the site.",
+        "displayName": "Time Zone",
+        "cdsSourceName": "timezonecode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "createdOn",
+        "description": "Date and time when the site was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the site.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the site was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the site.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the site.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who last modified the site.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1AddressId",
+        "description": "Unique identifier for address 1.",
+        "displayName": "Address 1: ID",
+        "cdsSourceName": "address1_addressid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "address1AddressTypeCode",
+        "description": "Type of address for address 1, such as billing, shipping, or primary address.",
+        "displayName": "Address 1: Address Type",
+        "cdsSourceName": "address1_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1AddressTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1City",
+        "description": "City name for address 1.",
+        "displayName": "City",
+        "cdsSourceName": "address1_city",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Country",
+        "description": "Country/region name for address 1.",
+        "displayName": "Country/Region",
+        "cdsSourceName": "address1_country",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1County",
+        "description": "County name for address 1.",
+        "displayName": "Address 1: County",
+        "cdsSourceName": "address1_county",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.county",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Fax",
+        "description": "Fax number for address 1.",
+        "displayName": "Fax",
+        "cdsSourceName": "address1_fax",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Latitude",
+        "description": "Latitude for address 1.",
+        "displayName": "Address 1: Latitude",
+        "cdsSourceName": "address1_latitude",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1Line1",
+        "description": "First line for entering address 1 information.",
+        "displayName": "Street 1",
+        "cdsSourceName": "address1_line1",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line2",
+        "description": "Second line for entering address 1 information.",
+        "displayName": "Street 2",
+        "cdsSourceName": "address1_line2",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Line3",
+        "description": "Third line for entering address 1 information.",
+        "displayName": "Street 3",
+        "cdsSourceName": "address1_line3",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Longitude",
+        "description": "Longitude for address 1.",
+        "displayName": "Address 1: Longitude",
+        "cdsSourceName": "address1_longitude",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address1Name",
+        "description": "Name to enter for address 1.",
+        "displayName": "Address 1: Name",
+        "cdsSourceName": "address1_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostalCode",
+        "description": "ZIP Code or postal code for address 1.",
+        "displayName": "ZIP/Postal Code",
+        "cdsSourceName": "address1_postalcode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1PostOfficeBox",
+        "description": "Post office box number for address 1.",
+        "displayName": "Address 1: Post Office Box",
+        "cdsSourceName": "address1_postofficebox",
+        "semanticDomain": {
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1ShippingMethodCode",
+        "description": "Method of shipment for address 1.",
+        "displayName": "Address 1: Shipping Method",
+        "cdsSourceName": "address1_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address1ShippingMethodCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1StateOrProvince",
+        "description": "State or province for address 1.",
+        "displayName": "State/Province",
+        "cdsSourceName": "address1_stateorprovince",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone1",
+        "description": "First telephone number associated with address 1.",
+        "displayName": "Main Phone",
+        "cdsSourceName": "address1_telephone1",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone2",
+        "description": "Second telephone number associated with address 1.",
+        "displayName": "Other Phone",
+        "cdsSourceName": "address1_telephone2",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1Telephone3",
+        "description": "Third telephone number associated with address 1.",
+        "displayName": "Address 1: Telephone 3",
+        "cdsSourceName": "address1_telephone3",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UPSZone",
+        "description": "United Parcel Service (UPS) zone for address 1.",
+        "displayName": "Address 1: UPS Zone",
+        "cdsSourceName": "address1_upszone",
+        "semanticDomain": {
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address1UTCOffset",
+        "description": "UTC offset for address 1. This is the difference between local time and standard Coordinated Universal Time.",
+        "displayName": "Address 1: UTC Offset",
+        "cdsSourceName": "address1_utcoffset",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2AddressId",
+        "description": "Unique identifier for address 2.",
+        "displayName": "Address 2: ID",
+        "cdsSourceName": "address2_addressid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "address2AddressTypeCode",
+        "description": "Type of address for address 2, such as billing, shipping, or primary address.",
+        "displayName": "Address 2: Address Type",
+        "cdsSourceName": "address2_addresstypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2AddressTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2City",
+        "description": "City name for address 2.",
+        "displayName": "Address 2: City",
+        "cdsSourceName": "address2_city",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.city",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Country",
+        "description": "Country/region name for address 2.",
+        "displayName": "Address 2: Country/Region",
+        "cdsSourceName": "address2_country",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.country",
+          "maxLength": 80
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2County",
+        "description": "County name for address 2.",
+        "displayName": "Address 2: County",
+        "cdsSourceName": "address2_county",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.county",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Fax",
+        "description": "Fax number for address 2.",
+        "displayName": "Address 2: Fax",
+        "cdsSourceName": "address2_fax",
+        "semanticDomain": {
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Latitude",
+        "description": "Latitude for address 2.",
+        "displayName": "Address 2: Latitude",
+        "cdsSourceName": "address2_latitude",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.latitude",
+          "maxValue": 90,
+          "minValue": -90
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2Line1",
+        "description": "First line for entering address 2 information.",
+        "displayName": "Address 2: Street 1",
+        "cdsSourceName": "address2_line1",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line2",
+        "description": "Second line for entering address 2 information.",
+        "displayName": "Address 2: Street 2",
+        "cdsSourceName": "address2_line2",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Line3",
+        "description": "Third line for entering address 2 information.",
+        "displayName": "Address 2: Street 3",
+        "cdsSourceName": "address2_line3",
+        "semanticDomain": {
+          "semanticTypeName": "means.location",
+          "maxLength": 250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Longitude",
+        "description": "Longitude for address 2.",
+        "displayName": "Address 2: Longitude",
+        "cdsSourceName": "address2_longitude",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.longitude",
+          "maxValue": 180,
+          "minValue": -180
+        },
+        "dataType": "Double"
+      },
+      {
+        "name": "address2Name",
+        "description": "Name to enter for address 2.",
+        "displayName": "Address 2: Name",
+        "cdsSourceName": "address2_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostalCode",
+        "description": "ZIP Code or postal code for address 2.",
+        "displayName": "Address 2: ZIP/Postal Code",
+        "cdsSourceName": "address2_postalcode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.postalCode",
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2PostOfficeBox",
+        "description": "Post office box number for address 2.",
+        "displayName": "Address 2: Post Office Box",
+        "cdsSourceName": "address2_postofficebox",
+        "semanticDomain": {
+          "maxLength": 20
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2ShippingMethodCode",
+        "description": "Method of shipment for address 2.",
+        "displayName": "Address 2: Shipping Method",
+        "cdsSourceName": "address2_shippingmethodcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Default Value",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "address2ShippingMethodCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2StateOrProvince",
+        "description": "State or province for address 2.",
+        "displayName": "Address 2: State/Province",
+        "cdsSourceName": "address2_stateorprovince",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.stateOrProvince",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone1",
+        "description": "First telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 1",
+        "cdsSourceName": "address2_telephone1",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone2",
+        "description": "Second telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 2",
+        "cdsSourceName": "address2_telephone2",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2Telephone3",
+        "description": "Third telephone number associated with address 2.",
+        "displayName": "Address 2: Telephone 3",
+        "cdsSourceName": "address2_telephone3",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.phone",
+          "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UPSZone",
+        "description": "United Parcel Service (UPS) zone for address 2.",
+        "displayName": "Address 2: UPS Zone",
+        "cdsSourceName": "address2_upszone",
+        "semanticDomain": {
+          "maxLength": 4
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "address2UTCOffset",
+        "description": "UTC offset for address 2. This is the difference between local time and standard Coordinated Universal Time.",
+        "displayName": "Address 2: UTC Offset",
+        "cdsSourceName": "address2_utcoffset",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "EMailAddress",
+        "description": "Email address for the site.",
+        "displayName": "Email",
+        "cdsSourceName": "emailaddress",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      }
+    ],
+    "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      }
+    ]
+  }
 }
