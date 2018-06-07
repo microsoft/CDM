@@ -295,8 +295,8 @@ function fileListToNavData(fileList : FileList) : navigatorData {
     noUX.add("meanings.cdm.json");
     noUX.add("dwConcepts.cdm.json");
     noUX.add("_allImports.cdm.json");
-    noUX.add("cdstConcepts.cdm.json");
-    noUX.add("wellKnownCDSTAttributeGroups.cdm.json");
+    noUX.add("cdsConcepts.cdm.json");
+    noUX.add("wellKnownCDSAttributeGroups.cdm.json");
 
     let iFolder = 1;
     let root : folder = {id: `Folder${iFolder}`, name:"", entities : null, folders : null};

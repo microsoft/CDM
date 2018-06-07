@@ -1,6 +1,4 @@
 import * as cdm from "../cdm-types/cdm-types"
-import { randomBytes } from "crypto";
-import { basename } from "path";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +41,7 @@ export interface DPAttribute {
     description: string;
     dataCategory: string;
     dataType : string;
+    sourceColumnName: string;
 }
 
 export interface DPAnnotation {
@@ -139,6 +138,7 @@ class DPAttributeImpl implements DPAttribute {
     description: string;
     dataCategory: string;
     dataType : string;
+    sourceColumnName : string;
     //pii: string;
     //isHidden: boolean;
     constructor() {
@@ -244,6 +244,11 @@ export class Converter implements IConvertToDplx {
                 //     dpAtt.pii = "CustomerContent";
                 // if (ra.resolvedTraits.find("is.hidden"))
                 //     dpAtt.isHidden = true;                    
+
+                let mapTrait : cdm.ResolvedTrait;
+                if (mapTrait = ra.resolvedTraits.find("is.CDS.sourceNamed")) 
+                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").valueString;
+
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
                 

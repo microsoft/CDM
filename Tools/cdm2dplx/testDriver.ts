@@ -1,9 +1,6 @@
-import fetch from 'node-fetch';
 import * as cdm from "../cdm-types/cdm-types"
-import * as cdm2dplx from "./cdm2dplx"
+import * as cdm2dplx from "../cdm2dplx/cdm2dplx"
 import { readFileSync, writeFileSync, readFile, mkdirSync, existsSync, createReadStream, readdirSync, statSync } from "fs";
-import { promisify } from "util";
-import { relative } from "path";
 
 
 class Startup {

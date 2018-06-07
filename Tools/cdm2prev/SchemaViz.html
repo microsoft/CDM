@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>CDM Entity Navigator</title>
+    <link rel="Stylesheet" href="SchemaVizOld.css" type="text/css" />
+    <script>
+
+        window.onload = function () {
+
+            // check if ie
+            var sAgent = window.navigator.userAgent;
+            if (sAgent.indexOf("MSIE") > 0 || sAgent.indexOf("Trident") > 0) {
+                var classItem = document.getElementsByClassName("main_container")[0];
+                while (classItem.childNodes.length > 0)
+                    classItem.removeChild(classItem.firstChild);
+
+                classItem.textContent = "We're very sorry, this page uses some features not supported by your browser.";
+                return;
+            }
+
+            initListeners();
+        }
+
+    </script>
+
+</head>
+
+<body style="height:100%">
+    <script>
+
+        function initListeners() {
+
+            var classItem = document.getElementsByClassName("main_container")[0];
+            classItem.entitySelectionChangePing = entitySelectionChangePingReflect;
+            classItem.attributeSelectionChangePing = attributeSelectionChangePingReflect;
+            classItem.entitySelectionChange = entitySelectionChange;
+            classItem.attributeSelectionChange = attributeSelectionChange;
+
+            var classSet = document.getElementsByClassName("parent_container");
+            for (var i = 0; i < classSet.length; i++) {
+                var classItem = classSet[i];
+                classItem.entitySelectionChangePing = entitySelectionChangePing;
+                classItem.entitySelectionChange = entitySelectionChange;
+                classItem.attributeSelectionChange = attributeSelectionChange;
+            }
+            var classSet = document.getElementsByClassName("detail_container");
+            for (var i = 0; i < classSet.length; i++) {
+                var classItem = classSet[i];
+                classItem.entitySelectionChangePing = entitySelectionChangePing;
+                classItem.entitySelectionChange = entitySelectionChange;
+                classItem.attributeSelectionChange = attributeSelectionChange;
+            }
+            var classSet = document.getElementsByClassName("sub_container");
+            for (var i = 0; i < classSet.length; i++) {
+                var classItem = classSet[i];
+                classItem.entitySelectionChangePing = entitySelectionChangePing;
+                classItem.entitySelectionChange = entitySelectionChange;
+                classItem.attributeSelectionChange = attributeSelectionChange;
+            }
+            var classSet = document.getElementsByClassName("detail_item");
+            for (var i = 0; i < classSet.length; i++) {
+                var classItem = classSet[i];
+                classItem.onclick = onDetailItemClick;
+                classItem.entitySelectionChange = entitySelectionChangeItem;
+                classItem.attributeSelectionChange = attributeSelectionChangeItem;
+                // set the title on the element so tooltip works
+                var entityData = entityFromId(classItem.id);
+                if (entityData)
+                    classItem.title = entityData.description;
+            }
+
+            var classItem = document.getElementsByClassName("list_container")[0];
+            classItem.entitySelectionChange = entitySelectionChangeList;
+            classItem.attributeSelectionChangePing = attributeSelectionChangePing;
+            classItem.attributeSelectionChange = attributeSelectionChange;
+
+            var classItem = document.getElementsByClassName("detail_pane")[0];
+            classItem.entitySelectionChange = entitySelectionChangeDetail;
+            classItem.attributeSelectionChange = attributeSelectionChangeDetail;
+        }
+
+
+        function onDetailItemClick() {
+            this.parentElement.entitySelectionChangePing(this.id);
+        }
+
+        function entitySelectionChangePingReflect(newId) {
+            var entityData = entityFromId(newId);
+            if (entityData)
+                this.entitySelectionChange(entityData);
+        }
+        function attributeSelectionChangePingReflect(attributeData, entityData) {
+            this.attributeSelectionChange(attributeData, entityData);
+        }
+
+        function entitySelectionChangePing(newId) {
+            this.parentElement.entitySelectionChangePing(newId);
+        }
+        function attributeSelectionChangePing(attributeData, entityData) {
+            this.parentElement.attributeSelectionChangePing(attributeData, entityData);
+        }
+
+        function entitySelectionChange(entityData) {
+            if (this.children) {
+                for (var i = 0; i < this.children.length; i++) {
+                    if (this.children[i].entitySelectionChange)
+                        this.children[i].entitySelectionChange(entityData);
+                }
+
+            }
+        }
+        function attributeSelectionChange(attributeData, entityData) {
+            if (this.children) {
+                for (var i = 0; i < this.children.length; i++) {
+                    if (this.children[i].attributeSelectionChange)
+                        this.children[i].attributeSelectionChange(attributeData, entityData);
+                }
+
+            }
+        }
+
+        function selectBackground(flag1, flag3, color1, color2, color3) {
+            if (flag1 && flag3)
+                return "linear-gradient(to right, " + color1 + ", " + color2 + ", " + color3 + ")";
+            if (flag1)
+                return "linear-gradient(to right, " + color1 + ", " + color2 + ", " + color2 + ")";
+            if (flag3)
+                return "linear-gradient(to right, " + color2 + ", " + color2 + ", " + color3 + ")";
+            return color2;
+        }
+
+        function entitySelectionChangeItem(entityData) {
+            // selection is shown with a fat border
+            if (this.id == entityData.id) {
+                this.style.borderWidth = "var(--item-border-selected)";
+                this.style.margin = "var(--item-margin-selected)";
+            }
+            else {
+                this.style.borderWidth = "var(--item-border-normal)";
+                this.style.margin = "var(--item-margin-normal)";
+            }
+
+            // base and extensions are shown with background
+            var entityDataThis = entityFromId(this.id);
+
+            var background = "var(--item-back-normal)";
+            if (entityData.extends && entityData.extends == this.id)
+                background = "var(--item-back-base)";
+            if (entityDataThis && entityDataThis.extends && entityDataThis.extends == entityData.id)
+                background = "var(--item-back-extension)";
+
+            // entities that the selection point as
+            var isReferenced = (entityData.pointsAt && entityData.pointsAt.find(other => other.entityId == this.id));
+            // entities that point at the selection
+            var isReferencing = (entityDataThis && entityDataThis.pointsAt && entityDataThis.pointsAt.find(other => other.entityId == entityData.id));
+
+            this.style.background = selectBackground(isReferenced, isReferencing, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
+        }
+
+        function attributeSelectionChangeItem(attributeData, entityData) {
+            var background = "var(--item-back-normal)";
+            if (entityData.extends && entityData.extends == this.id)
+                background = "var(--item-back-base)";
+
+            // entities that the selection point as
+            var isReferenced = (attributeData.pointsAt && attributeData.pointsAt.find(other => other.entityId == this.id));
+            // entities that point at the selection
+            var isReferencing = (attributeData.pointedAtBy && attributeData.pointedAtBy.find(other => other.entityId == this.id));
+
+            this.style.background = selectBackground(isReferenced, isReferencing, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
+        }
+
+
+        function entitySelectionChangeList(entityData) {
+            // clear old att list and fill a new one
+            while (this.lastChild)
+                this.removeChild(this.lastChild);
+            // add the title
+            var t = document.createElement("span");
+            t.className = "group_title";
+            t.textContent = "Attributes:"
+            this.appendChild(t);
+
+            // add all attributes and link them to these objects
+            entityData.attributes.sort(function (l, r) { if (l.inherited == r.inherited) return l.name.localeCompare(r.name); return l.inherited == true ? 1 : -1 }).forEach(att => {
+                var aSpan = document.createElement("span");
+                aSpan.className = "list_item";
+                aSpan.textContent = att.name;
+                aSpan.title = att.description;
+                aSpan.entityAttribute = att;
+                aSpan.entityData = entityData
+
+                aSpan.onclick = onListItemClick;
+                aSpan.attributeSelectionChange = attributeSelectionChangeListItem;
+
+                var background = "var(--item-back-normal)"
+                if (att.inherited)
+                    background = "var(--item-back-base)";
+
+                aSpan.style.background = selectBackground(att.pointedAtBy, att.pointsAt, "var(--item-back-referencing)", background, "var(--item-back-referenced)");
+
+                this.appendChild(aSpan);
+            });
+
+        }
+
+        function onListItemClick() {
+            this.parentElement.attributeSelectionChangePing(this.entityAttribute, this.entityData);
+        }
+
+        function attributeSelectionChangeListItem(attributeData, entityData) {
+            // selection is shown with a fat border
+            if (this.entityAttribute === attributeData) {
+                this.style.borderWidth = "var(--item-border-selected)";
+                this.style.padding = "var(--list-item-padding-selected)";
+            }
+            else {
+                this.style.borderWidth = "var(--item-border-normal)";
+                this.style.padding = "var(--list-item-padding-normal)";
+            }
+        }
+
+        function entitySelectionChangeDetail(entityData) {
+            this.innerHTML = getEntityDetails(entityData);
+        }
+
+        function getEntityDetails(entityData) {
+            return makeLabel("Entity") +
+                (entityData.name ? makeLabel("Name") + entityData.name : "") +
+                (entityData.displayName ? makeLabel("Display Name") + entityData.displayName : "") +
+                (entityData.description ? makeLabel("Description") + entityData.description : "") +
+                (entityData.extends ? makeLabel("Extends") + entityFromId(entityData.extends).name : "") +
+                (entityData.pointsAt ? makeLabel("References") + "[" + getRefEntityList(entityData.pointsAt) + "]" : "") +
+                (entityData.ghurl ? makeLabel("github doc") + "<a href=\"" + entityData.ghurl + "\">" + entityData.ghurl + "</a>" : "")
+                ;
+        }
+
+        function makeLabel(str) {
+            return "<br/><b>" + str + ": </b>";
+        }
+
+        function getRefEntityList(refArray) {
+            var l = "";
+            refArray.forEach(next => {
+                if (l != "")
+                    l += ", ";
+                l += entityFromId(next.entityId).name;
+                l += "(";
+                var atts = "";
+                next.attributes.forEach(att => {
+                    if (atts != "")
+                        atts += ", ";
+                    atts += att;
+                });
+                l += atts + ")";
+            });
+            return l;
+        }
+
+        function attributeSelectionChangeDetail(attributeData, entityData) {
+            this.innerHTML = getEntityDetails(entityData) + "<br/><br/>" + getAttributeDetails(attributeData)
+        }
+
+        function getAttributeDetails(attributeData) {
+            return makeLabel("Attribute") +
+                (attributeData.name ? makeLabel("Name") + attributeData.name : "") +
+                (attributeData.displayName ? makeLabel("Display Name") + attributeData.displayName : "") +
+                (attributeData.description ? makeLabel("Description") + attributeData.description : "") +
+                (attributeData.inherited ? makeLabel("Inherited") + "true" : "") +
+                (attributeData.isPrimaryKey ? makeLabel("Primay Key") + "true" : "") +
+                (attributeData.dataType ? makeLabel("Data Type") + attributeData.dataType : "") +
+                (attributeData.semanticType ? makeLabel("Semantic Type") + attributeData.semanticType : "") +
+                (attributeData.pointsAt ? makeLabel("References") + "[" + getRefEntityList(attributeData.pointsAt) + "]" : "") +
+                (attributeData.pointedAtBy ? makeLabel("Referenced By") + "[" + getRefEntityList(attributeData.pointedAtBy) + "]" : "");
+        }
+
+        function entityFromId(entId) {
+            return entityMap['id_' + entId];
+        }
+
+
+        var entityMap =
+            { d: "INSERTDATA" };
+
+    </script>
+    <span class="main_container">
+        <span class="parent_container" style="border:0px;padding:0px;margin:0px;">
+            <span class="parent_container" style="border:0px;padding:0px;margin:0px;overflow-y:auto;">
+                <!--chrome bug with smashing flex boxes when they scroll-->
+                <span class="parent_container" style="border:0px;padding:0px;margin:0px;min-height:3000px;">
+                    <span>INSERTHTMLHERE</span>
+                </span>
+            </span>
+            <span class="parent_container" style="background-color: var(--back-alternate1);min-height:56px">
+                <span class="detail_container">
+                    <span class="group_title">Color Key:</span>
+                    <span class="key_item" style="background-color: var(--item-back-referenced)">Used by Selected</span>
+                    <span class="key_item" style="background-color: var(--item-back-referencing)">Uses the Selected</span>
+                    <span class="key_item" style="background-color: var(--item-back-base)">Base of Selected</span>
+                    <span class="key_item" style="background-color: var(--item-back-extension)">Extension of Selected</span>
+                </span>
+            </span>
+        </span>
+        <span class="list_container" id="attributeList">
+            <span class="group_title">
+                Attributes:
+            </span>
+        </span>
+        <span class="detail_pane">
+            Details:
+        </span>
+    </span>
+</body>
+
+</html>
