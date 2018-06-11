@@ -92,7 +92,8 @@ class Startup {
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef);
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Lead.cdm.json/Lead") as cdm.ICdmEntityDef);
 
-        writeFileSync("account.spew", set[0].getFriendlyFormat().toString(160, 20, 0, 2), "utf-8");
+        
+        writeFileSync("account.spew", cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/Account.cdm.json/Account").getFriendlyFormat().toString(200, 20, 0, 2), "utf-8");
 
         let dplx = converter.convertEntities(set);
 

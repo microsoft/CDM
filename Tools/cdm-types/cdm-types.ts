@@ -1357,13 +1357,15 @@ export class friendlyFormatNode {
     public verticalMode : boolean = false;
     public indentChildren : boolean = true;
     public terminateAfterList : boolean = true;
+    public lineWrap : boolean = false;
+    public forceWrap : boolean = false;
     public bracketEmpty : boolean = false;
     public starter : string;
     public terminator : string;
     public separator : string;
     public comment : string;
     public leafSource: string;
-    public sourceWidth: number;
+    public layoutWidth: number = 0;
     public children: friendlyFormatNode[];
     calcStarter : string;
     calcTerminator : string;
@@ -1391,86 +1393,6 @@ export class friendlyFormatNode {
             this.addChild(new friendlyFormatNode(source));
         }
     }
-
-    public measure() : number {
-        if (this.leafSource)
-            this.sourceWidth = this.leafSource.length;
-        else if (this.children) {
-            this.sourceWidth = 0;
-            let lChildren = this.children.length;
-            for (let iChild = 0; iChild < lChildren; iChild++) {
-                this.sourceWidth += this.children[iChild].measure();
-
-            }
-        }
-        else
-            this.sourceWidth = 0;
-
-        this.sourceWidth += this.calcPreceedingSeparator.length;
-        if (!this.verticalMode) {
-            this.sourceWidth += (this.calcStarter.length + this.calcTerminator.length);
-        }
-        return this.sourceWidth;
-    }
-
-    lineStart(startIndent : number) {
-        let line = "";
-        while (startIndent) {
-            line += " ";
-            startIndent --;
-        }
-        return line;
-    }
-
-    public layout(indentWidth : number, measureOnly : boolean) : string {
-
-        let layout : string = "";
-        let width = 0;
-        
-        layout += this.calcPreceedingSeparator;
-
-        if (this.calcStarter) {
-            layout += this.calcStarter;
-        }
-        width += layout.length;
-
-        if (this.calcNLBefore) {
-            layout += "\n";
-            width = 0;
-        }
-
-        if (this.children) {
-            let lChildren = this.children.length;
-            for (let iChild = 0; iChild < lChildren; iChild++) {
-                let child = this.children[iChild];
-                layout += child.layout(indentWidth, measureOnly);
-            }
-        }
-        else if (this.leafSource) {
-            if (this.calcNLBefore)
-                layout += this.lineStart(this.calcIndentLevel * indentWidth);
-            layout += this.leafSource;
-        }
-
-        if (this.calcNLAfter) {
-            layout += "\n";
-        }
-
-        if (this.calcTerminator) {
-            if (this.calcNLAfter)
-                layout += this.lineStart(this.calcIndentLevel * indentWidth);
-            layout += this.calcTerminator;
-            if (this.calcNLAfter)
-                layout += "\n";
-        }
-        return layout;
-    }
-
-    public breakLines(maxWidth : number, maxMargin : number, startIndent : number, indentWidth : number) {
-
-
-    }
-
 
     public setDelimiters() {
         this.calcStarter = "";
@@ -1527,13 +1449,128 @@ export class friendlyFormatNode {
         return didNL;
     }
 
+    public layout(maxWidth : number, maxMargin : number, start : number, indentWidth : number) : [number, number] {
+
+        let position = start;
+        let firstWrite;
+        
+        if (this.calcPreceedingSeparator) {
+            firstWrite = position;
+            position += this.calcPreceedingSeparator.length;
+        }
+
+        if (this.calcStarter) {
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+            position += this.calcStarter.length;
+        }
+
+        if (this.calcNLBefore) {
+            position = 0;
+            position += this.calcIndentLevel * indentWidth;
+            firstWrite = position;
+        }
+
+        if (this.children) {
+            let lChildren = this.children.length;
+            let wrapTo : number;
+            for (let iChild = 0; iChild < lChildren; iChild++) {
+                let child = this.children[iChild];
+                if (iChild > 0 && (this.forceWrap  || (this.lineWrap && position + child.layoutWidth > maxWidth))) {
+                    child.calcNLBefore = true;
+                    child.calcIndentLevel = Math.floor((wrapTo + indentWidth) / indentWidth)
+                    position = child.calcIndentLevel * indentWidth;
+                }
+                let childLayout = child.layout(maxWidth, maxMargin, position, indentWidth);
+                position = childLayout["0"];
+                if (iChild == 0) {
+                    wrapTo = childLayout["1"];
+                    firstWrite = firstWrite != undefined ? firstWrite : wrapTo;
+                }
+            }
+        }
+        else if (this.leafSource) {
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+            position += this.leafSource.length;
+        }
+
+        if (this.calcNLAfter) {
+            position = 0;
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+        }
+
+        if (this.calcTerminator) {
+            if (this.calcNLAfter)
+                position += this.calcIndentLevel * indentWidth;
+            firstWrite = firstWrite != undefined ? firstWrite : position;                
+            position += this.calcTerminator.length;
+            if (this.calcNLAfter)
+                position = 0;
+        }
+
+        firstWrite = firstWrite != undefined ? firstWrite : position;
+        this.layoutWidth = position - firstWrite;
+
+        return [position, firstWrite];
+    }
+
+    lineStart(startIndent : number) {
+        let line = "";
+        while (startIndent) {
+            line += " ";
+            startIndent --;
+        }
+        return line;
+    }
+
+    public compose(indentWidth : number) : string {
+
+        let compose : string = "";
+        
+        compose += this.calcPreceedingSeparator;
+
+        if (this.calcStarter) {
+            compose += this.calcStarter;
+        }
+
+        if (this.calcNLBefore) {
+            compose += "\n";
+            compose += this.lineStart(this.calcIndentLevel * indentWidth);
+        }
+
+        if (this.children) {
+            let lChildren = this.children.length;
+            for (let iChild = 0; iChild < lChildren; iChild++) {
+                let child = this.children[iChild];
+                compose += child.compose(indentWidth);
+            }
+        }
+        else if (this.leafSource) {
+            compose += this.leafSource;
+        }
+
+        if (this.calcNLAfter) {
+            compose += "\n";
+        }
+
+        if (this.calcTerminator) {
+            if (this.calcNLAfter)
+                compose += this.lineStart(this.calcIndentLevel * indentWidth);
+            compose += this.calcTerminator;
+            if (this.calcNLAfter)
+                compose += "\n";
+        }
+        return compose;
+    }    
+
     public toString(maxWidth : number, maxMargin : number, startIndent : number, indentWidth : number) {
         this.setDelimiters();
         this.setWhitespace(0, false);
         this.calcNLBefore = false;
-        this.measure();
-        this.breakLines(maxWidth, maxMargin, startIndent, indentWidth);
-        return this.layout(indentWidth, false);
+        // layout with a giant maxWidth so that we just measure everything
+        this.layout(Number.MAX_SAFE_INTEGER, maxMargin, startIndent, indentWidth);
+        // now use the real max
+        this.layout(maxWidth, maxMargin, startIndent, indentWidth);
+        return this.compose(indentWidth);
 
     }
 }
@@ -1662,11 +1699,18 @@ abstract class cdmObject implements ICdmObject {
     }
 
     public static arrayGetFriendlyFormat(under : friendlyFormatNode, source: cdmObject[]) {
-        if (!source || source.length == 0)
+        if (!source || source.length == 0) {
+            under.lineWrap = false;
+            under.forceWrap = false;
             return;
+        }
         let l = source.length;
         for (let i = 0; i < l; i++) {
             under.addChild(source[i].getFriendlyFormat());
+        }
+        if (l==1) {
+            under.lineWrap = false;
+            under.forceWrap = false;
         }
     }
 
@@ -1995,7 +2039,6 @@ export class ImportImpl extends cdmObject implements ICdmImport {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.terminator = ";"
         ff.addChildString("import *");
@@ -2075,7 +2118,6 @@ export class ArgumentImpl extends cdmObject implements ICdmArgumentDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = ": ";
         ff.addChildString(this.name);
         ff.addChild(this.value.getFriendlyFormat());
@@ -2194,7 +2236,6 @@ export class ParameterImpl extends cdmObject implements ICdmParameterDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChildString(this.required ? "required" : undefined);
         ff.addChildString(this.direction);
@@ -2312,12 +2353,11 @@ abstract class cdmObjectDef extends cdmObject implements ICdmObjectDef {
     public getFriendlyFormatDef(under : friendlyFormatNode) {
         if (this.exhibitsTraits && this.exhibitsTraits.length)  {
             let ff = new friendlyFormatNode();
-            ff.verticalMode = false;
             ff.separator = " ";
             ff.addChildString("exhibits");
             let ffT = new friendlyFormatNode();
-            ffT.verticalMode = false;
             ffT.separator = ", ";
+            ffT.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffT, this.exhibitsTraits);
             ff.addChild(ffT);
             under.addChild(ff);
@@ -2402,8 +2442,8 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef {
     public getFriendlyFormatRef(under : friendlyFormatNode)  {
         if (this.appliedTraits && this.appliedTraits.length)  {
             let ff = new friendlyFormatNode();
-            ff.verticalMode = false;
             ff.separator = ", ";
+            ff.lineWrap = true;
             ff.starter = "[";
             ff.terminator = "]";
             cdmObject.arrayGetFriendlyFormat(ff, this.appliedTraits);
@@ -2514,12 +2554,11 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.addChildString(this.trait.getName());
         
         let ffSub = new friendlyFormatNode();
-        ffSub.verticalMode = false;
         ffSub.separator = ", ";
+        ffSub.lineWrap = true;
         ffSub.starter = "(";
         ffSub.terminator = ")";
         ffSub.bracketEmpty = true;
@@ -2668,7 +2707,6 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.terminator = ";";
         ff.addChildString("trait");
@@ -2865,7 +2903,6 @@ export class RelationshipReferenceImpl extends cdmObjectRef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.relationship.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -2945,7 +2982,6 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
     
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.terminator = ";";
         ff.addChildString("relationship");
@@ -3045,7 +3081,6 @@ export class DataTypeReferenceImpl extends cdmObjectRef {
     
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.dataType.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -3122,7 +3157,6 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.terminator = ";";
         ff.addChildString("dataType");
@@ -3329,6 +3363,7 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
             ffSub.separator = ", ";
             ffSub.starter = "[";
             ffSub.terminator = "]";
+            ffSub.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffSub, this.appliedTraits);
             ff.addChild(ffSub);
         }
@@ -3471,6 +3506,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
+        ff.lineWrap = true;
         ff.addComment(this.explanation);
         ff.addChild(this.relationship.getFriendlyFormat());
         if (this.entity instanceof Array) {
@@ -3478,7 +3514,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
             ffSub.separator = ", ";
             ffSub.starter = "{";
             ffSub.terminator = "}";
-            ffSub.verticalMode = true;
+            ffSub.forceWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffSub, this.entity);
             ff.addChild(ffSub);
         }
@@ -3491,6 +3527,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
             ffSub.separator = ", ";
             ffSub.starter = "[";
             ffSub.terminator = "]";
+            ffSub.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ff, this.appliedTraits);
             ff.addChild(ffSub);
         }
@@ -3708,7 +3745,6 @@ export class AttributeGroupReferenceImpl extends cdmObjectRef implements ICdmAtt
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.attributeGroup.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -3800,10 +3836,11 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         this.getFriendlyFormatDef(ff);
         ff.addChildString("members");
         let ffSub = new friendlyFormatNode();
+        //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
         ffSub.bracketEmpty = true;
         ffSub.indentChildren = true;
-        ffSub.separator = ";";
+        ffSub.separator = ";\n";
         ffSub.starter = "{";
         ffSub.terminator = "}";
         cdmObject.arrayGetFriendlyFormat(ffSub, this.members);
@@ -3935,15 +3972,19 @@ export class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEnti
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.addChildString("constant entity");
-        ff.addChildString(this.constantEntityName);
-        ff.addChildString("shaped like");
-        ff.addChild(this.entityShape.getFriendlyFormat());
-        ff.addChildString("contains");
+        ff.lineWrap=true;
+        let ffDecl = new friendlyFormatNode();
+        ff.addChild(ffDecl);
+        ffDecl.separator = " ";
+        ffDecl.addChildString("constant entity");
+        ffDecl.addChildString(this.constantEntityName);
+        ffDecl.addChildString("shaped like");
+        ffDecl.addChild(this.entityShape.getFriendlyFormat());
+        ffDecl.addChildString("contains");
 
         let ffTable = new friendlyFormatNode();
         ff.addChild(ffTable);
-        ffTable.verticalMode = this.constantValues.length > 1;
+        ffTable.forceWrap = this.constantValues.length > 1;
         ffTable.bracketEmpty = true;
         ffTable.starter = "{";
         ffTable.terminator= "}";
@@ -4106,7 +4147,6 @@ export class EntityReferenceImpl extends cdmObjectRef implements ICdmObjectRef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.entity.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -4208,10 +4248,11 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef {
         this.getFriendlyFormatDef(ff);
         ff.addChildString("hasAttributes");
         let ffSub = new friendlyFormatNode();
+        //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
         ffSub.bracketEmpty = true;
         ffSub.indentChildren = true;
-        ffSub.separator = ";";
+        ffSub.separator = ";\n";
         ffSub.starter = "{";
         ffSub.terminator = "}";
         cdmObject.arrayGetFriendlyFormat(ffSub, this.hasAttributes);
@@ -4453,8 +4494,9 @@ export class Document extends cdmObject implements ICdmDocumentDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
+        ff.forceWrap = true;
         ff.verticalMode = true;
-        ff.indentChildren = false;
+        //ff.indentChildren = false;
         cdmObject.arrayGetFriendlyFormat(ff, this.imports);
         cdmObject.arrayGetFriendlyFormat(ff, this.definitions);
         return ff;
