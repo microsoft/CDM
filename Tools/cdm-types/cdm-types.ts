@@ -471,6 +471,61 @@ export class ParameterValue {
     public get name(): string {
         return this.parameter.getName();
     }
+    public setValue( newValue: ICdmObject) {
+        this.value = ParameterValue.getReplacementValue(this.value, newValue);
+    }
+    public static getReplacementValue(oldValue: ICdmObject, newValue: ICdmObject) : ICdmObject {
+        if (oldValue && (oldValue.getObjectType() == cdmObjectType.entityRef)) {
+            let oldEnt : ICdmConstantEntityDef = oldValue.getObjectDef();
+            let newEnt : ICdmConstantEntityDef  = newValue.getObjectDef();
+
+            // check that the entities are the same shape
+            if (oldEnt.getEntityShape() != oldEnt.getEntityShape())
+                return newValue;
+
+            let oldCv = oldEnt.getConstantValues();
+            let newCv = newEnt.getConstantValues();
+            // rows in old?
+            if (!oldCv || oldCv.length == 0)
+                return newValue;
+            // rows in new?
+            if (!newCv || newCv.length == 0)
+                return oldValue;
+
+            // find rows in the new one that are not in the old one. slow, but these are small usually
+            let appendedRows = new Array<Array<string>>();
+            let lNew = newCv.length;
+            let lOld = oldCv.length;
+            for(let iNew = 0; iNew < lNew; iNew ++) {
+                let newRow = newCv[iNew];
+                let lCol = newRow.length;
+                let iOld = 0
+                for(; iOld < lOld; iOld ++) {
+                    let oldRow = oldCv[iOld];
+                    let iCol = 0
+                    for (; iCol < lCol; iCol ++) {
+                        if (newRow[iCol] != oldRow[iCol])
+                            break;
+                    }
+                    if (iCol < lCol)
+                        break;
+                }
+                if (iOld < lOld) {
+                    appendedRows.push(newRow);
+                }
+            }
+
+            if (!appendedRows.length)
+                return newValue;
+
+            let replacementEnt : ICdmConstantEntityDef = oldEnt.copy();
+            let allRows = replacementEnt.getConstantValues().slice(0).concat(appendedRows);
+            replacementEnt.setConstantValues(allRows);
+            return Corpus.MakeRef(cdmObjectType.entityRef, replacementEnt);
+        }
+        
+        return newValue;
+    }
     public spew(indent: string) {
         console.log(`${indent}${this.name}:${this.valueString}`);
     }
@@ -511,7 +566,8 @@ export class ParameterValueSet {
             v = new StringConstant(cdmObjectType.unresolved, value as string);
         else
             v = value;
-        this.values[i] = v;
+
+        this.values[i] = ParameterValue.getReplacementValue(this.values[i], v);
     }
 
     public copy(): ParameterValueSet {
@@ -596,7 +652,7 @@ export class ResolvedTraitSet extends refCounted {
                         rtOld = traitSetResult.lookupByTrait.get(trait);
                         avOld = rtOld.parameterValues.values;
                     }
-                    avOld[i] = av[i];
+                    avOld[i] = ParameterValue.getReplacementValue(avOld[i], av[i]);
                 }
                 if (forAtt) {
                     let strConst = avOld[i] as StringConstant;
@@ -606,7 +662,7 @@ export class ResolvedTraitSet extends refCounted {
                             rtOld = traitSetResult.lookupByTrait.get(trait);
                             avOld = rtOld.parameterValues.values;
                         }
-                        avOld[i] = forAtt;
+                        avOld[i] = ParameterValue.getReplacementValue(avOld[i], av[i]);
                     }
                 } 
             }
@@ -847,7 +903,8 @@ class ResolvedTraitSetBuilder {
                     resTrait = this.rts.get(trait);
                     av = resTrait.parameterValues.values;
                 }
-                av[iParam] = newVal;
+                av[iParam] = ParameterValue.getReplacementValue(av[iParam], newVal);
+
             }
         }
     }
@@ -1857,6 +1914,9 @@ export class StringConstant extends cdmObject implements ICdmStringConstant, ICd
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let v = this.constantValue;
+        if (!v)
+            v="null";
+        v = v.replace("(resolvedAttributes)", "<resolvedAttributes>")
         if (!this.resolvedReference) {
             v = `"${v}"`;
         }
@@ -2040,11 +2100,10 @@ export class ImportImpl extends cdmObject implements ICdmImport {
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.terminator = ";"
         ff.addChildString("import *");
         ff.addChildString(this.moniker ? "as " + this.moniker : undefined);
         ff.addChildString("from");
-        ff.addChildString(this.uri, true);
+        ff.addChildString(`${this.uri}`, true);
         return ff;
     }
     public static createClass(object: any): ImportImpl {
@@ -2708,7 +2767,6 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef {
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("trait");
         ff.addChildString(this.traitName);
         if (this.extendsTrait) {
@@ -2716,6 +2774,19 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef {
             ff.addChild(this.extendsTrait.getFriendlyFormat());
         }
         this.getFriendlyFormatDef(ff);
+
+        if (this.hasParameters) {
+            let ffSub = new friendlyFormatNode();
+            ffSub.forceWrap = true;
+            //ffSub.verticalMode = true;
+            ffSub.bracketEmpty = true;
+            ffSub.separator = ";";
+            ffSub.starter = "{";
+            ffSub.terminator = "}";
+            cdmObject.arrayGetFriendlyFormat(ffSub, this.hasParameters);
+            ff.addChild(ffSub);
+        }
+        
         return ff;
     }
     public static createClass(object: any): TraitImpl {
@@ -2983,7 +3054,6 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("relationship");
         ff.addChildString(this.relationshipName);
         if (this.extendsRelationship) {
@@ -3158,7 +3228,6 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef {
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("dataType");
         ff.addChildString(this.dataTypeName);
         if (this.extendsDataType) {
@@ -3509,18 +3578,19 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
         ff.lineWrap = true;
         ff.addComment(this.explanation);
         ff.addChild(this.relationship.getFriendlyFormat());
+        let ffSub = new friendlyFormatNode();
+        ffSub.separator = ", ";
+        ffSub.starter = "{";
+        ffSub.terminator = "}";
         if (this.entity instanceof Array) {
-            let ffSub = new friendlyFormatNode();
-            ffSub.separator = ", ";
-            ffSub.starter = "{";
-            ffSub.terminator = "}";
-            ffSub.forceWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffSub, this.entity);
-            ff.addChild(ffSub);
+            ffSub.forceWrap = true;
         }
-        else {
-            ff.addChild(this.entity.getFriendlyFormat());
+        else  {
+            ffSub.addChild(this.entity.getFriendlyFormat());
+            ffSub.forceWrap = false;
         }
+        ff.addChild(ffSub);
         
         if (this.appliedTraits && this.appliedTraits.length)  {
             let ffSub = new friendlyFormatNode();
@@ -3834,7 +3904,6 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         ff.addChildString("attributeGroup");
         ff.addChildString(this.attributeGroupName);
         this.getFriendlyFormatDef(ff);
-        ff.addChildString("members");
         let ffSub = new friendlyFormatNode();
         //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
@@ -4246,7 +4315,6 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef {
             ff.addChild(this.extendsEntity.getFriendlyFormat());
         }
         this.getFriendlyFormatDef(ff);
-        ff.addChildString("hasAttributes");
         let ffSub = new friendlyFormatNode();
         //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
@@ -4494,11 +4562,26 @@ export class Document extends cdmObject implements ICdmDocumentDef {
     }
     public getFriendlyFormat() : friendlyFormatNode {
         let ff = new friendlyFormatNode();
-        ff.forceWrap = true;
         ff.verticalMode = true;
-        //ff.indentChildren = false;
-        cdmObject.arrayGetFriendlyFormat(ff, this.imports);
-        cdmObject.arrayGetFriendlyFormat(ff, this.definitions);
+        ff.indentChildren = false;
+        ff.separator = "\n";
+
+        let ffImp = new friendlyFormatNode();
+        ffImp.indentChildren = false;
+        ffImp.separator = ";";
+        ffImp.terminator = ";";
+        ffImp.verticalMode = true;
+        cdmObject.arrayGetFriendlyFormat(ffImp, this.imports);
+        ff.addChild(ffImp);
+   
+
+        let ffDef = new friendlyFormatNode();
+        ffDef.indentChildren = false;
+        ffDef.separator = ";\n";
+        ffDef.terminator = ";";
+        ffDef.verticalMode = true;
+        cdmObject.arrayGetFriendlyFormat(ffDef, this.definitions);
+        ff.addChild(ffDef);
         return ff;
     }
 

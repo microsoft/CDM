@@ -132,6 +132,55 @@ class ParameterValue {
     get name() {
         return this.parameter.getName();
     }
+    setValue(newValue) {
+        this.value = ParameterValue.getReplacementValue(this.value, newValue);
+    }
+    static getReplacementValue(oldValue, newValue) {
+        if (oldValue && (oldValue.getObjectType() == cdmObjectType.entityRef)) {
+            let oldEnt = oldValue.getObjectDef();
+            let newEnt = newValue.getObjectDef();
+            // check that the entities are the same shape
+            if (oldEnt.getEntityShape() != oldEnt.getEntityShape())
+                return newValue;
+            let oldCv = oldEnt.getConstantValues();
+            let newCv = newEnt.getConstantValues();
+            // rows in old?
+            if (!oldCv || oldCv.length == 0)
+                return newValue;
+            // rows in new?
+            if (!newCv || newCv.length == 0)
+                return oldValue;
+            // find rows in the new one that are not in the old one. slow, but these are small usually
+            let appendedRows = new Array();
+            let lNew = newCv.length;
+            let lOld = oldCv.length;
+            for (let iNew = 0; iNew < lNew; iNew++) {
+                let newRow = newCv[iNew];
+                let lCol = newRow.length;
+                let iOld = 0;
+                for (; iOld < lOld; iOld++) {
+                    let oldRow = oldCv[iOld];
+                    let iCol = 0;
+                    for (; iCol < lCol; iCol++) {
+                        if (newRow[iCol] != oldRow[iCol])
+                            break;
+                    }
+                    if (iCol < lCol)
+                        break;
+                }
+                if (iOld < lOld) {
+                    appendedRows.push(newRow);
+                }
+            }
+            if (!appendedRows.length)
+                return newValue;
+            let replacementEnt = oldEnt.copy();
+            let allRows = replacementEnt.getConstantValues().slice(0).concat(appendedRows);
+            replacementEnt.setConstantValues(allRows);
+            return Corpus.MakeRef(cdmObjectType.entityRef, replacementEnt);
+        }
+        return newValue;
+    }
     spew(indent) {
         console.log(`${indent}${this.name}:${this.valueString}`);
     }
@@ -168,7 +217,7 @@ class ParameterValueSet {
             v = new StringConstant(cdmObjectType.unresolved, value);
         else
             v = value;
-        this.values[i] = v;
+        this.values[i] = ParameterValue.getReplacementValue(this.values[i], v);
     }
     copy() {
         __paramCopy++;
@@ -244,7 +293,7 @@ class ResolvedTraitSet extends refCounted {
                         rtOld = traitSetResult.lookupByTrait.get(trait);
                         avOld = rtOld.parameterValues.values;
                     }
-                    avOld[i] = av[i];
+                    avOld[i] = ParameterValue.getReplacementValue(avOld[i], av[i]);
                 }
                 if (forAtt) {
                     let strConst = avOld[i];
@@ -254,7 +303,7 @@ class ResolvedTraitSet extends refCounted {
                             rtOld = traitSetResult.lookupByTrait.get(trait);
                             avOld = rtOld.parameterValues.values;
                         }
-                        avOld[i] = forAtt;
+                        avOld[i] = ParameterValue.getReplacementValue(avOld[i], av[i]);
                     }
                 }
             }
@@ -472,7 +521,7 @@ class ResolvedTraitSetBuilder {
                     resTrait = this.rts.get(trait);
                     av = resTrait.parameterValues.values;
                 }
-                av[iParam] = newVal;
+                av[iParam] = ParameterValue.getReplacementValue(av[iParam], newVal);
             }
         }
     }
@@ -925,7 +974,10 @@ class friendlyFormatNode {
         this.verticalMode = false;
         this.indentChildren = true;
         this.terminateAfterList = true;
+        this.lineWrap = false;
+        this.forceWrap = false;
         this.bracketEmpty = false;
+        this.layoutWidth = 0;
         this.leafSource = leafSource;
     }
     addComment(comment) {
@@ -942,70 +994,6 @@ class friendlyFormatNode {
                 source = `"${source}"`;
             this.addChild(new friendlyFormatNode(source));
         }
-    }
-    measure() {
-        if (this.leafSource)
-            this.sourceWidth = this.leafSource.length;
-        else if (this.children) {
-            this.sourceWidth = 0;
-            let lChildren = this.children.length;
-            for (let iChild = 0; iChild < lChildren; iChild++) {
-                this.sourceWidth += this.children[iChild].measure();
-            }
-        }
-        else
-            this.sourceWidth = 0;
-        this.sourceWidth += this.calcPreceedingSeparator.length;
-        if (!this.verticalMode) {
-            this.sourceWidth += (this.calcStarter.length + this.calcTerminator.length);
-        }
-        return this.sourceWidth;
-    }
-    lineStart(startIndent) {
-        let line = "";
-        while (startIndent) {
-            line += " ";
-            startIndent--;
-        }
-        return line;
-    }
-    layout(indentWidth, measureOnly) {
-        let layout = "";
-        let width = 0;
-        layout += this.calcPreceedingSeparator;
-        if (this.calcStarter) {
-            layout += this.calcStarter;
-        }
-        width += layout.length;
-        if (this.calcNLBefore) {
-            layout += "\n";
-            width = 0;
-        }
-        if (this.children) {
-            let lChildren = this.children.length;
-            for (let iChild = 0; iChild < lChildren; iChild++) {
-                let child = this.children[iChild];
-                layout += child.layout(indentWidth, measureOnly);
-            }
-        }
-        else if (this.leafSource) {
-            if (this.calcNLBefore)
-                layout += this.lineStart(this.calcIndentLevel * indentWidth);
-            layout += this.leafSource;
-        }
-        if (this.calcNLAfter) {
-            layout += "\n";
-        }
-        if (this.calcTerminator) {
-            if (this.calcNLAfter)
-                layout += this.lineStart(this.calcIndentLevel * indentWidth);
-            layout += this.calcTerminator;
-            if (this.calcNLAfter)
-                layout += "\n";
-        }
-        return layout;
-    }
-    breakLines(maxWidth, maxMargin, startIndent, indentWidth) {
     }
     setDelimiters() {
         this.calcStarter = "";
@@ -1053,13 +1041,109 @@ class friendlyFormatNode {
         }
         return didNL;
     }
+    layout(maxWidth, maxMargin, start, indentWidth) {
+        let position = start;
+        let firstWrite;
+        if (this.calcPreceedingSeparator) {
+            firstWrite = position;
+            position += this.calcPreceedingSeparator.length;
+        }
+        if (this.calcStarter) {
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+            position += this.calcStarter.length;
+        }
+        if (this.calcNLBefore) {
+            position = 0;
+            position += this.calcIndentLevel * indentWidth;
+            firstWrite = position;
+        }
+        if (this.children) {
+            let lChildren = this.children.length;
+            let wrapTo;
+            for (let iChild = 0; iChild < lChildren; iChild++) {
+                let child = this.children[iChild];
+                if (iChild > 0 && (this.forceWrap || (this.lineWrap && position + child.layoutWidth > maxWidth))) {
+                    child.calcNLBefore = true;
+                    child.calcIndentLevel = Math.floor((wrapTo + indentWidth) / indentWidth);
+                    position = child.calcIndentLevel * indentWidth;
+                }
+                let childLayout = child.layout(maxWidth, maxMargin, position, indentWidth);
+                position = childLayout["0"];
+                if (iChild == 0) {
+                    wrapTo = childLayout["1"];
+                    firstWrite = firstWrite != undefined ? firstWrite : wrapTo;
+                }
+            }
+        }
+        else if (this.leafSource) {
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+            position += this.leafSource.length;
+        }
+        if (this.calcNLAfter) {
+            position = 0;
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+        }
+        if (this.calcTerminator) {
+            if (this.calcNLAfter)
+                position += this.calcIndentLevel * indentWidth;
+            firstWrite = firstWrite != undefined ? firstWrite : position;
+            position += this.calcTerminator.length;
+            if (this.calcNLAfter)
+                position = 0;
+        }
+        firstWrite = firstWrite != undefined ? firstWrite : position;
+        this.layoutWidth = position - firstWrite;
+        return [position, firstWrite];
+    }
+    lineStart(startIndent) {
+        let line = "";
+        while (startIndent) {
+            line += " ";
+            startIndent--;
+        }
+        return line;
+    }
+    compose(indentWidth) {
+        let compose = "";
+        compose += this.calcPreceedingSeparator;
+        if (this.calcStarter) {
+            compose += this.calcStarter;
+        }
+        if (this.calcNLBefore) {
+            compose += "\n";
+            compose += this.lineStart(this.calcIndentLevel * indentWidth);
+        }
+        if (this.children) {
+            let lChildren = this.children.length;
+            for (let iChild = 0; iChild < lChildren; iChild++) {
+                let child = this.children[iChild];
+                compose += child.compose(indentWidth);
+            }
+        }
+        else if (this.leafSource) {
+            compose += this.leafSource;
+        }
+        if (this.calcNLAfter) {
+            compose += "\n";
+        }
+        if (this.calcTerminator) {
+            if (this.calcNLAfter)
+                compose += this.lineStart(this.calcIndentLevel * indentWidth);
+            compose += this.calcTerminator;
+            if (this.calcNLAfter)
+                compose += "\n";
+        }
+        return compose;
+    }
     toString(maxWidth, maxMargin, startIndent, indentWidth) {
         this.setDelimiters();
         this.setWhitespace(0, false);
         this.calcNLBefore = false;
-        this.measure();
-        this.breakLines(maxWidth, maxMargin, startIndent, indentWidth);
-        return this.layout(indentWidth, false);
+        // layout with a giant maxWidth so that we just measure everything
+        this.layout(Number.MAX_SAFE_INTEGER, maxMargin, startIndent, indentWidth);
+        // now use the real max
+        this.layout(maxWidth, maxMargin, startIndent, indentWidth);
+        return this.compose(indentWidth);
     }
 }
 exports.friendlyFormatNode = friendlyFormatNode;
@@ -1161,11 +1245,18 @@ class cdmObject {
         return casted;
     }
     static arrayGetFriendlyFormat(under, source) {
-        if (!source || source.length == 0)
+        if (!source || source.length == 0) {
+            under.lineWrap = false;
+            under.forceWrap = false;
             return;
+        }
         let l = source.length;
         for (let i = 0; i < l; i++) {
             under.addChild(source[i].getFriendlyFormat());
+        }
+        if (l == 1) {
+            under.lineWrap = false;
+            under.forceWrap = false;
         }
     }
     static createStringOrImpl(object, typeName, creater) {
@@ -1294,6 +1385,9 @@ class StringConstant extends cdmObject {
     }
     getFriendlyFormat() {
         let v = this.constantValue;
+        if (!v)
+            v = "null";
+        v = v.replace("(resolvedAttributes)", "<resolvedAttributes>");
         if (!this.resolvedReference) {
             v = `"${v}"`;
         }
@@ -1464,13 +1558,11 @@ class ImportImpl extends cdmObject {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("import *");
         ff.addChildString(this.moniker ? "as " + this.moniker : undefined);
         ff.addChildString("from");
-        ff.addChildString(this.uri, true);
+        ff.addChildString(`${this.uri}`, true);
         return ff;
     }
     static createClass(object) {
@@ -1535,7 +1627,6 @@ class ArgumentImpl extends cdmObject {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = ": ";
         ff.addChildString(this.name);
         ff.addChild(this.value.getFriendlyFormat());
@@ -1643,7 +1734,6 @@ class ParameterImpl extends cdmObject {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChildString(this.required ? "required" : undefined);
         ff.addChildString(this.direction);
@@ -1745,12 +1835,11 @@ class cdmObjectDef extends cdmObject {
     getFriendlyFormatDef(under) {
         if (this.exhibitsTraits && this.exhibitsTraits.length) {
             let ff = new friendlyFormatNode();
-            ff.verticalMode = false;
             ff.separator = " ";
             ff.addChildString("exhibits");
             let ffT = new friendlyFormatNode();
-            ffT.verticalMode = false;
             ffT.separator = ", ";
+            ffT.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffT, this.exhibitsTraits);
             ff.addChild(ffT);
             under.addChild(ff);
@@ -1826,8 +1915,8 @@ class cdmObjectRef extends cdmObject {
     getFriendlyFormatRef(under) {
         if (this.appliedTraits && this.appliedTraits.length) {
             let ff = new friendlyFormatNode();
-            ff.verticalMode = false;
             ff.separator = ", ";
+            ff.lineWrap = true;
             ff.starter = "[";
             ff.terminator = "]";
             cdmObject.arrayGetFriendlyFormat(ff, this.appliedTraits);
@@ -1924,11 +2013,10 @@ class TraitReferenceImpl extends cdmObjectRef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.addChildString(this.trait.getName());
         let ffSub = new friendlyFormatNode();
-        ffSub.verticalMode = false;
         ffSub.separator = ", ";
+        ffSub.lineWrap = true;
         ffSub.starter = "(";
         ffSub.terminator = ")";
         ffSub.bracketEmpty = true;
@@ -2066,9 +2154,7 @@ class TraitImpl extends cdmObjectDef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("trait");
         ff.addChildString(this.traitName);
         if (this.extendsTrait) {
@@ -2076,6 +2162,17 @@ class TraitImpl extends cdmObjectDef {
             ff.addChild(this.extendsTrait.getFriendlyFormat());
         }
         this.getFriendlyFormatDef(ff);
+        if (this.hasParameters) {
+            let ffSub = new friendlyFormatNode();
+            ffSub.forceWrap = true;
+            //ffSub.verticalMode = true;
+            ffSub.bracketEmpty = true;
+            ffSub.separator = ";";
+            ffSub.starter = "{";
+            ffSub.terminator = "}";
+            cdmObject.arrayGetFriendlyFormat(ffSub, this.hasParameters);
+            ff.addChild(ffSub);
+        }
         return ff;
     }
     static createClass(object) {
@@ -2247,7 +2344,6 @@ class RelationshipReferenceImpl extends cdmObjectRef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.relationship.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -2322,9 +2418,7 @@ class RelationshipImpl extends cdmObjectDef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("relationship");
         ff.addChildString(this.relationshipName);
         if (this.extendsRelationship) {
@@ -2416,7 +2510,6 @@ class DataTypeReferenceImpl extends cdmObjectRef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.dataType.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -2490,9 +2583,7 @@ class DataTypeImpl extends cdmObjectDef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
-        ff.terminator = ";";
         ff.addChildString("dataType");
         ff.addChildString(this.dataTypeName);
         if (this.extendsDataType) {
@@ -2676,6 +2767,7 @@ class TypeAttributeImpl extends AttributeImpl {
             ffSub.separator = ", ";
             ffSub.starter = "[";
             ffSub.terminator = "]";
+            ffSub.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ffSub, this.appliedTraits);
             ff.addChild(ffSub);
         }
@@ -2803,25 +2895,28 @@ class EntityAttributeImpl extends AttributeImpl {
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
+        ff.lineWrap = true;
         ff.addComment(this.explanation);
         ff.addChild(this.relationship.getFriendlyFormat());
+        let ffSub = new friendlyFormatNode();
+        ffSub.separator = ", ";
+        ffSub.starter = "{";
+        ffSub.terminator = "}";
         if (this.entity instanceof Array) {
-            let ffSub = new friendlyFormatNode();
-            ffSub.separator = ", ";
-            ffSub.starter = "{";
-            ffSub.terminator = "}";
-            ffSub.verticalMode = true;
             cdmObject.arrayGetFriendlyFormat(ffSub, this.entity);
-            ff.addChild(ffSub);
+            ffSub.forceWrap = true;
         }
         else {
-            ff.addChild(this.entity.getFriendlyFormat());
+            ffSub.addChild(this.entity.getFriendlyFormat());
+            ffSub.forceWrap = false;
         }
+        ff.addChild(ffSub);
         if (this.appliedTraits && this.appliedTraits.length) {
             let ffSub = new friendlyFormatNode();
             ffSub.separator = ", ";
             ffSub.starter = "[";
             ffSub.terminator = "]";
+            ffSub.lineWrap = true;
             cdmObject.arrayGetFriendlyFormat(ff, this.appliedTraits);
             ff.addChild(ffSub);
         }
@@ -3020,7 +3115,6 @@ class AttributeGroupReferenceImpl extends cdmObjectRef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.attributeGroup.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -3106,12 +3200,12 @@ class AttributeGroupImpl extends cdmObjectDef {
         ff.addChildString("attributeGroup");
         ff.addChildString(this.attributeGroupName);
         this.getFriendlyFormatDef(ff);
-        ff.addChildString("members");
         let ffSub = new friendlyFormatNode();
+        //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
         ffSub.bracketEmpty = true;
         ffSub.indentChildren = true;
-        ffSub.separator = ";";
+        ffSub.separator = ";\n";
         ffSub.starter = "{";
         ffSub.terminator = "}";
         cdmObject.arrayGetFriendlyFormat(ffSub, this.members);
@@ -3229,14 +3323,18 @@ class ConstantEntityImpl extends cdmObjectDef {
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
         ff.separator = " ";
-        ff.addChildString("constant entity");
-        ff.addChildString(this.constantEntityName);
-        ff.addChildString("shaped like");
-        ff.addChild(this.entityShape.getFriendlyFormat());
-        ff.addChildString("contains");
+        ff.lineWrap = true;
+        let ffDecl = new friendlyFormatNode();
+        ff.addChild(ffDecl);
+        ffDecl.separator = " ";
+        ffDecl.addChildString("constant entity");
+        ffDecl.addChildString(this.constantEntityName);
+        ffDecl.addChildString("shaped like");
+        ffDecl.addChild(this.entityShape.getFriendlyFormat());
+        ffDecl.addChildString("contains");
         let ffTable = new friendlyFormatNode();
         ff.addChild(ffTable);
-        ffTable.verticalMode = this.constantValues.length > 1;
+        ffTable.forceWrap = this.constantValues.length > 1;
         ffTable.bracketEmpty = true;
         ffTable.starter = "{";
         ffTable.terminator = "}";
@@ -3388,7 +3486,6 @@ class EntityReferenceImpl extends cdmObjectRef {
     }
     getFriendlyFormat() {
         let ff = new friendlyFormatNode();
-        ff.verticalMode = false;
         ff.separator = " ";
         ff.addChild(this.entity.getFriendlyFormat());
         this.getFriendlyFormatRef(ff);
@@ -3480,12 +3577,12 @@ class EntityImpl extends cdmObjectDef {
             ff.addChild(this.extendsEntity.getFriendlyFormat());
         }
         this.getFriendlyFormatDef(ff);
-        ff.addChildString("hasAttributes");
         let ffSub = new friendlyFormatNode();
+        //ffSub.forceWrap = true;
         ffSub.verticalMode = true;
         ffSub.bracketEmpty = true;
         ffSub.indentChildren = true;
-        ffSub.separator = ";";
+        ffSub.separator = ";\n";
         ffSub.starter = "{";
         ffSub.terminator = "}";
         cdmObject.arrayGetFriendlyFormat(ffSub, this.hasAttributes);
@@ -3693,8 +3790,21 @@ class Document extends cdmObject {
         let ff = new friendlyFormatNode();
         ff.verticalMode = true;
         ff.indentChildren = false;
-        cdmObject.arrayGetFriendlyFormat(ff, this.imports);
-        cdmObject.arrayGetFriendlyFormat(ff, this.definitions);
+        ff.separator = "\n";
+        let ffImp = new friendlyFormatNode();
+        ffImp.indentChildren = false;
+        ffImp.separator = ";";
+        ffImp.terminator = ";";
+        ffImp.verticalMode = true;
+        cdmObject.arrayGetFriendlyFormat(ffImp, this.imports);
+        ff.addChild(ffImp);
+        let ffDef = new friendlyFormatNode();
+        ffDef.indentChildren = false;
+        ffDef.separator = ";\n";
+        ffDef.terminator = ";";
+        ffDef.verticalMode = true;
+        cdmObject.arrayGetFriendlyFormat(ffDef, this.definitions);
+        ff.addChild(ffDef);
         return ff;
     }
     constructResolvedAttributes() {

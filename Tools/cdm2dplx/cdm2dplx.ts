@@ -62,8 +62,10 @@ export interface DPRelationship {
 
 export interface IConvertToDplx {
     bindingType : string; // none, csv, byol
+    relationshipsType : string; // none, inclusive, all
     partitionPattern : string; // a string for the partition location of an entity where $1 is replaced by entity name 
-    convertEntities(entities : cdm.ICdmEntityDef[]) : DataPool;
+    schemaUriBase : string; // schema URI base
+    convertEntities(entities : cdm.ICdmEntityDef[], dpName : string) : DataPool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +104,7 @@ class DPEntityImpl implements DPEntity {
     dataCategory: string;
     //pii: string;
     //isHidden: boolean;
+    schemas: string[];    
     annotations: DPAnnotation[];
     attributes: DPAttribute[];
     partitions : DPPartition[];
@@ -111,6 +114,7 @@ class DPEntityImpl implements DPEntity {
         this.description = "";
         this.dataCategory = "";
         //this.pii = "Unclassified";
+        this.schemas = new Array<string>();
         this.annotations = new Array<DPAnnotation>();
         this.attributes = new Array<DPAttribute>();
         this.partitions = new Array<DPPartition>();
@@ -118,6 +122,8 @@ class DPEntityImpl implements DPEntity {
     public cleanUp() {
         //if (this.pii == "Unclassified")
         //    this.pii = undefined;
+        if (this.schemas.length == 0)
+            this.schemas = undefined;
         if (this.annotations.length == 0)
             this.annotations = undefined;
         if (this.attributes.length == 0)
@@ -174,11 +180,14 @@ class DPRelationshipImpl implements DPRelationship {
 
 
 export class Converter implements IConvertToDplx {
-    public bindingType : string; 
+    public bindingType : string = "none"; 
+    public relationshipsType : string = "none";
     public partitionPattern : string = "$1.csv";
+    public schemaUriBase: string = ""
 
-    public convertEntities(entities : cdm.ICdmEntityDef[]) : DataPool {
+    public convertEntities(entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
         let dp = new DataPoolImpl();
+        dp.name = dpName;
 
         let entitiesIncluded = new Set<cdm.ICdmEntityDef>();
         let relationshipsSeen = new Array<cdm.ResolvedEntityReferenceSet>();
@@ -203,14 +212,33 @@ export class Converter implements IConvertToDplx {
 
             // get the traits of the entity 
             let rtsEnt = cdmEntity.getResolvedTraits();
-            // any traits that are derived from 'is.CDM.Id' identify special attribute groups 
+            // the trait 'is.CDM.attributeGroup' contains a table of references to the 'special' attribute groups contained by the entity.
             // also look for the description, pii
-            let attSets = new Array<string>();
             let isPII = false;
             let isHidden = false;
             rtsEnt.set.forEach(rt => {
-                if (rt.trait.isDerivedFrom("is.CDM.Id"))
-                    attSets.push(rt.traitName);
+                if (rt.traitName === "is.CDM.attributeGroup") {
+                    // get the entity held in the parameter
+                    let pv : cdm.ParameterValue;
+                    let ent : cdm.ICdmConstantEntityDef;
+                    let cv : string[][];
+                    if ((pv = rt.parameterValues.getParameterValue("groupList")) &&
+                        (pv.value && (ent = pv.value.getObjectDef())) &&
+                        (cv = ent.getConstantValues())) {
+                        cv.forEach(r => {
+                            // assume this is the right entity shape. just one attribute
+                            let agPath = r[0];
+                            // the attributegroup path is virtual from the root of the OM hierarchy out to the name of the attribute group.
+                            // turn this into just the entity doc reference 
+                            let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
+                            if (agPath.endsWith(expectedEnding))
+                                agPath = agPath.slice(0, agPath.length - expectedEnding.length);
+                            // caller might want some other prefix
+                            agPath = this.schemaUriBase + agPath;
+                            dpEnt.schemas.push(agPath);
+                        });
+                    }
+                }
                 if (rt.trait.isDerivedFrom("is.sensitive.PII"))
                     isPII=true;
                 if (rt.trait.isDerivedFrom("is.hidden"))
@@ -221,8 +249,6 @@ export class Converter implements IConvertToDplx {
                         dpEnt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>().lookupWhere("displayText", "languageTag", "en");
                 }
             });
-            if (attSets.length)
-                dpEnt.annotations.push(new DPAnnotationImpl("ContainedAttributeSets", attSets));
             // if (isPII)
             //     dpEnt.pii = "CustomerContent";
             // if (isHidden)
@@ -262,25 +288,29 @@ export class Converter implements IConvertToDplx {
         }
 
         // now pick out all of the relationships that matter for the selected entities
-        relationshipsSeen.forEach(entRels => {
-            entRels.set.forEach(resEntRef => {
-                let referencingEntity = resEntRef.referencing.entity;
-                let referencingAttribute = resEntRef.referencing.getFirstAttribute(); // assumes single column keys
-                resEntRef.referenced.forEach(resEntRefSideReferenced => {
-                    let referencedEntity = resEntRefSideReferenced.entity;
-                    let referencedAttribute = resEntRefSideReferenced.getFirstAttribute();// assumes single column keys
+        if (this.relationshipsType != "none") {
+            relationshipsSeen.forEach(entRels => {
+                entRels.set.forEach(resEntRef => {
+                    let referencingEntity = resEntRef.referencing.entity;
+                    let referencingAttribute = resEntRef.referencing.getFirstAttribute(); // assumes single column keys
+                    resEntRef.referenced.forEach(resEntRefSideReferenced => {
+                        let referencedEntity = resEntRefSideReferenced.entity;
+                        let referencedAttribute = resEntRefSideReferenced.getFirstAttribute();// assumes single column keys
 
-                    if (referencedEntity && referencedAttribute && entitiesIncluded.has(referencingEntity) && entitiesIncluded.has(referencedEntity)) {
-                        let dpRel = new DPRelationshipImpl();
-                        dpRel.fromAttribute.entityName = referencingEntity.getName();
-                        dpRel.fromAttribute.attributeName = referencingAttribute.resolvedName;
-                        dpRel.toAttribute.entityName = referencedEntity.getName();
-                        dpRel.toAttribute.attributeName = referencedAttribute.resolvedName;
-                        dp.relationships.push(dpRel);
-                    }
+                        if (referencedEntity && referencedAttribute && 
+                            ((this.relationshipsType == "inclusive" && entitiesIncluded.has(referencingEntity) && entitiesIncluded.has(referencedEntity)) ||
+                             (this.relationshipsType == "all"))) {
+                            let dpRel = new DPRelationshipImpl();
+                            dpRel.fromAttribute.entityName = referencingEntity.getName();
+                            dpRel.fromAttribute.attributeName = referencingAttribute.resolvedName;
+                            dpRel.toAttribute.entityName = referencedEntity.getName();
+                            dpRel.toAttribute.attributeName = referencedAttribute.resolvedName;
+                            dp.relationships.push(dpRel);
+                        }
+                    });
                 });
             });
-        });
+        }
 
         dp.cleanUp();
             

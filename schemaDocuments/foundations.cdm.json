@@ -31,16 +31,35 @@
             ]
         },
         {
-            "traitName": "is.CDM.Id",
+            "traitName": "is.CDM.attributeGroup",
             "extendsTrait": "is.CDM",
             "elevated": true,
-            "explanation": "root trait for public identifiers of attribute groups and entities."
+            "explanation": "identifies standard groups of attributes in CDM entities.",
+            "hasParameters": [
+                {
+                "name": "groupList",
+                "direction": "both",
+                "dataType": "entity"
+                }
+            ]
         },
         {
             "entityName": "CdmObject",
             "extendsEntity":"object",
             "exhibitsTraits": [
                 "is.CDM.entityVersion"
+            ]
+        },
+        {
+            "entityName": "attributeGroupSet",
+            "explanation": "a set of references to attributeGroups",
+            "extendsEntity": "reference",
+            "hasAttributes": [
+                {
+                    "name": "attributeGroupReference",
+                    "dataType": "attributeGroup",
+                    "relationship": "hasA"
+                }
             ]
         },
         {

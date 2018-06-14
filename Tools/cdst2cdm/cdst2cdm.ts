@@ -192,18 +192,13 @@ class Startup {
     
     public static cdstEntityToCdmEntity(cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, cdmEntity : cdm.ICdmEntityDef) {
 
-        let attGroupExt = cdmFolder.getRelativePath().replace(new RegExp('/', 'g'), '.',) + cdmEntity.getName();
         // is this an extension entity? make the ref
         if (cdstEntityInfo.extends) {
             cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cdstEntityInfo.extends));
-            attGroupExt += ".extensionAttributes";
         }
         else {
             cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "CdmObject"));
-            attGroupExt += ".baseAttributes";
         }
-        let attGroupAllExt = attGroupExt + ".all";
-        let attGroupReqExt = attGroupExt + ".required";
 
         let getLocalizedTableTrait = (sourceText : string, traitName : string) : cdm.ICdmTraitRef => {
             if (sourceText) {
@@ -233,22 +228,18 @@ class Startup {
             interface creationResultInfo {
                 requiredLevel? : string;
             }; 
-            
 
-            // put all attributes into a required or 'optional' group so it can have a public identity trait
-            let attGroupAll = cdm.Corpus.MakeObject<cdm.ICdmAttributeGroupDef>(cdm.cdmObjectType.attributeGroupDef, "allAttributesAddedAtThisScope");
-            let idTraitName = "is.CDM.Id" + attGroupAllExt;
-            let idTrait = cdm.Corpus.MakeObject<cdm.ICdmTraitDef>(cdm.cdmObjectType.traitDef, idTraitName);
-            idTrait.setExtendsTrait("is.CDM.Id");
-            attGroupAll.addExhibitedTrait(idTrait);
-            // one for the required attributes 
-            let attGroupRequired = cdm.Corpus.MakeObject<cdm.ICdmAttributeGroupDef>(cdm.cdmObjectType.attributeGroupDef, "requiredAttributesAddedAtThisScope");
-            idTraitName = "is.CDM.Id" + attGroupReqExt;
-            idTrait = cdm.Corpus.MakeObject<cdm.ICdmTraitDef>(cdm.cdmObjectType.traitDef, idTraitName);
-            idTrait.setExtendsTrait("is.CDM.Id");
-            attGroupRequired.addExhibitedTrait(idTrait);
-            // the required group is a member of the all group
-            attGroupAll.addMemberAttributeDef(cdm.Corpus.MakeRef(cdm.cdmObjectType.attributeGroupRef, attGroupRequired) as cdm.ICdmAttributeGroupRef);
+            // create an attribute group with a trait that lists the path.
+            let attGroupAll = cdm.Corpus.MakeObject<cdm.ICdmAttributeGroupDef>(cdm.cdmObjectType.attributeGroupDef, "attributesAddedAtThisScope");
+            let tRef = cdm.Corpus.MakeObject<cdm.ICdmTraitRef>(cdm.cdmObjectType.traitRef, "is.CDM.attributeGroup");
+            // make the argument nothing but a ref to a constant entity, safe since there is only one param for the trait and it looks cleaner
+            let cEnt = cdm.Corpus.MakeObject<cdm.ICdmConstantEntityDef>(cdm.cdmObjectType.constantEntityDef);
+            cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "attributeGroupSet"));
+            let groupPath = cdmFolder.getRelativePath() + cdmEntity.getName() + ".cdm.json/" + cdmEntity.getName() + "/hasAttributes/attributesAddedAtThisScope";
+            // is this an extension entity? make the ref
+            cEnt.setConstantValues([[groupPath]]);
+            tRef.addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.constantEntityRef, cEnt));
+            attGroupAll.addExhibitedTrait(tRef);
 
             let relRefStatus : cdm.ICdmRelationshipRef = null;
             let attNameState : string = "UNSPECIFIED";
@@ -507,8 +498,8 @@ class Startup {
                 }
 
                 let attGroupTarget = attGroupAll;
-                if (resultInfo.requiredLevel && resultInfo.requiredLevel != "none")
-                    attGroupTarget = attGroupRequired;
+                // if (resultInfo.requiredLevel && resultInfo.requiredLevel != "none")
+                //     attGroupTarget = attGroupRequired;
 
                 attGroupTarget.addMemberAttributeDef(cdmAtt as any);
                 
