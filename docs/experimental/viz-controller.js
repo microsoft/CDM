@@ -732,11 +732,13 @@ function changeDPLX() {
         if (controller.multiSelectEntityList && controller.multiSelectEntityList.size) {
             let converter = new cdm2dplx.Converter();
             converter.bindingType = "byol";
+            converter.relationshipsType = "inclusive";
+            converter.schemaUriBase = "";
             converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
             let set = new Array();
             controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
                 set.push(entState.entity); });
-            let dplx = converter.convertEntities(set);
+            let dplx = converter.convertEntities(set, "exampleDataPoolForBYOD");
             jsonText = JSON.stringify(dplx, null, 2);
         }
         controller.DplxPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
