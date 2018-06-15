@@ -36,7 +36,7 @@ class Startup {
                 mdTemplate : "readme_header.md",
                 mdToken : "INSERT_DIRECTORY_HERE",
                 coreDir : docsRoot + "prevSchemaDocuments/",
-                docLocationRoot : "https://docs.microsoft.com/en-us/dynamics365/customer-engagement/web-api/",
+                docLocationRoot : "https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/",
                 ghSourceRoot : "https://github.com/Microsoft/CDM/blob/master/schemaDocuments",
                 ghRawRoot : "https://raw.githubusercontent.com/Microsoft/CDM/experimental/schemaDocuments"
             };

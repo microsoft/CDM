@@ -8,6 +8,7 @@ export interface entityState {
     name : string;
     path : string;
     docName : string;
+    UEName : string;
     loadState : number;
     description : string;
     createUX : boolean;
@@ -135,6 +136,7 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
                             let id = "e" + (entNumber + folderId * 10000).toString();
                             // for each entity defined 
                             // get description
+                            let UEName : string;
                             let description = "";
                             let locEnt : cdm.ICdmConstantEntityDef;
                             let pVal: cdm.ParameterValue;
@@ -145,8 +147,14 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
                                 (locEnt = pVal.value.getObjectDef() as cdm.ICdmConstantEntityDef)) {
                                     description = locEnt.lookupWhere("displayText", "languageTag", "en");
                             }
+                            if ((rtDesc = def.getResolvedTraits().find("is.CDS.sourceNamed")) &&
+                                (pVal = rtDesc.parameterValues.getParameterValue("name")))
+                                UEName = pVal.valueString;
+                            if (!UEName)
+                                UEName = def.getName();
+
                             hier.entities.push({id:id, folderId:hier.id, name:def.getName(), path:folder.getRelativePath(), 
-                                                docName:doc.getName(), loadState : 0, description : description, createUX : true});
+                                                docName:doc.getName(), loadState : 0, description : description, UEName : UEName, createUX : true});
                         }
                     });
                 
@@ -214,7 +222,7 @@ export function createGithubIndex(hierRoot : folder, consts : contentConstants) 
                                     locationFragment : locationFragment,
                                     locationLink : consts.ghSourceRoot + ent.path,
                                     description : ent.description,
-                                    documentationLink : consts.docLocationRoot + ent.name,
+                                    documentationLink : consts.docLocationRoot + ent.UEName,
                                     level : level});
                 });
             }
