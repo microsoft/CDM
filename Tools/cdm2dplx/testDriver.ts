@@ -25,8 +25,8 @@ class Startup {
 
         ghc.resolveLocalCorpus(cdmCorpus, statusRpt).then((r:boolean) =>{
 
-            //this.createTestDplx(cdmCorpus);
-            this.createEachDplx(cdmCorpus, ".");
+            this.createTestDplx(cdmCorpus);
+            //this.createEachDplx(cdmCorpus, ".");
 
             console.log('done');
 
@@ -42,7 +42,15 @@ class Startup {
         converter.schemaUriBase = "";
         let set = new Array<cdm.ICdmEntityDef>();
 
-        set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef);
+        let ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
+
+        // ignore this, just testing out the 'search for atts from traits' function
+        let s = ent.getAttributesWithTraits(["is.dataFormat.floatingPoint","means.location.longitude"]);
+        s = ent.getAttributesWithTraits("means.reference");
+        s = ent.getAttributesWithTraits({traitBaseName:"is.requiredAtLevel", params : [{paramName : "level", paramValue : "systemrequired"}]});
+
+
+        set.push(ent);
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Lead.cdm.json/Lead") as cdm.ICdmEntityDef);
         let dplx = converter.convertEntities(set, "ExampleDataPool");
     }

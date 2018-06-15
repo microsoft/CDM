@@ -320,6 +320,7 @@ export interface ICdmEntityDef extends ICdmObjectDef, ICdmReferencesEntities {
     getHasAttributeDefs(): (ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef)[];
     addAttributeDef(attDef : ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef) : ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef;
     countInheritedAttributes() : number;
+    getAttributesWithTraits(queryFor : TraitSpec | TraitSpec[]): ResolvedAttributeSet;
 }
 
 export interface ICdmImport extends ICdmObject {
@@ -350,8 +351,17 @@ export interface ICdmFolderDef extends ICdmObject {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  argument types and callbacks
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+export interface TraitParamSpec {
+    traitBaseName : string;
+    params : {
+        paramName : string;
+        paramValue : string;
+    }[];
+}
+export type TraitSpec = (string | TraitParamSpec);
 
 type ArgumentValue = (StringConstant | RelationshipReferenceImpl | TraitReferenceImpl | DataTypeReferenceImpl | AttributeGroupReferenceImpl | EntityReferenceImpl | EntityAttributeImpl | TypeAttributeImpl);
+
 
 export enum cdmStatusLevel {
     info,
@@ -609,6 +619,17 @@ export class ResolvedTrait {
         let copy = new ResolvedTrait(this.trait, copyParamValues.pc, copyParamValues.values);
         return copy;
     }
+    public collectTraitNames(into : Set<string>) {
+        // get the name of this trait and all of its base classes
+        let t = this.trait;
+        while (t) {
+            let name = t.getName();
+            if (!into.has(name))
+                into.add(name);
+            let baseRef = t.getExtendsTrait();
+            t = baseRef ? baseRef.getObjectDef() : null;
+        }
+    }
 }
 
 class refCounted {
@@ -800,6 +821,18 @@ export class ResolvedTraitSet extends refCounted {
         return copy;
     }
 
+    public collectTraitNames() : Set<string> {
+        let collection = new Set<string>();
+        if (this.set) {
+            let l = this.set.length;
+            for (let i = 0; i < l; i++) {
+                let rt = this.set[i];
+                rt.collectTraitNames(collection);
+            }
+        }
+        return collection;
+    }
+
     public keepElevated() : ResolvedTraitSet {
         let elevatedSet : ResolvedTrait[];
         let elevatedLookup : Map<ICdmTraitDef, ResolvedTrait>;
@@ -958,6 +991,7 @@ let __rasApplyAdd = 0;
 let __rasApplyRemove = 0;
 export class ResolvedAttributeSet extends refCounted {
     resolvedName2resolvedAttribute: Map<string, ResolvedAttribute>;
+    baseTrait2Attributes: Map<string, Set<ResolvedAttribute>>;
     set : Array<ResolvedAttribute>;
     constructor() {
         super();
@@ -992,6 +1026,7 @@ export class ResolvedAttributeSet extends refCounted {
                 toMerge.insertOrder = rasResult.set.length;
                 rasResult.set.push(toMerge);
             }
+            this.baseTrait2Attributes = null;
         }
         return rasResult;
     }
@@ -1130,6 +1165,7 @@ export class ResolvedAttributeSet extends refCounted {
 
         // now we are that
         rasResult.resolvedName2resolvedAttribute = rasApplied.resolvedName2resolvedAttribute;
+        rasResult.baseTrait2Attributes = null;
         rasResult.set = rasApplied.set;
         return rasResult;
     }
@@ -1212,9 +1248,105 @@ export class ResolvedAttributeSet extends refCounted {
         }
 
         rasResult.resolvedName2resolvedAttribute = appliedAttSet.resolvedName2resolvedAttribute;
+        rasResult.baseTrait2Attributes = null;
         rasResult.set = appliedAttSet.set;
         return rasResult;
     }
+
+    getAttributesWithTraits(queryFor : TraitSpec | TraitSpec[]): ResolvedAttributeSet {
+        // put the input into a standard form
+        let query = new Array<TraitParamSpec>();
+        if (queryFor instanceof Array) {
+            let l = queryFor.length;
+            for (let i = 0; i<l; i++) {
+                let q = queryFor[i];
+                if (typeof (q) === "string" )
+                    query.push({traitBaseName : q, params : []})
+                else 
+                    query.push(q);
+            }
+        }
+        else {
+            if (typeof (queryFor) === "string" )
+                query.push({traitBaseName : queryFor, params : []})
+            else 
+                query.push(queryFor);
+        }
+
+        // if the map isn't in place, make one now. assumption is that this is called as part of a usage pattern where it will get called again.
+        if (!this.baseTrait2Attributes) {
+            this.baseTrait2Attributes = new Map<string, Set<ResolvedAttribute>>();
+            let l = this.set.length;
+            for (let i = 0; i < l; i++) {
+                // create a map from the name of every trait found in this whole set of attributes to the attributes that have the trait (included base classes of traits)
+                const resAtt = this.set[i];
+                let traitNames = resAtt.resolvedTraits.collectTraitNames();
+                traitNames.forEach(tName => {
+                    if (!this.baseTrait2Attributes.has(tName)) 
+                        this.baseTrait2Attributes.set(tName, new Set<ResolvedAttribute>());
+                    this.baseTrait2Attributes.get(tName).add(resAtt);
+                }); 
+            }
+        }
+        // for every trait in the query, get the set of attributes.
+        // intersect these sets to get the final answer
+        let finalSet : Set<ResolvedAttribute>;
+        let lQuery = query.length;
+        for (let i = 0; i < lQuery; i++) {
+            const q = query[i];
+            if (this.baseTrait2Attributes.has(q.traitBaseName)) {
+                let subSet = this.baseTrait2Attributes.get(q.traitBaseName);
+                if (q.params && q.params.length) {
+                    // need to check param values, so copy the subset to something we can modify 
+                    let filteredSubSet = new Set<ResolvedAttribute>();
+                    subSet.forEach(ra => {
+                        // get parameters of the the actual trait matched
+                        let pvals = ra.resolvedTraits.find(q.traitBaseName).parameterValues;                        
+                        // compare to all query params
+                        let lParams = q.params.length;
+                        let iParam;
+                        for (iParam = 0; iParam < lParams; iParam ++) {
+                            const param = q.params[i];
+                            let pv = pvals.getParameterValue(param.paramName);
+                            if (!pv || pv.valueString != param.paramValue)
+                                break;
+                        }
+                        // stop early means no match
+                        if (iParam == lParams)
+                            filteredSubSet.add(ra);
+                    });
+                    subSet = filteredSubSet;
+                }
+                if (subSet && subSet.size) {
+                    // got some. either use as starting point for answer or intersect this in
+                    if (!finalSet)
+                        finalSet = subSet;
+                    else {
+                        let intersection =  new Set<ResolvedAttribute>();
+                        // intersect the two
+                        finalSet.forEach( ra => {
+                            if (subSet.has(ra))
+                                intersection.add(ra);
+                        });
+                        finalSet = intersection;
+                    }
+                }
+            }
+        }
+
+        // collect the final set into a resolvedAttributeSet
+        if (finalSet && finalSet.size) {
+            let rasResult = new ResolvedAttributeSet();
+            finalSet.forEach(ra => {
+                rasResult.merge(ra);
+            });
+            return rasResult;
+        }
+
+        return null;
+        
+    }
+
 
     public get(name: string): ResolvedAttribute {
         if (this.resolvedName2resolvedAttribute.has(name)) {
@@ -4495,6 +4627,9 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef {
         return this.entityRefSet;
     }
 
+    getAttributesWithTraits(queryFor : TraitSpec | TraitSpec[]): ResolvedAttributeSet {
+        return this.getResolvedAttributes().getAttributesWithTraits(queryFor);
+    }
 
 }
 
