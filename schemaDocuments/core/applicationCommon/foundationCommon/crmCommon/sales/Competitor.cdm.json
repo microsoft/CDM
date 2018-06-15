@@ -23,24 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "organizationId",
-        "description": "Unique identifier for the organization",
-        "displayName": "Organization Id",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type the company or business name used to identify the competitor in data views and related records.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -86,6 +68,13 @@
         "description": "Shows who last updated the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
         "dataType": "Guid"
       },
       {
@@ -137,6 +126,17 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "description": "Type the company or business name used to identify the competitor in data views and related records.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
       },
       {
         "name": "processId",
@@ -897,34 +897,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Competitor",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -1030,6 +1002,34 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Competitor",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
           }
         }
       },

@@ -22,61 +22,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Waitlist Item",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "contact",
-        "displayName": "Contact",
-        "cdsSourceName": "msevtmgt_contact",
-        "dataType": "Guid"
-      },
-      {
-        "name": "event",
-        "displayName": "Event",
-        "cdsSourceName": "msevtmgt_event",
-        "dataType": "Guid"
-      },
-      {
-        "name": "invited",
-        "displayName": "Invited",
-        "cdsSourceName": "msevtmgt_invited",
-        "dataType": "Boolean"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -125,6 +70,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier for the business unit that owns the record",
         "displayName": "Owning Business Unit",
@@ -144,6 +96,36 @@
         "displayName": "Owning Team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Waitlist Item",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -245,6 +227,24 @@
         "dataType": "Boolean"
       },
       {
+        "name": "contact",
+        "displayName": "Contact",
+        "cdsSourceName": "msevtmgt_contact",
+        "dataType": "Guid"
+      },
+      {
+        "name": "event",
+        "displayName": "Event",
+        "cdsSourceName": "msevtmgt_event",
+        "dataType": "Guid"
+      },
+      {
+        "name": "invited",
+        "displayName": "Invited",
+        "cdsSourceName": "msevtmgt_invited",
+        "dataType": "Boolean"
+      },
+      {
         "name": "reserved",
         "displayName": "Reserved",
         "cdsSourceName": "msevtmgt_reserved",
@@ -252,118 +252,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "WaitlistItem",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "WaitlistItem",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "contact",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "WaitlistItem",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "contactId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Contact",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "event",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "WaitlistItem",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "eventId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Event",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -480,6 +368,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "WaitlistItem",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "WaitlistItem",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -557,6 +501,62 @@
             "semanticVersion": "0.5.5",
             "type": "Team",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "contact",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "WaitlistItem",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "event",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "WaitlistItem",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "eventId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Event",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
           }
         }
       }

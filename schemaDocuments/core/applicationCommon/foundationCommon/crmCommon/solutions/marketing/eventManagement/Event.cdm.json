@@ -23,10 +23,79 @@
         "dataType": "Guid"
       },
       {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who modified the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Unique identifier of the delegate user who created the record.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Unique identifier of the delegate user who modified the record.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
         "name": "ownerId",
         "description": "Owner ID",
         "displayName": "Owner",
         "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier for the business unit that owns the record",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier for the user that owns the record.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningTeam",
+        "description": "Unique identifier for the team that owns the record.",
+        "displayName": "Owning Team",
+        "cdsSourceName": "owningteam",
         "dataType": "Guid"
       },
       {
@@ -60,6 +129,88 @@
         "dataType": "String"
       },
       {
+        "name": "statusCode",
+        "description": "Reason for the status of the Event",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
         "name": "name",
         "description": "The name of the custom entity.",
         "displayName": "Event Name",
@@ -67,6 +218,44 @@
         "semanticDomain": {
           "semanticTypeName": "means.identity.name",
           "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "processId",
+        "description": "Contains the id of the process associated with the entity.",
+        "displayName": "Process Id",
+        "cdsSourceName": "processid",
+        "dataType": "String"
+      },
+      {
+        "name": "stageId",
+        "description": "Contains the id of the stage where the entity is located.",
+        "displayName": "Stage Id",
+        "cdsSourceName": "stageid",
+        "dataType": "String"
+      },
+      {
+        "name": "traversedPath",
+        "description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
+        "displayName": "Traversed Path",
+        "cdsSourceName": "traversedpath",
+        "semanticDomain": {
+          "maxLength": 1250
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "entityImageId",
+        "cdsSourceName": "entityimageid",
+        "dataType": "String"
+      },
+      {
+        "name": "baseRecurrentEventID",
+        "displayName": "Base Recurrent Event ID",
+        "cdsSourceName": "msevtmgt_baserecurrenteventid",
+        "semanticDomain": {
+          "maxLength": 40
         },
         "dataType": "String"
       },
@@ -157,6 +346,36 @@
         "dataType": "Decimal"
       },
       {
+        "name": "transactionCurrencyId",
+        "description": "Unique identifier of the currency associated with the entity.",
+        "displayName": "Currency",
+        "cdsSourceName": "msevtmgt_transactioncurrencyid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "exchangeRate",
+        "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
+        "displayName": "Exchange Rate",
+        "cdsSourceName": "exchangerate",
+        "semanticDomain": {
+          "maxValue": 100000000000,
+          "minValue": 1e-10
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "budgetallocatedBase",
+        "description": "Value of the Budget Allocated in base currency.",
+        "displayName": "Budget Allocated (Base)",
+        "cdsSourceName": "msevtmgt_budgetallocated_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
         "name": "cateringRequired",
         "displayName": "Catering required?",
         "cdsSourceName": "msevtmgt_cateringrequired",
@@ -184,6 +403,17 @@
           "isReadOnly": true
         },
         "dataType": "String"
+      },
+      {
+        "name": "checkInCount",
+        "description": "Check-in count",
+        "displayName": "Check-in count",
+        "cdsSourceName": "msevtmgt_checkincount",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
       },
       {
         "name": "confirmedHotelChoices",
@@ -222,6 +452,16 @@
           "isReadOnly": true
         },
         "dataType": "String"
+      },
+      {
+        "name": "countdownInDays",
+        "displayName": "Countdown in Days",
+        "cdsSourceName": "msevtmgt_countdownindays",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
       },
       {
         "name": "createMarketingCollateral",
@@ -372,6 +612,15 @@
         "dataType": "String"
       },
       {
+        "name": "description",
+        "displayName": "Description",
+        "cdsSourceName": "msevtmgt_description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
         "name": "developMarketingPlan",
         "displayName": "Develop Marketing Plan",
         "cdsSourceName": "msevtmgt_developmarketingplan",
@@ -515,6 +764,80 @@
           "minValue": -1500
         },
         "dataType": "String"
+      },
+      {
+        "name": "eventTimeZoneName",
+        "displayName": "Event Time Zone Name",
+        "cdsSourceName": "msevtmgt_eventtimezonename",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "eventType",
+        "displayName": "Event Type",
+        "cdsSourceName": "msevtmgt_eventtype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Demonstration",
+                "value": "100000003"
+              },
+              {
+                "displayName": "Training",
+                "value": "100000004"
+              },
+              {
+                "displayName": "Webcast",
+                "value": "100000005"
+              },
+              {
+                "displayName": "Executive Briefing",
+                "value": "100000001"
+              },
+              {
+                "displayName": "Conference",
+                "value": "100000002"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "eventType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "eventVenueCost",
+        "displayName": "Event Venue Cost",
+        "cdsSourceName": "msevtmgt_eventvenuecost",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "eventvenuecostBase",
+        "description": "Value of the Event Venue Cost in base currency.",
+        "displayName": "Event Venue Cost (Base)",
+        "cdsSourceName": "msevtmgt_eventvenuecost_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
       },
       {
         "name": "expectedOutcome",
@@ -663,6 +986,119 @@
         "dataType": "String"
       },
       {
+        "name": "isRecurringEvent",
+        "displayName": "Is Recurring Event",
+        "cdsSourceName": "msevtmgt_isrecurringevent",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isTemplate",
+        "displayName": "Is Template",
+        "cdsSourceName": "msevtmgt_istemplate",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Yes",
+                "value": "100000001"
+              },
+              {
+                "displayName": "No",
+                "value": "100000002"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "isTemplate_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "language",
+        "description": "The language of the webinar",
+        "displayName": "Language",
+        "cdsSourceName": "msevtmgt_language",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "English",
+                "value": "100000000"
+              },
+              {
+                "displayName": "French",
+                "value": "100000001"
+              },
+              {
+                "displayName": "German",
+                "value": "100000002"
+              },
+              {
+                "displayName": "Spanish",
+                "value": "100000003"
+              },
+              {
+                "displayName": "Italian",
+                "value": "100000004"
+              },
+              {
+                "displayName": "Russian",
+                "value": "100000005"
+              },
+              {
+                "displayName": "Japanese",
+                "value": "100000010"
+              },
+              {
+                "displayName": "Korean",
+                "value": "100000011"
+              },
+              {
+                "displayName": "Hebrew",
+                "value": "100000012"
+              },
+              {
+                "displayName": "Chinese (Traditional)",
+                "value": "100000013"
+              },
+              {
+                "displayName": "Dutch",
+                "value": "100000006"
+              },
+              {
+                "displayName": "Turkish",
+                "value": "100000007"
+              },
+              {
+                "displayName": "Portuguese",
+                "value": "100000008"
+              },
+              {
+                "displayName": "Chinese (Simplified)",
+                "value": "100000009"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "language_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "makePaymentsDue",
         "displayName": "Make Payments Due",
         "cdsSourceName": "msevtmgt_makepaymentsdue",
@@ -700,6 +1136,45 @@
         "dataType": "String"
       },
       {
+        "name": "manageRegistrationCount",
+        "displayName": "Manage Registration Count?",
+        "cdsSourceName": "msevtmgt_manageregistrationcount",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Yes",
+                "value": "100000001"
+              },
+              {
+                "displayName": "No",
+                "value": "100000002"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "manageRegistrationCount_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "maximumEventCapacity",
+        "displayName": "Maximum Event Capacity",
+        "cdsSourceName": "msevtmgt_maximumeventcapacity",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
         "name": "maxNumberOfRegistrations",
         "displayName": "Max number of registrations",
         "cdsSourceName": "msevtmgt_maxnumberofregistrations",
@@ -708,6 +1183,29 @@
           "minValue": 0
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "miscellaneousCosts",
+        "displayName": "Miscellaneous Costs",
+        "cdsSourceName": "msevtmgt_miscellaneouscosts",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "miscellaneouscostsBase",
+        "description": "Value of the Miscellaneous Costs in base currency.",
+        "displayName": "Miscellaneous Costs (Base)",
+        "cdsSourceName": "msevtmgt_miscellaneouscosts_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
       },
       {
         "name": "notifyAuthoritiesOfEvent",
@@ -784,6 +1282,16 @@
         "dataType": "String"
       },
       {
+        "name": "presentationManagerUrl",
+        "displayName": "Presentation Manager URL",
+        "cdsSourceName": "msevtmgt_presentationmanagerurl",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
         "name": "primaryGoal",
         "displayName": "Primary Goal",
         "cdsSourceName": "msevtmgt_primarygoal",
@@ -817,6 +1325,28 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "primaryVenue",
+        "displayName": "Primary Venue",
+        "cdsSourceName": "msevtmgt_primaryvenue",
+        "dataType": "Guid"
+      },
+      {
+        "name": "producer",
+        "displayName": "Producer",
+        "cdsSourceName": "msevtmgt_producer",
+        "dataType": "Guid"
+      },
+      {
+        "name": "publicEventURL",
+        "displayName": "Event URL",
+        "cdsSourceName": "msevtmgt_publiceventurl",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.URL",
+          "maxLength": 200
         },
         "dataType": "String"
       },
@@ -858,6 +1388,55 @@
         "dataType": "String"
       },
       {
+        "name": "readableEventID",
+        "displayName": "Readable Event ID",
+        "cdsSourceName": "msevtmgt_readableeventid",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "recurrencePattern",
+        "displayName": "Recurrence pattern",
+        "cdsSourceName": "msevtmgt_recurrencepattern",
+        "semanticDomain": {
+          "maxLength": 512
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "recurrentEventStatus",
+        "displayName": "Recurrent Event Status",
+        "cdsSourceName": "msevtmgt_recurrenteventstatus",
+        "semanticDomain": {
+          "maxValue": 4,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "registrationCount",
+        "description": "Registration count of the Event.",
+        "displayName": "Registration Count",
+        "cdsSourceName": "msevtmgt_registrationcount",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "registrationsTarget",
+        "displayName": "Registrations target",
+        "cdsSourceName": "msevtmgt_registrationstarget",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
         "name": "requestSponsorship",
         "displayName": "Request Sponsorship",
         "cdsSourceName": "msevtmgt_requestsponsorship",
@@ -893,6 +1472,29 @@
           "isReadOnly": true
         },
         "dataType": "String"
+      },
+      {
+        "name": "revenueFromSponsorship",
+        "displayName": "Revenue from Sponsorship",
+        "cdsSourceName": "msevtmgt_revenuefromsponsorship",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "revenuefromsponsorshipBase",
+        "description": "Value of the Revenue from Sponsorship in base currency.",
+        "displayName": "Revenue from Sponsorship (Base)",
+        "cdsSourceName": "msevtmgt_revenuefromsponsorship_base",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
       },
       {
         "name": "scheduleAirportPickups",
@@ -1044,6 +1646,44 @@
         "dataType": "String"
       },
       {
+        "name": "sendEventInvitation",
+        "description": "Event invitation sending status",
+        "displayName": "Send Event invitation",
+        "cdsSourceName": "msevtmgt_sendeventinvitation",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "In progress",
+                "value": "100000002"
+              },
+              {
+                "displayName": "Completed",
+                "value": "100000003"
+              },
+              {
+                "displayName": "Not applicable",
+                "value": "100000004"
+              },
+              {
+                "displayName": "Not started",
+                "value": "100000001"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "sendEventInvitation_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "sendMarketingMaterial",
         "displayName": "Send Marketing Material",
         "cdsSourceName": "msevtmgt_sendmarketingmaterial",
@@ -1155,9 +1795,27 @@
         "dataType": "String"
       },
       {
+        "name": "showWaitlist",
+        "displayName": "Show Waitlist",
+        "cdsSourceName": "msevtmgt_showwaitlist",
+        "dataType": "Boolean"
+      },
+      {
         "name": "targetRevenue",
         "displayName": "Target Revenue",
         "cdsSourceName": "msevtmgt_targetrevenue",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.currency",
+          "maxValue": 922337203685477,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "targetrevenueBase",
+        "description": "Value of the Target Revenue in base currency.",
+        "displayName": "Target Revenue (Base)",
+        "cdsSourceName": "msevtmgt_targetrevenue_base",
         "semanticDomain": {
           "semanticTypeName": "means.measurement.currency",
           "maxValue": 922337203685477,
@@ -1201,701 +1859,6 @@
           "isReadOnly": true
         },
         "dataType": "String"
-      },
-      {
-        "name": "sendSurveys",
-        "displayName": "Send Surveys",
-        "cdsSourceName": "msevtmgt_sendsurveys",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Not started",
-                "value": "100000001"
-              },
-              {
-                "displayName": "In progress",
-                "value": "100000002"
-              },
-              {
-                "displayName": "Completed",
-                "value": "100000003"
-              },
-              {
-                "displayName": "Not applicable",
-                "value": "100000004"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "sendSurveys_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "createdOn",
-        "description": "Date and time when the record was created.",
-        "displayName": "Created On",
-        "cdsSourceName": "createdon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "createdBy",
-        "description": "Unique identifier of the user who created the record.",
-        "displayName": "Created By",
-        "cdsSourceName": "createdby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "modifiedOn",
-        "description": "Date and time when the record was modified.",
-        "displayName": "Modified On",
-        "cdsSourceName": "modifiedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "modifiedBy",
-        "description": "Unique identifier of the user who modified the record.",
-        "displayName": "Modified By",
-        "cdsSourceName": "modifiedby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "createdOnBehalfBy",
-        "description": "Unique identifier of the delegate user who created the record.",
-        "displayName": "Created By (Delegate)",
-        "cdsSourceName": "createdonbehalfby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "modifiedOnBehalfBy",
-        "description": "Unique identifier of the delegate user who modified the record.",
-        "displayName": "Modified By (Delegate)",
-        "cdsSourceName": "modifiedonbehalfby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningBusinessUnit",
-        "description": "Unique identifier for the business unit that owns the record",
-        "displayName": "Owning Business Unit",
-        "cdsSourceName": "owningbusinessunit",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningUser",
-        "description": "Unique identifier for the user that owns the record.",
-        "displayName": "Owning User",
-        "cdsSourceName": "owninguser",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningTeam",
-        "description": "Unique identifier for the team that owns the record.",
-        "displayName": "Owning Team",
-        "cdsSourceName": "owningteam",
-        "dataType": "Guid"
-      },
-      {
-        "name": "statusCode",
-        "description": "Reason for the status of the Event",
-        "displayName": "Status Reason",
-        "cdsSourceName": "statuscode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "1",
-                "correlationValue": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "2",
-                "correlationValue": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "statusCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "versionNumber",
-        "description": "Version Number",
-        "displayName": "Version Number",
-        "cdsSourceName": "versionnumber",
-        "dataType": "Int64"
-      },
-      {
-        "name": "importSequenceNumber",
-        "description": "Sequence number of the import that created this record.",
-        "displayName": "Import Sequence Number",
-        "cdsSourceName": "importsequencenumber",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "overriddenCreatedOn",
-        "description": "Date and time that the record was migrated.",
-        "displayName": "Record Created On",
-        "cdsSourceName": "overriddencreatedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "timeZoneRuleVersionNumber",
-        "description": "For internal use only.",
-        "displayName": "Time Zone Rule Version Number",
-        "cdsSourceName": "timezoneruleversionnumber",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -1
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "UTCConversionTimeZoneCode",
-        "description": "Time zone code that was in use when the record was created.",
-        "displayName": "UTC Conversion Time Zone Code",
-        "cdsSourceName": "utcconversiontimezonecode",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -1
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "processId",
-        "description": "Contains the id of the process associated with the entity.",
-        "displayName": "Process Id",
-        "cdsSourceName": "processid",
-        "dataType": "String"
-      },
-      {
-        "name": "stageId",
-        "description": "Contains the id of the stage where the entity is located.",
-        "displayName": "Stage Id",
-        "cdsSourceName": "stageid",
-        "dataType": "String"
-      },
-      {
-        "name": "traversedPath",
-        "description": "A comma separated list of string values representing the unique identifiers of stages in a Business Process Flow Instance in the order that they occur.",
-        "displayName": "Traversed Path",
-        "cdsSourceName": "traversedpath",
-        "semanticDomain": {
-          "maxLength": 1250
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "entityImageId",
-        "cdsSourceName": "entityimageid",
-        "dataType": "String"
-      },
-      {
-        "name": "baseRecurrentEventID",
-        "displayName": "Base Recurrent Event ID",
-        "cdsSourceName": "msevtmgt_baserecurrenteventid",
-        "semanticDomain": {
-          "maxLength": 40
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "transactionCurrencyId",
-        "description": "Unique identifier of the currency associated with the entity.",
-        "displayName": "Currency",
-        "cdsSourceName": "msevtmgt_transactioncurrencyid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "exchangeRate",
-        "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
-        "displayName": "Exchange Rate",
-        "cdsSourceName": "exchangerate",
-        "semanticDomain": {
-          "maxValue": 100000000000,
-          "minValue": 1e-10
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "budgetallocatedBase",
-        "description": "Value of the Budget Allocated in base currency.",
-        "displayName": "Budget Allocated (Base)",
-        "cdsSourceName": "msevtmgt_budgetallocated_base",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "checkInCount",
-        "description": "Check-in count",
-        "displayName": "Check-in count",
-        "cdsSourceName": "msevtmgt_checkincount",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "countdownInDays",
-        "displayName": "Countdown in Days",
-        "cdsSourceName": "msevtmgt_countdownindays",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "description",
-        "displayName": "Description",
-        "cdsSourceName": "msevtmgt_description",
-        "semanticDomain": {
-          "maxLength": 2000
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "eventTimeZoneName",
-        "displayName": "Event Time Zone Name",
-        "cdsSourceName": "msevtmgt_eventtimezonename",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "eventType",
-        "displayName": "Event Type",
-        "cdsSourceName": "msevtmgt_eventtype",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Demonstration",
-                "value": "100000003"
-              },
-              {
-                "displayName": "Training",
-                "value": "100000004"
-              },
-              {
-                "displayName": "Webcast",
-                "value": "100000005"
-              },
-              {
-                "displayName": "Executive Briefing",
-                "value": "100000001"
-              },
-              {
-                "displayName": "Conference",
-                "value": "100000002"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "eventType_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "eventVenueCost",
-        "displayName": "Event Venue Cost",
-        "cdsSourceName": "msevtmgt_eventvenuecost",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "eventvenuecostBase",
-        "description": "Value of the Event Venue Cost in base currency.",
-        "displayName": "Event Venue Cost (Base)",
-        "cdsSourceName": "msevtmgt_eventvenuecost_base",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "isRecurringEvent",
-        "displayName": "Is Recurring Event",
-        "cdsSourceName": "msevtmgt_isrecurringevent",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "isTemplate",
-        "displayName": "Is Template",
-        "cdsSourceName": "msevtmgt_istemplate",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Yes",
-                "value": "100000001"
-              },
-              {
-                "displayName": "No",
-                "value": "100000002"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "isTemplate_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "language",
-        "description": "The language of the webinar",
-        "displayName": "Language",
-        "cdsSourceName": "msevtmgt_language",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "English",
-                "value": "100000000"
-              },
-              {
-                "displayName": "French",
-                "value": "100000001"
-              },
-              {
-                "displayName": "German",
-                "value": "100000002"
-              },
-              {
-                "displayName": "Spanish",
-                "value": "100000003"
-              },
-              {
-                "displayName": "Italian",
-                "value": "100000004"
-              },
-              {
-                "displayName": "Russian",
-                "value": "100000005"
-              },
-              {
-                "displayName": "Japanese",
-                "value": "100000010"
-              },
-              {
-                "displayName": "Korean",
-                "value": "100000011"
-              },
-              {
-                "displayName": "Hebrew",
-                "value": "100000012"
-              },
-              {
-                "displayName": "Chinese (Traditional)",
-                "value": "100000013"
-              },
-              {
-                "displayName": "Dutch",
-                "value": "100000006"
-              },
-              {
-                "displayName": "Turkish",
-                "value": "100000007"
-              },
-              {
-                "displayName": "Portuguese",
-                "value": "100000008"
-              },
-              {
-                "displayName": "Chinese (Simplified)",
-                "value": "100000009"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "language_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "manageRegistrationCount",
-        "displayName": "Manage Registration Count?",
-        "cdsSourceName": "msevtmgt_manageregistrationcount",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Yes",
-                "value": "100000001"
-              },
-              {
-                "displayName": "No",
-                "value": "100000002"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "manageRegistrationCount_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "maximumEventCapacity",
-        "displayName": "Maximum Event Capacity",
-        "cdsSourceName": "msevtmgt_maximumeventcapacity",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "miscellaneousCosts",
-        "displayName": "Miscellaneous Costs",
-        "cdsSourceName": "msevtmgt_miscellaneouscosts",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "miscellaneouscostsBase",
-        "description": "Value of the Miscellaneous Costs in base currency.",
-        "displayName": "Miscellaneous Costs (Base)",
-        "cdsSourceName": "msevtmgt_miscellaneouscosts_base",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "presentationManagerUrl",
-        "displayName": "Presentation Manager URL",
-        "cdsSourceName": "msevtmgt_presentationmanagerurl",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.URL",
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "primaryVenue",
-        "displayName": "Primary Venue",
-        "cdsSourceName": "msevtmgt_primaryvenue",
-        "dataType": "Guid"
-      },
-      {
-        "name": "producer",
-        "displayName": "Producer",
-        "cdsSourceName": "msevtmgt_producer",
-        "dataType": "Guid"
-      },
-      {
-        "name": "publicEventURL",
-        "displayName": "Event URL",
-        "cdsSourceName": "msevtmgt_publiceventurl",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.URL",
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "readableEventID",
-        "displayName": "Readable Event ID",
-        "cdsSourceName": "msevtmgt_readableeventid",
-        "semanticDomain": {
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "recurrencePattern",
-        "displayName": "Recurrence pattern",
-        "cdsSourceName": "msevtmgt_recurrencepattern",
-        "semanticDomain": {
-          "maxLength": 512
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "recurrentEventStatus",
-        "displayName": "Recurrent Event Status",
-        "cdsSourceName": "msevtmgt_recurrenteventstatus",
-        "semanticDomain": {
-          "maxValue": 4,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "registrationCount",
-        "description": "Registration count of the Event.",
-        "displayName": "Registration Count",
-        "cdsSourceName": "msevtmgt_registrationcount",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "registrationsTarget",
-        "displayName": "Registrations target",
-        "cdsSourceName": "msevtmgt_registrationstarget",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "revenueFromSponsorship",
-        "displayName": "Revenue from Sponsorship",
-        "cdsSourceName": "msevtmgt_revenuefromsponsorship",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "revenuefromsponsorshipBase",
-        "description": "Value of the Revenue from Sponsorship in base currency.",
-        "displayName": "Revenue from Sponsorship (Base)",
-        "cdsSourceName": "msevtmgt_revenuefromsponsorship_base",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "sendEventInvitation",
-        "description": "Event invitation sending status",
-        "displayName": "Send Event invitation",
-        "cdsSourceName": "msevtmgt_sendeventinvitation",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "In progress",
-                "value": "100000002"
-              },
-              {
-                "displayName": "Completed",
-                "value": "100000003"
-              },
-              {
-                "displayName": "Not applicable",
-                "value": "100000004"
-              },
-              {
-                "displayName": "Not started",
-                "value": "100000001"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "sendEventInvitation_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "showWaitlist",
-        "displayName": "Show Waitlist",
-        "cdsSourceName": "msevtmgt_showwaitlist",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "targetrevenueBase",
-        "description": "Value of the Target Revenue in base currency.",
-        "displayName": "Target Revenue (Base)",
-        "cdsSourceName": "msevtmgt_targetrevenue_base",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.currency",
-          "maxValue": 922337203685477,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
       },
       {
         "name": "totalCostOfEventsActivities",
@@ -2098,6 +2061,43 @@
         "dataType": "String"
       },
       {
+        "name": "sendSurveys",
+        "displayName": "Send Surveys",
+        "cdsSourceName": "msevtmgt_sendsurveys",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not started",
+                "value": "100000001"
+              },
+              {
+                "displayName": "In progress",
+                "value": "100000002"
+              },
+              {
+                "displayName": "Completed",
+                "value": "100000003"
+              },
+              {
+                "displayName": "Not applicable",
+                "value": "100000004"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "sendSurveys_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "eventURLspecified",
         "description": "Determines whether an event URL is specified.",
         "displayName": "Event URL specified",
@@ -2161,62 +2161,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Event",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Event",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -2326,6 +2270,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Event",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Event",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

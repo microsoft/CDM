@@ -22,95 +22,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Check-in",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "checkintime",
-        "description": "Check-in time.",
-        "displayName": "Check-in time",
-        "cdsSourceName": "msevtmgt_checkintime",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "checkInType",
-        "displayName": "Check-in Type",
-        "cdsSourceName": "msevtmgt_checkintype",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Session Check-in",
-                "value": "100000000"
-              },
-              {
-                "displayName": "Event Check-in",
-                "value": "100000001"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "checkInType_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "registrationId",
-        "displayName": "Registrant Attending",
-        "cdsSourceName": "msevtmgt_registrationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "sessionAttended",
-        "description": "Session records of the Check-in.",
-        "displayName": "Session Attended",
-        "cdsSourceName": "msevtmgt_sessionattended",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Check-in-time",
@@ -159,6 +70,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier for the business unit that owns the record",
         "displayName": "Owning Business Unit",
@@ -178,6 +96,36 @@
         "displayName": "Owning Team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Check-in",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -311,6 +259,45 @@
         "dataType": "String"
       },
       {
+        "name": "checkintime",
+        "description": "Check-in time.",
+        "displayName": "Check-in time",
+        "cdsSourceName": "msevtmgt_checkintime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "checkInType",
+        "displayName": "Check-in Type",
+        "cdsSourceName": "msevtmgt_checkintype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Session Check-in",
+                "value": "100000000"
+              },
+              {
+                "displayName": "Event Check-in",
+                "value": "100000001"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "checkInType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "checkOutTime",
         "description": "Check-out time.",
         "displayName": "Check-out time",
@@ -349,6 +336,19 @@
         "description": "Unique identifier for Attendee Pass associated with Check-in.",
         "displayName": "Purchased Passes",
         "cdsSourceName": "msevtmgt_purchasedpassesid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "registrationId",
+        "displayName": "Registrant Attending",
+        "cdsSourceName": "msevtmgt_registrationid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "sessionAttended",
+        "description": "Session records of the Check-in.",
+        "displayName": "Session Attended",
+        "cdsSourceName": "msevtmgt_sessionattended",
         "dataType": "Guid"
       },
       {
@@ -431,118 +431,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CheckIn",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CheckIn",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "registrationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CheckIn",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "eventRegistrationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "EventRegistration",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "sessionAttended",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CheckIn",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "sessionId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Session",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -652,6 +540,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CheckIn",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CheckIn",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },
@@ -819,6 +763,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "AttendeePass",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "registrationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CheckIn",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "eventRegistrationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "EventRegistration",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "sessionAttended",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CheckIn",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "sessionId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Session",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
           }
         }

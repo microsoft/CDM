@@ -23,50 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "businessUnitId",
-        "description": "Business Unit Id",
-        "displayName": "Business Unit Id",
-        "cdsSourceName": "businessunitid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Name of the facility/equipment.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 160
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "calendarId",
-        "description": "Fiscal calendar associated with the facility/equipment.",
-        "displayName": "Calendar",
-        "cdsSourceName": "calendarid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "organizationId",
-        "description": "Unique identifier of the parent business unit.",
-        "displayName": "Organization",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "timeZoneCode",
-        "description": "Local time zone where the facility/equipment is located.",
-        "displayName": "Time Zone",
-        "cdsSourceName": "timezonecode",
-        "semanticDomain": {
-          "semanticTypeName": "means.location.timezone",
-          "maxValue": 1500,
-          "minValue": -1500
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -112,6 +68,13 @@
         "description": "Unique identifier of the delegate user who last modified the equipment.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "businessUnitId",
+        "description": "Business Unit Id",
+        "displayName": "Business Unit Id",
+        "cdsSourceName": "businessunitid",
         "dataType": "Guid"
       },
       {
@@ -165,6 +128,24 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Name of the facility/equipment.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "calendarId",
+        "description": "Fiscal calendar associated with the facility/equipment.",
+        "displayName": "Calendar",
+        "cdsSourceName": "calendarid",
+        "dataType": "Guid"
+      },
+      {
         "name": "description",
         "description": "Description of the facility/equipment.",
         "displayName": "Description",
@@ -200,6 +181,13 @@
         "dataType": "Boolean"
       },
       {
+        "name": "organizationId",
+        "description": "Unique identifier of the parent business unit.",
+        "displayName": "Organization",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
         "name": "siteId",
         "description": "Site where the facility/equipment is located.",
         "displayName": "Site",
@@ -213,6 +201,18 @@
         "cdsSourceName": "skills",
         "semanticDomain": {
           "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "timeZoneCode",
+        "description": "Local time zone where the facility/equipment is located.",
+        "displayName": "Time Zone",
+        "cdsSourceName": "timezonecode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
         },
         "dataType": "String"
       },
@@ -236,90 +236,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "businessUnitId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "FacilityEquipment",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "businessUnitId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BusinessUnit",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "businessUnitId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "FacilityEquipment",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "businessUnitId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "FacilityEquipment",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -429,6 +345,90 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "FacilityEquipment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "FacilityEquipment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "FacilityEquipment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
           }
         }
       },

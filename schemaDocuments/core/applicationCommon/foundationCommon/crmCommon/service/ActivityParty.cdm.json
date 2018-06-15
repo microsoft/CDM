@@ -39,6 +39,16 @@
         "dataType": "Guid"
       },
       {
+        "name": "partyId",
+        "description": "Unique identifier of the party associated with the activity.",
+        "displayName": "Party",
+        "cdsSourceName": "partyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
         "name": "participationTypeMask",
         "description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner.",
         "displayName": "Participation Type",
@@ -105,80 +115,6 @@
           "isReadOnly": true
         },
         "dataType": "String"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the activity_party.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "instanceTypeCode",
-        "description": "Type of instance of a recurring series.",
-        "displayName": "Appointment Type",
-        "cdsSourceName": "instancetypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Not Recurring",
-                "value": "0"
-              },
-              {
-                "displayName": "Recurring Master",
-                "value": "1"
-              },
-              {
-                "displayName": "Recurring Instance",
-                "value": "2"
-              },
-              {
-                "displayName": "Recurring Exception",
-                "value": "3"
-              },
-              {
-                "displayName": "Recurring Future Exception",
-                "value": "4"
-              }
-            ]
-          },
-          "inherited": true
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "instanceTypeCode_display",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isPartyDeleted",
-        "description": "Information about whether the underlying entity record is deleted.",
-        "displayName": "Is Party Deleted",
-        "cdsSourceName": "ispartydeleted",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Boolean"
-      },
-      {
-        "name": "partyId",
-        "description": "Unique identifier of the party associated with the activity.",
-        "displayName": "Party",
-        "cdsSourceName": "partyid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
       },
       {
         "name": "addressUsed",
@@ -279,6 +215,70 @@
         "description": "Information about whether to allow phone calls to the lead.",
         "displayName": "Do not allow Phone Calls",
         "cdsSourceName": "donotphone",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the activity_party.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring series.",
+        "displayName": "Appointment Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isPartyDeleted",
+        "description": "Information about whether the underlying entity record is deleted.",
+        "displayName": "Is Party Deleted",
+        "cdsSourceName": "ispartydeleted",
         "semanticDomain": {
           "inherited": true
         },
@@ -561,62 +561,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ActivityParty",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ActivityParty",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "partyId",
               "comparisonOrder": 0
             }
@@ -749,6 +693,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ActivityParty",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ActivityParty",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
             "namespace": "core.applicationCommon"
           }
         }

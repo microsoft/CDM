@@ -23,31 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "organizationId",
-        "description": "Unique identifier for the organization",
-        "displayName": "Organization Id",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type a descriptive title for the sales literature.",
-        "displayName": "Title",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "subjectId",
-        "description": "Choose the subject for the sales literature to relate the item to a product or business group. Administrators can configure subjects under Business Management in the Settings area.",
-        "displayName": "Subject",
-        "cdsSourceName": "subjectid",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -93,6 +68,13 @@
         "description": "Shows who last updated the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
         "dataType": "Guid"
       },
       {
@@ -144,6 +126,17 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "description": "Type a descriptive title for the sales literature.",
+        "displayName": "Title",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
       },
       {
         "name": "processId",
@@ -287,6 +280,13 @@
         "dataType": "String"
       },
       {
+        "name": "subjectId",
+        "description": "Choose the subject for the sales literature to relate the item to a product or business group. Administrators can configure subjects under Business Management in the Settings area.",
+        "displayName": "Subject",
+        "cdsSourceName": "subjectid",
+        "dataType": "Guid"
+      },
+      {
         "name": "entityImageId",
         "cdsSourceName": "entityimageid",
         "dataType": "String"
@@ -311,34 +311,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "SalesLiterature",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -448,6 +420,34 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SalesLiterature",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
           }
         }
       },

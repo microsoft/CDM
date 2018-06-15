@@ -29,84 +29,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type a subject or descriptive name, such as the expected order or company name, for the opportunity.",
-        "displayName": "Topic",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 300
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "transactionCurrencyId",
-        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-        "displayName": "Currency",
-        "cdsSourceName": "transactioncurrencyid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "customerId",
-        "description": "Select the customer account or contact to provide a quick link to additional customer details, such as address, phone number, activities, and orders.",
-        "displayName": "Potential Customer",
-        "cdsSourceName": "customerid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the opportunity is open, won, or lost. Won and lost opportunities are read-only and can't be edited until they are reactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Open",
-                "value": "0"
-              },
-              {
-                "displayName": "Won",
-                "value": "1"
-              },
-              {
-                "displayName": "Lost",
-                "value": "2"
-              }
-            ]
-          },
-          "inherited": true
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -163,6 +85,16 @@
         "description": "Shows who last updated the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "semanticDomain": {
           "inherited": true
         },
@@ -268,6 +200,18 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Type a subject or descriptive name, such as the expected order or company name, for the opportunity.",
+        "displayName": "Topic",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 300
+        },
+        "dataType": "String"
+      },
+      {
         "name": "processId",
         "description": "Contains the id of the process associated with the entity.",
         "displayName": "Process Id",
@@ -321,6 +265,16 @@
           "minValue": -1000000000000
         },
         "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
       },
       {
         "name": "exchangeRate",
@@ -435,6 +389,16 @@
           "maxLength": 2000
         },
         "dataType": "String"
+      },
+      {
+        "name": "customerId",
+        "description": "Select the customer account or contact to provide a quick link to additional customer details, such as address, phone number, activities, and orders.",
+        "displayName": "Potential Customer",
+        "cdsSourceName": "customerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
       },
       {
         "name": "customerNeed",
@@ -1186,6 +1150,42 @@
         "dataType": "DateTimeOffset"
       },
       {
+        "name": "stateCode",
+        "description": "Shows whether the opportunity is open, won, or lost. Won and lost opportunities are read-only and can't be edited until they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0"
+              },
+              {
+                "displayName": "Won",
+                "value": "1"
+              },
+              {
+                "displayName": "Lost",
+                "value": "2"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "statusCode",
         "description": "Select the opportunity's status.",
         "displayName": "Status Reason",
@@ -1609,146 +1609,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Opportunity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Opportunity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Opportunity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Currency",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Opportunity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "accountId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Account",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Opportunity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "contactId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Contact",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -1861,6 +1721,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Opportunity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Opportunity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -1938,6 +1854,90 @@
             "semanticVersion": "0.5.5",
             "type": "Team",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Opportunity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Opportunity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "accountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Account",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Opportunity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
           }
         }
       },

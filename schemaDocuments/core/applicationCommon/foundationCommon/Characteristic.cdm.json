@@ -23,84 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type a name for the characteristic.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "characteristicType",
-        "description": "Select the type of characteristic.",
-        "displayName": "Characteristic Type",
-        "cdsSourceName": "characteristictype",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Skill",
-                "value": "1"
-              },
-              {
-                "displayName": "Certification",
-                "value": "2"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "characteristicType_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Characteristic",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -146,6 +68,13 @@
         "description": "Unique identifier of the delegate user who modified the record.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "dataType": "Guid"
       },
       {
@@ -220,12 +149,83 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Type a name for the characteristic.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "characteristicType",
+        "description": "Select the type of characteristic.",
+        "displayName": "Characteristic Type",
+        "cdsSourceName": "characteristictype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Skill",
+                "value": "1"
+              },
+              {
+                "displayName": "Certification",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "characteristicType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "description",
         "description": "Type a detailed description of the characteristic.",
         "displayName": "Description",
         "cdsSourceName": "description",
         "semanticDomain": {
           "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Characteristic",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
         },
         "dataType": "String"
       },
@@ -281,62 +281,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Characteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Characteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -445,6 +389,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Characteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Characteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
             "namespace": "core.applicationCommon"
           }
         }

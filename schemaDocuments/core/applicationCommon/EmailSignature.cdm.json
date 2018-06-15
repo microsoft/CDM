@@ -23,90 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "title",
-        "description": "Title of the email signature.",
-        "displayName": "Title",
-        "cdsSourceName": "title",
-        "semanticDomain": {
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the email signature for the email activity.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "languageCode",
-        "description": "Language of the email signature.",
-        "displayName": "Language",
-        "cdsSourceName": "languagecode",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.language",
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "overwriteTime",
-        "description": "For internal use only.",
-        "displayName": "Record Overwrite Time",
-        "cdsSourceName": "overwritetime",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "componentState",
-        "description": "For internal use only.",
-        "displayName": "Component State",
-        "cdsSourceName": "componentstate",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Published",
-                "value": "0"
-              },
-              {
-                "displayName": "Unpublished",
-                "value": "1"
-              },
-              {
-                "displayName": "Deleted",
-                "value": "2"
-              },
-              {
-                "displayName": "Deleted Unpublished",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "componentState_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isCustomizable",
-        "description": "Information that specifies whether this component can be customized.",
-        "displayName": "Customizable",
-        "cdsSourceName": "iscustomizable",
-        "dataType": "Boolean"
-      },
-      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier of the business unit that owns the email signature.",
         "displayName": "Owning Business Unit",
@@ -137,6 +53,16 @@
         "cdsSourceName": "body",
         "semanticDomain": {
           "maxLength": 1073741823
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "title",
+        "description": "Title of the email signature.",
+        "displayName": "Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "maxLength": 200
         },
         "dataType": "String"
       },
@@ -202,6 +128,13 @@
         "dataType": "DateTimeOffset"
       },
       {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the email signature for the email activity.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "generationTypeCode",
         "description": "For internal use only.",
         "displayName": "Generation Type Code",
@@ -213,6 +146,18 @@
         "dataType": "Int32"
       },
       {
+        "name": "languageCode",
+        "description": "Language of the email signature.",
+        "displayName": "Language",
+        "cdsSourceName": "languagecode",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.language",
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "String"
+      },
+      {
         "name": "importSequenceNumber",
         "description": "Unique identifier of the data import or data migration that created this record.",
         "displayName": "Import Sequence Number",
@@ -222,6 +167,54 @@
           "minValue": -2147483648
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "overwriteTime",
+        "description": "For internal use only.",
+        "displayName": "Record Overwrite Time",
+        "cdsSourceName": "overwritetime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "componentState",
+        "description": "For internal use only.",
+        "displayName": "Component State",
+        "cdsSourceName": "componentstate",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Published",
+                "value": "0"
+              },
+              {
+                "displayName": "Unpublished",
+                "value": "1"
+              },
+              {
+                "displayName": "Deleted",
+                "value": "2"
+              },
+              {
+                "displayName": "Deleted Unpublished",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "componentState_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "createdOnBehalfBy",
@@ -245,6 +238,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "isCustomizable",
+        "description": "Information that specifies whether this component can be customized.",
+        "displayName": "Customizable",
+        "cdsSourceName": "iscustomizable",
+        "dataType": "Boolean"
+      },
+      {
         "name": "overriddenCreatedOn",
         "description": "Date and time that the record was migrated.",
         "displayName": "Record Created On",
@@ -263,62 +263,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "EmailSignature",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "EmailSignature",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -399,6 +343,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "EmailSignature",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "EmailSignature",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
             "namespace": "core.applicationCommon"
           }
         }

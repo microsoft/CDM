@@ -13,6 +13,16 @@
     "cdsSourceName": "ServiceAppointment",
     "attributes": [
       {
+        "name": "activityAdditionalParams",
+        "description": "For internal use only.",
+        "displayName": "Additional Parameters",
+        "cdsSourceName": "activityadditionalparams",
+        "semanticDomain": {
+          "maxLength": 8192
+        },
+        "dataType": "String"
+      },
+      {
         "name": "activityId",
         "description": "Unique identifier of the service activity.",
         "displayName": "Service Activity",
@@ -35,147 +45,6 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "instanceTypeCode",
-        "description": "Type of instance of a recurring series.",
-        "displayName": "Recurring Instance Type",
-        "cdsSourceName": "instancetypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Not Recurring",
-                "value": "0"
-              },
-              {
-                "displayName": "Recurring Master",
-                "value": "1"
-              },
-              {
-                "displayName": "Recurring Instance",
-                "value": "2"
-              },
-              {
-                "displayName": "Recurring Exception",
-                "value": "3"
-              },
-              {
-                "displayName": "Recurring Future Exception",
-                "value": "4"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "instanceTypeCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isRegularActivity",
-        "description": "Information regarding whether the activity is a regular activity type or event type.",
-        "displayName": "Is Regular Activity",
-        "cdsSourceName": "isregularactivity",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the activity.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "scheduledEnd",
-        "description": "Enter the expected due date and time.",
-        "displayName": "Scheduled End",
-        "cdsSourceName": "scheduledend",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "scheduledStart",
-        "description": "Enter the expected due date and time.",
-        "displayName": "Scheduled Start",
-        "cdsSourceName": "scheduledstart",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "serviceId",
-        "description": "Choose the service scheduled to be performed during the service activity.",
-        "displayName": "Service",
-        "cdsSourceName": "serviceid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the service activity is open, completed, or canceled. Completed and canceled service activities are read-only and can't be edited.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Closed",
-                "value": "1"
-              },
-              {
-                "displayName": "Canceled",
-                "value": "2"
-              },
-              {
-                "displayName": "Scheduled",
-                "value": "3"
-              },
-              {
-                "displayName": "Open",
-                "value": "0"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "subject",
-        "description": "Type a short description about the objective or primary topic of the service activity.",
-        "displayName": "Subject",
-        "cdsSourceName": "subject",
-        "semanticDomain": {
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "activityAdditionalParams",
-        "description": "For internal use only.",
-        "displayName": "Additional Parameters",
-        "cdsSourceName": "activityadditionalparams",
-        "semanticDomain": {
-          "maxLength": 8192
         },
         "dataType": "String"
       },
@@ -319,6 +188,48 @@
         "dataType": "String"
       },
       {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring series.",
+        "displayName": "Recurring Instance Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "isBilled",
         "description": "Information which specifies whether the service activity was billed as part of resolving a case.",
         "displayName": "Is Billed",
@@ -330,6 +241,13 @@
         "description": "For internal use only.",
         "displayName": "Is Private",
         "cdsSourceName": "ismapiprivate",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
         "dataType": "Boolean"
       },
       {
@@ -390,6 +308,13 @@
           "minValue": -2147483648
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the activity.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
       },
       {
         "name": "owningBusinessUnit",
@@ -483,6 +408,26 @@
         "dataType": "Int32"
       },
       {
+        "name": "scheduledEnd",
+        "description": "Enter the expected due date and time.",
+        "displayName": "Scheduled End",
+        "cdsSourceName": "scheduledend",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "scheduledStart",
+        "description": "Enter the expected due date and time.",
+        "displayName": "Scheduled Start",
+        "cdsSourceName": "scheduledstart",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
         "name": "senderMailboxId",
         "description": "Unique identifier of the mailbox associated with the sender of the email message.",
         "displayName": "Sender's Mailbox",
@@ -505,6 +450,13 @@
         "displayName": "Series Id",
         "cdsSourceName": "seriesid",
         "dataType": "String"
+      },
+      {
+        "name": "serviceId",
+        "description": "Choose the service scheduled to be performed during the service activity.",
+        "displayName": "Service",
+        "cdsSourceName": "serviceid",
+        "dataType": "Guid"
       },
       {
         "name": "SLAId",
@@ -535,6 +487,44 @@
         "description": "Unique identifier of the Stage.",
         "displayName": "Process Stage",
         "cdsSourceName": "stageid",
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the service activity is open, completed, or canceled. Completed and canceled service activities are read-only and can't be edited.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Closed",
+                "value": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "2"
+              },
+              {
+                "displayName": "Scheduled",
+                "value": "3"
+              },
+              {
+                "displayName": "Open",
+                "value": "0"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
         "dataType": "String"
       },
       {
@@ -601,6 +591,16 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "subject",
+        "description": "Type a short description about the objective or primary topic of the service activity.",
+        "displayName": "Subject",
+        "cdsSourceName": "subject",
+        "semanticDomain": {
+          "maxLength": 200
         },
         "dataType": "String"
       },
@@ -819,90 +819,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ServiceActivity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ServiceActivity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "serviceId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ServiceActivity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "serviceId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Service",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -1008,6 +924,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ServiceActivity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ServiceActivity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },
@@ -1484,6 +1456,34 @@
             "semanticVersion": "0.5.5",
             "type": "KnowledgeArticle",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "serviceId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ServiceActivity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "serviceId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Service",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
           }
         }
       },

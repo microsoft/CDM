@@ -22,62 +22,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner ID",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Marketing Email",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "name",
-        "displayName": "Name",
-        "cdsSourceName": "msdyncrm_name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "UICEntityID",
-        "displayName": "UIC Entity ID",
-        "cdsSourceName": "msdyncrm_uicentityid",
-        "semanticDomain": {
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created on",
@@ -126,6 +70,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner ID",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique ID of the business unit that owns the record.",
         "displayName": "Owning business unit",
@@ -145,6 +96,36 @@
         "displayName": "Owning team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Marketing Email",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -242,6 +223,16 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "displayName": "Name",
+        "cdsSourceName": "msdyncrm_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
       },
       {
         "name": "automaticallyGeneratePlainText",
@@ -402,65 +393,18 @@
           "maxLength": 100
         },
         "dataType": "String"
+      },
+      {
+        "name": "UICEntityID",
+        "displayName": "UIC Entity ID",
+        "cdsSourceName": "msdyncrm_uicentityid",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingEmail",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingEmail",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -570,6 +514,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingEmail",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingEmail",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

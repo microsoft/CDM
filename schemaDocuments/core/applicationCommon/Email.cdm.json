@@ -13,214 +13,6 @@
     "cdsSourceName": "Email",
     "attributes": [
       {
-        "name": "activityId",
-        "description": "Unique identifier of the email activity.",
-        "displayName": "Email Message",
-        "cdsSourceName": "activityid",
-        "semanticDomain": {
-          "isPrimaryKey": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the email is open, completed, or canceled. Completed and canceled email is read-only and can't be edited.",
-        "displayName": "Activity Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Open",
-                "value": "0"
-              },
-              {
-                "displayName": "Completed",
-                "value": "1"
-              },
-              {
-                "displayName": "Canceled",
-                "value": "2"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "ownerId",
-        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "compressed",
-        "description": "Indicates if the body is compressed.",
-        "displayName": "Compression",
-        "cdsSourceName": "compressed",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "activityTypeCode",
-        "description": "Shows the type of activity.",
-        "displayName": "Activity Type",
-        "cdsSourceName": "activitytypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Case Resolution",
-                "value": "4206"
-              },
-              {
-                "displayName": "Letter",
-                "value": "4207"
-              },
-              {
-                "displayName": "Quote Close",
-                "value": "4211"
-              },
-              {
-                "displayName": "Task",
-                "value": "4212"
-              },
-              {
-                "displayName": "Service Activity",
-                "value": "4214"
-              },
-              {
-                "displayName": "Appointment",
-                "value": "4201"
-              },
-              {
-                "displayName": "Email",
-                "value": "4202"
-              },
-              {
-                "displayName": "Fax",
-                "value": "4204"
-              },
-              {
-                "displayName": "Quick Campaign",
-                "value": "4406"
-              },
-              {
-                "displayName": "Alert Subscription",
-                "value": "10022"
-              },
-              {
-                "displayName": "Invite Redemption",
-                "value": "10025"
-              },
-              {
-                "displayName": "Opportunity Close",
-                "value": "4208"
-              },
-              {
-                "displayName": "Order Close",
-                "value": "4209"
-              },
-              {
-                "displayName": "Phone Call",
-                "value": "4210"
-              },
-              {
-                "displayName": "Survey Activity",
-                "value": "10196"
-              },
-              {
-                "displayName": "Recurring Appointment",
-                "value": "4251"
-              },
-              {
-                "displayName": "Campaign Response",
-                "value": "4401"
-              },
-              {
-                "displayName": "Campaign Activity",
-                "value": "4402"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "activityTypeCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isRegularActivity",
-        "description": "Information regarding whether the activity is a regular activity type or event type.",
-        "displayName": "Is Regular Activity",
-        "cdsSourceName": "isregularactivity",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "attachmentCount",
-        "description": "Shows the umber of attachments of the email message.",
-        "displayName": "Attachment Count",
-        "cdsSourceName": "attachmentcount",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "emailReminderStatus",
-        "description": "Shows the status of the email reminder.",
-        "displayName": "Email Reminder Status",
-        "cdsSourceName": "emailreminderstatus",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "NotSet",
-                "value": "0"
-              },
-              {
-                "displayName": "ReminderSet",
-                "value": "1"
-              },
-              {
-                "displayName": "ReminderExpired",
-                "value": "2"
-              },
-              {
-                "displayName": "ReminderInvalid",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "emailReminderStatus_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "scheduledStart",
         "description": "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated.",
         "displayName": "Start Date",
@@ -365,6 +157,16 @@
         "displayName": "Is Workflow Created",
         "cdsSourceName": "isworkflowcreated",
         "dataType": "Boolean"
+      },
+      {
+        "name": "activityId",
+        "description": "Unique identifier of the email activity.",
+        "displayName": "Email Message",
+        "cdsSourceName": "activityid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
       },
       {
         "name": "scheduledEnd",
@@ -629,6 +431,47 @@
         "dataType": "Guid"
       },
       {
+        "name": "stateCode",
+        "description": "Shows whether the email is open, completed, or canceled. Completed and canceled email is read-only and can't be edited.",
+        "displayName": "Activity Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0"
+              },
+              {
+                "displayName": "Completed",
+                "value": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "messageId",
         "description": "Unique identifier of the email message. Used only for email that is received.",
         "displayName": "Message ID",
@@ -676,6 +519,13 @@
           "minValue": 0
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "compressed",
+        "description": "Indicates if the body is compressed.",
+        "displayName": "Compression",
+        "cdsSourceName": "compressed",
+        "dataType": "Boolean"
       },
       {
         "name": "notifications",
@@ -748,6 +598,107 @@
         "dataType": "Guid"
       },
       {
+        "name": "activityTypeCode",
+        "description": "Shows the type of activity.",
+        "displayName": "Activity Type",
+        "cdsSourceName": "activitytypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Case Resolution",
+                "value": "4206"
+              },
+              {
+                "displayName": "Letter",
+                "value": "4207"
+              },
+              {
+                "displayName": "Quote Close",
+                "value": "4211"
+              },
+              {
+                "displayName": "Task",
+                "value": "4212"
+              },
+              {
+                "displayName": "Service Activity",
+                "value": "4214"
+              },
+              {
+                "displayName": "Appointment",
+                "value": "4201"
+              },
+              {
+                "displayName": "Email",
+                "value": "4202"
+              },
+              {
+                "displayName": "Fax",
+                "value": "4204"
+              },
+              {
+                "displayName": "Quick Campaign",
+                "value": "4406"
+              },
+              {
+                "displayName": "Alert Subscription",
+                "value": "10022"
+              },
+              {
+                "displayName": "Invite Redemption",
+                "value": "10025"
+              },
+              {
+                "displayName": "Opportunity Close",
+                "value": "4208"
+              },
+              {
+                "displayName": "Order Close",
+                "value": "4209"
+              },
+              {
+                "displayName": "Phone Call",
+                "value": "4210"
+              },
+              {
+                "displayName": "Survey Activity",
+                "value": "10196"
+              },
+              {
+                "displayName": "Recurring Appointment",
+                "value": "4251"
+              },
+              {
+                "displayName": "Campaign Response",
+                "value": "4401"
+              },
+              {
+                "displayName": "Campaign Activity",
+                "value": "4402"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "activityTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
+        "dataType": "Boolean"
+      },
+      {
         "name": "owningTeam",
         "description": "Unique identifier of the team who owns the email activity.",
         "displayName": "Owning Team",
@@ -785,6 +736,17 @@
         "displayName": "Senders Account",
         "cdsSourceName": "sendersaccount",
         "dataType": "Guid"
+      },
+      {
+        "name": "attachmentCount",
+        "description": "Shows the umber of attachments of the email message.",
+        "displayName": "Attachment Count",
+        "cdsSourceName": "attachmentcount",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
       },
       {
         "name": "senderMailboxId",
@@ -1156,6 +1118,44 @@
         "dataType": "String"
       },
       {
+        "name": "emailReminderStatus",
+        "description": "Shows the status of the email reminder.",
+        "displayName": "Email Reminder Status",
+        "cdsSourceName": "emailreminderstatus",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "NotSet",
+                "value": "0"
+              },
+              {
+                "displayName": "ReminderSet",
+                "value": "1"
+              },
+              {
+                "displayName": "ReminderExpired",
+                "value": "2"
+              },
+              {
+                "displayName": "ReminderInvalid",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "emailReminderStatus_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "emailReminderText",
         "description": "For internal use only.",
         "displayName": "Email Reminder Text",
@@ -1223,62 +1223,6 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Activity",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Email",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Email",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
             "namespace": "core.applicationCommon"
           }
         }
@@ -1475,6 +1419,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "KnowledgeArticle",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Email",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Email",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
             "namespace": "core.applicationCommon"
           }
         }

@@ -33,64 +33,6 @@
         "dataType": "DateTimeOffset"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningBusinessUnit",
-        "description": "Unique identifier for the business unit that owns the record",
-        "displayName": "Owning Business Unit",
-        "cdsSourceName": "owningbusinessunit",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningUser",
-        "description": "Unique identifier for the user that owns the record.",
-        "displayName": "Owning User",
-        "cdsSourceName": "owninguser",
-        "dataType": "Guid"
-      },
-      {
-        "name": "isSentToCustomer",
-        "description": "This should be set to Yes when the user emails the article link to a customer. ",
-        "displayName": "Sent To Customer",
-        "cdsSourceName": "issenttocustomer",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Knowledge Article Incident",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdBy",
         "description": "Unique identifier of the user who created the record.",
         "displayName": "Created By",
@@ -126,6 +68,27 @@
         "description": "Unique identifier of the delegate user who modified the record.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier for the business unit that owns the record",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier for the user that owns the record.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
         "dataType": "Guid"
       },
       {
@@ -234,6 +197,43 @@
         "dataType": "String"
       },
       {
+        "name": "isSentToCustomer",
+        "description": "This should be set to Yes when the user emails the article link to a customer. ",
+        "displayName": "Sent To Customer",
+        "cdsSourceName": "issenttocustomer",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Knowledge Article Incident",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "statusCode",
         "description": "Reason for the status of the Knowledge Article Incident",
         "displayName": "Status Reason",
@@ -285,90 +285,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "KnowledgeArticleIncident",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "KnowledgeArticleIncident",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "owningUser",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "KnowledgeArticleIncident",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -458,6 +374,90 @@
           "attributes": [
             {
               "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticleIncident",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticleIncident",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "KnowledgeArticleIncident",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "owningUser",
               "comparisonOrder": 0
             }
           ],

@@ -13,6 +13,16 @@
     "cdsSourceName": "IncidentResolution",
     "attributes": [
       {
+        "name": "activityAdditionalParams",
+        "description": "Additional information provided by the external application as JSON. For internal use only.",
+        "displayName": "Activity Additional Parameters",
+        "cdsSourceName": "activityadditionalparams",
+        "semanticDomain": {
+          "maxLength": 8192
+        },
+        "dataType": "String"
+      },
+      {
         "name": "activityId",
         "description": "Unique identifier of the case resolution activity.",
         "displayName": "Case Resolution",
@@ -35,116 +45,6 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "instanceTypeCode",
-        "description": "Type of instance of a recurring series.",
-        "displayName": "Recurring Instance Type",
-        "cdsSourceName": "instancetypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Not Recurring",
-                "value": "0"
-              },
-              {
-                "displayName": "Recurring Master",
-                "value": "1"
-              },
-              {
-                "displayName": "Recurring Instance",
-                "value": "2"
-              },
-              {
-                "displayName": "Recurring Exception",
-                "value": "3"
-              },
-              {
-                "displayName": "Recurring Future Exception",
-                "value": "4"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "instanceTypeCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isRegularActivity",
-        "description": "Information regarding whether the activity is a regular activity type or event type.",
-        "displayName": "Is Regular Activity",
-        "cdsSourceName": "isregularactivity",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the activity.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the case resolution is open, completed, or canceled. By default, all case resolutions are completed and the status value can't be changed.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Open",
-                "value": "0"
-              },
-              {
-                "displayName": "Completed",
-                "value": "1"
-              },
-              {
-                "displayName": "Canceled",
-                "value": "2"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "subject",
-        "description": "Subject associated with the case resolution activity.",
-        "displayName": "Subject",
-        "cdsSourceName": "subject",
-        "semanticDomain": {
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "activityAdditionalParams",
-        "description": "Additional information provided by the external application as JSON. For internal use only.",
-        "displayName": "Activity Additional Parameters",
-        "cdsSourceName": "activityadditionalparams",
-        "semanticDomain": {
-          "maxLength": 8192
         },
         "dataType": "String"
       },
@@ -288,6 +188,48 @@
         "dataType": "String"
       },
       {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring series.",
+        "displayName": "Recurring Instance Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "isBilled",
         "description": "Information about whether the case resolution activity was billed as part of resolving a case.",
         "displayName": "Is Billed",
@@ -299,6 +241,13 @@
         "description": "For internal use only.",
         "displayName": "Is Private",
         "cdsSourceName": "ismapiprivate",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
         "dataType": "Boolean"
       },
       {
@@ -359,6 +308,13 @@
           "minValue": -2147483648
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the activity.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
       },
       {
         "name": "owningBusinessUnit",
@@ -533,6 +489,40 @@
         "dataType": "String"
       },
       {
+        "name": "stateCode",
+        "description": "Shows whether the case resolution is open, completed, or canceled. By default, all case resolutions are completed and the status value can't be changed.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Open",
+                "value": "0"
+              },
+              {
+                "displayName": "Completed",
+                "value": "1"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "statusCode",
         "description": "Reason for the status of the case resolution activity.",
         "displayName": "Status Reason",
@@ -566,6 +556,16 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "subject",
+        "description": "Subject associated with the case resolution activity.",
+        "displayName": "Subject",
+        "cdsSourceName": "subject",
+        "semanticDomain": {
+          "maxLength": 200
         },
         "dataType": "String"
       },
@@ -793,62 +793,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CaseResolution",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CaseResolution",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -954,6 +898,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CaseResolution",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CaseResolution",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

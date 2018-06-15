@@ -23,36 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "organizationId",
-        "description": "Unique identifier for the organization",
-        "displayName": "Organization Id",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Name of the site.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 160
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "timeZoneCode",
-        "description": "Local time zone for the site.",
-        "displayName": "Time Zone",
-        "cdsSourceName": "timezonecode",
-        "semanticDomain": {
-          "semanticTypeName": "means.location.timezone",
-          "maxValue": 1500,
-          "minValue": -1500
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the site was created.",
         "displayName": "Created On",
@@ -98,6 +68,13 @@
         "description": "Unique identifier of the delegate user who last modified the site.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
         "dataType": "Guid"
       },
       {
@@ -149,6 +126,17 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "description": "Name of the site.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 160
+        },
+        "dataType": "String"
       },
       {
         "name": "address1AddressId",
@@ -674,37 +662,21 @@
           "maxLength": 100
         },
         "dataType": "String"
+      },
+      {
+        "name": "timeZoneCode",
+        "description": "Local time zone for the site.",
+        "displayName": "Time Zone",
+        "cdsSourceName": "timezonecode",
+        "semanticDomain": {
+          "semanticTypeName": "means.location.timezone",
+          "maxValue": 1500,
+          "minValue": -1500
+        },
+        "dataType": "String"
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Site",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -814,6 +786,34 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Site",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
           }
         }
       }

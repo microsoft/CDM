@@ -13,6 +13,30 @@
     "cdsSourceName": "CampaignActivity",
     "attributes": [
       {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the activity.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "actualEnd",
+        "description": "Enter the date when the campaign activity was actually  completed.",
+        "displayName": "Actual End",
+        "cdsSourceName": "actualend",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version number of the activity.",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
         "name": "activityId",
         "description": "Unique identifier of the campaign activity.",
         "displayName": "Campaign Activity",
@@ -21,6 +45,40 @@
           "isPrimaryKey": true
         },
         "dataType": "Guid"
+      },
+      {
+        "name": "isBilled",
+        "description": "Information regarding whether the campaign activity was billed as part of resolving a case.",
+        "displayName": "Is Billed",
+        "cdsSourceName": "isbilled",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "createdBy",
+        "description": "Unique identifier of the user who created the activity.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "description",
+        "description": "Type additional information to describe the campaign activity, such as key talking points, objectives, or details about the target audience.",
+        "displayName": "Description",
+        "cdsSourceName": "description",
+        "semanticDomain": {
+          "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when activity was last modified.",
+        "displayName": "Last Updated",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
       },
       {
         "name": "activityTypeCode",
@@ -71,137 +129,6 @@
           "isReadOnly": true
         },
         "dataType": "String"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the activity.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "regardingObjectId",
-        "description": "Choose the parent campaign so that the campaign activity costs reflect in the correct campaign for reporting.",
-        "displayName": "Parent Campaign",
-        "cdsSourceName": "regardingobjectid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "subject",
-        "description": "Type a short description about the objective or primary topic of the campaign activity.",
-        "displayName": "Subject",
-        "cdsSourceName": "subject",
-        "semanticDomain": {
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "instanceTypeCode",
-        "description": "Type of instance of a recurring series.",
-        "displayName": "Recurring Instance Type",
-        "cdsSourceName": "instancetypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Not Recurring",
-                "value": "0"
-              },
-              {
-                "displayName": "Recurring Master",
-                "value": "1"
-              },
-              {
-                "displayName": "Recurring Instance",
-                "value": "2"
-              },
-              {
-                "displayName": "Recurring Exception",
-                "value": "3"
-              },
-              {
-                "displayName": "Recurring Future Exception",
-                "value": "4"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "instanceTypeCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isRegularActivity",
-        "description": "Information regarding whether the activity is a regular activity type or event type.",
-        "displayName": "Is Regular Activity",
-        "cdsSourceName": "isregularactivity",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "owningBusinessUnit",
-        "description": "Unique identifier of the business unit that owns the activity.",
-        "displayName": "Owning Business Unit",
-        "cdsSourceName": "owningbusinessunit",
-        "dataType": "Guid"
-      },
-      {
-        "name": "actualEnd",
-        "description": "Enter the date when the campaign activity was actually  completed.",
-        "displayName": "Actual End",
-        "cdsSourceName": "actualend",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "versionNumber",
-        "description": "Version number of the activity.",
-        "displayName": "Version Number",
-        "cdsSourceName": "versionnumber",
-        "dataType": "Int64"
-      },
-      {
-        "name": "isBilled",
-        "description": "Information regarding whether the campaign activity was billed as part of resolving a case.",
-        "displayName": "Is Billed",
-        "cdsSourceName": "isbilled",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "createdBy",
-        "description": "Unique identifier of the user who created the activity.",
-        "displayName": "Created By",
-        "cdsSourceName": "createdby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "description",
-        "description": "Type additional information to describe the campaign activity, such as key talking points, objectives, or details about the target audience.",
-        "displayName": "Description",
-        "cdsSourceName": "description",
-        "semanticDomain": {
-          "maxLength": 2000
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "modifiedOn",
-        "description": "Date and time when activity was last modified.",
-        "displayName": "Last Updated",
-        "cdsSourceName": "modifiedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
-        },
-        "dataType": "DateTimeOffset"
       },
       {
         "name": "scheduledEnd",
@@ -293,6 +220,13 @@
         "dataType": "String"
       },
       {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the activity.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "actualStart",
         "description": "Enter the actual start date and time for the campaign activity to determine if the campaign activity started on the scheduled time.",
         "displayName": "Actual Start",
@@ -343,6 +277,23 @@
           "semanticTypeName": "means.reference.displayText",
           "inSupportOf": "teamType",
           "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "regardingObjectId",
+        "description": "Choose the parent campaign so that the campaign activity costs reflect in the correct campaign for reporting.",
+        "displayName": "Parent Campaign",
+        "cdsSourceName": "regardingobjectid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "subject",
+        "description": "Type a short description about the objective or primary topic of the campaign activity.",
+        "displayName": "Subject",
+        "cdsSourceName": "subject",
+        "semanticDomain": {
+          "maxLength": 200
         },
         "dataType": "String"
       },
@@ -400,11 +351,60 @@
         "dataType": "Int32"
       },
       {
+        "name": "instanceTypeCode",
+        "description": "Type of instance of a recurring series.",
+        "displayName": "Recurring Instance Type",
+        "cdsSourceName": "instancetypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Not Recurring",
+                "value": "0"
+              },
+              {
+                "displayName": "Recurring Master",
+                "value": "1"
+              },
+              {
+                "displayName": "Recurring Instance",
+                "value": "2"
+              },
+              {
+                "displayName": "Recurring Exception",
+                "value": "3"
+              },
+              {
+                "displayName": "Recurring Future Exception",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "instanceTypeCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "seriesId",
         "description": "Uniqueidentifier specifying the id of recurring series of an instance.",
         "displayName": "Series Id",
         "cdsSourceName": "seriesid",
         "dataType": "String"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
+        "dataType": "Boolean"
       },
       {
         "name": "modifiedOnBehalfBy",
@@ -936,6 +936,34 @@
         "referencing": {
           "attributes": [
             {
+              "name": "owningBusinessUnit",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignActivity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "businessUnitId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BusinessUnit",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "activityId",
               "comparisonOrder": 0
             }
@@ -957,6 +985,34 @@
             "semanticVersion": "0.5.5",
             "type": "Activity",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CampaignActivity",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
           }
         }
       },
@@ -1237,62 +1293,6 @@
             "semanticVersion": "0.5.5",
             "type": "QuickCampaign",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "owningBusinessUnit",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CampaignActivity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "businessUnitId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BusinessUnit",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "createdBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CampaignActivity",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
           }
         }
       },

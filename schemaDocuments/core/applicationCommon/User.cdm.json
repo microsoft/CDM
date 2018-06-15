@@ -37,6 +37,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "parentSystemUserId",
+        "description": "Unique identifier of the manager of the user.",
+        "displayName": "Manager",
+        "cdsSourceName": "parentsystemuserid",
+        "dataType": "Guid"
+      },
+      {
         "name": "firstName",
         "description": "First name of the user.",
         "displayName": "First Name",
@@ -46,390 +53,6 @@
           "maxLength": 64
         },
         "dataType": "String"
-      },
-      {
-        "name": "lastName",
-        "description": "Last name of the user.",
-        "displayName": "Last Name",
-        "cdsSourceName": "lastname",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.person.lastName",
-          "maxLength": 64
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "domainName",
-        "description": "Active Directory domain of which the user is a member.",
-        "displayName": "User Name",
-        "cdsSourceName": "domainname",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 1024
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "setupUser",
-        "description": "Check if user is a setup user.",
-        "displayName": "Restricted Access Mode",
-        "cdsSourceName": "setupuser",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "incomingEmailDeliveryMethod",
-        "description": "Incoming email delivery method for the user.",
-        "displayName": "Incoming Email Delivery Method",
-        "cdsSourceName": "incomingemaildeliverymethod",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "None",
-                "value": "0"
-              },
-              {
-                "displayName": "Microsoft Dynamics 365 for Outlook",
-                "value": "1"
-              },
-              {
-                "displayName": "Server-Side Synchronization or Email Router",
-                "value": "2"
-              },
-              {
-                "displayName": "Forward Mailbox",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "incomingEmailDeliveryMethod_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "outgoingEmailDeliveryMethod",
-        "description": "Outgoing email delivery method for the user.",
-        "displayName": "Outgoing Email Delivery Method",
-        "cdsSourceName": "outgoingemaildeliverymethod",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "None",
-                "value": "0"
-              },
-              {
-                "displayName": "Microsoft Dynamics 365 for Outlook",
-                "value": "1"
-              },
-              {
-                "displayName": "Server-Side Synchronization or Email Router",
-                "value": "2"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "outgoingEmailDeliveryMethod_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "accessMode",
-        "description": "Type of user.",
-        "displayName": "Access Mode",
-        "cdsSourceName": "accessmode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Read-Write",
-                "value": "0"
-              },
-              {
-                "displayName": "Administrative",
-                "value": "1"
-              },
-              {
-                "displayName": "Read",
-                "value": "2"
-              },
-              {
-                "displayName": "Support User",
-                "value": "3"
-              },
-              {
-                "displayName": "Non-interactive",
-                "value": "4"
-              },
-              {
-                "displayName": "Delegated Admin",
-                "value": "5"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "accessMode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "inviteStatusCode",
-        "description": "User invitation status.",
-        "displayName": "Invitation Status",
-        "cdsSourceName": "invitestatuscode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Invitation Rejected",
-                "value": "5"
-              },
-              {
-                "displayName": "Invitation Revoked",
-                "value": "6"
-              },
-              {
-                "displayName": "Invitation Not Sent",
-                "value": "0"
-              },
-              {
-                "displayName": "Invited",
-                "value": "1"
-              },
-              {
-                "displayName": "Invitation Near Expired",
-                "value": "2"
-              },
-              {
-                "displayName": "Invitation Expired",
-                "value": "3"
-              },
-              {
-                "displayName": "Invitation Accepted",
-                "value": "4"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "inviteStatusCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isIntegrationUser",
-        "description": "Check if user is an integration user.",
-        "displayName": "Integration user mode",
-        "cdsSourceName": "isintegrationuser",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "defaultFiltersPopulated",
-        "description": "Indicates if default outlook filters have been populated.",
-        "displayName": "Default Filters Populated",
-        "cdsSourceName": "defaultfilterspopulated",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "emailRouterAccessApproval",
-        "description": "Shows the status of the primary email address.",
-        "displayName": "Primary Email Status",
-        "cdsSourceName": "emailrouteraccessapproval",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Empty",
-                "value": "0"
-              },
-              {
-                "displayName": "Approved",
-                "value": "1"
-              },
-              {
-                "displayName": "Pending Approval",
-                "value": "2"
-              },
-              {
-                "displayName": "Rejected",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "emailRouterAccessApproval_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "CALType",
-        "description": "License type of user.",
-        "displayName": "License Type",
-        "cdsSourceName": "caltype",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Field Service",
-                "value": "11"
-              },
-              {
-                "displayName": "Project Service",
-                "value": "12"
-              },
-              {
-                "displayName": "Device Essential",
-                "value": "6"
-              },
-              {
-                "displayName": "Enterprise",
-                "value": "7"
-              },
-              {
-                "displayName": "Device Enterprise",
-                "value": "8"
-              },
-              {
-                "displayName": "Sales",
-                "value": "9"
-              },
-              {
-                "displayName": "Service",
-                "value": "10"
-              },
-              {
-                "displayName": "Professional",
-                "value": "0"
-              },
-              {
-                "displayName": "Administrative",
-                "value": "1"
-              },
-              {
-                "displayName": "Basic",
-                "value": "2"
-              },
-              {
-                "displayName": "Device Professional",
-                "value": "3"
-              },
-              {
-                "displayName": "Device Basic",
-                "value": "4"
-              },
-              {
-                "displayName": "Essential",
-                "value": "5"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "CALType_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isLicensed",
-        "description": "Information about whether the user is licensed.",
-        "displayName": "User Licensed",
-        "cdsSourceName": "islicensed",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "isSyncWithDirectory",
-        "description": "Information about whether the user is synced with the directory.",
-        "displayName": "User Synced",
-        "cdsSourceName": "issyncwithdirectory",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "userLicenseType",
-        "description": "Shows the type of user license.",
-        "displayName": "User License Type",
-        "cdsSourceName": "userlicensetype",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "isEmailAddressApprovedByO365Admin",
-        "description": "Shows the status of approval of the email address by O365 Admin.",
-        "displayName": "Email Address O365 Admin Approval Status",
-        "cdsSourceName": "isemailaddressapprovedbyo365admin",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "defaultOdbFolderName",
-        "description": "Type a default folder name for the user's OneDrive For Business location.",
-        "displayName": "Default OneDrive for Business Folder Name",
-        "cdsSourceName": "defaultodbfoldername",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "identityId",
-        "description": "For internal use only.",
-        "displayName": "Unique user identity id",
-        "cdsSourceName": "identityid",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "parentSystemUserId",
-        "description": "Unique identifier of the manager of the user.",
-        "displayName": "Manager",
-        "cdsSourceName": "parentsystemuserid",
-        "dataType": "Guid"
       },
       {
         "name": "salutation",
@@ -449,6 +72,17 @@
         "semanticDomain": {
           "semanticTypeName": "means.identity.person.middleName",
           "maxLength": 50
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "lastName",
+        "description": "Last name of the user.",
+        "displayName": "Last Name",
+        "cdsSourceName": "lastname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.person.lastName",
+          "maxLength": 64
         },
         "dataType": "String"
       },
@@ -651,6 +285,17 @@
         "semanticDomain": {
           "semanticTypeName": "means.reference.URL",
           "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "domainName",
+        "description": "Active Directory domain of which the user is a member.",
+        "displayName": "User Name",
+        "cdsSourceName": "domainname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 1024
         },
         "dataType": "String"
       },
@@ -1294,6 +939,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "setupUser",
+        "description": "Check if user is a setup user.",
+        "displayName": "Restricted Access Mode",
+        "cdsSourceName": "setupuser",
+        "dataType": "Boolean"
+      },
+      {
         "name": "windowsLiveID",
         "description": "Windows Live ID",
         "displayName": "Windows Live ID",
@@ -1301,6 +953,78 @@
         "semanticDomain": {
           "semanticTypeName": "means.identity.service.email",
           "maxLength": 1024
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "incomingEmailDeliveryMethod",
+        "description": "Incoming email delivery method for the user.",
+        "displayName": "Incoming Email Delivery Method",
+        "cdsSourceName": "incomingemaildeliverymethod",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Microsoft Dynamics 365 for Outlook",
+                "value": "1"
+              },
+              {
+                "displayName": "Server-Side Synchronization or Email Router",
+                "value": "2"
+              },
+              {
+                "displayName": "Forward Mailbox",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "incomingEmailDeliveryMethod_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "outgoingEmailDeliveryMethod",
+        "description": "Outgoing email delivery method for the user.",
+        "displayName": "Outgoing Email Delivery Method",
+        "cdsSourceName": "outgoingemaildeliverymethod",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "None",
+                "value": "0"
+              },
+              {
+                "displayName": "Microsoft Dynamics 365 for Outlook",
+                "value": "1"
+              },
+              {
+                "displayName": "Server-Side Synchronization or Email Router",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "outgoingEmailDeliveryMethod_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
         },
         "dataType": "String"
       },
@@ -1314,6 +1038,102 @@
           "minValue": -2147483648
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "accessMode",
+        "description": "Type of user.",
+        "displayName": "Access Mode",
+        "cdsSourceName": "accessmode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Read-Write",
+                "value": "0"
+              },
+              {
+                "displayName": "Administrative",
+                "value": "1"
+              },
+              {
+                "displayName": "Read",
+                "value": "2"
+              },
+              {
+                "displayName": "Support User",
+                "value": "3"
+              },
+              {
+                "displayName": "Non-interactive",
+                "value": "4"
+              },
+              {
+                "displayName": "Delegated Admin",
+                "value": "5"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "accessMode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "inviteStatusCode",
+        "description": "User invitation status.",
+        "displayName": "Invitation Status",
+        "cdsSourceName": "invitestatuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Invitation Rejected",
+                "value": "5"
+              },
+              {
+                "displayName": "Invitation Revoked",
+                "value": "6"
+              },
+              {
+                "displayName": "Invitation Not Sent",
+                "value": "0"
+              },
+              {
+                "displayName": "Invited",
+                "value": "1"
+              },
+              {
+                "displayName": "Invitation Near Expired",
+                "value": "2"
+              },
+              {
+                "displayName": "Invitation Expired",
+                "value": "3"
+              },
+              {
+                "displayName": "Invitation Accepted",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "inviteStatusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "overriddenCreatedOn",
@@ -1392,6 +1212,20 @@
         "dataType": "String"
       },
       {
+        "name": "isIntegrationUser",
+        "description": "Check if user is an integration user.",
+        "displayName": "Integration user mode",
+        "cdsSourceName": "isintegrationuser",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "defaultFiltersPopulated",
+        "description": "Indicates if default outlook filters have been populated.",
+        "displayName": "Default Filters Populated",
+        "cdsSourceName": "defaultfilterspopulated",
+        "dataType": "Boolean"
+      },
+      {
         "name": "createdOnBehalfBy",
         "description": "Unique identifier of the delegate user who created the systemuser.",
         "displayName": "Created By (Delegate)",
@@ -1413,6 +1247,44 @@
         "dataType": "Guid"
       },
       {
+        "name": "emailRouterAccessApproval",
+        "description": "Shows the status of the primary email address.",
+        "displayName": "Primary Email Status",
+        "cdsSourceName": "emailrouteraccessapproval",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Empty",
+                "value": "0"
+              },
+              {
+                "displayName": "Approved",
+                "value": "1"
+              },
+              {
+                "displayName": "Pending Approval",
+                "value": "2"
+              },
+              {
+                "displayName": "Rejected",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "emailRouterAccessApproval_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "transactionCurrencyId",
         "description": "Unique identifier of the currency associated with the systemuser.",
         "displayName": "Currency",
@@ -1429,6 +1301,94 @@
           "minValue": 1e-10
         },
         "dataType": "Decimal"
+      },
+      {
+        "name": "CALType",
+        "description": "License type of user.",
+        "displayName": "License Type",
+        "cdsSourceName": "caltype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Field Service",
+                "value": "11"
+              },
+              {
+                "displayName": "Project Service",
+                "value": "12"
+              },
+              {
+                "displayName": "Device Essential",
+                "value": "6"
+              },
+              {
+                "displayName": "Enterprise",
+                "value": "7"
+              },
+              {
+                "displayName": "Device Enterprise",
+                "value": "8"
+              },
+              {
+                "displayName": "Sales",
+                "value": "9"
+              },
+              {
+                "displayName": "Service",
+                "value": "10"
+              },
+              {
+                "displayName": "Professional",
+                "value": "0"
+              },
+              {
+                "displayName": "Administrative",
+                "value": "1"
+              },
+              {
+                "displayName": "Basic",
+                "value": "2"
+              },
+              {
+                "displayName": "Device Professional",
+                "value": "3"
+              },
+              {
+                "displayName": "Device Basic",
+                "value": "4"
+              },
+              {
+                "displayName": "Essential",
+                "value": "5"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "CALType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isLicensed",
+        "description": "Information about whether the user is licensed.",
+        "displayName": "User Licensed",
+        "cdsSourceName": "islicensed",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isSyncWithDirectory",
+        "description": "Information about whether the user is synced with the directory.",
+        "displayName": "User Synced",
+        "cdsSourceName": "issyncwithdirectory",
+        "dataType": "Boolean"
       },
       {
         "name": "yammerEmailAddress",
@@ -1457,6 +1417,17 @@
         "displayName": "Mailbox",
         "cdsSourceName": "defaultmailbox",
         "dataType": "Guid"
+      },
+      {
+        "name": "userLicenseType",
+        "description": "Shows the type of user license.",
+        "displayName": "User License Type",
+        "cdsSourceName": "userlicensetype",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
       },
       {
         "name": "entityImageId",
@@ -1500,6 +1471,13 @@
         "dataType": "String"
       },
       {
+        "name": "isEmailAddressApprovedByO365Admin",
+        "description": "Shows the status of approval of the email address by O365 Admin.",
+        "displayName": "Email Address O365 Admin Approval Status",
+        "cdsSourceName": "isemailaddressapprovedbyo365admin",
+        "dataType": "Boolean"
+      },
+      {
         "name": "positionId",
         "description": "User's position in hierarchical security model.",
         "displayName": "Position",
@@ -1535,6 +1513,17 @@
         "dataType": "Guid"
       },
       {
+        "name": "defaultOdbFolderName",
+        "description": "Type a default folder name for the user's OneDrive For Business location.",
+        "displayName": "Default OneDrive for Business Folder Name",
+        "cdsSourceName": "defaultodbfoldername",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
         "name": "applicationId",
         "description": "The identifier for the application. This is used to access data in another application.",
         "displayName": "Application ID",
@@ -1557,6 +1546,17 @@
         "displayName": "Azure AD Object ID",
         "cdsSourceName": "azureactivedirectoryobjectid",
         "dataType": "String"
+      },
+      {
+        "name": "identityId",
+        "description": "For internal use only.",
+        "displayName": "Unique user identity id",
+        "cdsSourceName": "identityid",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
       },
       {
         "name": "territoryId",

@@ -23,11 +23,109 @@
         "dataType": "Guid"
       },
       {
+        "name": "createdOn",
+        "description": "Date and time when the record was created.",
+        "displayName": "Created On",
+        "cdsSourceName": "createdon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "createdBy",
+        "description": "Shows who created the record.",
+        "displayName": "Created By",
+        "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the record was modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "modifiedBy",
+        "description": "Shows who last updated the record.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "createdOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Created By (Delegate)",
+        "cdsSourceName": "createdonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOnBehalfBy",
+        "description": "Shows who created the record on behalf of another user.",
+        "displayName": "Modified By (Delegate)",
+        "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
         "name": "organizationId",
         "description": "Unique identifier for the organization",
         "displayName": "Organization Id",
         "cdsSourceName": "organizationid",
         "dataType": "Guid"
+      },
+      {
+        "name": "versionNumber",
+        "description": "Version Number",
+        "displayName": "Version Number",
+        "cdsSourceName": "versionnumber",
+        "dataType": "Int64"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Sequence number of the import that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "overriddenCreatedOn",
+        "description": "Date and time that the record was migrated.",
+        "displayName": "Record Created On",
+        "cdsSourceName": "overriddencreatedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "timeZoneRuleVersionNumber",
+        "description": "For internal use only.",
+        "displayName": "Time Zone Rule Version Number",
+        "cdsSourceName": "timezoneruleversionnumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "UTCConversionTimeZoneCode",
+        "description": "Time zone code that was in use when the record was created.",
+        "displayName": "UTC Conversion Time Zone Code",
+        "cdsSourceName": "utcconversiontimezonecode",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -1
+        },
+        "dataType": "Int32"
       },
       {
         "name": "name",
@@ -116,6 +214,38 @@
         "dataType": "String"
       },
       {
+        "name": "statusCode",
+        "description": "Shows whether the product relationship is active or inactive.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "substitutedProductId",
         "description": "Select the related product that the relationship needs to be defined for.",
         "displayName": "Related Product",
@@ -153,136 +283,6 @@
         "dataType": "String"
       },
       {
-        "name": "createdOn",
-        "description": "Date and time when the record was created.",
-        "displayName": "Created On",
-        "cdsSourceName": "createdon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "createdBy",
-        "description": "Shows who created the record.",
-        "displayName": "Created By",
-        "cdsSourceName": "createdby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "modifiedOn",
-        "description": "Date and time when the record was modified.",
-        "displayName": "Modified On",
-        "cdsSourceName": "modifiedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "modifiedBy",
-        "description": "Shows who last updated the record.",
-        "displayName": "Modified By",
-        "cdsSourceName": "modifiedby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "createdOnBehalfBy",
-        "description": "Shows who created the record on behalf of another user.",
-        "displayName": "Created By (Delegate)",
-        "cdsSourceName": "createdonbehalfby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "modifiedOnBehalfBy",
-        "description": "Shows who created the record on behalf of another user.",
-        "displayName": "Modified By (Delegate)",
-        "cdsSourceName": "modifiedonbehalfby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "versionNumber",
-        "description": "Version Number",
-        "displayName": "Version Number",
-        "cdsSourceName": "versionnumber",
-        "dataType": "Int64"
-      },
-      {
-        "name": "importSequenceNumber",
-        "description": "Sequence number of the import that created this record.",
-        "displayName": "Import Sequence Number",
-        "cdsSourceName": "importsequencenumber",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "overriddenCreatedOn",
-        "description": "Date and time that the record was migrated.",
-        "displayName": "Record Created On",
-        "cdsSourceName": "overriddencreatedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.creation"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "timeZoneRuleVersionNumber",
-        "description": "For internal use only.",
-        "displayName": "Time Zone Rule Version Number",
-        "cdsSourceName": "timezoneruleversionnumber",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -1
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "UTCConversionTimeZoneCode",
-        "description": "Time zone code that was in use when the record was created.",
-        "displayName": "UTC Conversion Time Zone Code",
-        "cdsSourceName": "utcconversiontimezonecode",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -1
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "statusCode",
-        "description": "Shows whether the product relationship is active or inactive.",
-        "displayName": "Status Reason",
-        "cdsSourceName": "statuscode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "1",
-                "correlationValue": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "2",
-                "correlationValue": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "statusCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "exchangeRate",
         "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
         "displayName": "Exchange Rate",
@@ -302,90 +302,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ProductRelationship",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "productId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ProductRelationship",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "productId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Product",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "substitutedProductId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ProductRelationship",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "productId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Product",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -495,6 +411,90 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ProductRelationship",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "productId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ProductRelationship",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "productId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Product",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "substitutedProductId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ProductRelationship",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "productId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Product",
+            "namespace": "core.applicationCommon/foundationCommon"
           }
         }
       },

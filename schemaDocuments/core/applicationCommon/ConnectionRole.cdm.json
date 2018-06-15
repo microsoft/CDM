@@ -23,6 +23,23 @@
         "dataType": "Guid"
       },
       {
+        "name": "modifiedBy",
+        "description": "Unique identifier of the user who last modified the connection role.",
+        "displayName": "Modified By",
+        "cdsSourceName": "modifiedby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "modifiedOn",
+        "description": "Date and time when the connection role was last modified.",
+        "displayName": "Modified On",
+        "cdsSourceName": "modifiedon",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
         "name": "name",
         "description": "Name of the connection role.",
         "displayName": "Name",
@@ -32,6 +49,17 @@
           "maxLength": 100
         },
         "dataType": "String"
+      },
+      {
+        "name": "importSequenceNumber",
+        "description": "Unique identifier of the data import or data migration that created this record.",
+        "displayName": "Import Sequence Number",
+        "cdsSourceName": "importsequencenumber",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
       },
       {
         "name": "stateCode",
@@ -62,117 +90,6 @@
           "isReadOnly": true
         },
         "dataType": "String"
-      },
-      {
-        "name": "organizationId",
-        "description": "Unique identifier of the organization that this connection role belongs to.",
-        "displayName": "Organization",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "solutionId",
-        "description": "Unique identifier of the associated solution.",
-        "displayName": "Solution",
-        "cdsSourceName": "solutionid",
-        "dataType": "String"
-      },
-      {
-        "name": "componentState",
-        "description": "State of the component.",
-        "displayName": "Component State",
-        "cdsSourceName": "componentstate",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Published",
-                "value": "0"
-              },
-              {
-                "displayName": "Unpublished",
-                "value": "1"
-              },
-              {
-                "displayName": "Deleted",
-                "value": "2"
-              },
-              {
-                "displayName": "Deleted Unpublished",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "componentState_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "overwriteTime",
-        "description": "Date and time when the record was last overwritten.",
-        "displayName": "Overwritten On",
-        "cdsSourceName": "overwritetime",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "connectionRoleIdUnique",
-        "description": "Unique identifier of the published or unpublished connection role record.",
-        "displayName": "Unique ID",
-        "cdsSourceName": "connectionroleidunique",
-        "dataType": "String"
-      },
-      {
-        "name": "isManaged",
-        "description": "Indicates whether the solution component is part of a managed solution.",
-        "displayName": "State",
-        "cdsSourceName": "ismanaged",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "isCustomizable",
-        "description": "Information that specifies whether this component can be customized.",
-        "displayName": "Customizable",
-        "cdsSourceName": "iscustomizable",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "modifiedBy",
-        "description": "Unique identifier of the user who last modified the connection role.",
-        "displayName": "Modified By",
-        "cdsSourceName": "modifiedby",
-        "dataType": "Guid"
-      },
-      {
-        "name": "modifiedOn",
-        "description": "Date and time when the connection role was last modified.",
-        "displayName": "Modified On",
-        "cdsSourceName": "modifiedon",
-        "semanticDomain": {
-          "semanticTypeName": "means.measurement.date, means.measurement.time, means.measurement.date.modify"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "importSequenceNumber",
-        "description": "Unique identifier of the data import or data migration that created this record.",
-        "displayName": "Import Sequence Number",
-        "cdsSourceName": "importsequencenumber",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
       },
       {
         "name": "statusCode",
@@ -268,6 +185,13 @@
         "dataType": "String"
       },
       {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization that this connection role belongs to.",
+        "displayName": "Organization",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
         "name": "description",
         "description": "Description of the connection role.",
         "displayName": "Description",
@@ -295,6 +219,68 @@
         "dataType": "Int64"
       },
       {
+        "name": "solutionId",
+        "description": "Unique identifier of the associated solution.",
+        "displayName": "Solution",
+        "cdsSourceName": "solutionid",
+        "dataType": "String"
+      },
+      {
+        "name": "componentState",
+        "description": "State of the component.",
+        "displayName": "Component State",
+        "cdsSourceName": "componentstate",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Published",
+                "value": "0"
+              },
+              {
+                "displayName": "Unpublished",
+                "value": "1"
+              },
+              {
+                "displayName": "Deleted",
+                "value": "2"
+              },
+              {
+                "displayName": "Deleted Unpublished",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "componentState_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "overwriteTime",
+        "description": "Date and time when the record was last overwritten.",
+        "displayName": "Overwritten On",
+        "cdsSourceName": "overwritetime",
+        "semanticDomain": {
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "connectionRoleIdUnique",
+        "description": "Unique identifier of the published or unpublished connection role record.",
+        "displayName": "Unique ID",
+        "cdsSourceName": "connectionroleidunique",
+        "dataType": "String"
+      },
+      {
         "name": "modifiedOnBehalfBy",
         "description": "Unique identifier of the delegate user who modified the relationship role.",
         "displayName": "Modified By (Delegate)",
@@ -309,6 +295,20 @@
         "dataType": "Guid"
       },
       {
+        "name": "isManaged",
+        "description": "Indicates whether the solution component is part of a managed solution.",
+        "displayName": "State",
+        "cdsSourceName": "ismanaged",
+        "dataType": "Boolean"
+      },
+      {
+        "name": "isCustomizable",
+        "description": "Information that specifies whether this component can be customized.",
+        "displayName": "Customizable",
+        "cdsSourceName": "iscustomizable",
+        "dataType": "Boolean"
+      },
+      {
         "name": "introducedVersion",
         "description": "Version in which the form is introduced.",
         "displayName": "Introduced Version",
@@ -321,34 +321,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "ConnectionRole",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -401,6 +373,34 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "ConnectionRole",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
             "namespace": "core.applicationCommon"
           }
         }

@@ -23,95 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "listName",
-        "description": "Type a name for the marketing list so that it is identified correctly in lists.",
-        "displayName": "Name",
-        "cdsSourceName": "listname",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 128
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "createdFromCode",
-        "description": "Select the type of members that this marketing list will contain: accounts, contacts, or leads. Each list can have only one member type and this value can't be changed after the marketing list is created.",
-        "displayName": "Marketing List Member Type",
-        "cdsSourceName": "createdfromcode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Account",
-                "value": "1"
-              },
-              {
-                "displayName": "Contact",
-                "value": "2"
-              },
-              {
-                "displayName": "Lead",
-                "value": "4"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "createdFromCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the marketing list is active or inactive. Inactive marketing lists are read-only and can't be edited unless they are reactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "type",
-        "description": "Select whether you want the marketing list to be static or dynamic. The members in a static marketing list are unchanging. A dynamic marketing list is based on a dynamic query that retrieves the updated list of members",
-        "displayName": "Type",
-        "cdsSourceName": "type",
-        "dataType": "Boolean"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -157,6 +68,13 @@
         "description": "Shows who last updated the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "dataType": "Guid"
       },
       {
@@ -231,6 +149,17 @@
         "dataType": "Int32"
       },
       {
+        "name": "listName",
+        "description": "Type a name for the marketing list so that it is identified correctly in lists.",
+        "displayName": "Name",
+        "cdsSourceName": "listname",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
         "name": "processId",
         "description": "Contains the id of the process associated with the entity.",
         "displayName": "Process Id",
@@ -295,6 +224,40 @@
           "minValue": -922337203685477
         },
         "dataType": "Decimal"
+      },
+      {
+        "name": "createdFromCode",
+        "description": "Select the type of members that this marketing list will contain: accounts, contacts, or leads. Each list can have only one member type and this value can't be changed after the marketing list is created.",
+        "displayName": "Marketing List Member Type",
+        "cdsSourceName": "createdfromcode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Account",
+                "value": "1"
+              },
+              {
+                "displayName": "Contact",
+                "value": "2"
+              },
+              {
+                "displayName": "Lead",
+                "value": "4"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "createdFromCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "description",
@@ -390,6 +353,36 @@
         "dataType": "String"
       },
       {
+        "name": "stateCode",
+        "description": "Shows whether the marketing list is active or inactive. Inactive marketing lists are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "statusCode",
         "description": "Select the marketing list's status.",
         "displayName": "Status Reason",
@@ -420,65 +413,16 @@
           "isReadOnly": true
         },
         "dataType": "String"
+      },
+      {
+        "name": "type",
+        "description": "Select whether you want the marketing list to be static or dynamic. The members in a static marketing list are unchanging. A dynamic marketing list is based on a dynamic query that retrieves the updated list of members",
+        "displayName": "Type",
+        "cdsSourceName": "type",
+        "dataType": "Boolean"
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingList",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingList",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -588,6 +532,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingList",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingList",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

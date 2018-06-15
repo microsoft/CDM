@@ -23,65 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Event Speaker",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "name",
-        "description": "The name of the custom entity.",
-        "displayName": "Name",
-        "cdsSourceName": "msevtmgt_name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "email",
-        "description": "Speaker Email.",
-        "displayName": "Email",
-        "cdsSourceName": "msevtmgt_email",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.service.email",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -130,6 +71,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier for the business unit that owns the record",
         "displayName": "Owning Business Unit",
@@ -149,6 +97,36 @@
         "displayName": "Owning Team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Event Speaker",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -233,6 +211,17 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "The name of the custom entity.",
+        "displayName": "Name",
+        "cdsSourceName": "msevtmgt_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
         "name": "processId",
         "description": "Contains the id of the process associated with the entity.",
         "displayName": "Process Id",
@@ -298,6 +287,17 @@
         "displayName": "Contact",
         "cdsSourceName": "msevtmgt_contact",
         "dataType": "Guid"
+      },
+      {
+        "name": "email",
+        "description": "Speaker Email.",
+        "displayName": "Email",
+        "cdsSourceName": "msevtmgt_email",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.service.email",
+          "maxLength": 100
+        },
+        "dataType": "String"
       },
       {
         "name": "eventId",
@@ -444,62 +444,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Speaker",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Speaker",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -605,6 +549,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Speaker",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Speaker",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

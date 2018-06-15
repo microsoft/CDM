@@ -22,90 +22,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Custom Registration Field",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              },
-              {
-                "displayName": "Active",
-                "value": "0"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "text",
-        "description": "Text for the custom registration field displayed in the registration form for an attendee.",
-        "displayName": "Text",
-        "cdsSourceName": "msevtmgt_text",
-        "semanticDomain": {
-          "maxLength": 450
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "type",
-        "displayName": "Type",
-        "cdsSourceName": "msevtmgt_type",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Simple text",
-                "value": "100000000"
-              },
-              {
-                "displayName": "Boolean (Yes/No)",
-                "value": "100000001"
-              },
-              {
-                "displayName": "Multiple choice",
-                "value": "100000002"
-              },
-              {
-                "displayName": "Single choice",
-                "value": "100000003"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "type_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -154,6 +70,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier for the business unit that owns the record",
         "displayName": "Owning Business Unit",
@@ -173,6 +96,36 @@
         "displayName": "Owning Team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Custom Registration Field",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              },
+              {
+                "displayName": "Active",
+                "value": "0"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -257,6 +210,16 @@
         "dataType": "Int32"
       },
       {
+        "name": "text",
+        "description": "Text for the custom registration field displayed in the registration form for an attendee.",
+        "displayName": "Text",
+        "cdsSourceName": "msevtmgt_text",
+        "semanticDomain": {
+          "maxLength": 450
+        },
+        "dataType": "String"
+      },
+      {
         "name": "choices",
         "description": "Choices available for the multiple choice registration fields. Each line in this field represents one choice.",
         "displayName": "Choices",
@@ -271,65 +234,46 @@
         "displayName": "Is Required",
         "cdsSourceName": "msevtmgt_isrequired",
         "dataType": "Boolean"
+      },
+      {
+        "name": "type",
+        "displayName": "Type",
+        "cdsSourceName": "msevtmgt_type",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Simple text",
+                "value": "100000000"
+              },
+              {
+                "displayName": "Boolean (Yes/No)",
+                "value": "100000001"
+              },
+              {
+                "displayName": "Multiple choice",
+                "value": "100000002"
+              },
+              {
+                "displayName": "Single choice",
+                "value": "100000003"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "type_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CustomRegistrationField",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CustomRegistrationField",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -439,6 +383,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomRegistrationField",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomRegistrationField",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
           }
         }
       },

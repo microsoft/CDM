@@ -23,61 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type a name for the campaign so that it is identified correctly in lists.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 128
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "transactionCurrencyId",
-        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-        "displayName": "Currency",
-        "cdsSourceName": "transactioncurrencyid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows the status of the campaign. By default, campaigns are active and can't be deactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -123,6 +68,13 @@
         "description": "Shows who created the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "dataType": "Guid"
       },
       {
@@ -208,6 +160,17 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Type a name for the campaign so that it is identified correctly in lists.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 128
+        },
+        "dataType": "String"
+      },
+      {
         "name": "processId",
         "description": "Contains the id of the process associated with the entity.",
         "displayName": "Process Id",
@@ -262,6 +225,13 @@
           "minValue": 0
         },
         "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
       },
       {
         "name": "exchangeRate",
@@ -423,6 +393,36 @@
           "semanticTypeName": "means.measurement.date, means.measurement.time"
         },
         "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows the status of the campaign. By default, campaigns are active and can't be deactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -589,90 +589,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Campaign",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Campaign",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Campaign",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Currency",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -785,6 +701,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Campaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Campaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -861,6 +833,34 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Campaign",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
             "namespace": "core.applicationCommon"
           }
         }

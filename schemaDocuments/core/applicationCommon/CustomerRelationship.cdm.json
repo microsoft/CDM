@@ -13,37 +13,6 @@
     "cdsSourceName": "CustomerRelationship",
     "attributes": [
       {
-        "name": "customerRelationshipId",
-        "description": "Unique identifier of the customer relationship.",
-        "displayName": "Customer Relationship",
-        "cdsSourceName": "customerrelationshipid",
-        "semanticDomain": {
-          "isPrimaryKey": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "ownerId",
-        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "partnerId",
-        "description": "Select the secondary account or contact involved in the customer relationship.",
-        "displayName": "Party 2",
-        "cdsSourceName": "partnerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "customerId",
-        "description": "Select the primary account or contact involved in the customer relationship.",
-        "displayName": "Party 1",
-        "cdsSourceName": "customerid",
-        "dataType": "Guid"
-      },
-      {
         "name": "versionNumber",
         "cdsSourceName": "versionnumber",
         "dataType": "Int64"
@@ -76,10 +45,34 @@
         "dataType": "Guid"
       },
       {
+        "name": "customerRelationshipId",
+        "description": "Unique identifier of the customer relationship.",
+        "displayName": "Customer Relationship",
+        "cdsSourceName": "customerrelationshipid",
+        "semanticDomain": {
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
         "name": "createdBy",
         "description": "Shows who created the record.",
         "displayName": "Created By",
         "cdsSourceName": "createdby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "partnerId",
+        "description": "Select the secondary account or contact involved in the customer relationship.",
+        "displayName": "Party 2",
+        "cdsSourceName": "partnerid",
         "dataType": "Guid"
       },
       {
@@ -112,6 +105,13 @@
           "maxLength": 2000
         },
         "dataType": "String"
+      },
+      {
+        "name": "customerId",
+        "description": "Select the primary account or contact involved in the customer relationship.",
+        "displayName": "Party 1",
+        "cdsSourceName": "customerid",
+        "dataType": "Guid"
       },
       {
         "name": "modifiedBy",
@@ -181,6 +181,34 @@
       }
     ],
     "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerRelationship",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
       {
         "referencing": {
           "attributes": [
@@ -297,90 +325,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CustomerRelationship",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "accountId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Account",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CustomerRelationship",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "contactId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Contact",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "createdBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "CustomerRelationship",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -429,6 +373,62 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "CustomerRelationship",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerRelationship",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "accountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Account",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "CustomerRelationship",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
             "namespace": "core.applicationCommon"
           }
         }

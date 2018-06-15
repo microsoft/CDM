@@ -29,6 +29,62 @@
         "dataType": "String"
       },
       {
+        "name": "actualEnd",
+        "description": "Enter the actual end date and time of the task. By default, it displays when the activity was completed or canceled.",
+        "displayName": "Actual End",
+        "cdsSourceName": "actualend",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "scheduledStart",
+        "description": "Enter the expected due date and time.",
+        "displayName": "Start Date",
+        "cdsSourceName": "scheduledstart",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "regardingObjectId",
+        "description": "Choose the record that the task relates to.",
+        "displayName": "Regarding",
+        "cdsSourceName": "regardingobjectid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "scheduledDurationMinutes",
+        "description": "Scheduled duration of the task, specified in minutes.",
+        "displayName": "Scheduled Duration",
+        "cdsSourceName": "scheduleddurationminutes",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.duration.minutes",
+          "maxValue": 2147483647,
+          "minValue": 0
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "actualStart",
+        "description": "Enter the actual start date and time for the task. By default, it displays when the task was created.",
+        "displayName": "Actual Start",
+        "cdsSourceName": "actualstart",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.measurement.date, means.measurement.time"
+        },
+        "dataType": "DateTimeOffset"
+      },
+      {
         "name": "ownerId",
         "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
         "displayName": "Owner",
@@ -84,168 +140,6 @@
           "isPrimaryKey": true
         },
         "dataType": "Guid"
-      },
-      {
-        "name": "activityTypeCode",
-        "description": "Type of activity.",
-        "displayName": "Activity Type",
-        "cdsSourceName": "activitytypecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Survey Activity",
-                "value": "10196"
-              },
-              {
-                "displayName": "Recurring Appointment",
-                "value": "4251"
-              },
-              {
-                "displayName": "Email",
-                "value": "4202"
-              },
-              {
-                "displayName": "Fax",
-                "value": "4204"
-              },
-              {
-                "displayName": "Case Resolution",
-                "value": "4206"
-              },
-              {
-                "displayName": "Letter",
-                "value": "4207"
-              },
-              {
-                "displayName": "Order Close",
-                "value": "4209"
-              },
-              {
-                "displayName": "Phone Call",
-                "value": "4210"
-              },
-              {
-                "displayName": "Quote Close",
-                "value": "4211"
-              },
-              {
-                "displayName": "Task",
-                "value": "4212"
-              },
-              {
-                "displayName": "Service Activity",
-                "value": "4214"
-              },
-              {
-                "displayName": "Appointment",
-                "value": "4201"
-              },
-              {
-                "displayName": "Campaign Response",
-                "value": "4401"
-              },
-              {
-                "displayName": "Campaign Activity",
-                "value": "4402"
-              },
-              {
-                "displayName": "Quick Campaign",
-                "value": "4406"
-              },
-              {
-                "displayName": "Alert Subscription",
-                "value": "10022"
-              },
-              {
-                "displayName": "Invite Redemption",
-                "value": "10025"
-              },
-              {
-                "displayName": "Opportunity Close",
-                "value": "4208"
-              }
-            ]
-          },
-          "inherited": true
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "activityTypeCode_display",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isRegularActivity",
-        "description": "Information regarding whether the activity is a regular activity type or event type.",
-        "displayName": "Is Regular Activity",
-        "cdsSourceName": "isregularactivity",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Boolean"
-      },
-      {
-        "name": "actualEnd",
-        "description": "Enter the actual end date and time of the task. By default, it displays when the activity was completed or canceled.",
-        "displayName": "Actual End",
-        "cdsSourceName": "actualend",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "scheduledStart",
-        "description": "Enter the expected due date and time.",
-        "displayName": "Start Date",
-        "cdsSourceName": "scheduledstart",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
-      },
-      {
-        "name": "regardingObjectId",
-        "description": "Choose the record that the task relates to.",
-        "displayName": "Regarding",
-        "cdsSourceName": "regardingobjectid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "scheduledDurationMinutes",
-        "description": "Scheduled duration of the task, specified in minutes.",
-        "displayName": "Scheduled Duration",
-        "cdsSourceName": "scheduleddurationminutes",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.measurement.duration.minutes",
-          "maxValue": 2147483647,
-          "minValue": 0
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "actualStart",
-        "description": "Enter the actual start date and time for the task. By default, it displays when the task was created.",
-        "displayName": "Actual Start",
-        "cdsSourceName": "actualstart",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.measurement.date, means.measurement.time"
-        },
-        "dataType": "DateTimeOffset"
       },
       {
         "name": "category",
@@ -566,6 +460,112 @@
         "dataType": "Guid"
       },
       {
+        "name": "activityTypeCode",
+        "description": "Type of activity.",
+        "displayName": "Activity Type",
+        "cdsSourceName": "activitytypecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Survey Activity",
+                "value": "10196"
+              },
+              {
+                "displayName": "Recurring Appointment",
+                "value": "4251"
+              },
+              {
+                "displayName": "Email",
+                "value": "4202"
+              },
+              {
+                "displayName": "Fax",
+                "value": "4204"
+              },
+              {
+                "displayName": "Case Resolution",
+                "value": "4206"
+              },
+              {
+                "displayName": "Letter",
+                "value": "4207"
+              },
+              {
+                "displayName": "Order Close",
+                "value": "4209"
+              },
+              {
+                "displayName": "Phone Call",
+                "value": "4210"
+              },
+              {
+                "displayName": "Quote Close",
+                "value": "4211"
+              },
+              {
+                "displayName": "Task",
+                "value": "4212"
+              },
+              {
+                "displayName": "Service Activity",
+                "value": "4214"
+              },
+              {
+                "displayName": "Appointment",
+                "value": "4201"
+              },
+              {
+                "displayName": "Campaign Response",
+                "value": "4401"
+              },
+              {
+                "displayName": "Campaign Activity",
+                "value": "4402"
+              },
+              {
+                "displayName": "Quick Campaign",
+                "value": "4406"
+              },
+              {
+                "displayName": "Alert Subscription",
+                "value": "10022"
+              },
+              {
+                "displayName": "Invite Redemption",
+                "value": "10025"
+              },
+              {
+                "displayName": "Opportunity Close",
+                "value": "4208"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "activityTypeCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isRegularActivity",
+        "description": "Information regarding whether the activity is a regular activity type or event type.",
+        "displayName": "Is Regular Activity",
+        "cdsSourceName": "isregularactivity",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
         "name": "owningTeam",
         "description": "Unique identifier of the team that owns the task.",
         "displayName": "Owning Team",
@@ -716,90 +716,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Task",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Task",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "activityId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Task",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "activityId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Activity",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "regardingObjectId",
               "comparisonOrder": 0
             }
@@ -904,6 +820,90 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Contact",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Task",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Task",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Task",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "activityId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Activity",
             "namespace": "core.applicationCommon"
           }
         }

@@ -23,100 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Type a descriptive name for the invoice.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 300
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "customerId",
-        "description": "Select the customer account or contact to provide a quick link to additional customer details, such as account information, activities, and opportunities.",
-        "displayName": "Customer",
-        "cdsSourceName": "customerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "transactionCurrencyId",
-        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-        "displayName": "Currency",
-        "cdsSourceName": "transactioncurrencyid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "invoiceNumber",
-        "description": "Shows the identifying number or code of the invoice.",
-        "displayName": "Invoice ID",
-        "cdsSourceName": "invoicenumber",
-        "semanticDomain": {
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "isPriceLocked",
-        "description": "Select whether prices specified on the invoice are locked from any further updates.",
-        "displayName": "Prices Locked",
-        "cdsSourceName": "ispricelocked",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "priceLevelId",
-        "description": "Choose the price list associated with this record to make sure the products associated with the campaign are offered at the correct prices.",
-        "displayName": "Price List",
-        "cdsSourceName": "pricelevelid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the invoice is active, paid, or canceled. Paid and canceled invoices are read-only and can't be edited unless they are reactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Closed (deprecated)",
-                "value": "1"
-              },
-              {
-                "displayName": "Paid",
-                "value": "2"
-              },
-              {
-                "displayName": "Canceled",
-                "value": "3"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -162,6 +68,13 @@
         "description": "Shows who last updated the record on behalf of another user.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "dataType": "Guid"
       },
       {
@@ -245,6 +158,17 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "name",
+        "description": "Type a descriptive name for the invoice.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 300
+        },
+        "dataType": "String"
       },
       {
         "name": "processId",
@@ -390,6 +314,13 @@
         "dataType": "String"
       },
       {
+        "name": "customerId",
+        "description": "Select the customer account or contact to provide a quick link to additional customer details, such as account information, activities, and opportunities.",
+        "displayName": "Customer",
+        "cdsSourceName": "customerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "dateDelivered",
         "description": "Enter the date when the products included in the invoice were delivered.",
         "displayName": "Date Delivered",
@@ -420,6 +351,13 @@
           "minValue": 0
         },
         "dataType": "Decimal"
+      },
+      {
+        "name": "transactionCurrencyId",
+        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+        "displayName": "Currency",
+        "cdsSourceName": "transactioncurrencyid",
+        "dataType": "Guid"
       },
       {
         "name": "exchangeRate",
@@ -490,6 +428,23 @@
         "dataType": "Decimal"
       },
       {
+        "name": "invoiceNumber",
+        "description": "Shows the identifying number or code of the invoice.",
+        "displayName": "Invoice ID",
+        "cdsSourceName": "invoicenumber",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "isPriceLocked",
+        "description": "Select whether prices specified on the invoice are locked from any further updates.",
+        "displayName": "Prices Locked",
+        "cdsSourceName": "ispricelocked",
+        "dataType": "Boolean"
+      },
+      {
         "name": "lastBackofficeSubmit",
         "description": "Enter the date and time when the invoice was last submitted to an accounting or ERP system for processing.",
         "displayName": "Last Submitted to Back Office",
@@ -543,6 +498,13 @@
           "isReadOnly": true
         },
         "dataType": "String"
+      },
+      {
+        "name": "priceLevelId",
+        "description": "Choose the price list associated with this record to make sure the products associated with the campaign are offered at the correct prices.",
+        "displayName": "Price List",
+        "cdsSourceName": "pricelevelid",
+        "dataType": "Guid"
       },
       {
         "name": "pricingErrorCode",
@@ -947,6 +909,44 @@
         "dataType": "String"
       },
       {
+        "name": "stateCode",
+        "description": "Shows whether the invoice is active, paid, or canceled. Paid and canceled invoices are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Closed (deprecated)",
+                "value": "1"
+              },
+              {
+                "displayName": "Paid",
+                "value": "2"
+              },
+              {
+                "displayName": "Canceled",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "statusCode",
         "description": "Select the invoice's status.",
         "displayName": "Status Reason",
@@ -1229,174 +1229,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "accountId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Account",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "customerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "contactId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Contact",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "transactionCurrencyId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Currency",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "priceLevelId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Invoice",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "priceLevelId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "PriceList",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -1509,6 +1341,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -1593,6 +1481,90 @@
         "referencing": {
           "attributes": [
             {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "accountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Account",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "customerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "contactId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Contact",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "transactionCurrencyId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Currency",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "opportunityId",
               "comparisonOrder": 0
             }
@@ -1614,6 +1586,34 @@
             "semanticVersion": "0.5.5",
             "type": "Opportunity",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "priceLevelId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Invoice",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "priceLevelId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "PriceList",
+            "namespace": "core.applicationCommon/foundationCommon"
           }
         }
       },

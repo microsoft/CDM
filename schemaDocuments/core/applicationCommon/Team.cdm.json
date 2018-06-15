@@ -48,57 +48,6 @@
         "dataType": "String"
       },
       {
-        "name": "administratorId",
-        "description": "Unique identifier of the user primary responsible for the team.",
-        "displayName": "Administrator",
-        "cdsSourceName": "administratorid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "isDefault",
-        "description": "Information about whether the team is a default business unit team.",
-        "displayName": "Is Default",
-        "cdsSourceName": "isdefault",
-        "dataType": "Boolean"
-      },
-      {
-        "name": "teamType",
-        "description": "Select the team type.",
-        "displayName": "Team Type",
-        "cdsSourceName": "teamtype",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Owner",
-                "value": "0"
-              },
-              {
-                "displayName": "Access",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "teamType_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "systemManaged",
-        "description": "Select whether the team will be managed by the system.",
-        "displayName": "Is System Managed",
-        "cdsSourceName": "systemmanaged",
-        "dataType": "Boolean"
-      },
-      {
         "name": "description",
         "description": "Description of the team.",
         "displayName": "Description",
@@ -182,6 +131,20 @@
         "dataType": "DateTimeOffset"
       },
       {
+        "name": "administratorId",
+        "description": "Unique identifier of the user primary responsible for the team.",
+        "displayName": "Administrator",
+        "cdsSourceName": "administratorid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "isDefault",
+        "description": "Information about whether the team is a default business unit team.",
+        "displayName": "Is Default",
+        "cdsSourceName": "isdefault",
+        "dataType": "Boolean"
+      },
+      {
         "name": "yomiName",
         "description": "Pronunciation of the full name of the team, written in phonetic hiragana or katakana characters.",
         "displayName": "Yomi Name",
@@ -242,6 +205,36 @@
         "dataType": "Decimal"
       },
       {
+        "name": "teamType",
+        "description": "Select the team type.",
+        "displayName": "Team Type",
+        "cdsSourceName": "teamtype",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Owner",
+                "value": "0"
+              },
+              {
+                "displayName": "Access",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "teamType_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
         "name": "teamTemplateId",
         "description": "Shows the team template that is associated with the team.",
         "displayName": "Team Template Identifier",
@@ -254,6 +247,13 @@
         "displayName": "Regarding Object Id",
         "cdsSourceName": "regardingobjectid",
         "dataType": "Guid"
+      },
+      {
+        "name": "systemManaged",
+        "description": "Select whether the team will be managed by the system.",
+        "displayName": "Is System Managed",
+        "cdsSourceName": "systemmanaged",
+        "dataType": "Boolean"
       },
       {
         "name": "stageId",
@@ -331,34 +331,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "administratorId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -388,6 +360,34 @@
           "attributes": [
             {
               "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "administratorId",
               "comparisonOrder": 0
             }
           ],

@@ -23,30 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "title",
-        "description": "Type the title or name that describes the document.",
-        "displayName": "Title",
-        "cdsSourceName": "title",
-        "semanticDomain": {
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "organizationId",
-        "description": "Unique identifier of the organization associated with the document.",
-        "displayName": "Organization ",
-        "cdsSourceName": "organizationid",
-        "dataType": "String"
-      },
-      {
-        "name": "salesLiteratureId",
-        "description": "Unique identifier of the sales literature that is associated with the individual item.",
-        "displayName": "Sales Literature",
-        "cdsSourceName": "salesliteratureid",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the document was created.",
         "displayName": "Created On",
@@ -143,6 +119,16 @@
           "minValue": -1
         },
         "dataType": "Int32"
+      },
+      {
+        "name": "title",
+        "description": "Type the title or name that describes the document.",
+        "displayName": "Title",
+        "cdsSourceName": "title",
+        "semanticDomain": {
+          "maxLength": 200
+        },
+        "dataType": "String"
       },
       {
         "name": "abstract",
@@ -259,37 +245,23 @@
           "maxLength": 256
         },
         "dataType": "String"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization associated with the document.",
+        "displayName": "Organization ",
+        "cdsSourceName": "organizationid",
+        "dataType": "String"
+      },
+      {
+        "name": "salesLiteratureId",
+        "description": "Unique identifier of the sales literature that is associated with the individual item.",
+        "displayName": "Sales Literature",
+        "cdsSourceName": "salesliteratureid",
+        "dataType": "Guid"
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "salesLiteratureId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "SalesAttachment",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "salesLiteratureId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "SalesLiterature",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -399,6 +371,34 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "salesLiteratureId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SalesAttachment",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "salesLiteratureId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "SalesLiterature",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/sales"
           }
         }
       }

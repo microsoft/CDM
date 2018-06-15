@@ -23,57 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "characteristic",
-        "description": "Choose the characteristic to associate with the resource.",
-        "displayName": "Characteristic",
-        "cdsSourceName": "characteristic",
-        "dataType": "Guid"
-      },
-      {
-        "name": "resource",
-        "description": "Shows the resource associated with the characteristic.",
-        "displayName": "Resource",
-        "cdsSourceName": "resource",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the Bookable Resource Characteristic",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -119,6 +68,13 @@
         "description": "Unique identifier of the delegate user who modified the record.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
         "dataType": "Guid"
       },
       {
@@ -228,11 +184,55 @@
         "dataType": "String"
       },
       {
+        "name": "characteristic",
+        "description": "Choose the characteristic to associate with the resource.",
+        "displayName": "Characteristic",
+        "cdsSourceName": "characteristic",
+        "dataType": "Guid"
+      },
+      {
         "name": "ratingValue",
         "description": "Select a rating value that represents the evaluation of a characteristic for a particular resource.",
         "displayName": "Rating Value",
         "cdsSourceName": "ratingvalue",
         "dataType": "Guid"
+      },
+      {
+        "name": "resource",
+        "description": "Shows the resource associated with the characteristic.",
+        "displayName": "Resource",
+        "cdsSourceName": "resource",
+        "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the Bookable Resource Characteristic",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -286,118 +286,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BookableResourceCharacteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BookableResourceCharacteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "characteristic",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BookableResourceCharacteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "characteristicId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Characteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "resource",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BookableResourceCharacteristic",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "bookableResourceId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "BookableResource",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -514,6 +402,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceCharacteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceCharacteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -598,6 +542,34 @@
         "referencing": {
           "attributes": [
             {
+              "name": "characteristic",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceCharacteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "characteristicId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Characteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "ratingValue",
               "comparisonOrder": 0
             }
@@ -618,6 +590,34 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "RatingValue",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "resource",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResourceCharacteristic",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "bookableResourceId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "BookableResource",
             "namespace": "core.applicationCommon/foundationCommon"
           }
         }

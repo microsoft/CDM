@@ -23,13 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "parentId",
-        "description": "Unique identifier of the parent object with which the lead address is associated.",
-        "displayName": "Parent",
-        "cdsSourceName": "parentid",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the lead address was created.",
         "displayName": "Created On",
@@ -268,6 +261,13 @@
         "dataType": "Double"
       },
       {
+        "name": "parentId",
+        "description": "Unique identifier of the parent object with which the lead address is associated.",
+        "displayName": "Parent",
+        "cdsSourceName": "parentid",
+        "dataType": "Guid"
+      },
+      {
         "name": "postalCode",
         "description": "ZIP Code or postal code in the address for the lead.",
         "displayName": "ZIP/Postal Code",
@@ -391,34 +391,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "parentId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "LeadAddress",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "leadId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Lead",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -524,6 +496,34 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "parentId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LeadAddress",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "leadId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Lead",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
           }
         }
       },

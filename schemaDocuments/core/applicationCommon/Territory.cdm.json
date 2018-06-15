@@ -23,24 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "organizationId",
-        "description": "Unique identifier for the organization",
-        "displayName": "Organization Id",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "name",
-        "description": "Name of the territory.",
-        "displayName": "Territory Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 200
-        },
-        "dataType": "String"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -86,6 +68,13 @@
         "description": "Unique identifier of the delegate user who last modified the territory.",
         "displayName": "Modified By (Delegate)",
         "cdsSourceName": "modifiedonbehalfby",
+        "dataType": "Guid"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier for the organization",
+        "displayName": "Organization Id",
+        "cdsSourceName": "organizationid",
         "dataType": "Guid"
       },
       {
@@ -139,6 +128,17 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Name of the territory.",
+        "displayName": "Territory Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 200
+        },
+        "dataType": "String"
+      },
+      {
         "name": "description",
         "description": "Description of the territory.",
         "displayName": "Description",
@@ -180,34 +180,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Territory",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "organizationId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Organization",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -316,6 +288,34 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Territory",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "organizationId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Organization",
             "namespace": "core.applicationCommon"
           }
         }

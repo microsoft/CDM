@@ -21,45 +21,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "name",
-        "description": "name",
-        "displayName": "name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "entityId",
-        "displayName": "Entity",
-        "cdsSourceName": "entityid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "entityType",
-        "cdsSourceName": "entitytype",
-        "semanticDomain": {
-          "maxValue": 2147483647,
-          "minValue": -2147483648
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "listId",
-        "displayName": "Marketing List",
-        "cdsSourceName": "listid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the list member.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -158,6 +119,45 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "name",
+        "displayName": "name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "entityId",
+        "displayName": "Entity",
+        "cdsSourceName": "entityid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "entityType",
+        "cdsSourceName": "entitytype",
+        "semanticDomain": {
+          "maxValue": 2147483647,
+          "minValue": -2147483648
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "listId",
+        "displayName": "Marketing List",
+        "cdsSourceName": "listid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the list member.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "cdsSourceName": "owningbusinessunit",
         "dataType": "String"
@@ -169,6 +169,118 @@
       }
     ],
     "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingListMember",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingListMember",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "createdOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingListMember",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedOnBehalfBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "MarketingListMember",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
       {
         "referencing": {
           "attributes": [
@@ -334,118 +446,6 @@
             "semanticVersion": "0.5.5",
             "type": "Team",
             "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "createdBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingListMember",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "modifiedBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingListMember",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "createdOnBehalfBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingListMember",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "modifiedOnBehalfBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "MarketingListMember",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
           }
         }
       }

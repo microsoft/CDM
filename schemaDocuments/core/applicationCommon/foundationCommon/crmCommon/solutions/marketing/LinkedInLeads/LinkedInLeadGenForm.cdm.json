@@ -23,81 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "ownerId",
-        "description": "Owner Id",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Status of the LinkedIn Form",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "name",
-        "description": "LinkedIn form name",
-        "displayName": "Name",
-        "cdsSourceName": "msdyncrm_name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "headline",
-        "description": "Headline displayed to leads on LinkedIn",
-        "displayName": "LinkedIn form headline",
-        "cdsSourceName": "msdyncrm_headline",
-        "semanticDomain": {
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "linkedInID",
-        "description": "Unique identifier of the LinkedIn form",
-        "displayName": "LinkedIn ID",
-        "cdsSourceName": "msdyncrm_linkedinid",
-        "semanticDomain": {
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "linkedInParentAccount",
-        "description": "LinkedIn account record to which this form belongs to",
-        "displayName": "LinkedIn Account",
-        "cdsSourceName": "msdyncrm_linkedinparentaccount",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the record was created.",
         "displayName": "Created On",
@@ -146,6 +71,13 @@
         "dataType": "Guid"
       },
       {
+        "name": "ownerId",
+        "description": "Owner Id",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
         "name": "owningBusinessUnit",
         "description": "Unique identifier for the business unit that owns the record",
         "displayName": "Owning Business Unit",
@@ -165,6 +97,36 @@
         "displayName": "Owning Team",
         "cdsSourceName": "owningteam",
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Status of the LinkedIn Form",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "statusCode",
@@ -249,12 +211,33 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "LinkedIn form name",
+        "displayName": "Name",
+        "cdsSourceName": "msdyncrm_name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
         "name": "description",
         "description": "Description of the LinkedIn form",
         "displayName": "Description",
         "cdsSourceName": "msdyncrm_description",
         "semanticDomain": {
           "maxLength": 2000
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "headline",
+        "description": "Headline displayed to leads on LinkedIn",
+        "displayName": "LinkedIn form headline",
+        "cdsSourceName": "msdyncrm_headline",
+        "semanticDomain": {
+          "maxLength": 100
         },
         "dataType": "String"
       },
@@ -277,6 +260,23 @@
           "semanticTypeName": "means.measurement.date, means.measurement.time"
         },
         "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "linkedInID",
+        "description": "Unique identifier of the LinkedIn form",
+        "displayName": "LinkedIn ID",
+        "cdsSourceName": "msdyncrm_linkedinid",
+        "semanticDomain": {
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "linkedInParentAccount",
+        "description": "LinkedIn account record to which this form belongs to",
+        "displayName": "LinkedIn Account",
+        "cdsSourceName": "msdyncrm_linkedinparentaccount",
+        "dataType": "Guid"
       },
       {
         "name": "localeCountry",
@@ -394,90 +394,6 @@
         "referencing": {
           "attributes": [
             {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "LinkedInLeadGenForm",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "ownerId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "LinkedInLeadGenForm",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "teamId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "linkedInParentAccount",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "LinkedInLeadGenForm",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "linkedinaccountId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "LinkedInAccount",
-            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
               "name": "createdBy",
               "comparisonOrder": 0
             }
@@ -590,6 +506,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LinkedInLeadGenForm",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/service"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "ownerId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LinkedInLeadGenForm",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "teamId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Team",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "owningBusinessUnit",
               "comparisonOrder": 0
             }
@@ -667,6 +639,34 @@
             "semanticVersion": "0.5.5",
             "type": "Team",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "linkedInParentAccount",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LinkedInLeadGenForm",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "linkedinaccountId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "LinkedInAccount",
+            "namespace": "core.applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads"
           }
         }
       }

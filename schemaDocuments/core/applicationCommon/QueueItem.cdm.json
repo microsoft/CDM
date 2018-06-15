@@ -37,96 +37,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "organizationId",
-        "description": "Unique identifier of the organization with which the queue item is associated.",
-        "displayName": "Organization",
-        "cdsSourceName": "organizationid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "ownerId",
-        "description": "Unique identifier of the user or team who owns the queue item.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningUser",
-        "description": "Unique identifier of the user who owns the queue item.",
-        "displayName": "Owning User",
-        "cdsSourceName": "owninguser",
-        "dataType": "Guid"
-      },
-      {
-        "name": "owningBusinessUnit",
-        "description": "Unique identifier of the business unit that owns the queue item.",
-        "displayName": "Owning Business Unit",
-        "cdsSourceName": "owningbusinessunit",
-        "dataType": "Guid"
-      },
-      {
-        "name": "statusCode",
-        "description": "Select the item's status.",
-        "displayName": "Status Reason",
-        "cdsSourceName": "statuscode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "1",
-                "correlationValue": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "2",
-                "correlationValue": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "statusCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the queue record is active or inactive. Inactive queue records are read-only and can't be edited unless they are reactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          }
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
         "name": "objectTypeCode",
         "description": "Select the type of the queue item, such as activity, case, or appointment.",
         "displayName": "Type",
@@ -260,6 +170,13 @@
         "dataType": "String"
       },
       {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization with which the queue item is associated.",
+        "displayName": "Organization",
+        "cdsSourceName": "organizationid",
+        "dataType": "Guid"
+      },
+      {
         "name": "versionNumber",
         "description": "Version number of the queue item.",
         "displayName": "Version Number",
@@ -309,11 +226,94 @@
         "dataType": "DateTimeOffset"
       },
       {
+        "name": "ownerId",
+        "description": "Unique identifier of the user or team who owns the queue item.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "dataType": "Guid"
+      },
+      {
+        "name": "owningUser",
+        "description": "Unique identifier of the user who owns the queue item.",
+        "displayName": "Owning User",
+        "cdsSourceName": "owninguser",
+        "dataType": "Guid"
+      },
+      {
         "name": "workerId",
         "description": "Shows who is working on the queue item.",
         "displayName": "Worked By",
         "cdsSourceName": "workerid",
         "dataType": "Guid"
+      },
+      {
+        "name": "owningBusinessUnit",
+        "description": "Unique identifier of the business unit that owns the queue item.",
+        "displayName": "Owning Business Unit",
+        "cdsSourceName": "owningbusinessunit",
+        "dataType": "Guid"
+      },
+      {
+        "name": "statusCode",
+        "description": "Select the item's status.",
+        "displayName": "Status Reason",
+        "cdsSourceName": "statuscode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "1",
+                "correlationValue": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "2",
+                "correlationValue": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "statusCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the queue record is active or inactive. Inactive queue records are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "createdOnBehalfBy",
@@ -672,6 +672,62 @@
         "referencing": {
           "attributes": [
             {
+              "name": "createdBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "QueueItem",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
               "name": "organizationId",
               "comparisonOrder": 0
             }
@@ -748,62 +804,6 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Team",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "createdBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "QueueItem",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "modifiedBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "QueueItem",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
             "namespace": "core.applicationCommon"
           }
         }

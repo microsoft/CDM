@@ -18,91 +18,6 @@
     "cdsSourceName": "Connection",
     "attributes": [
       {
-        "name": "connectionId",
-        "description": "Unique identifier of the connection.",
-        "displayName": "Connection",
-        "cdsSourceName": "connectionid",
-        "semanticDomain": {
-          "inherited": true,
-          "isPrimaryKey": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "isMaster",
-        "description": "Indicates that this is the master record.",
-        "displayName": "Is Master",
-        "cdsSourceName": "ismaster",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Boolean"
-      },
-      {
-        "name": "ownerId",
-        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-        "displayName": "Owner",
-        "cdsSourceName": "ownerid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "relatedConnectionId",
-        "description": "Unique identifier for the reciprocal connection record.",
-        "displayName": "Reciprocal Connection",
-        "cdsSourceName": "relatedconnectionid",
-        "semanticDomain": {
-          "inherited": true
-        },
-        "dataType": "Guid"
-      },
-      {
-        "name": "stateCode",
-        "description": "Shows whether the connection is active or inactive. Inactive connections are read-only and can't be edited unless they are reactivated.",
-        "displayName": "Status",
-        "cdsSourceName": "statecode",
-        "semanticDomain": {
-          "constrainedList": {
-            "items": [
-              {
-                "displayName": "Active",
-                "value": "0"
-              },
-              {
-                "displayName": "Inactive",
-                "value": "1"
-              }
-            ]
-          },
-          "inherited": true
-        },
-        "dataType": "Int32"
-      },
-      {
-        "name": "stateCode_display",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.reference.displayText",
-          "inSupportOf": "teamType",
-          "isReadOnly": true
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "name",
-        "description": "Name of the connection.",
-        "displayName": "Connection Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "inherited": true,
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 500
-        },
-        "dataType": "String"
-      },
-      {
         "name": "modifiedBy",
         "description": "Shows who last updated the record.",
         "displayName": "Modified By",
@@ -169,6 +84,17 @@
         "dataType": "Int32"
       },
       {
+        "name": "connectionId",
+        "description": "Unique identifier of the connection.",
+        "displayName": "Connection",
+        "cdsSourceName": "connectionid",
+        "semanticDomain": {
+          "inherited": true,
+          "isPrimaryKey": true
+        },
+        "dataType": "Guid"
+      },
+      {
         "name": "versionNumber",
         "description": "Version number of the connection.",
         "displayName": "Version Number",
@@ -188,6 +114,36 @@
           "semanticTypeName": "means.measurement.date, means.measurement.time"
         },
         "dataType": "DateTimeOffset"
+      },
+      {
+        "name": "isMaster",
+        "description": "Indicates that this is the master record.",
+        "displayName": "Is Master",
+        "cdsSourceName": "ismaster",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Boolean"
+      },
+      {
+        "name": "ownerId",
+        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
+        "displayName": "Owner",
+        "cdsSourceName": "ownerid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
+      },
+      {
+        "name": "relatedConnectionId",
+        "description": "Unique identifier for the reciprocal connection record.",
+        "displayName": "Reciprocal Connection",
+        "cdsSourceName": "relatedconnectionid",
+        "semanticDomain": {
+          "inherited": true
+        },
+        "dataType": "Guid"
       },
       {
         "name": "description",
@@ -223,8 +179,8 @@
       },
       {
         "name": "record2Id",
-        "description": "Unique ID of the target record",
-        "displayName": "Connected to",
+        "description": "Unique identifier of the target record.",
+        "displayName": "Connected To",
         "cdsSourceName": "record2id",
         "semanticDomain": {
           "inherited": true
@@ -296,13 +252,45 @@
       },
       {
         "name": "record1Id",
-        "description": "Unique ID of the source record",
-        "displayName": "Connected from",
+        "description": "Unique identifier of the source record.",
+        "displayName": "Connected From",
         "cdsSourceName": "record1id",
         "semanticDomain": {
           "inherited": true
         },
         "dataType": "Guid"
+      },
+      {
+        "name": "stateCode",
+        "description": "Shows whether the connection is active or inactive. Inactive connections are read-only and can't be edited unless they are reactivated.",
+        "displayName": "Status",
+        "cdsSourceName": "statecode",
+        "semanticDomain": {
+          "constrainedList": {
+            "items": [
+              {
+                "displayName": "Active",
+                "value": "0"
+              },
+              {
+                "displayName": "Inactive",
+                "value": "1"
+              }
+            ]
+          },
+          "inherited": true
+        },
+        "dataType": "Int32"
+      },
+      {
+        "name": "stateCode_display",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.reference.displayText",
+          "inSupportOf": "teamType",
+          "isReadOnly": true
+        },
+        "dataType": "String"
       },
       {
         "name": "modifiedOnBehalfBy",
@@ -413,6 +401,18 @@
         "dataType": "String"
       },
       {
+        "name": "name",
+        "description": "Name of the connection.",
+        "displayName": "Connection Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "inherited": true,
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 500
+        },
+        "dataType": "String"
+      },
+      {
         "name": "entityImageId",
         "description": "For internal use only.",
         "displayName": "Entity Image Id",
@@ -424,6 +424,34 @@
       }
     ],
     "relationships": [
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "modifiedBy",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Connection",
+            "namespace": "core.applicationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "systemUserId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "User",
+            "namespace": "core.applicationCommon"
+          }
+        }
+      },
       {
         "referencing": {
           "attributes": [
@@ -504,34 +532,6 @@
           "entity": {
             "semanticVersion": "0.5.5",
             "type": "Connection",
-            "namespace": "core.applicationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "modifiedBy",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Connection",
-            "namespace": "core.applicationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "systemUserId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "User",
             "namespace": "core.applicationCommon"
           }
         }

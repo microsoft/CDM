@@ -23,49 +23,6 @@
         "dataType": "Guid"
       },
       {
-        "name": "name",
-        "description": "Type a descriptive title or name for the unit of measure.",
-        "displayName": "Name",
-        "cdsSourceName": "name",
-        "semanticDomain": {
-          "semanticTypeName": "means.identity.name",
-          "maxLength": 100
-        },
-        "dataType": "String"
-      },
-      {
-        "name": "baseUoM",
-        "description": "Choose the base or primary unit on which the unit is based.",
-        "displayName": "Base Unit",
-        "cdsSourceName": "baseuom",
-        "dataType": "Guid"
-      },
-      {
-        "name": "organizationId",
-        "description": "Unique identifier of the organization associated with the unit of measure.",
-        "displayName": "Organization ",
-        "cdsSourceName": "organizationid",
-        "dataType": "String"
-      },
-      {
-        "name": "quantity",
-        "description": "Unit quantity for the product.",
-        "displayName": "Quantity",
-        "cdsSourceName": "quantity",
-        "semanticDomain": {
-          "maxValue": 10000000000,
-          "minValue": 0
-        },
-        "dataType": "Decimal"
-      },
-      {
-        "name": "uoMScheduleId",
-        "description": "Choose the ID of the unit group that the unit is associated with.",
-        "displayName": "Unit Schedule",
-        "cdsSourceName": "uomscheduleid",
-        "dataType": "Guid"
-      },
-      {
         "name": "createdOn",
         "description": "Date and time when the unit was created.",
         "displayName": "Created On",
@@ -164,11 +121,54 @@
         "dataType": "Int32"
       },
       {
+        "name": "name",
+        "description": "Type a descriptive title or name for the unit of measure.",
+        "displayName": "Name",
+        "cdsSourceName": "name",
+        "semanticDomain": {
+          "semanticTypeName": "means.identity.name",
+          "maxLength": 100
+        },
+        "dataType": "String"
+      },
+      {
+        "name": "baseUoM",
+        "description": "Choose the base or primary unit on which the unit is based.",
+        "displayName": "Base Unit",
+        "cdsSourceName": "baseuom",
+        "dataType": "Guid"
+      },
+      {
         "name": "isScheduleBaseUoM",
         "description": "Tells whether the unit is the base unit for the associated unit group.",
         "displayName": "Is Schedule Base Unit",
         "cdsSourceName": "isschedulebaseuom",
         "dataType": "Boolean"
+      },
+      {
+        "name": "organizationId",
+        "description": "Unique identifier of the organization associated with the unit of measure.",
+        "displayName": "Organization ",
+        "cdsSourceName": "organizationid",
+        "dataType": "String"
+      },
+      {
+        "name": "quantity",
+        "description": "Unit quantity for the product.",
+        "displayName": "Quantity",
+        "cdsSourceName": "quantity",
+        "semanticDomain": {
+          "maxValue": 10000000000,
+          "minValue": 0
+        },
+        "dataType": "Decimal"
+      },
+      {
+        "name": "uoMScheduleId",
+        "description": "Choose the ID of the unit group that the unit is associated with.",
+        "displayName": "Unit Schedule",
+        "cdsSourceName": "uomscheduleid",
+        "dataType": "Guid"
       },
       {
         "name": "createdByExternalParty",
@@ -186,62 +186,6 @@
       }
     ],
     "relationships": [
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "baseUoM",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Unit",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "uoMId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Unit",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
-      {
-        "referencing": {
-          "attributes": [
-            {
-              "name": "uoMScheduleId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "Unit",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        },
-        "referenced": {
-          "attributes": [
-            {
-              "name": "uoMScheduleId",
-              "comparisonOrder": 0
-            }
-          ],
-          "entity": {
-            "semanticVersion": "0.5.5",
-            "type": "UnitGroup",
-            "namespace": "core.applicationCommon/foundationCommon"
-          }
-        }
-      },
       {
         "referencing": {
           "attributes": [
@@ -351,6 +295,62 @@
             "semanticVersion": "0.5.5",
             "type": "User",
             "namespace": "core.applicationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "baseUoM",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Unit",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "uoMId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Unit",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        }
+      },
+      {
+        "referencing": {
+          "attributes": [
+            {
+              "name": "uoMScheduleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "Unit",
+            "namespace": "core.applicationCommon/foundationCommon"
+          }
+        },
+        "referenced": {
+          "attributes": [
+            {
+              "name": "uoMScheduleId",
+              "comparisonOrder": 0
+            }
+          ],
+          "entity": {
+            "semanticVersion": "0.5.5",
+            "type": "UnitGroup",
+            "namespace": "core.applicationCommon/foundationCommon"
           }
         }
       }
