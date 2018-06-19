@@ -1,5 +1,6 @@
 import * as cdm from "../cdm-types/cdm-types"
 import * as ghc from "../github-pages-gen/gh-content-gen"
+import * as loc from "../local-corpus/local-corpus"
 
 // browserify ..\tools\cdm-types\cdm-types.js --o cdm-bundle.js --standalone cdm
 // browserify ..\tools\cdm2dplx\cdm2dplx.js --o cdm2dplx-bundle.js --standalone cdm2dplx
@@ -15,16 +16,11 @@ class Startup {
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
         cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
         console.log('reading source files');
-        ghc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"));
+        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), "analyticalCommon");
 
-        let statusRpt = (level: cdm.cdmStatusLevel, msg : string, path : string)=> {
-            if (level == cdm.cdmStatusLevel.error || level == cdm.cdmStatusLevel.warning)
-                console.log(`${(level==cdm.cdmStatusLevel.error) ? "Err" : "Wrn"}: ${msg} @ ${path}`) ;
-            else if (level == cdm.cdmStatusLevel.progress)
-                console.log(msg);
-        }
+        let statusRpt = loc.consoleStatusReport;
 
-        ghc.resolveLocalCorpus(cdmCorpus, statusRpt).then((r:boolean) =>{
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
             let docsRoot = "../../";
             let consts : ghc.contentConstants  = {
                 docsRoot : docsRoot,

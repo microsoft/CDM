@@ -1,8 +1,7 @@
 
-import * as cdm from "../cdm-types/cdm-types"
-import { readFileSync, writeFileSync, readFile, mkdirSync, existsSync, createReadStream } from "fs";
-import { promisify } from "util";
-import { relative } from "path";
+import * as cdm from "../cdm-types/cdm-types";
+import * as loc from "../local-corpus/local-corpus";
+import { readFileSync} from "fs";
 
 
 interface dataTypeAndRelationshipPicker {
@@ -32,68 +31,19 @@ class Startup {
 
         console.log('persist Corpus:');
         // run over created corpus and write out the docs into the folders
-        if (cdmCorpus && cdmCorpus.getSubFolders() && cdmCorpus.getSubFolders().length == 1) {
-            this.persistFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0]);
-        }
+        loc.persistCorpus(cdmCorpus);
 
-        console.log('reading well known attribute sets');
+       console.log('reading well known attribute sets');
        let wkas = readFileSync(cdmCorpus.rootPath + "/core/applicationCommon/wellKnownCDSAttributeGroups.cdm.json", "utf8");
        let docWkas : cdm.ICdmDocumentDef = cdmCorpus.addDocumentFromContent("/core/applicationCommon/wellKnownCDSAttributeGroups.cdm.json", wkas);
 
-        let msgCount : number= 0;
-        let statusRpt = (level:cdm.cdmStatusLevel, msg : string, path : string)=> {
-            if (level == cdm.cdmStatusLevel.error) {
-                console.log("E: " + msg + "  @" + path) ;
-            }
-            else if (level == cdm.cdmStatusLevel.progress) {
-                console.log("P: " + msg);
-            }
-            else {
-                msgCount ++;
-                if (msgCount % 1000 == 0) {
-                    console.log("I: " + msg);
-                    console.log(msgCount);
-                }
-            }
-        }
+        let statusRpt = loc.consoleStatusReport;
 
-        console.log('resolving imports');
-        // first resolve all of the imports to pull other docs into the namespace
-        cdmCorpus.resolveImports((uri : string) : Promise<[string, string]> =>{
-            return new Promise<[string, string]>((resolve, reject) => {
-                // resolve imports take a callback that askes for promise to do URI resolution.
-                // so here we are, working on that promise
-                readFile(cdmCorpus.rootPath + uri, "utf8", (err : NodeJS.ErrnoException, data:string)=>{
-                    if(err)
-                        reject([uri, err]);
-                    else
-                        resolve([uri, data]);
-                })
-            });
-        }, statusRpt).then((r:boolean) => {
-            // success resolving all imports
-            console.log(r);
-            console.log('validate schema:');
-            if (r) {
-                let validateStep = (currentStep:cdm.cdmValidationStep)=> {
-                cdmCorpus.resolveReferencesAndValidate(currentStep, statusRpt).then((nextStep:cdm.cdmValidationStep) => {
-                        if (nextStep == cdm.cdmValidationStep.error) {
-                            console.log('validation step failed');
-                        }
-                        else if (nextStep == cdm.cdmValidationStep.finished) {
-                            console.log('finished');
-                            console.log(Date.now() - now);
-                        }
-                        else {
-                            validateStep(nextStep);
-                        }
-                    });
-                }
-                now = Date.now();
-                validateStep(cdm.cdmValidationStep.start);
-            }
-        });
-
+        now = Date.now();
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
+            console.log('finished');
+            console.log(Date.now() - now);
+        }).catch();
         
         return 0;
     }
@@ -170,24 +120,6 @@ class Startup {
             }
         }
         return cdmDocument;
-    }
-
-    public static persistFolder(rootPath : string, cdmFolder : cdm.ICdmFolderDef): void {
-        if (cdmFolder) {
-            let folderPath = rootPath + cdmFolder.getRelativePath();
-            if (!existsSync(folderPath))
-                mkdirSync(folderPath);
-            if (cdmFolder.getDocuments())
-                cdmFolder.getDocuments().forEach(doc => {
-                    let content = JSON.stringify(doc, null, 4);
-                    writeFileSync(folderPath + doc.getName(), content, "utf8");
-                });
-            if (cdmFolder.getSubFolders()) {
-                cdmFolder.getSubFolders().forEach(f => {
-                    this.persistFolder(rootPath, f);
-                });
-            }
-        }
     }
     
     public static cdstEntityToCdmEntity(cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, cdmEntity : cdm.ICdmEntityDef) {
