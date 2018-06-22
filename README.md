@@ -8,6 +8,10 @@ The Common Data Model standard defines a common language for business entities c
 
 The CDM is undergoing a specification effort driven by Microsoft. The documents published here are a preview, and will be iterated on.
 
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 # Repository Layout
 
 There are two ways to consume the information in this repository:
@@ -22,10 +26,6 @@ Maintaining forward and backward compatibility is a key goal of the CDM. Therefo
 * Introduce new mandatory attributes on previously published entities, or change an optional attribute to be mandatory
 * Rename previously published attributes or entities
 * Remove previously published attributes
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 # Legal Notices
 
