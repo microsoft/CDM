@@ -20,6 +20,7 @@ class Startup {
 
         loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
 
+            //this.listAllTraits(cdmCorpus);
             this.createTestDplx(cdmCorpus);
             //this.createEachDplx(cdmCorpus, ".");
             console.log('done');
@@ -28,6 +29,53 @@ class Startup {
         
         return 0;
     }
+
+    public static listAllTraits(cdmCorpus : cdm.Corpus) {
+        let seen = new Set<string>();
+
+        let seekTraits = (folder : cdm.ICdmFolderDef) => {
+            if (folder.getName() != "" && folder.getDocuments() && folder.getDocuments().length)
+            {
+                if (folder.getDocuments())
+                    folder.getDocuments().forEach(doc => {
+                        if (doc.getDefinitions() && doc.getDefinitions().length)
+                            doc.getDefinitions().forEach(def => {
+                                if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
+                                    let ent = def as cdm.ICdmEntityDef;
+                                    let rtsEnt = ent.getResolvedTraits();
+                                    rtsEnt.set.forEach(rt => {
+                                        let rtName = rt.traitName;
+                                        if (!seen.has(rtName)) {
+                                            console.log(rtName);
+                                            seen.add(rtName);
+                                        }
+                                    });
+                                    let ras = ent.getResolvedAttributes();
+                                    ras.set.forEach(ra => {
+                                        let rtsAtt = ra.resolvedTraits;
+                                        rtsAtt.set.forEach(rt => {
+                                            let rtName = rt.traitName;
+                                            if (!seen.has(rtName)) {
+                                                console.log(rtName);
+                                                seen.add(rtName);
+                                            }
+                                        });
+    
+                                    });
+                                }
+                            });
+                    });
+            }
+            if (folder.getSubFolders()) {
+                folder.getSubFolders().forEach(f => {
+                    seekTraits(f);
+                });
+            }
+        }
+    
+        seekTraits(cdmCorpus);
+    }
+
 
     public static createTestDplx(cdmCorpus : cdm.Corpus) {
         let converter = new cdm2dplx.Converter() as cdm2dplx.IConvertToDplx;

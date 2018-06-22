@@ -18,7 +18,9 @@ class Startup {
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
         cdmCorpus.statusLevel = cdm.cdmStatusLevel.info;
         let folderResult = cdmCorpus.addFolder(pathToOutput);
-        let modelJson = JSON.parse(readFileSync("model.bim", "utf8"));
+        
+        //let modelJson = JSON.parse(readFileSync("model.bim", "utf8"));
+        let modelJson = JSON.parse(readFileSync("/cdsa schemas/CreditAndCollectionsImportMode.xmla", "utf8"));
 
         let converter = new tomModelToCdmCorpus();
         converter.addToCorpus(folderResult, modelJson);

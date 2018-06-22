@@ -205,13 +205,9 @@
             "explanation": "The root relationship for associating attributes with entities."
         },
         {
-            "traitName": "does.modifyAttributes",
-            "extendsTrait": "does",
-            "explanation": "The root trait that must be the base of any trait which modifies the name or visibility of attributes. The trait may be applied to a single attribute or an entity containing attributes"
-        },
-        {
             "traitName": "is.removed",
-            "extendsTrait": "does.modifyAttributes",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
             "explanation": "All attributes with this trait will be removed from the final resolved attribute list of an entity."
         },
         {
@@ -229,12 +225,6 @@
         {
             "traitName": "is.sensitive",
             "extendsTrait": "is"
-        },
-        {
-            "traitName": "is.sensitive.PII",
-            "extendsTrait": "is.sensitive",
-            "elevated": true,
-            "explanation": "Contains personally identifiable information, elevated trait so entities with PII attributes are also PII"
         },
         {
             "traitName": "does.elevateAttribute",
@@ -303,7 +293,8 @@
         },
         {
             "traitName": "does.addAttribute",
-            "extendsTrait": "does.modifyAttributes",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
             "hasParameters": [
                 {
                     "name": "addedAttribute",
@@ -322,7 +313,8 @@
         },
         {
             "traitName": "is.addedInSupportOf",
-            "extendsTrait": "does.modifyAttributes",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
             "hasParameters": [
                 {
                     "name": "inSupportOf",
@@ -362,7 +354,8 @@
         },
         {
             "traitName": "does.renameWithFormat",
-            "extendsTrait": "does.modifyAttributes",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
             "hasParameters": [
                 {
                     "name": "renameFormat",
@@ -381,7 +374,8 @@
         },
         {
             "traitName": "is.array",
-            "extendsTrait": "does.modifyAttributes",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
             "hasParameters": [
                 {
                     "name": "renameTrait",

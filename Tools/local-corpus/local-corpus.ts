@@ -70,7 +70,7 @@ export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef
         let entryName = path + dirEntry;
         let stats = statSync(entryName);
         if (stats.isDirectory()) {
-            this.loadCorpusFolder(corpus, folder.addFolder(dirEntry));
+            this.loadCorpusFolder(corpus, folder.addFolder(dirEntry), ignoreFolder);
         }
         else if (dirEntry.endsWith(".cdm.json")) {
             let sourceDoc = readFileSync(entryName, "utf8");
