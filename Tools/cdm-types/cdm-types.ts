@@ -213,7 +213,6 @@ export interface ICdmObject
     getObjectType(): cdmObjectType;
     objectType: cdmObjectType;
     getObjectRefType(): cdmObjectType;
-    getPathBranch(): string;
     getObjectDef<T=ICdmObjectDef>(): T
     copyData(stringPaths?: boolean): any;
     getResolvedTraits(set?: cdmTraitSet): ResolvedTraitSet
@@ -524,6 +523,20 @@ class profile
 
 let p = new profile();
 
+let visits :Map<string, number>;
+function trackVisits(path) {
+    if (!visits)
+        visits = new Map<string, number>();
+    let cnt = 0;
+    if (visits.has(path)) {
+        cnt = visits.get(path) + 1;
+    }
+    visits.set(path, cnt);
+    if (path == "Case/hasAttributes/attributesAddedAtThisScope/members/(unspecified)")
+        return true;
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -622,12 +635,43 @@ export class ParameterValue
     {
         //let bodyCode = () =>
         {
-            if (this.value) {
-                if (this.value.objectType == cdmObjectType.stringConstant)
-                    return (this.value as ICdmStringConstant).getConstant();
-                return "cdmObject()";
+            let value = this.value;
+            if (value) {
+                // if a string constant, call get value to turn into itself or a reference if that is what is held there
+                if (value.getObjectType() == cdmObjectType.stringConstant)
+                    value = (value as ICdmArgumentDef).getValue()
+                // if still  a string, it is just a string
+                if (value.getObjectType() == cdmObjectType.stringConstant)
+                    return (value as ICdmStringConstant).getConstant();
+
+                // if this is a constant table, then expand into an html table
+                if (value.getObjectType() == cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdmObjectType.constantEntityDef) {
+                    var entShape = value.getObjectDef<ICdmConstantEntityDef>().getEntityShape();
+                    var entValues = value.getObjectDef<ICdmConstantEntityDef>().getConstantValues();
+                    if (!entValues && entValues.length == 0)
+                        return "";
+                    
+                    let rows = new Array<any>();
+                    var shapeAtts = entShape.getResolvedAttributes();
+                    let l = shapeAtts.set.length;
+
+                    for (var r = 0; r < entValues.length; r++) {
+                        var rowData = entValues[r];
+                        if (rowData && rowData.length) {
+                            let row = {};
+                            for (var c = 0; c < rowData.length; c++) {
+                                var tvalue = rowData[c];
+                                row[shapeAtts.set[c].resolvedName] = tvalue;
+                            }
+                            rows.push(row);
+                        }
+                    }
+                    return JSON.stringify(rows);
+                }
+
+                return value.getObjectDef().getName();
             }
-            return "undefined";
+            return "";
         }
         //return p.measure(bodyCode);
     }
@@ -762,6 +806,13 @@ export class ParameterValueSet
         }
         //return p.measure(bodyCode);
     }
+    public getValueString(i : number) : string {
+        //let bodyCode = () =>
+        {
+            return new ParameterValue(this.pc.sequence[i], this.values[i]).valueString;
+        }
+        //return p.measure(bodyCode);        
+    }
     public getParameterValue(pName: string): ParameterValue
     {
         //let bodyCode = () =>
@@ -771,6 +822,7 @@ export class ParameterValueSet
         }
         //return p.measure(bodyCode);
     }
+   
     public setParameterValue(pName: string, value: string | ICdmObject): void
     {
         //let bodyCode = () =>
@@ -2351,6 +2403,9 @@ abstract class cdmObject implements ICdmObject
     rtsbElevated: ResolvedTraitSetBuilder;
     rtsbInherited: ResolvedTraitSetBuilder;
     rtsbApplied: ResolvedTraitSetBuilder;
+
+    declaredPath : string;
+
     public abstract constructResolvedTraits(rtsb: ResolvedTraitSetBuilder);
     public getResolvedTraits(set?: cdmTraitSet): ResolvedTraitSet
     {
@@ -2625,7 +2680,6 @@ abstract class cdmObject implements ICdmObject
         //return p.measure(bodyCode);
     }
 
-    public abstract getPathBranch(): string;
     public abstract visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean;
     public static visitArray(items: Array<cdmObject>, userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
@@ -2633,14 +2687,16 @@ abstract class cdmObject implements ICdmObject
         {
             let result: boolean = false;
             if (items) {
-                items.some(element =>
-                {
-                    if (element)
+                let lItem = items.length;
+                for (let iItem = 0; iItem < lItem; iItem ++) {
+                    let element = items[iItem];
+                    if (element) {
                         if (element.visit(userData, pathRoot, preChildren, postChildren, statusRpt)) {
                             result = true;
-                            return true;
+                            break;
                         }
-                });
+                    }
+                }
             }
             return result;
         }
@@ -2915,22 +2971,19 @@ export class StringConstant extends cdmObject implements ICdmStringConstant, ICd
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (!this.constantValue)
-                return "XXXXX";
-            return this.constantValue;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            //let path = pathRoot + this.getPathBranch();
-            let path = pathRoot + this.constantValue;
+            let path = this.declaredPath;
+            if (!path) {
+                if (!this.constantValue)
+                    path = pathRoot + "XXXXX";
+                else 
+                    path = pathRoot + this.constantValue;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             // not much to do
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
@@ -3082,14 +3135,6 @@ export class ImportImpl extends cdmObject implements ICdmImport
 
             let imp: ImportImpl = new ImportImpl(object.uri, object.moniker);
             return imp;
-        }
-        //return p.measure(bodyCode);
-    }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.uri;
         }
         //return p.measure(bodyCode);
     }
@@ -3294,21 +3339,17 @@ export class ArgumentImpl extends cdmObject implements ICdmArgumentDef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.value)
-                return "value/";
-            return "";
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + (this.value ? "value/" : "");
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.value)
@@ -3510,19 +3551,17 @@ export class ParameterImpl extends cdmObject implements ICdmParameterDef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.name;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.name;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.defaultValue)
@@ -4038,21 +4077,21 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.trait.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.trait.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot;
+                if (this.trait.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + (this.trait as StringConstant).constantValue;
+                else 
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.trait)
@@ -4318,19 +4357,16 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.traitName;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.traitName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
 
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
@@ -4561,21 +4597,20 @@ export class RelationshipReferenceImpl extends cdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.relationship.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.relationship.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.relationship.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + (this.relationship as StringConstant).constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.relationship)
@@ -4705,19 +4740,17 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.relationshipName;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.relationshipName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsRelationship)
@@ -4873,21 +4906,21 @@ export class DataTypeReferenceImpl extends cdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.dataType.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.dataType.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot;
+                if (this.dataType.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + (this.dataType as StringConstant).constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.dataType)
@@ -5022,19 +5055,17 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.dataTypeName;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.dataTypeName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsDataType)
@@ -5364,19 +5395,17 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.name;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.name;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.dataType)
@@ -5636,16 +5665,17 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
         }
         //return p.measure(bodyCode);
     }
-
-    public getPathBranch(): string
-    {
-        return "(unspecified)";
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + "(unspecified)";
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.entity instanceof Array) {
@@ -5911,21 +5941,20 @@ export class AttributeGroupReferenceImpl extends cdmObjectRef implements ICdmAtt
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.attributeGroup.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.attributeGroup.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.attributeGroup.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + (this.attributeGroup as StringConstant).constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.attributeGroup)
@@ -6093,19 +6122,17 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.attributeGroupName;;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.attributeGroupName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.members)
@@ -6366,22 +6393,16 @@ export class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEnti
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.constantEntityName)
-                return this.constantEntityName;
-            else
-                return "(unspecified)";
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + (this.constantEntityName ? this.constantEntityName : "(unspecified)");
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
 
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
@@ -6571,21 +6592,22 @@ export class EntityReferenceImpl extends cdmObjectRef implements ICdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            if (this.entity.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.entity.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.entity.objectType == cdmObjectType.stringConstant)
+                    path = pathRoot + (this.entity as StringConstant).constantValue;
+                else if (this.entity.objectType == cdmObjectType.constantEntityDef)
+                    path = pathRoot + "(constantEntity)";
+                else 
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.entity)
@@ -6773,19 +6795,17 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
         }
         //return p.measure(bodyCode);
     }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return this.entityName;
-        }
-        //return p.measure(bodyCode);
-    }
     public visit(userData: any, pathRoot: string, preChildren: VisitCallback, postChildren: VisitCallback, statusRpt: RptCallback): boolean
     {
         //let bodyCode = () =>
         {
-            let path: string = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.entityName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
+
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsEntity)
@@ -7200,15 +7220,6 @@ export class Document extends cdmObject implements ICdmDocumentDef
         //let bodyCode = () =>
         {
             return this.definitions;
-        }
-        //return p.measure(bodyCode);
-    }
-
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return "";
         }
         //return p.measure(bodyCode);
     }
@@ -7642,14 +7653,6 @@ export class Folder implements ICdmFolderDef
         //let bodyCode = () =>
         {
             return false;
-        }
-        //return p.measure(bodyCode);
-    }
-    public getPathBranch(): string
-    {
-        //let bodyCode = () =>
-        {
-            return "only makes sense inside a document"
         }
         //return p.measure(bodyCode);
     }
@@ -8607,6 +8610,17 @@ export class Corpus extends Folder
                     };
 
                     p.report();
+                    if (visits) {
+                        let max = 0;
+                        let maxVisit = "";
+                        visits.forEach( (v,k)=> {
+                            if (v > 250) {
+                                max = v;
+                                maxVisit = k;
+                            }
+                        });
+                        console.log(`${maxVisit}, ${max}`) ;
+                    }
 
                     if (errors > 0)
                         resolve(cdmValidationStep.error);

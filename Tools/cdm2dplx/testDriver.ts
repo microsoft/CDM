@@ -9,6 +9,7 @@ class Startup {
 
         let cdmCorpus : cdm.Corpus;
         let pathToDocRoot = "../../schemaDocuments";
+        //pathToDocRoot = "/cdsa schemas/credandcollect";
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
@@ -85,11 +86,14 @@ class Startup {
         let set = new Array<cdm.ICdmEntityDef>();
 
         let ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
+        //let ent = cdmCorpus.getObjectFromCorpusPath("/model/CollectionStatus.cdm.json/CollectionStatus") as cdm.ICdmEntityDef;
 
         // ignore this, just testing out the 'search for atts from traits' function
-        let s = ent.getAttributesWithTraits(["is.dataFormat.floatingPoint","means.location.longitude"]);
-        s = ent.getAttributesWithTraits("means.reference");
-        s = ent.getAttributesWithTraits({traitBaseName:"is.requiredAtLevel", params : [{paramName : "level", paramValue : "systemrequired"}]});
+        //let eat = ent.getFriendlyFormat().toString(200, 20, 0, 2);
+        //writeFileSync("account.spew", eat, "utf-8");
+        // let s = ent.getAttributesWithTraits(["is.dataFormat.floatingPoint","means.location.longitude"]);
+        // s = ent.getAttributesWithTraits("means.reference");
+        // s = ent.getAttributesWithTraits({traitBaseName:"is.requiredAtLevel", params : [{paramName : "level", paramValue : "systemrequired"}]});
 
 
         set.push(ent);

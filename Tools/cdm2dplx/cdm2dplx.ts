@@ -145,10 +145,15 @@ class DPAttributeImpl implements DPAttribute {
     dataCategory: string;
     dataType : string;
     sourceColumnName : string;
+    annotations : Array<DPAnnotation>;
     //pii: string;
     //isHidden: boolean;
     constructor() {
-
+        
+    }
+    public cleanUp() {
+        if (this.annotations.length == 0)
+            this.annotations = undefined;
     }
 }
 
@@ -209,7 +214,7 @@ export class Converter implements IConvertToDplx {
 
             // datacategory is the same as name for cdm
             dpEnt.dataCategory = dpEnt.name;
-
+            
             // get the traits of the entity 
             let rtsEnt = cdmEntity.getResolvedTraits();
             // the trait 'is.CDM.attributeGroup' contains a table of references to the 'special' attribute groups contained by the entity.
@@ -248,6 +253,8 @@ export class Converter implements IConvertToDplx {
                     if (localizedTableRef) 
                         dpEnt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>().lookupWhere("displayText", "languageTag", "en");
                 }
+                // turn each trait into an annotation too
+                //this.traitToAnnotation(rt, dpEnt.annotations);
             });
             // if (isPII)
             //     dpEnt.pii = "CustomerContent";
@@ -277,7 +284,15 @@ export class Converter implements IConvertToDplx {
 
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
-                
+
+                // turn each trait into an annotation too
+                dpAtt.annotations = new Array<DPAnnotation>();
+                let rtsAtt = ra.resolvedTraits;
+                rtsAtt.set.forEach(rt => {
+                    //this.traitToAnnotation(rt, dpAtt.annotations);
+                });
+
+                dpAtt.cleanUp();
                 dpEnt.attributes.push(dpAtt);
                
             });
@@ -578,6 +593,31 @@ export class Converter implements IConvertToDplx {
 
         return baseType;
     }
+
+    traitToAnnotation(rt : cdm.ResolvedTrait, annotations : DPAnnotation[]) {
+        // skip the ugly traits
+        if (!rt.trait.ugly) {
+            let annotationName = "trait." + rt.traitName;
+            let annotation : DPAnnotation;
+            // if there are non-null parameters for the trait, they each turn into annotations
+            let pv = rt.parameterValues;
+            if (pv && pv.length) {
+                for (let i =0; i< pv.length; i++) {
+                    let paramName = pv.getParameter(i).getName();
+                    let paramValue = pv.getValueString(i);
+                    if (paramValue) {
+                        annotation = new DPAnnotationImpl(annotationName + "." + paramName, paramValue);
+                        annotations.push(annotation);
+                    }
+                }
+            }
+            if (!annotation) {
+                annotation = new DPAnnotationImpl(annotationName, "true");
+                annotations.push(annotation);
+            }
+        }
+    }
+
 }
 
 

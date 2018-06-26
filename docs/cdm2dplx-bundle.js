@@ -56,6 +56,10 @@ class DPAttributeImpl {
     //isHidden: boolean;
     constructor() {
     }
+    cleanUp() {
+        if (this.annotations.length == 0)
+            this.annotations = undefined;
+    }
 }
 class DPAnnotationImpl {
     constructor(name, value) {
@@ -136,6 +140,8 @@ class Converter {
                     if (localizedTableRef)
                         dpEnt.description = localizedTableRef.getObjectDef().lookupWhere("displayText", "languageTag", "en");
                 }
+                // turn each trait into an annotation too
+                //this.traitToAnnotation(rt, dpEnt.annotations);
             });
             // if (isPII)
             //     dpEnt.pii = "CustomerContent";
@@ -161,6 +167,13 @@ class Converter {
                     dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").valueString;
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
+                // turn each trait into an annotation too
+                dpAtt.annotations = new Array();
+                let rtsAtt = ra.resolvedTraits;
+                rtsAtt.set.forEach(rt => {
+                    //this.traitToAnnotation(rt, dpAtt.annotations);
+                });
+                dpAtt.cleanUp();
                 dpEnt.attributes.push(dpAtt);
             });
             dpEnt.cleanUp();
@@ -446,6 +459,29 @@ class Converter {
             }
         }
         return baseType;
+    }
+    traitToAnnotation(rt, annotations) {
+        // skip the ugly traits
+        if (!rt.trait.ugly) {
+            let annotationName = "trait." + rt.traitName;
+            let annotation;
+            // if there are non-null parameters for the trait, they each turn into annotations
+            let pv = rt.parameterValues;
+            if (pv && pv.length) {
+                for (let i = 0; i < pv.length; i++) {
+                    let paramName = pv.getParameter(i).getName();
+                    let paramValue = pv.getValueString(i);
+                    if (paramValue) {
+                        annotation = new DPAnnotationImpl(annotationName + "." + paramName, paramValue);
+                        annotations.push(annotation);
+                    }
+                }
+            }
+            if (!annotation) {
+                annotation = new DPAnnotationImpl(annotationName, "true");
+                annotations.push(annotation);
+            }
+        }
     }
 }
 exports.Converter = Converter;
