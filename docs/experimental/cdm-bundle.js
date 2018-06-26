@@ -113,6 +113,18 @@ class profile {
     }
 }
 let p = new profile();
+let visits;
+function trackVisits(path) {
+    if (!visits)
+        visits = new Map();
+    let cnt = 0;
+    if (visits.has(path)) {
+        cnt = visits.get(path) + 1;
+    }
+    visits.set(path, cnt);
+    if (path == "Case/hasAttributes/attributesAddedAtThisScope/members/(unspecified)")
+        return true;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -191,12 +203,39 @@ class ParameterValue {
     get valueString() {
         //let bodyCode = () =>
         {
-            if (this.value) {
-                if (this.value.objectType == cdmObjectType.stringConstant)
-                    return this.value.getConstant();
-                return "cdmObject()";
+            let value = this.value;
+            if (value) {
+                // if a string constant, call get value to turn into itself or a reference if that is what is held there
+                if (value.getObjectType() == cdmObjectType.stringConstant)
+                    value = value.getValue();
+                // if still  a string, it is just a string
+                if (value.getObjectType() == cdmObjectType.stringConstant)
+                    return value.getConstant();
+                // if this is a constant table, then expand into an html table
+                if (value.getObjectType() == cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdmObjectType.constantEntityDef) {
+                    var entShape = value.getObjectDef().getEntityShape();
+                    var entValues = value.getObjectDef().getConstantValues();
+                    if (!entValues && entValues.length == 0)
+                        return "";
+                    let rows = new Array();
+                    var shapeAtts = entShape.getResolvedAttributes();
+                    let l = shapeAtts.set.length;
+                    for (var r = 0; r < entValues.length; r++) {
+                        var rowData = entValues[r];
+                        if (rowData && rowData.length) {
+                            let row = {};
+                            for (var c = 0; c < rowData.length; c++) {
+                                var tvalue = rowData[c];
+                                row[shapeAtts.set[c].resolvedName] = tvalue;
+                            }
+                            rows.push(row);
+                        }
+                    }
+                    return JSON.stringify(rows);
+                }
+                return value.getObjectDef().getName();
             }
-            return "undefined";
+            return "";
         }
         //return p.measure(bodyCode);
     }
@@ -311,6 +350,13 @@ class ParameterValueSet {
             return this.values[i];
         }
         //return p.measure(bodyCode);
+    }
+    getValueString(i) {
+        //let bodyCode = () =>
+        {
+            return new ParameterValue(this.pc.sequence[i], this.values[i]).valueString;
+        }
+        //return p.measure(bodyCode);        
     }
     getParameterValue(pName) {
         //let bodyCode = () =>
@@ -1887,13 +1933,16 @@ class cdmObject {
         {
             let result = false;
             if (items) {
-                items.some(element => {
-                    if (element)
+                let lItem = items.length;
+                for (let iItem = 0; iItem < lItem; iItem++) {
+                    let element = items[iItem];
+                    if (element) {
                         if (element.visit(userData, pathRoot, preChildren, postChildren, statusRpt)) {
                             result = true;
-                            return true;
+                            break;
                         }
-                });
+                    }
+                }
             }
             return result;
         }
@@ -2129,20 +2178,18 @@ class StringConstant extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (!this.constantValue)
-                return "XXXXX";
-            return this.constantValue;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            //let path = pathRoot + this.getPathBranch();
-            let path = pathRoot + this.constantValue;
+            let path = this.declaredPath;
+            if (!path) {
+                if (!this.constantValue)
+                    path = pathRoot + "XXXXX";
+                else
+                    path = pathRoot + this.constantValue;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             // not much to do
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
@@ -2273,13 +2320,6 @@ class ImportImpl extends cdmObject {
         {
             let imp = new ImportImpl(object.uri, object.moniker);
             return imp;
-        }
-        //return p.measure(bodyCode);
-    }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.uri;
         }
         //return p.measure(bodyCode);
     }
@@ -2454,19 +2494,15 @@ class ArgumentImpl extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.value)
-                return "value/";
-            return "";
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + (this.value ? "value/" : "");
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.value)
@@ -2637,17 +2673,15 @@ class ParameterImpl extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.name;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.name;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.defaultValue)
@@ -3083,19 +3117,19 @@ class TraitReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.trait.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.trait.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot;
+                if (this.trait.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + this.trait.constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.trait)
@@ -3319,17 +3353,15 @@ class TraitImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.traitName;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.traitName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsTrait)
@@ -3533,19 +3565,18 @@ class RelationshipReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.relationship.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.relationship.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.relationship.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + this.relationship.constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.relationship)
@@ -3659,17 +3690,15 @@ class RelationshipImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.relationshipName;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.relationshipName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsRelationship)
@@ -3805,19 +3834,19 @@ class DataTypeReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.dataType.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.dataType.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot;
+                if (this.dataType.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + this.dataType.constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.dataType)
@@ -3934,17 +3963,15 @@ class DataTypeImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.dataTypeName;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.dataTypeName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsDataType)
@@ -4226,17 +4253,15 @@ class TypeAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.name;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.name;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.dataType)
@@ -4460,13 +4485,15 @@ class EntityAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        return "(unspecified)";
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + "(unspecified)";
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.entity instanceof Array) {
@@ -4700,19 +4727,18 @@ class AttributeGroupReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.attributeGroup.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.attributeGroup.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.attributeGroup.objectType === cdmObjectType.stringConstant)
+                    path = pathRoot + this.attributeGroup.constantValue;
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.attributeGroup)
@@ -4858,18 +4884,15 @@ class AttributeGroupImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.attributeGroupName;
-            ;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.attributeGroupName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.members)
@@ -5095,20 +5118,15 @@ class ConstantEntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.constantEntityName)
-                return this.constantEntityName;
-            else
-                return "(unspecified)";
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + (this.constantEntityName ? this.constantEntityName : "(unspecified)");
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.entityShape)
@@ -5275,19 +5293,20 @@ class EntityReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            if (this.entity.objectType != cdmObjectType.stringConstant)
-                return "";
-            return this.entity.getPathBranch();
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                if (this.entity.objectType == cdmObjectType.stringConstant)
+                    path = pathRoot + this.entity.constantValue;
+                else if (this.entity.objectType == cdmObjectType.constantEntityDef)
+                    path = pathRoot + "(constantEntity)";
+                else
+                    path = pathRoot;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.entity)
@@ -5451,17 +5470,15 @@ class EntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return this.entityName;
-        }
-        //return p.measure(bodyCode);
-    }
     visit(userData, pathRoot, preChildren, postChildren, statusRpt) {
         //let bodyCode = () =>
         {
-            let path = pathRoot + this.getPathBranch();
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathRoot + this.entityName;
+                this.declaredPath = path;
+            }
+            //trackVisits(path);
             if (preChildren && preChildren(userData, this, path, statusRpt))
                 return false;
             if (this.extendsEntity)
@@ -5805,13 +5822,6 @@ class Document extends cdmObject {
         //let bodyCode = () =>
         {
             return this.definitions;
-        }
-        //return p.measure(bodyCode);
-    }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return "";
         }
         //return p.measure(bodyCode);
     }
@@ -6186,13 +6196,6 @@ class Folder {
         //let bodyCode = () =>
         {
             return false;
-        }
-        //return p.measure(bodyCode);
-    }
-    getPathBranch() {
-        //let bodyCode = () =>
-        {
-            return "only makes sense inside a document";
         }
         //return p.measure(bodyCode);
     }
@@ -7057,6 +7060,17 @@ class Corpus extends Folder {
                     }
                     ;
                     p.report();
+                    if (visits) {
+                        let max = 0;
+                        let maxVisit = "";
+                        visits.forEach((v, k) => {
+                            if (v > 250) {
+                                max = v;
+                                maxVisit = k;
+                            }
+                        });
+                        console.log(`${maxVisit}, ${max}`);
+                    }
                     if (errors > 0)
                         resolve(cdmValidationStep.error);
                     else
