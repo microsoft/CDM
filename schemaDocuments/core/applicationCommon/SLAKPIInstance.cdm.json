@@ -1,768 +1,1876 @@
 {
-	"jsonSchemaSemanticVersion": "0.5.0",
-	"entity": {
-		"semanticDomain": {
-			"class": {
-				"type": "SLAKPIInstance",
-				"namespace": "core.applicationCommon",
-				"semanticVersion": "0.5.0",
-				"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-			}
-		},
-		"description": "Service level agreement (SLA) key performance indicator (KPI) instance that is tracked for an individual case",
-		"displayName": "SLA KPI Instance",
-		"attributes": [
-			{
-				"name": "slakpiinstanceid",
-				"dataType": "Guid",
-				"displayName": "SLA KPI InstanceId",
-				"description": "Unique identifier of the SLA KPI Instance.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.UniqueIdentifer",
-					"isPrimaryKey": true
-				}
-			},
-			{
-				"name": "name",
-				"dataType": "String",
-				"displayName": "Name",
-				"description": "Type a descriptive name for the service level agreement (SLA) key performance indicator (KPI) instance.",
-				"semanticDomain": {
-					"semanticType": "Object.Identity.Name",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "computedfailuretime",
-				"dataType": "DateTimeOffset",
-				"displayName": "Computed Failure Time",
-				"description": "Computed Failure Date and time",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "computedwarningtime",
-				"dataType": "DateTimeOffset",
-				"displayName": "Computed Warning Time",
-				"description": "Computed Warning Date and time",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "failuretime",
-				"dataType": "DateTimeOffset",
-				"displayName": "Failure Time",
-				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI) will expire.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "ownerid",
-				"dataType": "Guid",
-				"displayName": "Owner",
-				"description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user or team.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owninguser",
-				"dataType": "Guid",
-				"displayName": "Owning User",
-				"description": "Owning User.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owningteam",
-				"dataType": "Guid",
-				"displayName": "Owning Team",
-				"description": "OwningTeam.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "owningbusinessunit",
-				"dataType": "Guid",
-				"displayName": "Owning Business Unit",
-				"description": "Owning Business Unit.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "regarding",
-				"dataType": "Guid",
-				"displayName": "Regarding",
-				"description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with.",
-				"semanticDomain": {
-					"semanticType": "Reference.Regarding"
-				}
-			},
-			{
-				"name": "status_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.Status.Display",
-					"inSupportOf": "status",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "status",
-				"dataType": "String",
-				"displayName": "Status",
-				"description": "Reason for the status of the service level agreement (SLA) key performance indicator (KPI) instance. For example, the SLA KPI could be Noncompliant or Succeeded.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "slakpiinstance_status",
-						"displayName": "SLA KPI Instance Type",
-						"description": "Information that specifies the type of SLA KPI Instance.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "In Progress"
-							},
-							{
-								"value": 1,
-								"displayName": "Noncompliant"
-							},
-							{
-								"value": 2,
-								"displayName": "Nearing Noncompliance"
-							},
-							{
-								"value": 3,
-								"displayName": "Paused"
-							},
-							{
-								"value": 4,
-								"displayName": "Succeeded"
-							},
-							{
-								"value": 5,
-								"displayName": "Canceled"
-							}
-						]
-					}
-				}
-			},
-			{
-				"name": "succeededon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Succeeded On",
-				"description": "Shows the date and time when the service level agreement (SLA) key performance indicator (KPI) success criteria was met.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "warningtime",
-				"dataType": "DateTimeOffset",
-				"displayName": "Warning Time",
-				"description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI)will go to a warning state.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date"
-				}
-			},
-			{
-				"name": "transactioncurrencyid",
-				"dataType": "Guid",
-				"displayName": "Currency",
-				"description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Currency.Type"
-				}
-			},
-			{
-				"name": "exchangerate",
-				"dataType": "Decimal",
-				"displayName": "Exchange Rate",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"minValue": 1E-10,
-					"maxValue": 100000000000
-				}
-			},
-			{
-				"name": "createdby",
-				"dataType": "Guid",
-				"displayName": "Created By",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "createdon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Created On",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Creation"
-				}
-			},
-			{
-				"name": "createdonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Created By (Delegate)",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "description",
-				"dataType": "String",
-				"displayName": "Description",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Reference.Description",
-					"maxLength": 100
-				}
-			},
-			{
-				"name": "modifiedby",
-				"dataType": "Guid",
-				"displayName": "Modified By",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "modifiedon",
-				"dataType": "DateTimeOffset",
-				"displayName": "Modified On",
-				"description": "For internal use only.",
-				"semanticDomain": {
-					"semanticType": "Measurement.Date.Modify"
-				}
-			},
-			{
-				"name": "modifiedonbehalfby",
-				"dataType": "Guid",
-				"displayName": "Modified By (Delegate)",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "versionnumber",
-				"dataType": "Int64",
-				"displayName": "Version Number",
-				"description": "For internal use only.",
-				"semanticDomain": {
-
-				}
-			},
-			{
-				"name": "warningtimereached_display",
-				"dataType": "String",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode.Display",
-					"inSupportOf": "warningtimereached",
-					"isReadOnly": true
-				}
-			},
-			{
-				"name": "warningtimereached",
-				"dataType": "String",
-				"displayName": "Warning Time Reached",
-				"description": "Shows information about whether the case has reached its warning time.",
-				"semanticDomain": {
-					"semanticType": "Measurement.OptionCode",
-					"constrainedList": {
-						"name": "slakpiinstance_warningtimereached",
-						"displayName": "Warning Time Reached",
-						"description": "Information that specifies whether the case is decrementing.",
-						"items": [
-							{
-								"value": 0,
-								"displayName": "No"
-							},
-							{
-								"value": 1,
-								"displayName": "Yes"
-							}
-						]
-					}
-				}
-			}
-		]
-	},
-	"relationships": [
-		{
-			"name": "implicit_user",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SystemUser",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "d3b9b209-0928-f247-03da-7c3fac836476"
-				},
-				"attributes": [
-					{
-						"name": "systemuserid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "implicit_team",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Team",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "e2069f47-358d-adfd-cf3e-0f0b0bda674d"
-				},
-				"attributes": [
-					{
-						"name": "teamid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_owner",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Owner",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "0a918fe7-0f50-d085-ce9d-2571b1be046d"
-				},
-				"attributes": [
-					{
-						"name": "ownerid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "TransactionCurrency_slakpiinstance",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "TransactionCurrency",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "20d70d8a-8db7-a962-9131-811acfd0a332"
-				},
-				"attributes": [
-					{
-						"name": "transactioncurrencyid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "business_unit_slakpiinstance",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "owningbusinessunit",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "BusinessUnit",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "3dcce49f-2ce7-90a7-ba26-553d44aa21dd"
-				},
-				"attributes": [
-					{
-						"name": "businessunitid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_account",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Account",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "07f94632-fb5e-f556-52bf-e5d7d4060d1e"
-				},
-				"attributes": [
-					{
-						"name": "accountid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_fax",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Fax",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "035be2dd-641b-c15f-5dbf-f3c7b8dcb783"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_email",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Email",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "771369e3-9291-4dfb-5ef7-6cb95353bc41"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_activitypointer",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "ActivityPointer",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "ffbcf1c2-8dae-abd8-ef19-308dd9b62cba"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_letter",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Letter",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "8dc11d90-b486-4699-d2c9-edb4b9d9e61a"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_appointment",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Appointment",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "05d93aa4-fd94-61df-a697-292673d6aff1"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_socialactivity",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "SocialActivity",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "537c8d1b-4f37-f6fc-c207-ac33bca162f1"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_task",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Task",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "6e661611-4269-802c-26a0-bdd02b8584f6"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_phonecall",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "PhoneCall",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "91e6cc0c-863d-158b-5daa-00dab6ca0410"
-				},
-				"attributes": [
-					{
-						"name": "activityid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		},
-		{
-			"name": "slakpiinstance_contact",
-			"referencing": {
-				"entity": {
-					"type": "SLAKPIInstance",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "2f8498be-b861-99e5-6c4e-413a03c0cd94"
-				},
-				"attributes": [
-					{
-						"name": "regarding",
-						"comparisonOrder": 0
-					}
-				]
-			},
-			"referenced": {
-				"entity": {
-					"type": "Contact",
-					"namespace": "core.applicationCommon",
-					"semanticVersion": "0.5.0",
-					"semanticId": "0ed5931f-678a-d8b1-5383-3e7ea104bb3c"
-				},
-				"attributes": [
-					{
-						"name": "contactid",
-						"comparisonOrder": 0
-					}
-				]
-			}
-		}
-	]
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SLAKPIInstance",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "SLA KPI Instance"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Service level agreement (SLA) key performance indicator (KPI) instance that is tracked for an individual case"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "displayName": "SLA KPI Instance",
+            "description": "Service level agreement (SLA) key performance indicator (KPI) instance that is tracked for an individual case",
+            "sourceName": "SLAKPIInstance",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/SLAKPIInstance.cdm.json/SLAKPIInstance/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "name": "SLAKPIInstanceId",
+                                "relationship": "identifiedBy",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "SLA KPI InstanceId"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier of the SLA KPI Instance."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "slakpiinstanceid",
+                                "sourceOrdering": 1,
+                                "displayName": "SLA KPI InstanceId",
+                                "description": "Unique identifier of the SLA KPI Instance."
+                            },
+                            {
+                                "name": "name",
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type a descriptive name for the service level agreement (SLA) key performance indicator (KPI) instance."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "name",
+                                "maximumLength": 100,
+                                "sourceOrdering": 2,
+                                "displayName": "Name",
+                                "description": "Type a descriptive name for the service level agreement (SLA) key performance indicator (KPI) instance."
+                            },
+                            {
+                                "name": "computedFailureTime",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Computed Failure Time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Computed Failure Date and time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "computedfailuretime",
+                                "sourceOrdering": 3,
+                                "isNullable": true,
+                                "displayName": "Computed Failure Time",
+                                "description": "Computed Failure Date and time"
+                            },
+                            {
+                                "name": "computedWarningTime",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Computed Warning Time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Computed Warning Date and time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "computedwarningtime",
+                                "sourceOrdering": 4,
+                                "isNullable": true,
+                                "displayName": "Computed Warning Time",
+                                "description": "Computed Warning Date and time"
+                            },
+                            {
+                                "name": "failureTime",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Failure Time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI) will expire."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "failuretime",
+                                "sourceOrdering": 5,
+                                "isNullable": true,
+                                "displayName": "Failure Time",
+                                "description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI) will expire."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesOwner",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "ownerId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "systemrequired"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Owner"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user or team."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "ownerid",
+                                                        "sourceOrdering": 6,
+                                                        "displayName": "Owner",
+                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user or team."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": [
+                                    {
+                                        "entityReference": "User",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "User/(resolvedAttributes)/systemUserId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Team",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Team/(resolvedAttributes)/teamId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "owningUser",
+                                "relationship": "hasA",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "single"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Owning User"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Owning User."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "owninguser",
+                                "sourceOrdering": 10,
+                                "isNullable": true,
+                                "displayName": "Owning User",
+                                "description": "Owning User."
+                            },
+                            {
+                                "name": "owningTeam",
+                                "relationship": "hasA",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "single"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Owning Team"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "OwningTeam."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "owningteam",
+                                "sourceOrdering": 11,
+                                "isNullable": true,
+                                "displayName": "Owning Team",
+                                "description": "OwningTeam."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "owningBusinessUnit",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Owning Business Unit"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Owning Business Unit."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 12,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning Business Unit",
+                                                        "description": "Owning Business Unit."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "BusinessUnit",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Email and Contact and Account and Activity and SocialActivity and Fax and PhoneCall and Appointment and Task and Letter' adds the 'regarding' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "regarding",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Regarding"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "regarding",
+                                                        "sourceOrdering": 13,
+                                                        "isNullable": true,
+                                                        "displayName": "Regarding",
+                                                        "description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": [
+                                    {
+                                        "entityReference": "Email",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Email/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Contact",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Contact/(resolvedAttributes)/contactId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Account",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Account/(resolvedAttributes)/accountId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Activity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Activity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "SocialActivity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "SocialActivity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Fax",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Fax/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "PhoneCall",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "PhoneCall/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Appointment",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Appointment/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Task",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Task/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Letter",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Letter/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "status",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Succeeded",
+                                                                "4",
+                                                                "4"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Canceled",
+                                                                "5",
+                                                                "5"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "In Progress",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Noncompliant",
+                                                                "1",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Nearing Noncompliance",
+                                                                "2",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Paused",
+                                                                "3",
+                                                                "3"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'status_display' is added to the 'SLAKPIInstance' entity to provide the localized display text for the value of the listLookup attribute 'status'",
+                                                    "name": "status_display",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the service level agreement (SLA) key performance indicator (KPI) instance. For example, the SLA KPI could be Noncompliant or Succeeded."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "status",
+                                "sourceOrdering": 15,
+                                "isNullable": true,
+                                "displayName": "Status",
+                                "description": "Reason for the status of the service level agreement (SLA) key performance indicator (KPI) instance. For example, the SLA KPI could be Noncompliant or Succeeded."
+                            },
+                            {
+                                "name": "succeededOn",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Succeeded On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the date and time when the service level agreement (SLA) key performance indicator (KPI) success criteria was met."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "succeededon",
+                                "sourceOrdering": 17,
+                                "isNullable": true,
+                                "displayName": "Succeeded On",
+                                "description": "Shows the date and time when the service level agreement (SLA) key performance indicator (KPI) success criteria was met."
+                            },
+                            {
+                                "name": "warningTime",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Warning Time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI)will go to a warning state."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "warningtime",
+                                "sourceOrdering": 18,
+                                "isNullable": true,
+                                "displayName": "Warning Time",
+                                "description": "Enter the date and time when the service level agreement (SLA) key performance indicator (KPI)will go to a warning state."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Currency' adds the 'transactionCurrencyId' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "transactionCurrencyId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Currency"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 19,
+                                                        "isNullable": true,
+                                                        "displayName": "Currency",
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "exchangeRate",
+                                "relationship": "hasA",
+                                "dataType": "decimal",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "exchangerate",
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10",
+                                "sourceOrdering": 21,
+                                "isNullable": true,
+                                "displayName": "Exchange Rate",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "For internal use only."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 22,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By",
+                                                        "description": "For internal use only."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "createdOn",
+                                "relationship": "createdOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Created On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "createdon",
+                                "sourceOrdering": 25,
+                                "isNullable": true,
+                                "displayName": "Created On",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "createdOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Created By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "For internal use only."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 26,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By (Delegate)",
+                                                        "description": "For internal use only."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "description",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "description",
+                                "maximumLength": 100,
+                                "sourceOrdering": 29,
+                                "isNullable": true,
+                                "displayName": "Description",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "For internal use only."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 30,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By",
+                                                        "description": "For internal use only."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "modifiedOn",
+                                "relationship": "modifiedOn",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Modified On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 33,
+                                "isNullable": true,
+                                "displayName": "Modified On",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'SLAKPIInstance' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "modifiedOnBehalfBy",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Modified By (Delegate)"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "For internal use only."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 34,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By (Delegate)",
+                                                        "description": "For internal use only."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "versionNumber",
+                                "relationship": "hasA",
+                                "dataType": "bigInteger",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 37,
+                                "isNullable": true,
+                                "displayName": "Version Number",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "name": "warningTimeReached",
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "No",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Yes",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'warningTimeReached_display' is added to the 'SLAKPIInstance' entity to provide the localized display text for the value of the listLookup attribute 'warningTimeReached'",
+                                                    "name": "warningTimeReached_display",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Warning Time Reached"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows information about whether the case has reached its warning time."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "warningtimereached",
+                                "sourceOrdering": 39,
+                                "isNullable": true,
+                                "displayName": "Warning Time Reached",
+                                "description": "Shows information about whether the case has reached its warning time."
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
 }
