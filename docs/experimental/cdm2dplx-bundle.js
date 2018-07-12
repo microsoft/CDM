@@ -26,7 +26,7 @@ class DPEntityImpl {
         this.$type = "LocalEntity";
         this.name = "";
         this.description = "";
-        this.dataCategory = "";
+        //this.dataCategory = "";
         //this.pii = "Unclassified";
         this.schemas = new Array();
         this.annotations = new Array();
@@ -82,12 +82,17 @@ class Converter {
         this.relationshipsType = "none";
         this.partitionPattern = "$1.csv";
         this.schemaUriBase = "";
+        this.schemaVersion = "";
+    }
+    getPostFix() {
+        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
     }
     convertEntities(entities, dpName) {
         let dp = new DataPoolImpl();
         dp.name = dpName;
         let entitiesIncluded = new Set();
         let relationshipsSeen = new Array();
+        let postFix = this.getPostFix();
         for (let iEnt = 0; iEnt < entities.length; iEnt++) {
             const cdmEntity = entities[iEnt];
             // remember what was sent to pick out the 'good' relationships at the end
@@ -101,7 +106,7 @@ class Converter {
             if (this.bindingType === "byol")
                 dpEnt.partitions.push(new DPPartitionImpl(this.partitionPattern, dpEnt.name));
             // datacategory is the same as name for cdm
-            dpEnt.dataCategory = dpEnt.name;
+            //dpEnt.dataCategory = dpEnt.name;
             // get the traits of the entity 
             let rtsEnt = cdmEntity.getResolvedTraits();
             // the trait 'is.CDM.attributeGroup' contains a table of references to the 'special' attribute groups contained by the entity.
@@ -125,6 +130,7 @@ class Converter {
                             let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
                             if (agPath.endsWith(expectedEnding))
                                 agPath = agPath.slice(0, agPath.length - expectedEnding.length);
+                            agPath += postFix;
                             // caller might want some other prefix
                             agPath = this.schemaUriBase + agPath;
                             dpEnt.schemas.push(agPath);
@@ -206,42 +212,24 @@ class Converter {
         return dp;
     }
     traits2DataType(rts) {
-        let isBig = false;
-        let isSmall = false;
         let baseType = "unclassified";
         let l = rts.set.length;
         for (let i = 0; i < l; i++) {
             const raName = rts.set[i].traitName;
             switch (raName) {
-                case "is.dataFormat.big":
-                    isBig = true;
-                    break;
-                case "is.dataFormat.small":
-                    isSmall = true;
-                    break;
                 case "is.dataFormat.integer":
-                    baseType = "int";
+                    baseType = "int64";
                     break;
                 case "is.dataFormat.floatingPoint":
-                    baseType = "float";
+                    baseType = "double";
                     break;
-                case "is.dataFormat.characters":
+                case "is.dataFormat.byte":
+                case "is.dataFormat.character":
                     baseType = "string";
-                    break;
-                case "is.dataFormat.bytes":
-                    baseType = "string";
-                    break;
-                case "is.dataFormat.date":
-                    if (baseType == "time")
-                        baseType = "dateTime";
-                    else
-                        baseType = "date";
                     break;
                 case "is.dataFormat.time":
-                    if (baseType == "date")
-                        baseType = "dateTime";
-                    else
-                        baseType = "time";
+                case "is.dataFormat.date":
+                    baseType = "dateTime";
                     break;
                 case "is.dataFormat.boolean":
                     baseType = "boolean";
@@ -253,13 +241,6 @@ class Converter {
                     break;
             }
         }
-        // and now throw away everything we just learned and smash into this set :)
-        if (baseType == "float")
-            baseType = "double";
-        if (baseType == "int")
-            baseType = "int64";
-        if (baseType == "date" || baseType == "time")
-            baseType = "dateTime";
         return baseType;
     }
     traits2DataCategory(rts) {
