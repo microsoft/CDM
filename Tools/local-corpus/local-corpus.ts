@@ -61,20 +61,24 @@ export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, stopLevel : cdm.cdmSt
 // "analyticalCommon"
 // "applicationCommon"
 
-export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef, ignoreFolder : string) {
+export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef, ignoreFolders : string[], version : string) {
     let path = corpus.rootPath + folder.getRelativePath();
-    if (folder.getName() == ignoreFolder)
+    if (ignoreFolders && ignoreFolders.find(ig => ig == folder.getName()))
         return;
+    let endMatch = (version ? "." + version : "" )+ ".cdm.json";
     // for every document or directory
     readdirSync(path).forEach(dirEntry => {
         let entryName = path + dirEntry;
         let stats = statSync(entryName);
         if (stats.isDirectory()) {
-            this.loadCorpusFolder(corpus, folder.addFolder(dirEntry), ignoreFolder);
+            this.loadCorpusFolder(corpus, folder.addFolder(dirEntry), ignoreFolders, version);
         }
-        else if (dirEntry.endsWith(".cdm.json")) {
-            let sourceDoc = readFileSync(entryName, "utf8");
-            corpus.addDocumentFromContent(folder.getRelativePath() +  dirEntry, sourceDoc);
+        else {
+            let postfix = dirEntry.slice(dirEntry.indexOf("."));
+            if (postfix == endMatch) {
+                let sourceDoc = readFileSync(entryName, "utf8");
+                corpus.addDocumentFromContent(folder.getRelativePath() +  dirEntry, sourceDoc);
+            }
         }
     });
 }

@@ -41,14 +41,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    "traitReference": "is.CDS.sourceNamed",
-                    "arguments": [
-                        "Owner"
-                    ]
                 }
             ],
+            "displayName": "Owner",
+            "description": "Group of undeleted system users and undeleted teams. Owners can be used to control access to specific objects.",
+            "sourceName": "Owner",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -77,21 +74,6 @@
                                 "dataType": "bigInteger",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "versionnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "1"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
-                                    {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
                                             {
@@ -100,25 +82,16 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 1,
+                                "isNullable": true
                             },
                             {
                                 "name": "ownerId",
                                 "relationship": "identifiedBy",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ownerid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "2"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -160,37 +133,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ownerid",
+                                "sourceOrdering": 2,
+                                "displayName": "Owner",
+                                "description": "Unique identifier for the Owner: systemuserid or teamid."
                             },
                             {
                                 "name": "name",
                                 "relationship": "hasA",
                                 "dataType": "name",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "name"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "160"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "3"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -232,38 +185,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "name",
+                                "maximumLength": 160,
+                                "sourceOrdering": 3,
+                                "isNullable": true,
+                                "displayName": "Owner Name",
+                                "description": "Name of the Owner."
                             },
                             {
                                 "name": "ownerIdType",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "owneridtype"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-2147483648"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "4"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -273,7 +207,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "owneridtype",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 4
                             },
                             {
                                 "name": "yomiName",
@@ -281,36 +219,10 @@
                                 "dataType": {
                                     "dataTypeReference": "name",
                                     "appliedTraits": [
-                                        {
-                                            "traitReference": "means.reference.phonetic"
-                                        }
+                                        "means.reference.phonetic"
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "yominame"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "160"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "5"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -352,7 +264,13 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "yominame",
+                                "maximumLength": 160,
+                                "sourceOrdering": 5,
+                                "isNullable": true,
+                                "displayName": "Yomi Name",
+                                "description": "Pronunciation of the name of the owner, written in phonetic hiragana or katakana characters."
                             }
                         ]
                     }

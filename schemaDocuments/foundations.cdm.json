@@ -25,9 +25,11 @@
                     "explanation": "semantic version number of the entity",
                     "direction": "both",
                     "required": true,
-                    "dataType": "string",
-                    "defaultValue": "0.6.0"
+                    "dataType": "string"
                 }
+            ],
+            "associatedProperties": [
+                "version"
             ]
         },
         {
@@ -41,13 +43,25 @@
                 "direction": "both",
                 "dataType": "entity"
                 }
+            ],
+            "associatedProperties": [
+                "cdmSchemas"
             ]
         },
         {
             "entityName": "CdmObject",
             "extendsEntity":"object",
             "exhibitsTraits": [
-                "is.CDM.entityVersion"
+                {
+                    "traitReference" : "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "0.6"
+                        }
+                    ]
+                } 
+                 
             ]
         },
         {
@@ -95,12 +109,18 @@
         {
             "traitName": "is.localized.displayedAs",
             "extendsTrait": "is.localized",
-            "explanation": "Holds the list of language specific display text for an object."
+            "explanation": "Holds the list of language specific display text for an object.",
+            "associatedProperties": [
+                "displayName"
+            ]
         },
         {
             "traitName": "is.localized.describedAs",
             "extendsTrait": "is.localized",
-            "explanation": "Holds the list of language specific descriptive text for an object."
+            "explanation": "Holds the list of language specific descriptive text for an object.",
+            "associatedProperties": [
+                "description"
+            ]
         },
         {
             "entityName": "listLookupValues",
@@ -143,12 +163,25 @@
                     "required": true,
                     "direction": "both"
                 }
+            ],
+            "associatedProperties": [
+                "defaultValue"
             ]
         },
         {
             "traitName": "is.nullable",
             "extendsTrait": "is",
-            "explanation": "The attribute value may be set to NULL."
+            "explanation": "The attribute value may be set to NULL.",
+            "associatedProperties": [
+                "isNullable"
+            ]
+        },
+        {
+            "traitName": "is.readOnly",
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "isReadOnly"
+            ]
         },
         {
             "traitName": "is.requiredAtLevel",
@@ -165,9 +198,52 @@
             ]
         },
         {
+            "traitName": "is.constrained",
+            "extendsTrait": "is",
+            "explanation": "maximum length or value constraints",
+            "hasParameters": [
+                {
+                    "name": "maximumLength",
+                    "dataType": "integer",
+                    "direction": "both"
+                },
+                {
+                    "name": "minimumValue",
+                    "dataType": "decimal",
+                    "direction": "both"
+                },
+                {
+                    "name": "maximumValue",
+                    "dataType": "decimal",
+                    "direction": "both"
+                }
+            ],
+            "associatedProperties": [
+                "maximumValue",
+                "minimumValue",
+                "maximumLength"
+            ]
+        },
+        {
+            "traitName": "is.constrainedList",
+            "extendsTrait" : "is",
+            "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities",
+            "associatedProperties": [
+                "valueConstrainedToList"
+            ]
+        },
+        {
+            "traitName": "means.entityState",
+            "extendsTrait": "does.elevateAttribute",
+            "explanation": "the attribute represents the current state of the entity."
+        },
+        {
             "relationshipName": "representsStateWith",
             "extendsRelationship": "hasA",
-            "explanation": "the related attribute describes the current state of the entity"
+            "explanation": "the related attribute describes the current state of the entity",
+            "exhibitsTraits": [
+                "means.entityState"
+            ]
         },
         {
             "traitName": "is.correlatedWith",
@@ -196,7 +272,8 @@
             "explanation": "One integer value from a defined list of possibilities",
             "exhibitsTraits": [
                 "does.haveDefault",
-                "does.addSupportingAttribute"
+                "does.addSupportingAttribute",
+                "is.constrainedList"
             ]
         },
         {
@@ -206,29 +283,8 @@
             "exhibitsTraits": [
                 "does.haveDefault",
                 "does.addSupportingAttribute",
-                "means.content.text.CSV"
-            ]
-        },
-        {
-            "traitName": "is.constrained",
-            "extendsTrait": "is",
-            "explanation": "maximum length or value constraints",
-            "hasParameters": [
-                {
-                    "name": "maximumLength",
-                    "dataType": "integer",
-                    "direction": "both"
-                },
-                {
-                    "name": "minimumValue",
-                    "dataType": "decimal",
-                    "direction": "both"
-                },
-                {
-                    "name": "maximumValue",
-                    "dataType": "decimal",
-                    "direction": "both"
-                }
+                "means.content.text.CSV",
+                "is.constrainedList"
             ]
         },
         {

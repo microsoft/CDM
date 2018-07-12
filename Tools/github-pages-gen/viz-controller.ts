@@ -34,6 +34,7 @@ class Controller {
     public paneDetailHost : any;
     public statusPane : any;
     public traitsPane : any;
+    public propertiesPane : any;
     public JsonPane : any;
     public DplxPane : any;
     public paneListTitle : any;
@@ -108,6 +109,8 @@ function init() {
     controller.statusPane.messageHandle = messageHandleDetailStatus;
     controller.traitsPane.messageHandlePing = messageHandlePingParent;
     controller.traitsPane.messageHandle = messageHandleDetailTraits;
+    controller.propertiesPane.messageHandlePing = messageHandlePingParent;
+    controller.propertiesPane.messageHandle = messageHandleDetailProperties;
     controller.JsonPane.messageHandlePing = messageHandlePingParent;
     controller.JsonPane.messageHandle = messageHandleDetailJson;
     controller.DplxPane.messageHandlePing = messageHandlePingParent;
@@ -275,7 +278,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
     else if (controller.appState === "resolveMode") {
         if (messageType === "resolveModeResult") {
             if (data1) {
-                controller.mainContainer.messageHandle("detailTabSelect", "trait_tab", null);
+                controller.mainContainer.messageHandle("detailTabSelect", "property_tab", null);
 
                 // associate the resolved entity objects with the navigation id
                 indexResolvedEntities();
@@ -290,13 +293,14 @@ function messageHandlePingMainControl(messageType, data1, data2) {
 function fileListToNavData(fileList : FileList) : navigatorData {
 
     let noUX = new Set<string>();
-    noUX.add("primitives.cdm.json");
-    noUX.add("foundations.cdm.json");
-    noUX.add("meanings.cdm.json");
-    noUX.add("dwConcepts.cdm.json");
-    noUX.add("_allImports.cdm.json");
-    noUX.add("cdsConcepts.cdm.json");
-    noUX.add("wellKnownCDSAttributeGroups.cdm.json");
+    noUX.add("schema");
+    noUX.add("primitives");
+    noUX.add("foundations");
+    noUX.add("meanings");
+    noUX.add("dwConcepts");
+    noUX.add("_allImports");
+    noUX.add("cdsConcepts");
+    noUX.add("wellKnownCDSAttributeGroups");
 
     let iFolder = 1;
     let root : folder = {id: `Folder${iFolder}`, name:"", entities : null, folders : null};
@@ -327,8 +331,8 @@ function fileListToNavData(fileList : FileList) : navigatorData {
     for(let iFile =0; iFile < fileList.length; iFile ++) {
         let file : File = fileList[iFile];
         if (file.name.endsWith(".cdm.json")){
-            let makeUX = !noUX.has(file.name);
-            let entName = file.name.slice(0, file.name.length - ".cdm.json".length);
+            let entName = file.name.slice(0, file.name.indexOf("."));
+            let makeUX = !noUX.has(entName);
             let f : folder;
             let path = (file.webkitRelativePath && file.webkitRelativePath.length) ? file.webkitRelativePath : "";
             // the first dir name is this and path ends with file. so cleanup
@@ -1104,6 +1108,95 @@ function messageHandleDetailTraits(messageType, data1, data2) {
 
 }
 
+function messageHandleDetailProperties(messageType, data1, data2) {
+    if (messageType == "detailTabSelect") {
+        this.style.display = (data1 != "property_tab") ? "none" : "block";
+        return;
+    }
+
+    let resolvedObject;
+    let isAtt = false;
+
+    if (messageType == "navigateEntitySelect") {
+        if (data2) {
+            resolvedObject = data2.entity.getResolvedEntity();
+        }
+    }
+    if (messageType == "listItemSelect") {
+        if (data1.resolvedName) {
+            resolvedObject = data1;
+            isAtt = true;
+        } else {
+            // assume entity
+            resolvedObject = data1.entity.getResolvedEntity();
+        }
+    }
+
+
+    if (resolvedObject) {
+
+        while (this.childNodes.length > 0)
+            this.removeChild(this.lastChild);
+
+        let propertyTable = controller.document.createElement("table"); propertyTable.className = "property_table";
+        let propertyRow = controller.document.createElement("tr"); propertyRow.className = "property_table_header"; propertyTable.appendChild(propertyRow);
+        let propertyLabel = controller.document.createElement("td"); propertyLabel.className = "property_table_header_label"; propertyRow.appendChild(propertyLabel);
+        let propertyValue = controller.document.createElement("td"); propertyValue.className = "property_table_header_value"; propertyRow.appendChild(propertyValue);
+
+        propertyLabel.appendChild(controller.document.createTextNode(isAtt ? "Attribute" : "Entity"));
+        propertyValue.appendChild(controller.document.createTextNode(resolvedObject.resolvedName))
+
+        let addRow = (propName : string) => {
+            let val = resolvedObject[propName];
+            if (val != undefined) {
+                propertyRow = controller.document.createElement("tr"); propertyRow.className = "property_table_detail"; propertyTable.appendChild(propertyRow);
+                propertyLabel = controller.document.createElement("td"); propertyLabel.className = "property_table_detail_label"; propertyRow.appendChild(propertyLabel);
+                propertyValue = controller.document.createElement("td"); propertyValue.className = "property_table_detail_value"; propertyRow.appendChild(propertyValue);
+                propertyLabel.appendChild(controller.document.createTextNode(propName));
+                if (typeof(val) == "string")
+                    propertyValue.appendChild(controller.document.createTextNode(val))
+                else if (val instanceof Array) {
+                    var pre = controller.document.createElement("pre");
+                    var code = controller.document.createElement("code");
+                    pre.appendChild(code);
+                    var json = JSON.stringify(val, null, 2);
+                    code.appendChild(controller.document.createTextNode(json));
+                    propertyValue.appendChild(pre);
+                }
+                else 
+                    propertyValue.appendChild(controller.document.createTextNode(val.toString()));
+            }
+        }
+
+        if (isAtt) {
+            addRow("displayName");
+            addRow("description");
+            addRow("isPrimaryKey");
+            addRow("dataFormat");
+            addRow("maximumLength");
+            addRow("maximumValue");
+            addRow("minimumValue");
+            addRow("isReadOnly");
+            addRow("isNullable");
+            addRow("creationSequence");
+            addRow("sourceName");
+            addRow("valueConstrainedToList");
+            addRow("defaultValue");
+        }
+        else {
+            addRow("displayName");
+            addRow("description");
+            addRow("version");
+            addRow("primaryKey");
+            addRow("cdmSchemas");
+            addRow("sourceName");
+        }
+
+        this.appendChild(propertyTable);
+    }
+
+}
+
 function messageHandleButton(messageType, data1, data2) {
 
 }
@@ -1112,6 +1205,8 @@ function copyActivePane() {
     var activePane;
     if (controller.statusPane.style.display != "none")
         activePane = controller.statusPane;
+    else if (controller.propertiesPane.style.display != "none")
+        activePane = controller.propertiesPane;
     else if (controller.traitsPane.style.display != "none")
         activePane = controller.traitsPane;
     else if (controller.JsonPane.style.display != "none")

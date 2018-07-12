@@ -1,0 +1,175 @@
+{
+  "name": "",
+  "culture": "en-EN",
+  "entities": [
+    {
+      "$type": "LocalEntity",
+      "name": "CampaignItem",
+      "description": "Work item in a campaign, a list or sales literature.",
+      "schemas": [
+        "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/CampaignItem.cdm.json.0.6.dplx"
+      ],
+      "attributes": [
+        {
+          "name": "campaignItemId",
+          "description": "Unique identifier of the campaign item.",
+          "sourceColumnName": "campaignitemid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "versionNumber",
+          "description": "Version Number",
+          "sourceColumnName": "versionnumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "importSequenceNumber",
+          "description": "Sequence number of the import that created this record.",
+          "sourceColumnName": "importsequencenumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "overriddenCreatedOn",
+          "description": "Date and time that the record was migrated.",
+          "sourceColumnName": "overriddencreatedon",
+          "dataType": "dateTime",
+          "dataCategory": "Measurement.Date.Creation"
+        },
+        {
+          "name": "timeZoneRuleVersionNumber",
+          "description": "For internal use only.",
+          "sourceColumnName": "timezoneruleversionnumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "UTCConversionTimeZoneCode",
+          "description": "Time zone code that was in use when the record was created.",
+          "sourceColumnName": "utcconversiontimezonecode",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "name",
+          "description": "name",
+          "sourceColumnName": "name",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "campaignId",
+          "description": "Unique identifier of the campaign that is associated with the individual item.",
+          "sourceColumnName": "campaignid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "entityId",
+          "description": "Unique identifier of the entity for the campaign item.",
+          "sourceColumnName": "entityid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "entityType",
+          "description": "Object type of entity for the campaign item.",
+          "sourceColumnName": "entitytype",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "ownerId",
+          "description": "Unique identifier of the user or team who owns the campaign item.",
+          "sourceColumnName": "ownerid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "owningBusinessUnit",
+          "description": "Unique identifier of the business unit that owns the campaign item.",
+          "sourceColumnName": "owningbusinessunit",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "owningUser",
+          "description": "Unique identifier of the user that owns the campaign item.",
+          "sourceColumnName": "owninguser",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "campaignId"
+      },
+      "toAttribute": {
+        "entityName": "Campaign",
+        "attributeName": "campaignId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "entityId"
+      },
+      "toAttribute": {
+        "entityName": "Campaign",
+        "attributeName": "campaignId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "entityId"
+      },
+      "toAttribute": {
+        "entityName": "MarketingList",
+        "attributeName": "listId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "entityId"
+      },
+      "toAttribute": {
+        "entityName": "Product",
+        "attributeName": "productId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "ownerId"
+      },
+      "toAttribute": {
+        "entityName": "User",
+        "attributeName": "systemUserId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "CampaignItem",
+        "attributeName": "ownerId"
+      },
+      "toAttribute": {
+        "entityName": "Team",
+        "attributeName": "teamId"
+      }
+    }
+  ]
+}

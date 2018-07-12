@@ -22,7 +22,10 @@
         },
         {
             "traitName": "is.dataFormat",
-            "extendsTrait": "is"
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "dataFormat"
+            ]
         },
         {
             "traitName": "is.dataFormat.integer",
@@ -41,11 +44,15 @@
             "extendsTrait": "is.dataFormat"
         },
         {
-            "traitName": "is.dataFormat.characters",
+            "traitName": "is.dataFormat.array",
             "extendsTrait": "is.dataFormat"
         },
         {
-            "traitName": "is.dataFormat.bytes",
+            "traitName": "is.dataFormat.character",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.byte",
             "extendsTrait": "is.dataFormat"
         },
         {
@@ -65,15 +72,19 @@
             "extendsTrait": "is.dataFormat"
         },
         {
+            "traitName": "is.dataFormat.guid",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
             "dataTypeName": "integer",
-            "extendsDataType":"any",
+            "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.integer"
             ]
         },
         {
             "dataTypeName": "float",
-            "extendsDataType":"any",
+            "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.floatingPoint"
             ]
@@ -99,38 +110,51 @@
         },
         {
             "dataTypeName": "decimal",
-            "extendsDataType":"any",
+            "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.numeric.shaped"
             ]
         },
         {
             "dataTypeName": "boolean",
-            "extendsDataType":"any",
+            "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.boolean"
             ]
         },
         {
-            "dataTypeName": "string",
-            "extendsDataType":"any",
+            "dataTypeName": "char",
+            "extendsDataType": "any",
             "exhibitsTraits": [
-                "is.dataFormat.characters",
+                "is.dataFormat.character",
                 "is.dataFormat.big"
             ]
         },
         {
-            "dataTypeName": "binary",
-            "extendsDataType":"any",
+            "dataTypeName": "string",
+            "extendsDataType": "char",
             "exhibitsTraits": [
-                "is.dataFormat.bytes"
-            ]            
+                "is.dataFormat.array"
+            ]
+        },
+        {
+            "dataTypeName": "byte",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.byte"
+            ]
+        },
+        {
+            "dataTypeName": "binary",
+            "extendsDataType": "byte",
+            "exhibitsTraits": [
+                "is.dataFormat.array"
+            ]
         },
         {
             "dataTypeName": "smallInteger",
             "extendsDataType": "integer",
             "exhibitsTraits": [
-                "is.dataFormat.characters",
                 "is.dataFormat.small"
             ]
         },
@@ -150,11 +174,14 @@
         },
         {
             "dataTypeName": "guid",
-            "extendsDataType": "string"
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "is.dataFormat.guid"
+            ]
         },
         {
             "dataTypeName": "cdmObject",
-            "extendsDataType":"any",
+            "extendsDataType": "any",
             "explanation": "types for trait parameters that take objects as values"
         },
         {
@@ -244,7 +271,11 @@
         {
             "traitName": "is.identifiedBy",
             "explanation": "names a specifc identity attribute to use with an entity",
-            "extendsTrait": "does.elevateAttribute"
+            "extendsTrait": "does.elevateAttribute",
+            "associatedProperties": [
+                "primaryKey",
+                "isPrimaryKey"
+            ]
         },
         {
             "relationshipName": "identifiedBy",
@@ -266,7 +297,6 @@
                 "is.named"
             ]
         },
-
         {
             "traitName": "is.ordered",
             "extendsTrait": "does.elevateAttribute"

@@ -12,7 +12,7 @@ class Startup {
         console.log('reading source file');
         let cdmCorpus : cdm.Corpus;
         let pathToDocRoot = "../../schemaDocuments";
-        let pathToOutput = "model";
+        let pathToOutput = "retail";
 
         // create an empty corpus with the supporting files at the root
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
@@ -20,7 +20,8 @@ class Startup {
         let folderResult = cdmCorpus.addFolder(pathToOutput);
         
         //let modelJson = JSON.parse(readFileSync("model.bim", "utf8"));
-        let modelJson = JSON.parse(readFileSync("/cdsa schemas/CreditAndCollectionsImportMode.xmla", "utf8"));
+        //let modelJson = JSON.parse(readFileSync("/cdsa schemas/CreditAndCollectionsImportMode.xmla", "utf8"));
+        let modelJson = JSON.parse(readFileSync("/cdsa schemas/retail/XMLAQuery1.xmla", "utf8"));
 
         let converter = new tomModelToCdmCorpus();
         converter.addToCorpus(folderResult, modelJson);

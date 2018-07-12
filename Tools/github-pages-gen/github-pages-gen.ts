@@ -16,7 +16,7 @@ class Startup {
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
         cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
         console.log('reading source files');
-        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), "analyticalCommon");
+        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], "");
 
         let statusRpt = loc.consoleStatusReport;
 
