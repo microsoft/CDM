@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>CDM Entity Navigator</title>
+    <link rel="Stylesheet" href="SchemaViz.css" type="text/css" />
+    <script>
+        window.onload = function () {
+
+            // check if ie
+            var sAgent = window.navigator.userAgent;
+            if (sAgent.indexOf("MSIE") > 0 || sAgent.indexOf("Trident") > 0) {
+                var classItem = document.getElementsByClassName("main_container")[0];
+                while (classItem.childNodes.length > 0)
+                    classItem.removeChild(classItem.lastChild);
+
+                classItem.textContent = "We're very sorry, this page uses some features not supported by your browser.";
+                return;
+            }
+
+            initController(document);
+            initDrag();
+        }
+
+        function onresizeMain() {
+            if (posPanes)
+                posPanes(window.innerWidth / 2);
+        }
+
+    </script>
+
+</head>
+
+<body style="height:100%" onresize="onresizeMain()">
+    <script src="cdm-bundle.js"></script>
+    <script src="cdm2dplx-bundle.js"></script>
+    <script src="simpledrag.js"></script>
+    <script src="viz-controller.js"></script>
+    <script>
+
+        var navPaneMinWidth = 256;
+        var navPaneMinHeight = 64;
+        var buttonBarHeight = 34;
+        var colorKeyHeight = 56;
+        var listPaneWidth = 260;
+        var detailPaneMinWidth = 150;
+        var resizeBarWidth = 6;
+
+        var posPanes = function (mid) {
+
+            // positions the 6 fixed panes that make up this little app
+            var innerWidth = window.innerWidth - 0;
+            var innerHeight = window.innerHeight - 0;
+
+            if (innerHeight < navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight)
+                innerHeight = navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight;
+            if (innerWidth < navPaneMinWidth + listPaneWidth + detailPaneMinWidth)
+                innerWidth = navPaneMinWidth + listPaneWidth + detailPaneMinWidth;
+
+            let xStop0 = 0;
+            let xStop1 = mid - (resizeBarWidth / 2);
+            let xStop2 = xStop1 + resizeBarWidth;
+            let xStop3 = xStop2 + listPaneWidth;
+            let xStop4 = innerWidth;
+
+            let yStop0 = 0;
+            let yStop1 = yStop0 + buttonBarHeight;
+            let yStop2 = yStop1 + buttonBarHeight;
+            let yStop4 = innerHeight;
+            let yStop3 = yStop4 - colorKeyHeight;
+
+            var setShape = function (pane, x1, y1, x2, y2, margin) {
+                pane.style.top = (y1 + margin) + "px";
+                pane.style.left = (x1 + margin) + "px";
+                pane.style.width = (x2 - x1 - margin * 2) + "px";
+                pane.style.height = (y2 - y1 - margin * 2) + "px";
+            }
+
+            setShape(controller.paneButtonHost, xStop0, yStop0, xStop1, yStop1, 0);
+            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop3, 0);
+            setShape(controller.paneColorKey, xStop0, yStop3, xStop1, yStop4, 0);
+            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop4, 0);
+            setShape(controller.paneListTitle, xStop2, yStop0, xStop3, yStop1, 0);
+            setShape(controller.paneListHost, xStop2, yStop1, xStop3, yStop4, 0);
+            setShape(controller.paneTabHost, xStop3, yStop0, xStop4, yStop1, 0);
+            setShape(controller.paneDetailTool, xStop3, yStop1, xStop4, yStop2, 0);
+            setShape(controller.paneDetailHost, xStop3, yStop2, xStop4, yStop4, 0);
+
+        }
+
+
+        function initController() {
+
+            controller.document = document;
+            controller.mainContainer = document.getElementsByClassName("main_container")[0];
+            controller.navDataGhExpected = navDataGhExpected;
+            controller.appState = "navigateMode";
+            controller.navHost = document.getElementById("nav_pane");
+            controller.paneButtonHost = document.getElementById("button_host_pane");
+            controller.paneDetailTool = document.getElementById("detail_tool_pane");
+            controller.paneNavHost = document.getElementById("navigate_host_pane");
+            controller.paneColorKey = document.getElementById("color_key_pane");
+            controller.paneResize = document.getElementById("resize_pane");
+            controller.paneListHost = document.getElementById("list_host_pane");
+            controller.paneDetailHost = document.getElementById("detail_host_pane");
+            controller.paneListTitle = document.getElementById("list_title_pane");
+            controller.paneTabHost = document.getElementById("tab_host_pane");
+            controller.paneWait = document.getElementById("wait_pane");
+            controller.listContainer = document.getElementsByClassName("list_container")[0];
+            controller.statusPane = document.getElementsByClassName("status_pane")[0];
+            controller.traitsPane = document.getElementsByClassName("traits_pane")[0];
+            controller.propertiesPane = document.getElementsByClassName("properties_pane")[0];
+            controller.JsonPane = document.getElementsByClassName("json_pane")[0];
+            controller.DplxPane = document.getElementsByClassName("dplx_pane")[0];
+            controller.backButton = document.getElementById("back_tool_button");
+
+            controller.onclickFolderItem = onclickFolderItem;
+            controller.onclickDetailItem = onclickDetailItem;
+            controller.onclickListItem = onclickListItem;
+
+            init();
+        }
+
+        function initDrag() {
+
+            controller.paneResize.sdrag(function (el, pageX, startX, pageY, startY, fix) {
+
+                var innerWidth = window.innerWidth;
+                var leftMin = navPaneMinWidth + resizeBarWidth / 2;
+                var rightMax = innerWidth - (listPaneWidth + detailPaneMinWidth + resizeBarWidth / 2);
+
+                fix.skipX = true;
+                fix.skipX = true;
+
+                if (pageX < leftMin) {
+                    fix.pageX = leftMin;
+                    pageX = leftMin;
+                } else if (pageX > rightMax) {
+                    pageX = rightMax;
+                    fix.pageX = rightMax;
+                }
+                posPanes(pageX);
+
+            }, null, 'horizontal');
+
+            posPanes(window.innerWidth / 2);
+
+        }
+
+        function onclickGithub() {
+            controller.mainContainer.messageHandlePing("githubLoadRequest", null, null);
+        }
+        function onclickFiles(files) {
+            controller.mainContainer.messageHandlePing("filesLoadRequest", files, null);
+        }
+
+        function onclickFolderItem(event) {
+            controller.mainContainer.messageHandlePing("navigateEntitySelect", this.folderState, event.ctrlKey);
+        }
+
+        function onclickDetailItem(event) {
+            controller.mainContainer.messageHandlePing("navigateEntitySelect", this.entityState, event.ctrlKey);
+        }
+
+        function onclickListItem() {
+            controller.mainContainer.messageHandlePing("listItemSelect", this.cdmObject, null);
+        }
+
+        function onclickDetailTab(fromId) {
+            controller.mainContainer.messageHandlePing("detailTabSelect", fromId, null);
+        }
+
+
+        var navDataGhExpected =
+            { d: "INSERTDATA" };
+
+    </script>
+    <span class="main_container">
+        <span class="fixed_container" id="button_host_pane">
+            <span class="detail_container">
+                <button id="github_button" class="button" onclick=onclickGithub()>Load from Github!</button>
+                <button id="local_button" class="button" onclick="document.getElementById('local-files').click();">Load from files...</button>
+                <input type="file" multiple directory webkitdirectory accept=".json" id="local-files" name="file" style="display: none" onchange="onclickFiles(document.getElementById('local-files').files)">
+            </span>
+        </span>
+        <span class="fixed_container" id="navigate_host_pane">
+            <span class="parent_container">
+                <!--chrome bug with smashing flex boxes when they scroll-->
+                <span class="parent_container" id="nav_pane" style="border:0px;padding:0px;margin:0px;">
+                    <span>
+                        <br/>
+                        <br/>Add some entities to get started.
+                        <br/>
+                        <br/>
+                    </span>
+                </span>
+            </span>
+        </span>
+        <span class="fixed_container" id="color_key_pane">
+            <span class="detail_container">
+                <span class="group_title">Color Key:</span>
+                <span class="key_item" style="background-color: var(--item-back-referenced)">Used by Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-referencing)">Uses the Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-base)">Base of Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-extension)">Extension of Selected</span>
+            </span>
+        </span>
+        <span class="resize_bar" id="resize_pane"></span>
+        <span class="fixed_container" id="list_title_pane" style="background-color: var(--back-alternate1);">
+            <span class="group_title">
+                Attributes:
+            </span>
+        </span>
+        <span class="fixed_container" id="list_host_pane">
+            <span class="list_container" id="attributeList">
+            </span>
+        </span>
+        <span class="fixed_container" id="tab_host_pane">
+            <span class="detail_container" style="background-color: var(--back-alternate1);">
+                <span class="tab" id="property_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('property_tab')">Properties</span>
+                <span class="tab" id="trait_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('trait_tab')">Traits</span>
+                <span class="tab" id="json_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('json_tab')">JSON</span>
+                <span class="tab" id="status_tab" style="background-color: var(--back-alternate2)" onclick="onclickDetailTab('status_tab')">Status</span>
+                <span class="tab" id="dplx_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('dplx_tab')">DPLX</span>
+            </span>
+        </span>
+        <span class="fixed_container" id="detail_tool_pane" style="border-style:inset">
+            <span class="detail_container">
+                <button id="copy_tool_button" class="button" onclick=copyActivePane()>Copy</button>
+                <button id="back_tool_button" class="button" style="display: none" onclick=popJsonPane()>Go Back</button>
+            </span>
+        </span>
+
+        <span class="fixed_container" id="detail_host_pane">
+            <span class="status_pane">
+            </span>
+            <span class="traits_pane">
+            </span>
+            <span class="properties_pane">
+            </span>
+            <span class="json_pane">
+            </span>
+            <span class="dplx_pane">
+            </span>
+        </span>
+        <span class="fixed_container" id="wait_pane" style="display:none">
+            <span id="message_text">
+                <br/>Loading and resolving entity documents, please wait...
+            </span>
+        </span>
+
+    </span>
+
+</body>
+
+</html>

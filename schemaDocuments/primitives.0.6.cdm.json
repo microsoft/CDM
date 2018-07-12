@@ -1,0 +1,426 @@
+{
+  "schema": "./schema.cdm.json",
+  "schemaVersion": "0.6.0",
+  "definitions": [
+        {
+            "traitName": "is",
+            "explanation": "the root 'trait' from which all others derive."
+        },
+        {
+            "traitName": "does",
+            "extendsTrait": "is",
+            "explanation": "a root with a more meaningful base name for certain exhibited traits"
+        },
+        {
+            "traitName": "means",
+            "extendsTrait": "is",
+            "explanation": "a root with a more meaningful base name for certain semantic meaning traits"
+        },
+        {
+            "dataTypeName": "any",
+            "explanation": "the root dataType"
+        },
+        {
+            "traitName": "is.dataFormat",
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "dataFormat"
+            ]
+        },
+        {
+            "traitName": "is.dataFormat.integer",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.big",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.small",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.floatingPoint",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.array",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.character",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.byte",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.numeric",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.date",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.time",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.boolean",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "traitName": "is.dataFormat.guid",
+            "extendsTrait": "is.dataFormat"
+        },
+        {
+            "dataTypeName": "integer",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.integer"
+            ]
+        },
+        {
+            "dataTypeName": "float",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.floatingPoint"
+            ]
+        },
+        {
+            "traitName": "is.dataFormat.numeric.shaped",
+            "extendsTrait": "is.dataFormat.numeric",
+            "explanation": "for setting the exact precision and scale of numeric values",
+            "hasParameters": [
+                {
+                    "name": "precision",
+                    "explanation": "the total number of significant digits",
+                    "dataType": "integer",
+                    "direction": "both"
+                },
+                {
+                    "name": "scale",
+                    "explanation": "the number of digits to the right of the decimal place",
+                    "dataType": "integer",
+                    "direction": "both"
+                }
+            ]
+        },
+        {
+            "dataTypeName": "decimal",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.numeric.shaped"
+            ]
+        },
+        {
+            "dataTypeName": "boolean",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.boolean"
+            ]
+        },
+        {
+            "dataTypeName": "char",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.character",
+                "is.dataFormat.big"
+            ]
+        },
+        {
+            "dataTypeName": "string",
+            "extendsDataType": "char",
+            "exhibitsTraits": [
+                "is.dataFormat.array"
+            ]
+        },
+        {
+            "dataTypeName": "byte",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.byte"
+            ]
+        },
+        {
+            "dataTypeName": "binary",
+            "extendsDataType": "byte",
+            "exhibitsTraits": [
+                "is.dataFormat.array"
+            ]
+        },
+        {
+            "dataTypeName": "smallInteger",
+            "extendsDataType": "integer",
+            "exhibitsTraits": [
+                "is.dataFormat.small"
+            ]
+        },
+        {
+            "dataTypeName": "bigInteger",
+            "extendsDataType": "integer",
+            "exhibitsTraits": [
+                "is.dataFormat.big"
+            ]
+        },
+        {
+            "dataTypeName": "double",
+            "extendsDataType": "float",
+            "exhibitsTraits": [
+                "is.dataFormat.big"
+            ]
+        },
+        {
+            "dataTypeName": "guid",
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "is.dataFormat.guid"
+            ]
+        },
+        {
+            "dataTypeName": "cdmObject",
+            "extendsDataType": "any",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "trait",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "dataType",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "relationship",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "entity",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "attribute",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "attributeGroup",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values"
+        },
+        {
+            "dataTypeName": "attributeName",
+            "extendsDataType": "string",
+            "explanation": "type for trait parameters that take attribute names as values"
+        },
+        {
+            "entityName": "object",
+            "explanation": "a root entity for things"
+        },
+        {
+            "entityName": "reference",
+            "explanation": "a root entity for constant reference tables"
+        },
+        {
+            "relationshipName": "hasA",
+            "explanation": "The root relationship for associating attributes with entities."
+        },
+        {
+            "traitName": "is.removed",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "explanation": "All attributes with this trait will be removed from the final resolved attribute list of an entity."
+        },
+        {
+            "traitName": "is.hidden",
+            "explanation": "All attributes with this trait should be hidden from view of the entity consumer."
+        },
+        {
+            "traitName": "is.secret",
+            "extendsTrait": "is"
+        },
+        {
+            "traitName": "is.required",
+            "extendsTrait": "is"
+        },
+        {
+            "traitName": "is.sensitive",
+            "extendsTrait": "is"
+        },
+        {
+            "traitName": "does.elevateAttribute",
+            "explanation": "elevates (up to a entity) a trait that describes a specific attribute",
+            "extendsTrait": "does",
+            "elevated": true,
+            "hasParameters": [
+                {
+                    "name": "attribute",
+                    "dataType": "attribute",
+                    "defaultValue": "this.attribute",
+                    "required": true,
+                    "direction": "both"
+                }
+            ]
+        },
+        {
+            "traitName": "is.identifiedBy",
+            "explanation": "names a specifc identity attribute to use with an entity",
+            "extendsTrait": "does.elevateAttribute",
+            "associatedProperties": [
+                "primaryKey",
+                "isPrimaryKey"
+            ]
+        },
+        {
+            "relationshipName": "identifiedBy",
+            "extendsRelationship": "hasA",
+            "exhibitsTraits": [
+                "is.identifiedBy"
+            ],
+            "explanation": "The attribute which supplies the unique identifier for the entity. Used by default in refereneces unless a different attribute is supplied with 'is.identifiedBy' trait."
+        },
+        {
+            "traitName": "is.named",
+            "extendsTrait": "does.elevateAttribute"
+        },
+        {
+            "relationshipName": "namedBy",
+            "extendsRelationship": "hasA",
+            "explanation": "The attribute which supplies the name for the entity.",
+            "exhibitsTraits": [
+                "is.named"
+            ]
+        },
+        {
+            "traitName": "is.ordered",
+            "extendsTrait": "does.elevateAttribute"
+        },
+        {
+            "relationshipName": "orderedBy",
+            "extendsRelationship": "hasA",
+            "explanation": "An attribute which determines the ordering of entity records",
+            "exhibitsTraits": [
+                "is.ordered"
+            ]
+        },
+        {
+            "traitName": "is.locatable",
+            "extendsTrait": "does.elevateAttribute"
+        },
+        {
+            "relationshipName": "locatedAt",
+            "extendsRelationship": "hasA",
+            "explanation": "An attribute which identifies the location of an entity",
+            "exhibitsTraits": [
+                "is.locatable"
+            ]
+        },
+        {
+            "traitName": "does.addAttribute",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "hasParameters": [
+                {
+                    "name": "addedAttribute",
+                    "dataType": "attribute",
+                    "explanation": "an attribute definition should be passed for this argument. the attribute will be added to the entity instead of the default one.",
+                    "required": true,
+                    "direction": "in"
+                },
+                {
+                    "name": "appliedTrait",
+                    "dataType": "trait",
+                    "explanation": "a trait definition should be passed for this argument. the attribute will be have this trait applied.",
+                    "direction": "in"
+                }
+            ]
+        },
+        {
+            "traitName": "is.addedInSupportOf",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "hasParameters": [
+                {
+                    "name": "inSupportOf",
+                    "dataType": "attributeName",
+                    "direction": "both",
+                    "explanation": "output parameter naming the attribute that is being supported"
+                }
+            ]
+        },
+        {
+            "traitName": "does.addSupportingAttribute",
+            "extendsTrait": {
+                "traitReference": "does.addAttribute",
+                "arguments": [
+                    {
+                        "name": "appliedTrait",
+                        "value": {
+                            "traitReference": "is.addedInSupportOf"
+                        }
+                    }
+                ]
+            },
+            "ugly": true
+        },
+        {
+            "relationshipName": "referencesA",
+            "extendsRelationship": "hasA",
+            "explanation": "Indicates that an entity used as an attribute of another entity is done so by reference instead of by containment.",
+            "exhibitsTraits": [
+                {
+                    "traitReference": {
+                        "traitName": "does.referenceEntity",
+                        "explanation": "turns all attributes from an entity into one key valued attribute",
+                        "extendsTrait": "does.addAttribute"
+                    }
+                }
+            ]
+        },
+        {
+            "traitName": "does.renameWithFormat",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "hasParameters": [
+                {
+                    "name": "renameFormat",
+                    "dataType": "string",
+                    "defaultValue": "{n}{o}",
+                    "explanation": "format specifier for generated attribute names. May contain a single occurence of '{n}' and '{o}' for the base name and ordinal. examples: 'address{x}_{n}' could produce 'address2_city', '{n}{x}' gives 'city1'",
+                    "direction": "in"
+                },
+                {
+                    "name": "ordinal",
+                    "dataType": "integer",
+                    "explanation": "if an integer value is set here, the renameFormat is applied with the value {o}=ordinal.",
+                    "direction": "in"
+                }
+            ]
+        },
+        {
+            "traitName": "is.array",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "hasParameters": [
+                {
+                    "name": "renameTrait",
+                    "dataType": "trait",
+                    "explanation": "a trait that will be used to create generated attribute names.",
+                    "direction": "in"
+                },
+                {
+                    "name": "fixedSize",
+                    "dataType": "integer",
+                    "explanation": "if an integer value is set here, the renameFormat is applied with the values {x}=1 to {x}=fixedSize.",
+                    "direction": "in"
+                }
+            ]
+        }
+    ]
+}
