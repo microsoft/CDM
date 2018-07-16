@@ -116,12 +116,44 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             controller.mainContainer.messageHandle("loadResolveStarting", null, null);
             loadDocuments(messageType);
         }
-        else if (messageType == "navigateEntitySelect") {
+        else if (messageType == "navigateRelatedSelect" || messageType == "navigateEntitySelect") {
             // if control held then add else replace
             if (!data2 || !controller.multiSelectEntityList)
                 controller.multiSelectEntityList = new Set();
-            // request the selected things to report back, this will update the map
-            controller.mainContainer.messageHandle("reportSelection", data1, null);
+            if (messageType == "navigateEntitySelect") {
+                // single click on an entity or folder. add or remove single or all in folder
+                // request the selected things to report back, this will update the map
+                controller.mainContainer.messageHandle("reportSelection", data1, null);
+            }
+            else {
+                // double click on an entity. go find all related and related related entities.
+                // loop over every entity and find ones that are currently NOT in the select list but are being pointed at by ones in the list.
+                // these get added to the list and we keep going
+                let entDataSelect = entityFromId(data1.id);
+                controller.multiSelectEntityList.add(entDataSelect);
+                let added = 1;
+                while (added > 0) {
+                    added = 0;
+                    let toAdd = new Array();
+                    controller.idLookup.forEach((entStateOther, id) => {
+                        if (entStateOther.relsIn) {
+                            entStateOther.relsIn.forEach((r) => {
+                                let entStateRef = controller.entity2state.get(r.referencingEntity);
+                                if (entStateRef === entDataSelect) {
+                                    if (!controller.multiSelectEntityList.has(entStateOther)) {
+                                        toAdd.push(entStateOther);
+                                        added++;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    if (added)
+                        toAdd.forEach(e => { controller.multiSelectEntityList.add(e); });
+                    // only go one level
+                    added = 0;
+                }
+            }
             // there could be multiple versions of the same entity in this set,
             // remove anything 'earlier' in the inheritence tree
             var toRemove = new Array();
@@ -305,6 +337,7 @@ function buildNavigation(hier, alternate) {
                 entItem.messageHandlePing = messageHandlePingParent;
                 entItem.messageHandle = messageHandleItem;
                 entItem.onclick = controller.onclickDetailItem;
+                entItem.ondblclick = controller.ondblclickDetailItem;
                 detailCont.appendChild(entItem);
             }
         });
