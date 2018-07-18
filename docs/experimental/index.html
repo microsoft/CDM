@@ -120,7 +120,7 @@
             controller.onclickDetailItem = onclickDetailItem;
             controller.ondblclickDetailItem = ondblclickDetailItem;
             controller.onclickListItem = onclickListItem;
-
+            document.onkeydown = onkeydownMain;
 
             init();
         }
@@ -176,6 +176,17 @@
 
         function onclickDetailTab(fromId) {
             controller.mainContainer.messageHandlePing("detailTabSelect", fromId, null);
+        }
+
+        function onkeydownMain(event) {
+            if (event.ctrlKey || event.altKey || event.key == "Shift")
+                return;
+            if (event.key == "Escape" || event.key == "Enter")
+                controller.mainContainer.messageHandlePing("searchClear", null, null);
+            else if (event.key == "Backspace")
+                controller.mainContainer.messageHandlePing("searchRemove", null, null);
+            else if (event.key && event.key.length == 1)
+                controller.mainContainer.messageHandlePing("searchAdd", event.key, null);
         }
 
 
