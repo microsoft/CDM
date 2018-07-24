@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class DataPoolImpl {
     constructor() {
-        this.name = "ExampleDataPool";
-        this.culture = "en-EN";
+        this.name = "ExampleDataFlow";
+        this.culture = "en-US";
         //this.collation = "_CS"
         //this.isHidden = false;
         //this.isGdpr = false;
@@ -85,7 +85,7 @@ class Converter {
         this.schemaVersion = "";
     }
     getPostFix() {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
+        return ".cdmx" + (this.schemaVersion ? "." + this.schemaVersion : "") + ".json";
     }
     convertEntities(entities, dpName) {
         let dp = new DataPoolImpl();

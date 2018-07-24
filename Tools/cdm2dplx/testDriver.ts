@@ -13,8 +13,8 @@ class Startup {
         //let pathToDocRoot = "../../test";
         //pathToDocRoot = "/cdsa schemas/credandcollect";
 
-        let version = "";
-        //let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
+        //let version = "";
+        let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
         cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
         console.log('reading source files');
@@ -25,8 +25,8 @@ class Startup {
         loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
             
             //this.listAllTraits(cdmCorpus);
-            this.createTestDplx(cdmCorpus);
-            //this.createEachDplx(cdmCorpus, pathToDocRoot, version);
+            //this.createTestDplx(cdmCorpus);
+            this.createEachDplx(cdmCorpus, pathToDocRoot, version);
             console.log('done');
 
         }).catch();
@@ -100,7 +100,7 @@ class Startup {
 
         set.push(ent);
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Lead.cdm.json/Lead") as cdm.ICdmEntityDef);
-        let dplx = converter.convertEntities(set, "ExampleDataPool");
+        let dplx = converter.convertEntities(set, "ExampleDataFlow");
     }
 
     public static createEachDplx(cdmCorpus : cdm.Corpus, outRoot : string, version : string) {

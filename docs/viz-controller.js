@@ -116,12 +116,44 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             controller.mainContainer.messageHandle("loadResolveStarting", null, null);
             loadDocuments(messageType);
         }
-        else if (messageType == "navigateEntitySelect") {
+        else if (messageType == "navigateRelatedSelect" || messageType == "navigateEntitySelect") {
             // if control held then add else replace
             if (!data2 || !controller.multiSelectEntityList)
                 controller.multiSelectEntityList = new Set();
-            // request the selected things to report back, this will update the map
-            controller.mainContainer.messageHandle("reportSelection", data1, null);
+            if (messageType == "navigateEntitySelect") {
+                // single click on an entity or folder. add or remove single or all in folder
+                // request the selected things to report back, this will update the map
+                controller.mainContainer.messageHandle("reportSelection", data1, null);
+            }
+            else {
+                // double click on an entity. go find all related and related related entities.
+                // loop over every entity and find ones that are currently NOT in the select list but are being pointed at by ones in the list.
+                // these get added to the list and we keep going
+                let entDataSelect = entityFromId(data1.id);
+                controller.multiSelectEntityList.add(entDataSelect);
+                let added = 1;
+                while (added > 0) {
+                    added = 0;
+                    let toAdd = new Array();
+                    controller.idLookup.forEach((entStateOther, id) => {
+                        if (entStateOther.relsIn) {
+                            entStateOther.relsIn.forEach((r) => {
+                                let entStateRef = controller.entity2state.get(r.referencingEntity);
+                                if (entStateRef === entDataSelect) {
+                                    if (!controller.multiSelectEntityList.has(entStateOther)) {
+                                        toAdd.push(entStateOther);
+                                        added++;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    if (added)
+                        toAdd.forEach(e => { controller.multiSelectEntityList.add(e); });
+                    // only go one level
+                    added = 0;
+                }
+            }
             // there could be multiple versions of the same entity in this set,
             // remove anything 'earlier' in the inheritence tree
             var toRemove = new Array();
@@ -153,6 +185,27 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                 controller.multiSelectEntityList.delete(data1);
             else
                 controller.multiSelectEntityList.add(data1);
+        }
+        else if (messageType == "searchAdd") {
+            if (controller.searchTerm == undefined)
+                controller.searchTerm = "";
+            controller.searchTerm += data1;
+            controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
+        }
+        else if (messageType == "searchRemove") {
+            if (controller.searchTerm && controller.searchTerm.length > 0) {
+                if (controller.searchTerm.length == 1)
+                    controller.searchTerm = undefined;
+                else
+                    controller.searchTerm = controller.searchTerm.slice(0, controller.searchTerm.length - 1);
+                controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
+            }
+        }
+        else if (messageType == "searchClear") {
+            if (controller.searchTerm) {
+                controller.searchTerm = undefined;
+                controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
+            }
         }
         else {
             controller.mainContainer.messageHandle(messageType, data1, data2);
@@ -305,6 +358,7 @@ function buildNavigation(hier, alternate) {
                 entItem.messageHandlePing = messageHandlePingParent;
                 entItem.messageHandle = messageHandleItem;
                 entItem.onclick = controller.onclickDetailItem;
+                entItem.ondblclick = controller.ondblclickDetailItem;
                 detailCont.appendChild(entItem);
             }
         });
@@ -539,11 +593,19 @@ function messageHandleItem(messageType, data1, data2) {
         return;
     }
     var entityStateThis = entityFromId(this.id);
+    let searchFound = true;
     if (entityStateThis.loadState == 1) {
         if (messageType === "reportSelection") {
             // report for us or for null (folder above us)
             if (entityStateThis === data1 || !data1)
                 controller.mainContainer.messageHandlePing("reportSelection", entityStateThis);
+        }
+        if (messageType === "applySearchTerm") {
+            let searchTerm = data1;
+            if (searchTerm) {
+                searchFound = entityStateThis.name.toUpperCase().includes(searchTerm.toUpperCase());
+            }
+            this.style.filter = searchFound ? "" : "brightness(0.7)";
         }
         if (messageType === "navigateEntitySelect" || messageType == "listItemSelect") {
             // handle the attribute select first
@@ -659,7 +721,23 @@ function messageHandleList(messageType, data1, data2) {
     this.messageHandleBroadcast(messageType, data1, data2);
 }
 function messageHandleListItem(messageType, data1, data2) {
-    if (messageType === "navigateEntitySelect") {
+    if (messageType === "applySearchTerm") {
+        let searchFound = true;
+        let searchTerm = data1;
+        if (searchTerm) {
+            let searchAgainst;
+            if (this.cdmObject) {
+                if (this.cdmObject.resolvedName)
+                    searchAgainst = this.cdmObject.resolvedName;
+                else if (this.cdmObject.getName)
+                    searchAgainst = this.cdmObject.getName();
+                if (searchAgainst)
+                    searchFound = searchAgainst.toUpperCase().includes(searchTerm.toUpperCase());
+            }
+        }
+        this.style.filter = searchFound ? "" : "brightness(0.7)";
+    }
+    else if (messageType === "navigateEntitySelect") {
         if (data2) {
             var entityState = data2;
             var background = "var(--item-back-normal)";
@@ -720,12 +798,58 @@ function messageHandleDetailStatus(messageType, data1, data2) {
         this.style.display = (data1 != "status_tab") ? "none" : "block";
     }
 }
+function applySearchTerm(html) {
+    if (!controller.searchTerm)
+        return html;
+    let localTerm = controller.searchTerm.replace(/([^a-zA-Z0-9.])/g, "");
+    if (localTerm.length > 0) {
+        // only apply term to text not inside html
+        // regex not supporting lookbehinds means do this the hard way
+        let getNextSegment = (startAt) => {
+            let end = html.indexOf("<", startAt);
+            if (end == -1)
+                return [startAt, html.length];
+            if (end > startAt)
+                return [startAt, end];
+            // must start with a tag, so find end. assume there are no embedded tag ending inside this tag
+            let newStartAt = html.indexOf(">", startAt);
+            if (newStartAt == -1)
+                return [html.length, html.length];
+            end = html.indexOf("<", newStartAt);
+            if (end == -1)
+                return [newStartAt, html.length];
+            if (end > startAt)
+                return [newStartAt, end];
+        };
+        let search = new RegExp(`(${localTerm})`, "g");
+        let newHtml = "";
+        let lastStart = 0;
+        let sourceLen = html.length;
+        do {
+            let seg = getNextSegment(lastStart);
+            let segStart = seg["0"];
+            let segEnd = seg["1"];
+            // add any html tag that got skipped
+            if (segStart > lastStart)
+                newHtml += html.slice(lastStart, segStart);
+            // replace in the segment
+            let segmentNew = html.slice(segStart, segEnd).replace(search, "<mark>$1</mark>");
+            newHtml += segmentNew;
+            lastStart = segEnd;
+        } while (lastStart < sourceLen);
+        html = newHtml;
+    }
+    return html;
+}
 function messageHandleDetailDPLX(messageType, data1, data2) {
     if (messageType == "detailTabSelect") {
         this.style.display = (data1 != "dplx_tab") ? "none" : "block";
         changeDPLX();
     }
     if (messageType == "navigateEntitySelect") {
+        changeDPLX();
+    }
+    if (messageType == "applySearchTerm") {
         changeDPLX();
     }
 }
@@ -741,8 +865,9 @@ function changeDPLX() {
             let set = new Array();
             controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
                 set.push(entState.entity); });
-            let dplx = converter.convertEntities(set, "exampleDataPoolForBYOD");
+            let dplx = converter.convertEntities(set, "exampleDataFlowForBYOD");
             jsonText = JSON.stringify(dplx, null, 2);
+            jsonText = applySearchTerm(jsonText);
         }
         controller.DplxPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
@@ -765,6 +890,9 @@ function messageHandleDetailJson(messageType, data1, data2) {
             cdmObject = data1.entity;
         }
     }
+    if (messageType == "applySearchTerm") {
+        drawJsonStack();
+    }
     if (cdmObject) {
         clearJsonPane();
         pushJsonPane(cdmObject);
@@ -786,26 +914,26 @@ function detailJsonJump(path) {
     pushJsonPane(detailObject);
 }
 function drawJsonStack() {
-    let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
-    let json = cdmObject.copyData(true);
-    let jsonText = JSON.stringify(json, null, 2);
-    // string refs got exploded. turn them back into strings with links
-    jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
-    if (controller.JsonStack.length > 1)
-        controller.backButton.style.display = "inline-block";
-    else
-        controller.backButton.style.display = "none";
-    controller.JsonPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+    if (controller.JsonStack && controller.JsonStack.length) {
+        let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
+        let json = cdmObject.copyData(true);
+        let jsonText = JSON.stringify(json, null, 2);
+        // string refs got exploded. turn them back into strings with links
+        jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
+        if (controller.JsonStack.length > 1)
+            controller.backButton.style.display = "inline-block";
+        else
+            controller.backButton.style.display = "none";
+        jsonText = applySearchTerm(jsonText);
+        controller.JsonPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+    }
 }
 function makeParamValue(param, value) {
     if (!value)
         return controller.document.createTextNode("");
     // if a string constant, call get value to turn into itself or a reference if that is what is held there
-    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
-        value = value.getValue();
-    // if still  a string, it is just a string
-    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
-        return controller.document.createTextNode(value.getConstant());
+    if (typeof (value) === "string")
+        return controller.document.createTextNode(value);
     // if this is a constant table, then expand into an html table
     if (value.getObjectType() == cdm.cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdm.cdmObjectType.constantEntityDef) {
         var entShape = value.getObjectDef().getEntityShape();

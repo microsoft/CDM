@@ -77,7 +77,7 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
                             if ((rtDesc = def.getResolvedTraits().find("is.localized.describedAs")) && 
                                 (pVal=rtDesc.parameterValues.getParameterValue("localizedDisplayText")) &&
                                 (pVal.value) && 
-                                (locEnt = pVal.value.getObjectDef() as cdm.ICdmConstantEntityDef)) {
+                                (locEnt = (pVal.value as cdm.ICdmObject).getObjectDef() as cdm.ICdmConstantEntityDef)) {
                                     description = locEnt.lookupWhere("displayText", "languageTag", "en");
                             }
                             if ((rtDesc = def.getResolvedTraits().find("is.CDS.sourceNamed")) &&

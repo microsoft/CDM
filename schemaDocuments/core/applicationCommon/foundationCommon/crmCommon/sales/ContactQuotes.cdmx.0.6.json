@@ -1,0 +1,101 @@
+{
+  "name": "",
+  "culture": "en-US",
+  "entities": [
+    {
+      "$type": "LocalEntity",
+      "name": "ContactQuotes",
+      "description": "",
+      "schemas": [
+        "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/sales/ContactQuotes.cdmx.0.6.json"
+      ],
+      "attributes": [
+        {
+          "name": "contactQuoteId",
+          "description": "Unique identifier of the quotes for the contact.",
+          "sourceColumnName": "contactquoteid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "versionNumber",
+          "description": "Version Number",
+          "sourceColumnName": "versionnumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "importSequenceNumber",
+          "description": "Sequence number of the import that created this record.",
+          "sourceColumnName": "importsequencenumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "overriddenCreatedOn",
+          "description": "Date and time that the record was migrated.",
+          "sourceColumnName": "overriddencreatedon",
+          "dataType": "dateTime",
+          "dataCategory": "Measurement.Date.Creation"
+        },
+        {
+          "name": "timeZoneRuleVersionNumber",
+          "description": "For internal use only.",
+          "sourceColumnName": "timezoneruleversionnumber",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "UTCConversionTimeZoneCode",
+          "description": "Time zone code that was in use when the record was created.",
+          "sourceColumnName": "utcconversiontimezonecode",
+          "dataType": "int64",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "name",
+          "description": "name",
+          "sourceColumnName": "name",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "contactId",
+          "sourceColumnName": "contactid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        },
+        {
+          "name": "quoteId",
+          "sourceColumnName": "quoteid",
+          "dataType": "string",
+          "dataCategory": "Uncategorized"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "ContactQuotes",
+        "attributeName": "contactId"
+      },
+      "toAttribute": {
+        "entityName": "Contact",
+        "attributeName": "contactId"
+      }
+    },
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "ContactQuotes",
+        "attributeName": "quoteId"
+      },
+      "toAttribute": {
+        "entityName": "Quote",
+        "attributeName": "quoteId"
+      }
+    }
+  ]
+}

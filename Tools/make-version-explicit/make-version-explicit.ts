@@ -56,7 +56,7 @@ class Startup {
                                 let ent = def as cdm.ICdmEntityDef;
                                 if (ent.getName() != "CdmObject" && ent.getResolvedTraits() && ent.getResolvedTraits().find("is.CDM.entityVersion")) {
                                     let tRef = ent.addExhibitedTrait("is.CDM.entityVersion", false);
-                                    tRef.addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, version));
+                                    tRef.addArgument(undefined, version);
                                 }
                             }
                         });

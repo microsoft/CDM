@@ -83,8 +83,8 @@ class DataPoolImpl implements DataPool {
     relationships: DPRelationship[];
 
     constructor() {
-        this.name = "ExampleDataPool";
-        this.culture = "en-EN";
+        this.name = "ExampleDataFlow";
+        this.culture = "en-US";
         //this.collation = "_CS"
         //this.isHidden = false;
         //this.isGdpr = false;
@@ -194,7 +194,7 @@ export class Converter implements IConvertToDplx {
     public schemaVersion: string = "";
 
     getPostFix(): string {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
+        return ".cdmx" + (this.schemaVersion ? "." + this.schemaVersion : "") + ".json";
     }
 
     public convertEntities(entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
@@ -237,14 +237,14 @@ export class Converter implements IConvertToDplx {
                     let ent : cdm.ICdmConstantEntityDef;
                     let cv : string[][];
                     if ((pv = rt.parameterValues.getParameterValue("groupList")) &&
-                        (pv.value && (ent = pv.value.getObjectDef())) &&
+                        (pv.value && (ent = (pv.value as cdm.ICdmObject).getObjectDef())) &&
                         (cv = ent.getConstantValues())) {
                         cv.forEach(r => {
                             // assume this is the right entity shape. just one attribute
                             let agPath = r[0];
                             // the attributegroup path is virtual from the root of the OM hierarchy out to the name of the attribute group.
                             // turn this into just the entity doc reference 
-                            let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
+                            let expectedEnding = `.cdm.json/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
                             if (agPath.endsWith(expectedEnding))
                                 agPath = agPath.slice(0, agPath.length - expectedEnding.length);
                             agPath += postFix;
