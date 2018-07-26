@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class DataPoolImpl {
     constructor() {
-        this.name = "ExampleDataPool";
-        this.culture = "en-EN";
+        this.name = "ExampleDataFlow";
+        this.culture = "en-US";
         //this.collation = "_CS"
         //this.isHidden = false;
         //this.isGdpr = false;
@@ -85,7 +85,7 @@ class Converter {
         this.schemaVersion = "";
     }
     getPostFix() {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
+        return ".cdmx" + (this.schemaVersion ? "." + this.schemaVersion : "") + ".json";
     }
     convertEntities(entities, dpName) {
         let dp = new DataPoolImpl();
@@ -127,7 +127,7 @@ class Converter {
                             let agPath = r[0];
                             // the attributegroup path is virtual from the root of the OM hierarchy out to the name of the attribute group.
                             // turn this into just the entity doc reference 
-                            let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
+                            let expectedEnding = `.cdm.json/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
                             if (agPath.endsWith(expectedEnding))
                                 agPath = agPath.slice(0, agPath.length - expectedEnding.length);
                             agPath += postFix;

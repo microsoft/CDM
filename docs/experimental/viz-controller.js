@@ -239,7 +239,6 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     controller.mainContainer.messageHandle("resolveStarting", null, null);
                     // now create corpus
                     controller.corpus = new cdm.Corpus(controller.navData.readRoot);
-                    controller.corpus.statusLevel = cdm.cdmStatusLevel.progress;
                     buildCorpus(controller.corpus, controller.corpus, controller.hier);
                     // validate whole corpus
                     controller.appState = "resolveMode";
@@ -503,6 +502,7 @@ function resolveCorpus(messageType) {
     };
     controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "resolving imports...");
     // first resolve all of the imports to pull other docs into the namespace
+    controller.corpus.setResolutionCallback(statusRpt, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
     controller.corpus.resolveImports((uri) => {
         if (messageType == "githubLoadRequest") {
             return new Promise((resolve, reject) => {
@@ -521,12 +521,12 @@ function resolveCorpus(messageType) {
         else {
             controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, `can't resolve import of '${uri}' in local file mode. you must load the file directly.`);
         }
-    }, statusRpt).then((r) => {
+    }).then((r) => {
         // success resolving all imports
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, statusRpt, cdm.cdmStatusLevel.error).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -865,7 +865,7 @@ function changeDPLX() {
             let set = new Array();
             controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
                 set.push(entState.entity); });
-            let dplx = converter.convertEntities(set, "exampleDataPoolForBYOD");
+            let dplx = converter.convertEntities(set, "exampleDataFlowForBYOD");
             jsonText = JSON.stringify(dplx, null, 2);
             jsonText = applySearchTerm(jsonText);
         }
@@ -932,11 +932,8 @@ function makeParamValue(param, value) {
     if (!value)
         return controller.document.createTextNode("");
     // if a string constant, call get value to turn into itself or a reference if that is what is held there
-    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
-        value = value.getValue();
-    // if still  a string, it is just a string
-    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
-        return controller.document.createTextNode(value.getConstant());
+    if (typeof (value) === "string")
+        return controller.document.createTextNode(value);
     // if this is a constant table, then expand into an html table
     if (value.getObjectType() == cdm.cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdm.cdmObjectType.constantEntityDef) {
         var entShape = value.getObjectDef().getEntityShape();
