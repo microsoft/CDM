@@ -63,6 +63,7 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
             hier.entities = new Array<entityState>();
             folder.getDocuments().forEach(doc => {
                 if (doc.getDefinitions() && doc.getDefinitions().length)
+                    // all refs get looked up from the POV of this doc.
                     doc.getDefinitions().forEach(def => {
                         if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
                             entNumber ++;
@@ -74,15 +75,15 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
                             let locEnt : cdm.ICdmConstantEntityDef;
                             let pVal: cdm.ParameterValue;
                             let rtDesc : cdm.ResolvedTrait;
-                            if ((rtDesc = def.getResolvedTraits().find("is.localized.describedAs")) && 
+                            if ((rtDesc = def.getResolvedTraits(doc).find(doc, "is.localized.describedAs")) && 
                                 (pVal=rtDesc.parameterValues.getParameterValue("localizedDisplayText")) &&
                                 (pVal.value) && 
-                                (locEnt = (pVal.value as cdm.ICdmObject).getObjectDef() as cdm.ICdmConstantEntityDef)) {
-                                    description = locEnt.lookupWhere("displayText", "languageTag", "en");
+                                (locEnt = (pVal.value as cdm.ICdmObject).getObjectDef(doc) as cdm.ICdmConstantEntityDef)) {
+                                    description = locEnt.lookupWhere(doc, "displayText", "languageTag", "en");
                             }
-                            if ((rtDesc = def.getResolvedTraits().find("is.CDS.sourceNamed")) &&
+                            if ((rtDesc = def.getResolvedTraits(doc).find(doc, "is.CDS.sourceNamed")) &&
                                 (pVal = rtDesc.parameterValues.getParameterValue("name")))
-                                UEName = pVal.valueString;
+                                UEName = pVal.getValueString(doc);
                             if (!UEName)
                                 UEName = def.getName();
 

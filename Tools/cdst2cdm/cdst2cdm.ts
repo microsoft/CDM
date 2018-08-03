@@ -25,7 +25,7 @@ class Startup {
         console.log('creating cdm corpus');
         if (cdstCorpus && cdstCorpus.folderInfo && cdstCorpus.folderInfo.length ==1) {
             cdmCorpus = new cdm.Corpus(pathToDocRoot);
-            cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+            cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
             this.convertCdstFolder(cdstCorpus.folderInfo[0], cdmCorpus);
         }
 
@@ -40,7 +40,7 @@ class Startup {
         let statusRpt = loc.consoleStatusReport;
 
         now = Date.now();
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
             console.log('finished');
             console.log(Date.now() - now);
         }).catch();

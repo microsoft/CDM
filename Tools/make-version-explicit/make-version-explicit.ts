@@ -11,14 +11,14 @@ class Startup {
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
-        cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+        cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
         loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], "");
 
         let statusRpt = loc.consoleStatusReport;
 
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
-            this.makeVersionExplicitCopy(cdmCorpus, "0.6");
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
+            this.makeVersionExplicitCopy(cdmCorpus, "0.7");
             loc.persistCorpus(cdmCorpus);
             console.log('done');
 
@@ -54,7 +54,7 @@ class Startup {
                                 // if the entity is already expressing a version trait, then explicitly exhibit one from the entity with the fixed value
                                 // except for the baseclass 
                                 let ent = def as cdm.ICdmEntityDef;
-                                if (ent.getName() != "CdmObject" && ent.getResolvedTraits() && ent.getResolvedTraits().find("is.CDM.entityVersion")) {
+                                if (ent.getName() != "CdmObject" && ent.getResolvedTraits(doc) && ent.getResolvedTraits(doc).find(doc, "is.CDM.entityVersion")) {
                                     let tRef = ent.addExhibitedTrait("is.CDM.entityVersion", false);
                                     tRef.addArgument(undefined, version);
                                 }

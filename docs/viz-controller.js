@@ -160,9 +160,10 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             controller.multiSelectEntityList.forEach(e => {
                 var entity = e.entity;
                 while (entity) {
-                    var base = entity.getExtendsEntityRef();
-                    if (base) {
-                        base = base.getObjectDef(); // turn ref into def
+                    let base;
+                    let baseRef = entity.getExtendsEntityRef();
+                    if (baseRef) {
+                        base = baseRef.getObjectDef(entity.declaredInDocument); // turn ref into def
                         if (entity.getName() == base.getName())
                             toRemove.push(base);
                         else
@@ -177,7 +178,8 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     controller.multiSelectEntityList.delete(baseState);
             });
             // repaint that selection
-            controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, controller.multiSelectEntityList.size == 1 ? controller.multiSelectEntityList.values().next().value : undefined);
+            let singleSelected = controller.multiSelectEntityList.size == 1 ? controller.multiSelectEntityList.values().next().value : undefined;
+            controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, singleSelected);
         }
         else if (messageType == "reportSelection") {
             // add or remove
@@ -239,7 +241,6 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     controller.mainContainer.messageHandle("resolveStarting", null, null);
                     // now create corpus
                     controller.corpus = new cdm.Corpus(controller.navData.readRoot);
-                    controller.corpus.statusLevel = cdm.cdmStatusLevel.progress;
                     buildCorpus(controller.corpus, controller.corpus, controller.hier);
                     // validate whole corpus
                     controller.appState = "resolveMode";
@@ -406,6 +407,8 @@ function indexResolvedEntities() {
             entState.entity = controller.corpus.getObjectFromCorpusPath(path);
             entState.relsOut = new Array();
             entState.relsIn = new Array();
+            entState.referencedEntityNames = new Set();
+            entState.referencedEntityCache = new Map();
             // make a lookup from entity to entityState
             controller.entity2state.set(entState.entity, entState);
         }
@@ -413,25 +416,28 @@ function indexResolvedEntities() {
     // now confident that lookup should work, cache all the relationship complexity
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState == 1 && entState.entity) {
-            var rels = entState.entity.getResolvedEntityReferences();
+            var rels = entState.entity.getResolvedEntityReferences(entState.entity.declaredInDocument);
             if (rels) {
                 rels.set.forEach(resEntRef => {
                     var referencingEntity = resEntRef.referencing.entity;
                     var referencingAttribute = resEntRef.referencing.getFirstAttribute(); // assumes single column keys
                     resEntRef.referenced.forEach(resEntRefSideReferenced => {
                         var referencedEntity = resEntRefSideReferenced.entity;
-                        var referencedAttribute = resEntRefSideReferenced.getFirstAttribute(); // assumes single column keys
-                        entState.relsOut.push({
-                            referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
-                            referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
-                        });
-                        // also go the other way
-                        var entStateOther = controller.entity2state.get(referencedEntity);
-                        if (entStateOther) {
-                            entStateOther.relsIn.push({
+                        if (referencedEntity) {
+                            var referencedAttribute = resEntRefSideReferenced.getFirstAttribute(); // assumes single column keys
+                            entState.referencedEntityNames.add(referencedEntity.getName());
+                            entState.relsOut.push({
                                 referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
                                 referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
                             });
+                            // also go the other way
+                            var entStateOther = controller.entity2state.get(referencedEntity);
+                            if (entStateOther) {
+                                entStateOther.relsIn.push({
+                                    referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
+                                    referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
+                                });
+                            }
                         }
                     });
                 });
@@ -503,6 +509,7 @@ function resolveCorpus(messageType) {
     };
     controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "resolving imports...");
     // first resolve all of the imports to pull other docs into the namespace
+    controller.corpus.setResolutionCallback(statusRpt, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
     controller.corpus.resolveImports((uri) => {
         if (messageType == "githubLoadRequest") {
             return new Promise((resolve, reject) => {
@@ -521,12 +528,12 @@ function resolveCorpus(messageType) {
         else {
             controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, `can't resolve import of '${uri}' in local file mode. you must load the file directly.`);
         }
-    }, statusRpt).then((r) => {
+    }).then((r) => {
         // success resolving all imports
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, statusRpt, cdm.cdmStatusLevel.error).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -612,14 +619,14 @@ function messageHandleItem(messageType, data1, data2) {
             if (messageType == "listItemSelect" && data1.resolvedName) {
                 let cdmAttribute = data1.attribute;
                 background = "var(--item-back-normal)";
-                // does the attribute pointed at this?
+                // does the attribute pointed at this? yes if 
                 var isReferencing = (entityStateThis.relsIn.some((r) => { return r.referencingAttribute && r.referencingAttribute.attribute === cdmAttribute; }));
                 // does the attribute get pointed at by this?
                 var isReferenced = (entityStateThis.relsOut.some((r) => { return r.referencedAttribute && r.referencedAttribute.attribute === cdmAttribute; }));
                 this.style.background = selectBackground(isReferencing, isReferenced, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
             }
             else {
-                var entitySelcted;
+                let entitySelcted;
                 if (messageType === "navigateEntitySelect") {
                     let set = data1;
                     // selection is shown with a fat border
@@ -638,25 +645,52 @@ function messageHandleItem(messageType, data1, data2) {
                     // must be list select from multi entity 
                     entitySelcted = data1.entity;
                 }
+                controller.cdmDocSelected = undefined;
                 if (entitySelcted) {
                     // base and extensions are shown with background
                     // get info about any baseclass of this entity
+                    controller.cdmDocSelected = entitySelcted.declaredInDocument;
                     if (entityStateThis.entity) {
-                        var baseThis = entityStateThis.entity.getExtendsEntityRef();
-                        if (baseThis)
-                            baseThis = baseThis.getObjectDef(); // turn ref into def
+                        let baseThis;
+                        let baseThisRef = entityStateThis.entity.getExtendsEntityRef();
+                        if (baseThisRef)
+                            baseThis = baseThisRef.getObjectDef(controller.cdmDocSelected); // turn ref into def
                         // selected base
-                        var baseSelect = entitySelcted.getExtendsEntityRef();
-                        if (baseSelect)
-                            baseSelect = baseSelect.getObjectDef();
+                        let baseSelect;
+                        let baseSelectRef = entitySelcted.getExtendsEntityRef();
+                        if (baseSelectRef)
+                            baseSelect = baseSelectRef.getObjectDef(controller.cdmDocSelected);
                         background = "var(--item-back-normal)";
                         if (baseSelect === entityStateThis.entity)
                             background = "var(--item-back-base)";
                         if (baseThis === entitySelcted)
                             background = "var(--item-back-extension)";
                         // does this entity point at the selection
-                        var isReferencing = (entityStateThis.relsOut.some((r) => { return r.referencedEntity === entitySelcted; }));
-                        // does the selection point at this
+                        // first see if we cached the answer from the last time asked
+                        var isReferencing = false;
+                        if (entityStateThis.referencedEntityCache.has(entitySelcted))
+                            isReferencing = entityStateThis.referencedEntityCache.get(entitySelcted);
+                        else {
+                            // need to figure the answer and then save it for next time
+                            if (entityStateThis.referencedEntityNames.has(entitySelcted.getName())) {
+                                // yes, something with the same name, but to be specific we must resolve this entity's relationships from the POV of the selected document
+                                isReferencing = false;
+                                var rels = entityStateThis.entity.getResolvedEntityReferences(controller.cdmDocSelected);
+                                if (rels) {
+                                    rels.set.some(resEntRef => {
+                                        return resEntRef.referenced.some(resEntRefSideReferenced => {
+                                            var referencedEntity = resEntRefSideReferenced.entity;
+                                            if (referencedEntity === entitySelcted) {
+                                                isReferencing = true;
+                                                return true;
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                            entityStateThis.referencedEntityCache.set(entitySelcted, isReferencing);
+                        }
+                        // does the selection point at this. already cached from that POV
                         var isReferenced = (entityStateThis.relsIn.some((r) => { return r.referencingEntity === entitySelcted; }));
                         this.style.background = selectBackground(isReferenced, isReferencing, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
                     }
@@ -694,8 +728,8 @@ function messageHandleList(messageType, data1, data2) {
             // use the resolved attributes from the entity
             let entity = data2.entity;
             if (data1 && entity) {
-                let atts = entity.getResolvedAttributes();
-                let inherited = entity.countInheritedAttributes();
+                let atts = entity.getResolvedAttributes(entity.declaredInDocument);
+                let inherited = entity.countInheritedAttributes(entity.declaredInDocument);
                 if (atts) {
                     atts.set = atts.set.sort(function (l, r) {
                         if ((l.insertOrder < inherited) == (r.insertOrder < inherited))
@@ -709,6 +743,7 @@ function messageHandleList(messageType, data1, data2) {
                         aSpan.className = "list_item";
                         aSpan.textContent = att.resolvedName;
                         aSpan.cdmObject = att;
+                        aSpan.cdmSource = entity;
                         aSpan.onclick = controller.onclickListItem;
                         aSpan.messageHandle = messageHandleListItem;
                         aSpan.inherited = att.insertOrder < inherited;
@@ -858,14 +893,18 @@ function changeDPLX() {
         var jsonText = "";
         if (controller.multiSelectEntityList && controller.multiSelectEntityList.size) {
             let converter = new cdm2dplx.Converter();
-            converter.bindingType = "byol";
-            converter.relationshipsType = "inclusive";
-            converter.schemaUriBase = "";
-            converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
+            converter.bindingType = "none";
+            converter.relationshipsType = "all";
+            converter.schemaUriBase = "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments";
+            converter.schemaVersion = "0.7";
+            // converter.bindingType="byol"
+            // converter.relationshipsType="inclusive";
+            // converter.schemaUriBase = "";
+            // converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
             let set = new Array();
             controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
                 set.push(entState.entity); });
-            let dplx = converter.convertEntities(set, "exampleDataFlowForBYOD");
+            let dplx = converter.convertEntities(controller.corpus, set, "exampleDataFlowForBYOD");
             jsonText = JSON.stringify(dplx, null, 2);
             jsonText = applySearchTerm(jsonText);
         }
@@ -916,7 +955,7 @@ function detailJsonJump(path) {
 function drawJsonStack() {
     if (controller.JsonStack && controller.JsonStack.length) {
         let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
-        let json = cdmObject.copyData(true);
+        let json = cdmObject.copyData(controller.cdmDocSelected, true);
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
         jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
@@ -935,16 +974,17 @@ function makeParamValue(param, value) {
     if (typeof (value) === "string")
         return controller.document.createTextNode(value);
     // if this is a constant table, then expand into an html table
-    if (value.getObjectType() == cdm.cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdm.cdmObjectType.constantEntityDef) {
-        var entShape = value.getObjectDef().getEntityShape();
-        var entValues = value.getObjectDef().getConstantValues();
+    let entDef;
+    if (value.getObjectType() == cdm.cdmObjectType.entityRef && (entDef = value.getObjectDef(controller.cdmDocSelected)) && entDef.getObjectType() == cdm.cdmObjectType.constantEntityDef) {
+        let entShape = entDef.getEntityShape().getObjectDef(controller.cdmDocSelected);
+        var entValues = entDef.getConstantValues();
         if (!entValues && entValues.length == 0)
             return controller.document.createTextNode("empty table");
         var valueTable = controller.document.createElement("table");
         valueTable.className = "trait_param_value_table";
         var valueRow = controller.document.createElement("tr");
         valueRow.className = "trait_param_value_table_header_row";
-        var shapeAtts = entShape.getResolvedAttributes();
+        var shapeAtts = entShape.getResolvedAttributes(controller.cdmDocSelected);
         let l = shapeAtts.set.length;
         for (var i = 0; i < l; i++) {
             var th = controller.document.createElement("th");
@@ -998,7 +1038,7 @@ function makeParamRow(param, value) {
     var td = controller.document.createElement("td");
     td.className = "trait_parameter_table_detail_type";
     if (param.getDataTypeRef())
-        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef().getName()));
+        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef(controller.cdmDocSelected).getName()));
     paramRow.appendChild(td);
     var td = controller.document.createElement("td");
     td.className = "trait_parameter_table_detail_explanation";
@@ -1071,10 +1111,11 @@ function messageHandleDetailTraits(messageType, data1, data2) {
         this.style.display = (data1 != "trait_tab") ? "none" : "block";
         return;
     }
-    var cdmObject;
+    let cdmObject;
     if (messageType == "navigateEntitySelect") {
-        if (data2)
+        if (data2) {
             cdmObject = data2.entity;
+        }
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
@@ -1088,7 +1129,7 @@ function messageHandleDetailTraits(messageType, data1, data2) {
     if (cdmObject) {
         while (this.childNodes.length > 0)
             this.removeChild(this.lastChild);
-        var rts = cdmObject.getResolvedTraits();
+        var rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         if (rts) {
             var traitTable = controller.document.createElement("table");
             traitTable.className = "trait_table";
@@ -1108,7 +1149,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
     let isAtt = false;
     if (messageType == "navigateEntitySelect") {
         if (data2) {
-            resolvedObject = data2.entity.getResolvedEntity();
+            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected);
         }
     }
     if (messageType == "listItemSelect") {
@@ -1118,7 +1159,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
         }
         else {
             // assume entity
-            resolvedObject = data1.entity.getResolvedEntity();
+            resolvedObject = data1.entity.getResolvedEntity(controller.cdmDocSelected);
         }
     }
     if (resolvedObject) {

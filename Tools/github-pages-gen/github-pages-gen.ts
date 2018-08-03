@@ -14,13 +14,11 @@ class Startup {
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
-        cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+        cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
         loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], "");
 
-        let statusRpt = loc.consoleStatusReport;
-
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
             let docsRoot = "../../";
             let consts : ghc.contentConstants  = {
                 docsRoot : docsRoot,
