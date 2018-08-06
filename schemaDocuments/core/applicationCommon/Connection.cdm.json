@@ -41,14 +41,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    "traitReference": "is.CDS.sourceNamed",
-                    "arguments": [
-                        "Connection"
-                    ]
                 }
             ],
+            "displayName": "Connection",
+            "description": "Relationship between two entities.",
+            "sourceName": "Connection",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -87,18 +84,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "1"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -106,9 +91,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -151,7 +133,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 1,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By",
+                                                        "description": "Shows who last updated the record."
                                                     }
                                                 }
                                             ]
@@ -176,18 +163,6 @@
                                 "dataType": "entityId",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "owninguser"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "2"
-                                        ]
-                                    },
-                                    {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
                                             {
@@ -195,9 +170,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -240,7 +212,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "owninguser",
+                                "sourceOrdering": 2,
+                                "isNullable": true,
+                                "displayName": "Owning User",
+                                "description": "Unique identifier of the user who owns the connection."
                             },
                             {
                                 "name": "statusCode",
@@ -292,28 +269,14 @@
                                                     "explanation": "This attribute 'statusCode_display' is added to the 'Connection' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                                                     "name": "statusCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "statuscode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "3"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -355,41 +318,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 3,
+                                "isNullable": true,
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the connection."
                             },
                             {
                                 "name": "importSequenceNumber",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "importsequencenumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-2147483648"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "4"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -431,25 +371,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "importsequencenumber",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 4,
+                                "isNullable": true,
+                                "displayName": "Import Sequence Number",
+                                "description": "Unique identifier of the data import or data migration that created this record."
                             },
                             {
                                 "name": "connectionId",
                                 "relationship": "identifiedBy",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "connectionid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "5"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -491,28 +426,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "connectionid",
+                                "sourceOrdering": 5,
+                                "displayName": "Connection",
+                                "description": "Unique identifier of the connection."
                             },
                             {
                                 "name": "versionNumber",
                                 "relationship": "hasA",
                                 "dataType": "bigInteger",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "versionnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "6"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -554,28 +478,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 6,
+                                "isNullable": true,
+                                "displayName": "Version Number",
+                                "description": "Version number of the connection."
                             },
                             {
                                 "name": "effectiveStart",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "effectivestart"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "7"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -617,25 +531,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "effectivestart",
+                                "sourceOrdering": 7,
+                                "isNullable": true,
+                                "displayName": "Starting",
+                                "description": "Enter the start date of the connection."
                             },
                             {
                                 "name": "isMaster",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ismaster"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "8"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -677,7 +584,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ismaster",
+                                "sourceOrdering": 8,
+                                "displayName": "Is Master",
+                                "description": "Indicates that this is the master record."
                             },
                             {
                                 "relationship": {
@@ -694,18 +605,6 @@
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "ownerid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "9"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -756,7 +655,11 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "ownerid",
+                                                        "sourceOrdering": 9,
+                                                        "displayName": "Owner",
+                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
                                                     }
                                                 }
                                             ]
@@ -804,18 +707,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "relatedconnectionid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "10"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -823,9 +714,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -868,7 +756,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "relatedconnectionid",
+                                                        "sourceOrdering": 10,
+                                                        "isNullable": true,
+                                                        "displayName": "Reciprocal Connection",
+                                                        "description": "Unique identifier for the reciprocal connection record."
                                                     }
                                                 }
                                             ]
@@ -892,30 +785,6 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "description"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "2000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "11"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -957,7 +826,13 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "description",
+                                "maximumLength": 2000,
+                                "sourceOrdering": 11,
+                                "isNullable": true,
+                                "displayName": "Description",
+                                "description": "Type additional information to describe the connection, such as the length or quality of the relationship."
                             },
                             {
                                 "relationship": {
@@ -975,18 +850,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "owningbusinessunit"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "12"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -994,9 +857,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1039,7 +899,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 12,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning Business Unit",
+                                                        "description": "Shows the business unit that the record owner belongs to."
                                                     }
                                                 }
                                             ]
@@ -1063,21 +928,6 @@
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "overriddencreatedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "13"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1119,7 +969,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 13,
+                                "isNullable": true,
+                                "displayName": "Record Created On",
+                                "description": "Date and time that the record was migrated."
                             },
                             {
                                 "relationship": {
@@ -1129,25 +984,13 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'SocialProfile and Goal and Activity and Appointment and Account and Email and User and KnowledgeArticle and SocialActivity and RecurringAppointment and PhoneCall and Contact and Team and Letter and KnowledgeBaseRecord and Task and Position and Fax and User' adds the 'record2Id' attribute below to the 'Connection' entity as a key",
+                                                    "explanation": "This 'referencesA' relationship to the entity 'SocialActivity and Letter and Email and User and Account and Appointment and Contact and Task and SocialProfile and Activity and Goal and KnowledgeBaseRecord and KnowledgeArticle and Position and Fax and Team and RecurringAppointment and PhoneCall and User' adds the 'record2Id' attribute below to the 'Connection' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
                                                         "name": "record2Id",
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "record2id"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "14"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -1156,9 +999,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1201,7 +1041,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "record2id",
+                                                        "sourceOrdering": 14,
+                                                        "isNullable": true,
+                                                        "displayName": "Connected To",
+                                                        "description": "Unique identifier of the target record."
                                                     }
                                                 }
                                             ]
@@ -1210,56 +1055,23 @@
                                 },
                                 "entity": [
                                     {
-                                        "entityReference": "SocialProfile",
+                                        "entityReference": "SocialActivity",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "SocialProfile/(resolvedAttributes)/socialProfileId"
+                                                    "SocialActivity/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
                                     },
                                     {
-                                        "entityReference": "Goal",
+                                        "entityReference": "Letter",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Goal/(resolvedAttributes)/goalId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Activity",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Activity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Appointment",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Appointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
+                                                    "Letter/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -1287,45 +1099,23 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "KnowledgeArticle",
+                                        "entityReference": "Account",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                    "Account/(resolvedAttributes)/accountId"
                                                 ]
                                             }
                                         ]
                                     },
                                     {
-                                        "entityReference": "SocialActivity",
+                                        "entityReference": "Appointment",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "SocialActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "RecurringAppointment",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PhoneCall",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PhoneCall/(resolvedAttributes)/activityId"
+                                                    "Appointment/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -1342,23 +1132,45 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "Team",
+                                        "entityReference": "Task",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
+                                                    "Task/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
                                     },
                                     {
-                                        "entityReference": "Letter",
+                                        "entityReference": "SocialProfile",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Letter/(resolvedAttributes)/activityId"
+                                                    "SocialProfile/(resolvedAttributes)/socialProfileId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Activity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Activity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Goal",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Goal/(resolvedAttributes)/goalId"
                                                 ]
                                             }
                                         ]
@@ -1375,12 +1187,12 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "Task",
+                                        "entityReference": "KnowledgeArticle",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Task/(resolvedAttributes)/activityId"
+                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
                                                 ]
                                             }
                                         ]
@@ -1403,6 +1215,39 @@
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
                                                     "Fax/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Team",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Team/(resolvedAttributes)/teamId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "RecurringAppointment",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "PhoneCall",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "PhoneCall/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -1436,18 +1281,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "15"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1455,9 +1288,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1500,7 +1330,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 15,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By",
+                                                        "description": "Shows who created the record."
                                                     }
                                                 }
                                             ]
@@ -1535,18 +1370,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "record2roleid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "16"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1554,9 +1377,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1599,7 +1419,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "record2roleid",
+                                                        "sourceOrdering": 16,
+                                                        "isNullable": true,
+                                                        "displayName": "Role (To)",
+                                                        "description": "Choose the secondary party's role or relationship with the primary party."
                                                     }
                                                 }
                                             ]
@@ -1623,21 +1448,6 @@
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "effectiveend"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "17"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1679,7 +1489,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "effectiveend",
+                                "sourceOrdering": 17,
+                                "isNullable": true,
+                                "displayName": "Ending",
+                                "description": "Enter the end date of the connection."
                             },
                             {
                                 "relationship": {
@@ -1697,18 +1512,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "record1roleid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "18"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1716,9 +1519,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1761,7 +1561,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "record1roleid",
+                                                        "sourceOrdering": 18,
+                                                        "isNullable": true,
+                                                        "displayName": "Role (From)",
+                                                        "description": "Choose the primary party's role or relationship with the second party."
                                                     }
                                                 }
                                             ]
@@ -1785,21 +1590,6 @@
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "createdon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "19"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1841,28 +1631,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "createdon",
+                                "sourceOrdering": 19,
+                                "isNullable": true,
+                                "displayName": "Created On",
+                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
                             },
                             {
                                 "name": "modifiedOn",
                                 "relationship": "modifiedOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "modifiedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "20"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1904,7 +1684,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 20,
+                                "isNullable": true,
+                                "displayName": "Modified On",
+                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
                             },
                             {
                                 "relationship": {
@@ -1914,25 +1699,13 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'KnowledgeArticle and Letter and Activity and Goal and User and SocialProfile and PhoneCall and Team and Contact and Fax and RecurringAppointment and Task and Account and SocialActivity and KnowledgeBaseRecord and Position and Appointment and Email and User' adds the 'record1Id' attribute below to the 'Connection' entity as a key",
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Task and RecurringAppointment and SocialProfile and PhoneCall and Team and Fax and Account and User and KnowledgeArticle and Letter and Goal and Activity and Contact and Email and Position and Appointment and KnowledgeBaseRecord and SocialActivity and User' adds the 'record1Id' attribute below to the 'Connection' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
                                                         "name": "record1Id",
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "record1id"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "21"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -1941,9 +1714,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1986,7 +1756,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "record1id",
+                                                        "sourceOrdering": 21,
+                                                        "isNullable": true,
+                                                        "displayName": "Connected From",
+                                                        "description": "Unique identifier of the source record."
                                                     }
                                                 }
                                             ]
@@ -1995,56 +1770,23 @@
                                 },
                                 "entity": [
                                     {
-                                        "entityReference": "KnowledgeArticle",
+                                        "entityReference": "Task",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                    "Task/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
                                     },
                                     {
-                                        "entityReference": "Letter",
+                                        "entityReference": "RecurringAppointment",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Letter/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Activity",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Activity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Goal",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Goal/(resolvedAttributes)/goalId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
+                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -2083,45 +1825,12 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
                                         "entityReference": "Fax",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
                                                     "Fax/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "RecurringAppointment",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Task",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Task/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -2138,23 +1847,78 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "SocialActivity",
+                                        "entityReference": "User",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "SocialActivity/(resolvedAttributes)/activityId"
+                                                    "User/(resolvedAttributes)/systemUserId"
                                                 ]
                                             }
                                         ]
                                     },
                                     {
-                                        "entityReference": "KnowledgeBaseRecord",
+                                        "entityReference": "KnowledgeArticle",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Letter",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Letter/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Goal",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Goal/(resolvedAttributes)/goalId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Activity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Activity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Contact",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Contact/(resolvedAttributes)/contactId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Email",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Email/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -2182,12 +1946,23 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "Email",
+                                        "entityReference": "KnowledgeBaseRecord",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Email/(resolvedAttributes)/activityId"
+                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "SocialActivity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "SocialActivity/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -2243,25 +2018,14 @@
                                                     "explanation": "This attribute 'stateCode_display' is added to the 'Connection' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
                                                     "name": "stateCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "statecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "22"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2303,7 +2067,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "statecode",
+                                "sourceOrdering": 22,
+                                "displayName": "Status",
+                                "description": "Shows whether the connection is active or inactive. Inactive connections are read-only and can't be edited unless they are reactivated."
                             },
                             {
                                 "relationship": {
@@ -2321,18 +2089,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "38"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -2340,9 +2096,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -2385,7 +2138,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 38,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By (Delegate)",
+                                                        "description": "Shows who last updated the record on behalf of another user."
                                                     }
                                                 }
                                             ]
@@ -2420,18 +2178,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "42"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -2439,9 +2185,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -2484,7 +2227,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 42,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By (Delegate)",
+                                                        "description": "Shows who created the record on behalf of another user."
                                                     }
                                                 }
                                             ]
@@ -2509,18 +2257,6 @@
                                 "dataType": "entityId",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "owningteam"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "46"
-                                        ]
-                                    },
-                                    {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
                                             {
@@ -2528,9 +2264,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2573,7 +2306,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "owningteam",
+                                "sourceOrdering": 46,
+                                "isNullable": true,
+                                "displayName": "Owning Team",
+                                "description": "Unique identifier of the team who owns the connection."
                             },
                             {
                                 "relationship": {
@@ -2591,18 +2329,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "transactioncurrencyid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "47"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -2610,9 +2336,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -2655,7 +2378,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 47,
+                                                        "isNullable": true,
+                                                        "displayName": "Currency",
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
                                                     }
                                                 }
                                             ]
@@ -2679,34 +2407,6 @@
                                 "relationship": "hasA",
                                 "dataType": "decimal",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "exchangerate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1E-10"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "100000000000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "49"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2748,7 +2448,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "exchangerate",
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10",
+                                "sourceOrdering": 49,
+                                "isNullable": true,
+                                "displayName": "Exchange Rate",
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
                             },
                             {
                                 "name": "record2ObjectTypeCode",
@@ -2782,28 +2489,14 @@
                                                     "explanation": "This attribute 'record2ObjectTypeCode_display' is added to the 'Connection' entity to provide the localized display text for the value of the listLookup attribute 'record2ObjectTypeCode'",
                                                     "name": "record2ObjectTypeCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "record2objecttypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "50"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2845,7 +2538,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "record2objecttypecode",
+                                "sourceOrdering": 50,
+                                "isNullable": true,
+                                "displayName": "Type (To)",
+                                "description": "Shows the record type of the target record."
                             },
                             {
                                 "name": "record1ObjectTypeCode",
@@ -2879,28 +2577,14 @@
                                                     "explanation": "This attribute 'record1ObjectTypeCode_display' is added to the 'Connection' entity to provide the localized display text for the value of the listLookup attribute 'record1ObjectTypeCode'",
                                                     "name": "record1ObjectTypeCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "record1objecttypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "52"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2942,37 +2626,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "record1objecttypecode",
+                                "sourceOrdering": 52,
+                                "isNullable": true,
+                                "displayName": "Type (From)",
+                                "description": "Shows the record type of the source record."
                             },
                             {
                                 "name": "name",
                                 "relationship": "hasA",
                                 "dataType": "name",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "name"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "500"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "54"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3014,28 +2679,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "name",
+                                "maximumLength": 500,
+                                "sourceOrdering": 54,
+                                "isNullable": true,
+                                "displayName": "Connection Name",
+                                "description": "Name of the connection."
                             },
                             {
                                 "name": "entityImageId",
                                 "relationship": "hasA",
                                 "dataType": "guid",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "entityimageid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "55"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3077,7 +2733,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "entityimageid",
+                                "sourceOrdering": 55,
+                                "isNullable": true,
+                                "displayName": "Entity Image Id",
+                                "description": "For internal use only."
                             }
                         ]
                     }

@@ -41,14 +41,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    "traitReference": "is.CDS.sourceNamed",
-                    "arguments": [
-                        "ActivityParty"
-                    ]
                 }
             ],
+            "displayName": "Activity Party",
+            "description": "Person or group associated with an activity. An activity can have multiple activity parties.",
+            "sourceName": "ActivityParty",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -79,25 +76,13 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Activity and Appointment and Letter and PhoneCall and RecurringAppointment and Email and SocialActivity and Task and Fax' adds the 'activityId' attribute below to the 'ActivityParty' entity as a key",
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Appointment and Activity and Fax and Task and SocialActivity and Letter and Email and PhoneCall and RecurringAppointment' adds the 'activityId' attribute below to the 'ActivityParty' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
                                                         "name": "activityId",
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "activityid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "1"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -148,7 +133,11 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 1,
+                                                        "displayName": "Activity",
+                                                        "description": "Unique identifier of the activity associated with the activity party. (A \"party\" is any person who is associated with an activity.)"
                                                     }
                                                 }
                                             ]
@@ -156,17 +145,6 @@
                                     ]
                                 },
                                 "entity": [
-                                    {
-                                        "entityReference": "Activity",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Activity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
                                     {
                                         "entityReference": "Appointment",
                                         "appliedTraits": [
@@ -179,12 +157,67 @@
                                         ]
                                     },
                                     {
+                                        "entityReference": "Activity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Activity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Fax",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Fax/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Task",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Task/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "SocialActivity",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "SocialActivity/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
                                         "entityReference": "Letter",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
                                                     "Letter/(resolvedAttributes)/activityId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Email",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Email/(resolvedAttributes)/activityId"
                                                 ]
                                             }
                                         ]
@@ -210,50 +243,6 @@
                                                 ]
                                             }
                                         ]
-                                    },
-                                    {
-                                        "entityReference": "Email",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Email/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "SocialActivity",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "SocialActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Task",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Task/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Fax",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Fax/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
                                     }
                                 ]
                             },
@@ -262,18 +251,6 @@
                                 "relationship": "identifiedBy",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "activitypartyid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "2"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -315,7 +292,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "activitypartyid",
+                                "sourceOrdering": 2,
+                                "displayName": "Activity Party",
+                                "description": "Unique identifier of the activity party."
                             },
                             {
                                 "relationship": {
@@ -325,25 +306,13 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Queue and Account and User and KnowledgeArticle and Contact' adds the 'partyId' attribute below to the 'ActivityParty' entity as a key",
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and KnowledgeArticle and User and Account and Queue' adds the 'partyId' attribute below to the 'ActivityParty' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
                                                         "name": "partyId",
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "partyid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "3"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -352,9 +321,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -397,7 +363,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "partyid",
+                                                        "sourceOrdering": 3,
+                                                        "isNullable": true,
+                                                        "displayName": "Party",
+                                                        "description": "Unique identifier of the party associated with the activity."
                                                     }
                                                 }
                                             ]
@@ -406,34 +377,12 @@
                                 },
                                 "entity": [
                                     {
-                                        "entityReference": "Queue",
+                                        "entityReference": "Contact",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Queue/(resolvedAttributes)/queueId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
+                                                    "Contact/(resolvedAttributes)/contactId"
                                                 ]
                                             }
                                         ]
@@ -450,12 +399,34 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "Contact",
+                                        "entityReference": "User",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
+                                                    "User/(resolvedAttributes)/systemUserId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Account",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Account/(resolvedAttributes)/accountId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "Queue",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Queue/(resolvedAttributes)/queueId"
                                                 ]
                                             }
                                         ]
@@ -478,27 +449,27 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Owner",
-                                                                "9",
-                                                                "8"
+                                                                "Sender",
+                                                                "1",
+                                                                "0"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Resource",
-                                                                "10",
-                                                                "9"
+                                                                "To Recipient",
+                                                                "2",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "CC Recipient",
+                                                                "3",
+                                                                "2"
                                                             ],
                                                             [
                                                                 "en",
                                                                 "BCC Recipient",
                                                                 "4",
                                                                 "3"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Customer",
-                                                                "11",
-                                                                "10"
                                                             ],
                                                             [
                                                                 "en",
@@ -526,21 +497,21 @@
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Sender",
-                                                                "1",
-                                                                "0"
+                                                                "Owner",
+                                                                "9",
+                                                                "8"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "To Recipient",
-                                                                "2",
-                                                                "1"
+                                                                "Resource",
+                                                                "10",
+                                                                "9"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "CC Recipient",
-                                                                "3",
-                                                                "2"
+                                                                "Customer",
+                                                                "11",
+                                                                "10"
                                                             ]
                                                         ]
                                                     }
@@ -554,25 +525,14 @@
                                                     "explanation": "This attribute 'participationTypeMask_display' is added to the 'ActivityParty' entity to provide the localized display text for the value of the listLookup attribute 'participationTypeMask'",
                                                     "name": "participationTypeMask_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "participationtypemask"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "5"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -614,37 +574,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "participationtypemask",
+                                "sourceOrdering": 5,
+                                "displayName": "Participation Type",
+                                "description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner."
                             },
                             {
                                 "name": "addressUsed",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "addressused"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "200"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "6"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -686,28 +626,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "addressused",
+                                "maximumLength": 200,
+                                "sourceOrdering": 6,
+                                "isNullable": true,
+                                "displayName": "Address ",
+                                "description": "Email address to which an email is delivered, and which is associated with the target entity."
                             },
                             {
                                 "name": "doNotFax",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "donotfax"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "12"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -749,28 +680,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "donotfax",
+                                "sourceOrdering": 12,
+                                "isNullable": true,
+                                "displayName": "Do not allow Faxes",
+                                "description": "Information about whether to allow sending faxes to the activity party."
                             },
                             {
                                 "name": "scheduledStart",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "scheduledstart"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "13"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -812,28 +733,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 13,
+                                "isNullable": true,
+                                "displayName": "Scheduled Start",
+                                "description": "Scheduled start time of the activity."
                             },
                             {
                                 "name": "scheduledEnd",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "scheduledend"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "14"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -875,41 +786,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 14,
+                                "isNullable": true,
+                                "displayName": "Scheduled End",
+                                "description": "Scheduled end time of the activity."
                             },
                             {
                                 "name": "effort",
                                 "relationship": "hasA",
                                 "dataType": "double",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "effort"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "0"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "1000000000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "15"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -951,28 +839,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "effort",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0",
+                                "sourceOrdering": 15,
+                                "isNullable": true,
+                                "displayName": "Effort",
+                                "description": "Amount of effort used by the resource in a service appointment activity."
                             },
                             {
-                                "name": "doNotEmail",
+                                "name": "doNotEMail",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "donotemail"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "16"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1014,37 +894,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "donotemail",
+                                "sourceOrdering": 16,
+                                "isNullable": true,
+                                "displayName": "Do not allow Emails",
+                                "description": "Information about whether to allow sending email to the activity party."
                             },
                             {
                                 "name": "exchangeEntryId",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "exchangeentryid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "1024"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "18"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1086,28 +947,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "exchangeentryid",
+                                "maximumLength": 1024,
+                                "sourceOrdering": 18,
+                                "isNullable": true,
+                                "displayName": "Exchange Entry",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "versionNumber",
                                 "relationship": "hasA",
                                 "dataType": "bigInteger",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "versionnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "20"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1117,28 +969,16 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 20,
+                                "isNullable": true
                             },
                             {
                                 "name": "doNotPostalMail",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "donotpostalmail"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "26"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1180,28 +1020,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "donotpostalmail",
+                                "sourceOrdering": 26,
+                                "isNullable": true,
+                                "displayName": "Do not allow Postal Mails",
+                                "description": "Information about whether to allow sending postal mail to the lead."
                             },
                             {
                                 "name": "doNotPhone",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "donotphone"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "27"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1243,7 +1073,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "donotphone",
+                                "sourceOrdering": 27,
+                                "isNullable": true,
+                                "displayName": "Do not allow Phone Calls",
+                                "description": "Information about whether to allow phone calls to the lead."
                             },
                             {
                                 "relationship": {
@@ -1261,18 +1096,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "ownerid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "30"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1280,9 +1103,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1325,7 +1145,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "ownerid",
+                                                        "sourceOrdering": 30,
+                                                        "isNullable": true,
+                                                        "displayName": "Owner",
+                                                        "description": "Unique identifier of the user or team who owns the activity_party."
                                                     }
                                                 }
                                             ]
@@ -1413,25 +1238,14 @@
                                                     "explanation": "This attribute 'instanceTypeCode_display' is added to the 'ActivityParty' entity to provide the localized display text for the value of the listLookup attribute 'instanceTypeCode'",
                                                     "name": "instanceTypeCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "instancetypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "32"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1473,25 +1287,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "instancetypecode",
+                                "sourceOrdering": 32,
+                                "displayName": "Appointment Type",
+                                "description": "Type of instance of a recurring series."
                             },
                             {
                                 "name": "isPartyDeleted",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ispartydeleted"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "34"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1533,41 +1339,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ispartydeleted",
+                                "sourceOrdering": 34,
+                                "displayName": "Is Party Deleted",
+                                "description": "Information about whether the underlying entity record is deleted."
                             },
                             {
                                 "name": "addressUsedEmailColumnNumber",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "addressusedemailcolumnnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "36"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1609,7 +1391,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "addressusedemailcolumnnumber",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "1",
+                                "sourceOrdering": 36,
+                                "isNullable": true,
+                                "displayName": "Email column number of party",
+                                "description": "Email address column number from associated party."
                             }
                         ]
                     }

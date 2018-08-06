@@ -41,14 +41,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    "traitReference": "is.CDS.sourceNamed",
-                    "arguments": [
-                        "EmailSignature"
-                    ]
                 }
             ],
+            "displayName": "Email Signature",
+            "description": "Signature for email message",
+            "sourceName": "EmailSignature",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -76,18 +73,6 @@
                                 "relationship": "identifiedBy",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "emailsignatureid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "1"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -129,7 +114,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "emailsignatureid",
+                                "sourceOrdering": 1,
+                                "displayName": "Email Signature",
+                                "description": "Unique identifier of the email signature."
                             },
                             {
                                 "relationship": {
@@ -147,18 +136,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "owningbusinessunit"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "3"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -166,9 +143,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -211,7 +185,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 3,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning Business Unit",
+                                                        "description": "Unique identifier of the business unit that owns the email signature."
                                                     }
                                                 }
                                             ]
@@ -235,21 +214,6 @@
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ispersonal"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "4"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -291,37 +255,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ispersonal",
+                                "sourceOrdering": 4,
+                                "isNullable": true,
+                                "displayName": "Viewable By",
+                                "description": "Information about whether the email signature is personal or is available to all users."
                             },
                             {
                                 "name": "mimeType",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "mimetype"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "256"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "7"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -363,37 +308,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "mimetype",
+                                "maximumLength": 256,
+                                "sourceOrdering": 7,
+                                "isNullable": true,
+                                "displayName": "Mime Type",
+                                "description": "MIME type of the email signature."
                             },
                             {
                                 "name": "body",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "body"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "1073741823"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "9"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -435,37 +362,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "body",
+                                "maximumLength": 1073741823,
+                                "sourceOrdering": 9,
+                                "isNullable": true,
+                                "displayName": "Body",
+                                "description": "Body text of the email signature."
                             },
                             {
                                 "name": "title",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "title"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "200"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "10"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -507,37 +416,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "title",
+                                "maximumLength": 200,
+                                "sourceOrdering": 10,
+                                "isNullable": true,
+                                "displayName": "Title",
+                                "description": "Title of the email signature."
                             },
                             {
                                 "name": "description",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "description"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "2000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "11"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -579,25 +470,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "description",
+                                "maximumLength": 2000,
+                                "sourceOrdering": 11,
+                                "isNullable": true,
+                                "displayName": "Description",
+                                "description": "Description of the email signature."
                             },
                             {
                                 "name": "owningUser",
                                 "relationship": "hasA",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "owninguser"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "12"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
@@ -606,9 +491,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -651,7 +533,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "owninguser",
+                                "sourceOrdering": 12,
+                                "isNullable": true,
+                                "displayName": "Owning User",
+                                "description": "Unique identifier of the user who owns the email signature."
                             },
                             {
                                 "relationship": {
@@ -669,18 +556,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "13"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -688,9 +563,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -733,7 +605,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 13,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By",
+                                                        "description": "Unique identifier of the user who created the email signature."
                                                     }
                                                 }
                                             ]
@@ -757,30 +634,6 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "presentationxml"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "1073741823"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "14"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -822,28 +675,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "presentationxml",
+                                "maximumLength": 1073741823,
+                                "sourceOrdering": 14,
+                                "isNullable": true,
+                                "displayName": "Presentation XML",
+                                "description": "XML data for the body of the email signature."
                             },
                             {
                                 "name": "createdOn",
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "createdon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "15"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -885,7 +729,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "createdon",
+                                "sourceOrdering": 15,
+                                "isNullable": true,
+                                "displayName": "Created On",
+                                "description": "Date and time when the email signature was created."
                             },
                             {
                                 "relationship": {
@@ -903,18 +752,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "16"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -922,9 +759,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -967,7 +801,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 16,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By",
+                                                        "description": "Unique identifier of the user who last modified the email signature."
                                                     }
                                                 }
                                             ]
@@ -991,21 +830,6 @@
                                 "relationship": "modifiedOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "modifiedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "17"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1047,7 +871,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 17,
+                                "isNullable": true,
+                                "displayName": "Modified On",
+                                "description": "Date and time when the email signature was last modified."
                             },
                             {
                                 "relationship": {
@@ -1064,18 +893,6 @@
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "ownerid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "24"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -1126,7 +943,11 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "ownerid",
+                                                        "sourceOrdering": 24,
+                                                        "displayName": "Owner",
+                                                        "description": "Unique identifier of the user or team who owns the email signature for the email activity."
                                                     }
                                                 }
                                             ]
@@ -1163,34 +984,6 @@
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "generationtypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "0"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "31"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1232,41 +1025,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "generationtypecode",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
+                                "sourceOrdering": 31,
+                                "isNullable": true,
+                                "displayName": "Generation Type Code",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "languageCode",
                                 "relationship": "hasA",
                                 "dataType": "language",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "languagecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "0"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "32"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1308,41 +1080,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "languagecode",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
+                                "sourceOrdering": 32,
+                                "isNullable": true,
+                                "displayName": "Language",
+                                "description": "Language of the email signature."
                             },
                             {
                                 "name": "importSequenceNumber",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "importsequencenumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-2147483648"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "33"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1384,25 +1135,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "importsequencenumber",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 33,
+                                "isNullable": true,
+                                "displayName": "Import Sequence Number",
+                                "description": "Unique identifier of the data import or data migration that created this record."
                             },
                             {
                                 "name": "overwriteTime",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "overwritetime"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "37"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1444,7 +1190,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "overwritetime",
+                                "sourceOrdering": 37,
+                                "displayName": "Record Overwrite Time",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "componentState",
@@ -1496,25 +1246,14 @@
                                                     "explanation": "This attribute 'componentState_display' is added to the 'EmailSignature' entity to provide the localized display text for the value of the listLookup attribute 'componentState'",
                                                     "name": "componentState_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "componentstate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "38"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1556,7 +1295,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "componentstate",
+                                "sourceOrdering": 38,
+                                "displayName": "Component State",
+                                "description": "For internal use only."
                             },
                             {
                                 "relationship": {
@@ -1574,18 +1317,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "42"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1593,9 +1324,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1638,7 +1366,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 42,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By (Delegate)",
+                                                        "description": "Unique identifier of the delegate user who created the email signature."
                                                     }
                                                 }
                                             ]
@@ -1673,18 +1406,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "46"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -1692,9 +1413,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -1737,7 +1455,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 46,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By (Delegate)",
+                                                        "description": "Unique identifier of the delegate user who last modified the email signature."
                                                     }
                                                 }
                                             ]
@@ -1762,18 +1485,6 @@
                                 "dataType": "entityId",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "owningteam"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "50"
-                                        ]
-                                    },
-                                    {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
                                             {
@@ -1781,9 +1492,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1826,25 +1534,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "owningteam",
+                                "sourceOrdering": 50,
+                                "isNullable": true,
+                                "displayName": "Owning Team",
+                                "description": "Unique identifier of the team who owns the email signature."
                             },
                             {
                                 "name": "isCustomizable",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "iscustomizable"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "52"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1886,28 +1587,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "iscustomizable",
+                                "sourceOrdering": 52,
+                                "displayName": "Customizable",
+                                "description": "Information that specifies whether this component can be customized."
                             },
                             {
                                 "name": "overriddenCreatedOn",
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "overriddencreatedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "55"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1949,28 +1639,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 55,
+                                "isNullable": true,
+                                "displayName": "Record Created On",
+                                "description": "Date and time that the record was migrated."
                             },
                             {
                                 "name": "isDefault",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isdefault"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "56"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2012,7 +1692,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isdefault",
+                                "sourceOrdering": 56,
+                                "isNullable": true,
+                                "displayName": "Is Default",
+                                "description": "Information that specifies whether the email signature is default to the user."
                             }
                         ]
                     }

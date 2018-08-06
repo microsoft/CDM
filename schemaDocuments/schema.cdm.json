@@ -361,7 +361,53 @@
                             }
                         ]
                     }
+                },
+                "dataFormat": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "sourceName": {
+                    "type": "string"
+                },
+                "sourceOrdering": {
+                    "type": "number"
+                },
+                "isPrimaryKey": {
+                    "type": "boolean"
+                },
+                "isReadOnly": {
+                    "type": "boolean"
+                },
+                "isNullable": {
+                    "type": "boolean"
+                },
+                "defaultValue": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "array", "items": {
+                            "type":"object"
+                        }},
+                        {"type" : "object"}
+                    ]
+                },
+                "maximumValue": {
+                    "type": "string"
+                },
+                "minimumValue": {
+                    "type": "string"
+                },
+                "maximumLength": {
+                    "type": "number"
+                },
+                "valueConstrainedToList" : {
+                    "type" : "boolean"
                 }
+
             },
             "additionalProperties": false,
             "required": [
@@ -567,9 +613,14 @@
                 "ugly": {
                     "type": "boolean",
                     "description": "ugly traits are usually internal or structural and shouldn't be shown in a UX aimed at regular people"
+                },
+                "associatedProperties" : {
+                    "type":"array",
+                    "description": "the list of Entity or Attribute properties that this trait informs and reflects.",
+                    "items": {
+                        "type" : "string"
+                    }
                 }
-
-                
             },
             "additionalProperties": false,
             "required": [
@@ -628,7 +679,26 @@
                             }
                         ]
                     }
+                },
+                "version": {
+                    "type": "string"
+                },
+                "sourceName": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "cdmSchemas": {
+                    "type" : "array",
+                    "items": {
+                        "type":"string"
+                    }
                 }
+
             },
             "additionalProperties": false,
             "required": [

@@ -25,7 +25,7 @@ class Startup {
         console.log('creating cdm corpus');
         if (cdstCorpus && cdstCorpus.folderInfo && cdstCorpus.folderInfo.length ==1) {
             cdmCorpus = new cdm.Corpus(pathToDocRoot);
-            cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+            cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
             this.convertCdstFolder(cdstCorpus.folderInfo[0], cdmCorpus);
         }
 
@@ -40,7 +40,7 @@ class Startup {
         let statusRpt = loc.consoleStatusReport;
 
         now = Date.now();
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
             console.log('finished');
             console.log(Date.now() - now);
         }).catch();
@@ -126,10 +126,10 @@ class Startup {
 
         // is this an extension entity? make the ref
         if (cdstEntityInfo.extends) {
-            cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cdstEntityInfo.extends));
+            cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cdstEntityInfo.extends, true));
         }
         else {
-            cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "CdmObject"));
+            cdmEntity.setExtendsEntityRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "CdmObject", true));
         }
 
         let getLocalizedTableTrait = (sourceText : string, traitName : string) : cdm.ICdmTraitRef => {
@@ -137,21 +137,21 @@ class Startup {
                 let tRef = cdm.Corpus.MakeObject<cdm.ICdmTraitRef>(cdm.cdmObjectType.traitRef, traitName);
                 // make the argument nothing but a ref to a constant entity, safe since there is only one param for the trait and it looks cleaner
                 let cEnt = cdm.Corpus.MakeObject<cdm.ICdmConstantEntityDef>(cdm.cdmObjectType.constantEntityDef);
-                cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "localizedTable"));
+                cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "localizedTable", true));
                 cEnt.setConstantValues([["en", sourceText]]);
-                tRef.addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.constantEntityRef, cEnt));
+                tRef.addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cEnt, false));
                 return tRef;
             }
                 
         }
 
         // add descriptive and display text
-        cdmEntity.addExhibitedTrait(getLocalizedTableTrait(cdstEntityInfo.displayName, "is.localized.displayedAs"));
-        cdmEntity.addExhibitedTrait(getLocalizedTableTrait(cdstEntityInfo.description, "is.localized.describedAs"));
+        cdmEntity.addExhibitedTrait(getLocalizedTableTrait(cdstEntityInfo.displayName, "is.localized.displayedAs"), false);
+        cdmEntity.addExhibitedTrait(getLocalizedTableTrait(cdstEntityInfo.description, "is.localized.describedAs"), false);
 
         if (cdstEntityInfo.CDSTName) {
-            let tRef = cdmEntity.addExhibitedTrait("is.CDS.sourceNamed");
-            tRef.addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, cdstEntityInfo.CDSTName));
+            let tRef = cdmEntity.addExhibitedTrait("is.CDS.sourceNamed", false);
+            tRef.addArgument(undefined, cdstEntityInfo.CDSTName);
         }
 
         // for each attribute
@@ -166,12 +166,12 @@ class Startup {
             let tRef = cdm.Corpus.MakeObject<cdm.ICdmTraitRef>(cdm.cdmObjectType.traitRef, "is.CDM.attributeGroup");
             // make the argument nothing but a ref to a constant entity, safe since there is only one param for the trait and it looks cleaner
             let cEnt = cdm.Corpus.MakeObject<cdm.ICdmConstantEntityDef>(cdm.cdmObjectType.constantEntityDef);
-            cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "attributeGroupSet"));
+            cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, "attributeGroupSet", true));
             let groupPath = cdmFolder.getRelativePath() + cdmEntity.getName() + ".cdm.json/" + cdmEntity.getName() + "/hasAttributes/attributesAddedAtThisScope";
             // is this an extension entity? make the ref
             cEnt.setConstantValues([[groupPath]]);
-            tRef.addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.constantEntityRef, cEnt));
-            attGroupAll.addExhibitedTrait(tRef);
+            tRef.addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cEnt, false));
+            attGroupAll.addExhibitedTrait(tRef, false);
 
             let relRefStatus : cdm.ICdmRelationshipRef = null;
             let attNameState : string = "UNSPECIFIED";
@@ -179,44 +179,44 @@ class Startup {
             let createTypeAttribute = (attInfo : any, resultInfo : creationResultInfo) : cdm.ICdmAttributeDef => {
                 let cdmAtt = cdm.Corpus.MakeObject<cdm.ICdmAttributeDef>(cdm.cdmObjectType.typeAttributeDef, attInfo.name);
                 // if this is the primary key, use the right relationship
-                let relRef : cdm.ICdmRelationshipRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "hasA");
+                let relRef : cdm.ICdmRelationshipRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "hasA", true);
                 if (attInfo.isPrimaryKey) {
-                    relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "identifiedBy");
+                    relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "identifiedBy", true);
                 }
 
                 // everything has one of these
-                let tRef = cdmAtt.addAppliedTrait("is.CDS.sourceNamed");
-                tRef.addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.CDSTName));
+                let tRef = cdmAtt.addAppliedTrait("is.CDS.sourceNamed", false);
+                tRef.addArgument(undefined, attInfo.CDSTName);
 
                 // constrained?
                 if (attInfo.maxLength || attInfo.minValue || attInfo.maxValue) {
-                    tRef = cdmAtt.addAppliedTrait("is.constrained");
+                    tRef = cdmAtt.addAppliedTrait("is.constrained", false);
                     if (attInfo.maxLength)
-                        tRef.addArgument("maximumLength", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.maxLength));
+                        tRef.addArgument("maximumLength", attInfo.maxLength);
                     if (attInfo.minValue)
-                        tRef.addArgument("minimumValue", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.minValue));
+                        tRef.addArgument("minimumValue", attInfo.minValue);
                     if (attInfo.maxValue)
-                        tRef.addArgument("maximumValue", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.maxValue));
+                        tRef.addArgument("maximumValue", attInfo.maxValue);
                 }
                 if (attInfo.columnNumber) {
-                    tRef = cdmAtt.addAppliedTrait("is.CDS.ordered");
-                    tRef.addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.columnNumber));
+                    tRef = cdmAtt.addAppliedTrait("is.CDS.ordered", false);
+                    tRef.addArgument(undefined, attInfo.columnNumber);
                 }
                 if (attInfo.lookupStyle) {
-                    tRef = cdmAtt.addAppliedTrait("is.CDS.lookup");
-                    tRef.addArgument("style", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.lookupStyle));
+                    tRef = cdmAtt.addAppliedTrait("is.CDS.lookup", false);
+                    tRef.addArgument("style", attInfo.lookupStyle);
                 }
                 if (attInfo.calculationOf) {
-                    tRef = cdmAtt.addAppliedTrait("is.calculationOf");
-                    tRef.addArgument("sourceAttribute", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.calculationOf));
+                    tRef = cdmAtt.addAppliedTrait("is.calculationOf", false);
+                    tRef.addArgument("sourceAttribute", attInfo.calculationOf);
                 }
 
                 if (attInfo.isNullable) {
-                    tRef = cdmAtt.addAppliedTrait("is.nullable");
+                    tRef = cdmAtt.addAppliedTrait("is.nullable", true);
                 }
                 if (attInfo.requiredLevel) {
-                    tRef = cdmAtt.addAppliedTrait("is.requiredAtLevel");
-                    tRef.addArgument("level", cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attInfo.requiredLevel));
+                    tRef = cdmAtt.addAppliedTrait("is.requiredAtLevel", false);
+                    tRef.addArgument("level", attInfo.requiredLevel);
                     resultInfo.requiredLevel = attInfo.requiredLevel;
                 }
                
@@ -227,10 +227,10 @@ class Startup {
                 let supportingDataTypeName : string = "localizedDisplayText";
 
                 if (attInfo.isPrimaryKey) {
-                    dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, "entityId");
+                    dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, "entityId", true);
                 }
                 else if (attInfo.isBaseCurrency) {
-                    dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, "baseCurrency");
+                    dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, "baseCurrency", true);
                 }
                 else if (attInfo.dataType == "picklist" || attInfo.dataType == "state" || attInfo.dataType == "status" || attInfo.dataType == "multiselectpicklist") {
                     // option set might be just a picklist, a state or a status
@@ -244,7 +244,7 @@ class Startup {
                     }
                     else if (attInfo.dataType === "state") {
                         attNameState = attInfo.name; // remember for the end of the att list
-                        relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "representsStateWith");
+                        relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "representsStateWith", true);
                     }
                     else if (attInfo.dataType == "multiselectpicklist") {
                         dataTypeName = "listLookupMultiple";
@@ -255,9 +255,9 @@ class Startup {
                     dataType = cdm.Corpus.MakeObject(cdm.cdmObjectType.dataTypeRef, dataTypeName);
                     // which has a trait containing the default value
                     let cEnt = cdm.Corpus.MakeObject<cdm.ICdmConstantEntityDef>(cdm.cdmObjectType.constantEntityDef);
-                    cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, entityShape));
+                    cEnt.setEntityShape(cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, entityShape, true));
                     cEnt.setExplanation(entityExplanation);
-                    dataType.addAppliedTrait("does.haveDefault").addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cEnt));
+                    dataType.addAppliedTrait("does.haveDefault", false).addArgument(undefined, cdm.Corpus.MakeRef(cdm.cdmObjectType.entityRef, cEnt, false));
                     
                     let vals = new Array<Array<string>>();
                     if (attInfo.optionSetInfo && attInfo.optionSetInfo.length)
@@ -275,10 +275,11 @@ class Startup {
 
                     // and a trait that adds a support description attribute
                     let supAtt = cdm.Corpus.MakeObject<cdm.ICdmTypeAttributeDef>(cdm.cdmObjectType.typeAttributeDef, attInfo.name + "_display");
-                    supAtt.setDataTypeRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, supportingDataTypeName));
-                    supAtt.setRelationshipRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "hasA"));
+                    supAtt.setDataTypeRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, supportingDataTypeName, true));
+                    supAtt.setRelationshipRef(cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, "hasA", true));
                     supAtt.setExplanation(`This attribute '${attInfo.name + "_display"}' is added to the '${cdstEntityInfo.name}' entity to provide the localized display text for the value of the listLookup attribute '${attInfo.name}'`);
-                    dataType.addAppliedTrait("does.addSupportingAttribute").addArgument(undefined, supAtt);
+                    dataType.addAppliedTrait("does.addSupportingAttribute", false).addArgument(undefined, supAtt);
+                    supAtt.addAppliedTrait("is.readOnly", true);
                 }
                 else {
 
@@ -339,13 +340,13 @@ class Startup {
 
                     if (bestTrait) {
                         dataType = cdm.Corpus.MakeObject<cdm.ICdmDataTypeRef>(cdm.cdmObjectType.dataTypeRef, bestType)
-                        dataType.addAppliedTrait(bestTrait);
+                        dataType.addAppliedTrait(bestTrait, true);
                     } else {
-                        dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, bestType);
+                        dataType = cdm.Corpus.MakeRef(cdm.cdmObjectType.dataTypeRef, bestType, true);
                     }
                         
                     if (bestRelationship)
-                        relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, bestRelationship);
+                        relRef = cdm.Corpus.MakeRef(cdm.cdmObjectType.relationshipRef, bestRelationship, true);
 
                 }
 
@@ -353,8 +354,8 @@ class Startup {
                 (cdmAtt as cdm.ICdmTypeAttributeDef).setDataTypeRef(dataType);
                 cdmAtt.setRelationshipRef(relRef);
 
-                cdmAtt.addAppliedTrait(getLocalizedTableTrait(attInfo.displayName, "is.localized.displayedAs"));
-                cdmAtt.addAppliedTrait(getLocalizedTableTrait(attInfo.description, "is.localized.describedAs"));
+                cdmAtt.addAppliedTrait(getLocalizedTableTrait(attInfo.displayName, "is.localized.displayedAs"), false);
+                cdmAtt.addAppliedTrait(getLocalizedTableTrait(attInfo.description, "is.localized.describedAs"), false);
 
                 return cdmAtt;
             };
@@ -374,8 +375,8 @@ class Startup {
                             referencedEntity += " and ";
                         referencedEntity += relInfo.referencedEntity;
                         let er : cdm.ICdmEntityRef = cdm.Corpus.MakeObject(cdm.cdmObjectType.entityRef, relInfo.referencedEntity);
-                        let tRef = er.addAppliedTrait("is.identifiedBy");
-                        tRef.addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, relInfo.referencedEntity + "/(resolvedAttributes)/" +relInfo.referencedAttribute));
+                        let tRef = er.addAppliedTrait("is.identifiedBy", false);
+                        tRef.addArgument(undefined, relInfo.referencedEntity + "/(resolvedAttributes)/" +relInfo.referencedAttribute);
                         return er;
                     }
                     let entList = new Array<cdm.ICdmEntityRef>();
@@ -415,7 +416,7 @@ class Startup {
                         if (attInfo.dataType === "owner")
                             relName = "referencesOwner"
                         let rel = cdm.Corpus.MakeObject<cdm.ICdmRelationshipRef>(cdm.cdmObjectType.relationshipRef, relName)
-                        let tRef = rel.addAppliedTrait("referencesA/exhibitsTraits/does.referenceEntity");
+                        let tRef = rel.addAppliedTrait("referencesA/exhibitsTraits/does.referenceEntity", false);
                         tRef.addArgument("addedAttribute", createTypeAttribute(attInfo, resultInfo))
                                 .setExplanation(`This 'referencesA' relationship to the entity '${referencedEntity}' adds the '${attInfo.name}' attribute below to the '${cdstEntityInfo.name}' entity as a key`);
                         cdmAtt.setRelationshipRef(rel);
@@ -439,9 +440,9 @@ class Startup {
 
             // go back and set this to what was found in the rest of the list
             if (relRefStatus)
-                relRefStatus.addAppliedTrait("is.correlatedWith").addArgument(undefined, cdm.Corpus.MakeObject(cdm.cdmObjectType.stringConstant, attNameState));
+                relRefStatus.addAppliedTrait("is.correlatedWith", false).addArgument(undefined, attNameState);
 
-            cdmEntity.addAttributeDef(cdm.Corpus.MakeRef(cdm.cdmObjectType.attributeGroupRef, attGroupAll) as cdm.ICdmAttributeGroupRef);
+            cdmEntity.addAttributeDef(cdm.Corpus.MakeRef(cdm.cdmObjectType.attributeGroupRef, attGroupAll, false) as cdm.ICdmAttributeGroupRef);
         }
 
     }

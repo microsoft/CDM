@@ -41,14 +41,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    "traitReference": "is.CDS.sourceNamed",
-                    "arguments": [
-                        "RecurringAppointmentMaster"
-                    ]
                 }
             ],
+            "displayName": "Recurring Appointment",
+            "description": "The Master appointment of a recurring appointment series.",
+            "sourceName": "RecurringAppointmentMaster",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -76,18 +73,6 @@
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isweekdaypattern"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "1"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -129,25 +114,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isweekdaypattern",
+                                "sourceOrdering": 1,
+                                "displayName": "Every Weekday",
+                                "description": "Indicates whether the weekly recurrence pattern is a daily weekday pattern. Valid for weekly recurrence pattern only."
                             },
                             {
                                 "name": "ruleId",
                                 "relationship": "hasA",
                                 "dataType": "entityId",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ruleid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "2"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
@@ -156,9 +133,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -201,28 +175,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ruleid",
+                                "sourceOrdering": 2,
+                                "isNullable": true,
+                                "displayName": "Recurrence Rule",
+                                "description": "Unique identifier of the recurrence rule that is associated with the recurring appointment series."
                             },
                             {
                                 "name": "overriddenCreatedOn",
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "overriddencreatedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "3"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -264,25 +228,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 3,
+                                "isNullable": true,
+                                "displayName": "Record Created On",
+                                "description": "Date and time that the record was migrated."
                             },
                             {
                                 "name": "isNthYearly",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isnthyearly"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "4"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -324,7 +281,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isnthyearly",
+                                "sourceOrdering": 4,
+                                "displayName": "Nth Yearly",
+                                "description": "Indicates whether the recurring appointment series should occur after every N years. Valid for yearly recurrence pattern only."
                             },
                             {
                                 "name": "stateCode",
@@ -376,25 +337,14 @@
                                                     "explanation": "This attribute 'stateCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
                                                     "name": "stateCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "statecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "5"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -436,28 +386,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "statecode",
+                                "sourceOrdering": 5,
+                                "displayName": "Status",
+                                "description": "Shows whether the recurring appointment is open, scheduled, completed, or canceled. Completed and canceled appointments are read-only and can't be edited."
                             },
                             {
                                 "name": "modifiedOn",
                                 "relationship": "modifiedOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "modifiedon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "6"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -499,7 +438,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 6,
+                                "isNullable": true,
+                                "displayName": "Modified On",
+                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
                             },
                             {
                                 "relationship": {
@@ -517,18 +461,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "owningbusinessunit"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "7"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -536,9 +468,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -581,7 +510,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 7,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning Business Unit",
+                                                        "description": "Unique identifier of the business unit that owns the recurring appointment series."
                                                     }
                                                 }
                                             ]
@@ -606,18 +540,6 @@
                                 "dataType": "entityId",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "groupid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "8"
-                                        ]
-                                    },
-                                    {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
                                             {
@@ -625,9 +547,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -670,41 +589,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "groupid",
+                                "sourceOrdering": 8,
+                                "isNullable": true,
+                                "displayName": "Group Id",
+                                "description": "Unique identifier of the recurring appointment series for which the recurrence information was updated. "
                             },
                             {
                                 "name": "UTCConversionTimeZoneCode",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "utcconversiontimezonecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "9"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -746,25 +642,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "utcconversiontimezonecode",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1",
+                                "sourceOrdering": 9,
+                                "isNullable": true,
+                                "displayName": "UTC Conversion Time Zone Code",
+                                "description": "Time zone code that was in use when the record was created."
                             },
                             {
                                 "name": "optionalAttendees",
                                 "relationship": "hasA",
                                 "dataType": "partylist",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "optionalattendees"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "10"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
@@ -773,9 +664,6 @@
                                                 "value": "multi"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -818,28 +706,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "optionalattendees",
+                                "sourceOrdering": 10,
+                                "isNullable": true,
+                                "displayName": "Optional Attendees",
+                                "description": "Enter the account, contact, lead, user, or other equipment resources that are not needed at the recurring appointment, but can optionally attend."
                             },
                             {
                                 "name": "lastExpandedInstanceDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "lastexpandedinstancedate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "12"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -881,28 +759,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "lastexpandedinstancedate",
+                                "sourceOrdering": 12,
+                                "isNullable": true,
+                                "displayName": "Last Expanded Instance Date",
+                                "description": "Date of last expanded instance of a recurring appointment series."
                             },
                             {
                                 "name": "effectiveEndDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "effectiveenddate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "13"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -944,28 +812,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "effectiveenddate",
+                                "sourceOrdering": 13,
+                                "isNullable": true,
+                                "displayName": "Effective End Date",
+                                "description": "Actual end date of the recurring appointment series based on the specified end date and recurrence pattern."
                             },
                             {
                                 "name": "patternStartDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "patternstartdate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "14"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1007,28 +865,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "patternstartdate",
+                                "sourceOrdering": 14,
+                                "isNullable": true,
+                                "displayName": "Recurrence Range Start",
+                                "description": "Start date of the recurrence range."
                             },
                             {
                                 "name": "isWorkflowCreated",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isworkflowcreated"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "15"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1070,7 +918,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isworkflowcreated",
+                                "sourceOrdering": 15,
+                                "isNullable": true,
+                                "displayName": "Is Workflow Created",
+                                "description": "Indicates whether the recurring appointment series was created from a workflow rule."
                             },
                             {
                                 "name": "instanceTypeCode",
@@ -1128,25 +981,14 @@
                                                     "explanation": "This attribute 'instanceTypeCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'instanceTypeCode'",
                                                     "name": "instanceTypeCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "instancetypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "16"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1188,25 +1030,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "instancetypecode",
+                                "sourceOrdering": 16,
+                                "displayName": "Appointment Type",
+                                "description": "Type of instance of a recurring appointment series."
                             },
                             {
                                 "name": "isRegenerate",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isregenerate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "17"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1248,41 +1082,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isregenerate",
+                                "sourceOrdering": 17,
+                                "displayName": "Regenerate",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "firstDayOfWeek",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "firstdayofweek"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "0"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "6"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "18"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1324,37 +1134,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "firstdayofweek",
+                                "maximumValue": "6",
+                                "minimumValue": "0",
+                                "sourceOrdering": 18,
+                                "isNullable": true,
+                                "displayName": "First Day Of Week",
+                                "description": "First day of week for the recurrence pattern."
                             },
                             {
                                 "name": "subcategory",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "subcategory"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "250"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "19"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1396,37 +1189,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "subcategory",
+                                "maximumLength": 250,
+                                "sourceOrdering": 19,
+                                "isNullable": true,
+                                "displayName": "Sub-Category",
+                                "description": "Type a subcategory to identify the recurring appointment type and relate the activity to a specific product, sales region, business group, or other function."
                             },
                             {
                                 "name": "category",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "category"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "250"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "20"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1468,41 +1243,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "category",
+                                "maximumLength": 250,
+                                "sourceOrdering": 20,
+                                "isNullable": true,
+                                "displayName": "Category",
+                                "description": "Type a category to identify the recurring appointment type, such as status meeting or service call, to tie the appointment to a business group or function."
                             },
                             {
                                 "name": "importSequenceNumber",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "importsequencenumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-2147483648"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "21"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1544,41 +1297,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "importsequencenumber",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 21,
+                                "isNullable": true,
+                                "displayName": "Import Sequence Number",
+                                "description": "Unique identifier of the data import or data migration that created this record."
                             },
                             {
                                 "name": "outlookOwnerApptId",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "outlookownerapptid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-2147483648"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "22"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1620,7 +1352,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "outlookownerapptid",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 22,
+                                "isNullable": true,
+                                "displayName": "Outlook Recurring Appointment Master Owner",
+                                "description": "Unique identifier of the Microsoft Office Outlook recurring appointment series owner that correlates to the PR_OWNER_APPT_ID MAPI property."
                             },
                             {
                                 "name": "recurrencePatternType",
@@ -1672,25 +1411,14 @@
                                                     "explanation": "This attribute 'recurrencePatternType_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'recurrencePatternType'",
                                                     "name": "recurrencePatternType_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "recurrencepatterntype"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "23"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1732,28 +1460,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "recurrencepatterntype",
+                                "sourceOrdering": 23,
+                                "displayName": "Recurrence Frequency",
+                                "description": "Select the pattern type for the recurring appointment to indicate whether the appointment occurs daily, weekly, monthly, or yearly."
                             },
                             {
                                 "name": "nextExpansionInstanceDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "nextexpansioninstancedate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "24"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1795,7 +1512,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "nextexpansioninstancedate",
+                                "sourceOrdering": 24,
+                                "isNullable": true,
+                                "displayName": "Next Expanded Instance Date",
+                                "description": "Date of the next expanded instance of a recurring appointment series."
                             },
                             {
                                 "name": "expansionStateCode",
@@ -1813,12 +1535,6 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Full",
-                                                                "2",
-                                                                "2"
-                                                            ],
-                                                            [
-                                                                "en",
                                                                 "Unexpanded",
                                                                 "0",
                                                                 "0"
@@ -1828,6 +1544,12 @@
                                                                 "Partial",
                                                                 "1",
                                                                 "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Full",
+                                                                "2",
+                                                                "2"
                                                             ]
                                                         ]
                                                     }
@@ -1841,28 +1563,14 @@
                                                     "explanation": "This attribute 'expansionStateCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'expansionStateCode'",
                                                     "name": "expansionStateCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "expansionstatecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "25"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1904,7 +1612,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "expansionstatecode",
+                                "sourceOrdering": 25,
+                                "isNullable": true,
+                                "displayName": "Expansion State Code",
+                                "description": "State code to indicate whether the recurring appointment series is expanded fully or partially."
                             },
                             {
                                 "name": "priorityCode",
@@ -1950,28 +1663,14 @@
                                                     "explanation": "This attribute 'priorityCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'priorityCode'",
                                                     "name": "priorityCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "prioritycode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "26"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2013,28 +1712,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "prioritycode",
+                                "sourceOrdering": 26,
+                                "isNullable": true,
+                                "displayName": "Priority",
+                                "description": "Select the priority so that preferred customers or critical issues are handled quickly."
                             },
                             {
                                 "name": "isBilled",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isbilled"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "27"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2076,28 +1765,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isbilled",
+                                "sourceOrdering": 27,
+                                "isNullable": true,
+                                "displayName": "Is Billed",
+                                "description": "Indicates whether the recurring appointment series was billed as part of resolving a case."
                             },
                             {
                                 "name": "patternEndDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "patternenddate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "28"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2139,41 +1818,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "patternenddate",
+                                "sourceOrdering": 28,
+                                "isNullable": true,
+                                "displayName": "Recurrence Range End",
+                                "description": "End date of the recurrence range."
                             },
                             {
                                 "name": "timeZoneRuleVersionNumber",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "timezoneruleversionnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "-1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "29"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2199,37 +1855,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "timezoneruleversionnumber",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1",
+                                "sourceOrdering": 29,
+                                "isNullable": true,
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "globalObjectId",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "globalobjectid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "300"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "30"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2271,28 +1909,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "globalobjectid",
+                                "maximumLength": 300,
+                                "sourceOrdering": 30,
+                                "isNullable": true,
+                                "displayName": "Outlook Recurring Appointment Master",
+                                "description": "Unique Outlook identifier to correlate recurring appointment series across Exchange mailboxes."
                             },
                             {
                                 "name": "effectiveStartDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "effectivestartdate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "31"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2334,7 +1963,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "effectivestartdate",
+                                "sourceOrdering": 31,
+                                "isNullable": true,
+                                "displayName": "Effective Start Date",
+                                "description": "Actual start date of the recurring appointment series based on the specified start date and recurrence pattern."
                             },
                             {
                                 "relationship": {
@@ -2351,18 +1985,6 @@
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "ownerid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "32"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -2413,7 +2035,11 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "ownerid",
+                                                        "sourceOrdering": 32,
+                                                        "displayName": "Owner",
+                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
                                                     }
                                                 }
                                             ]
@@ -2450,34 +2076,6 @@
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "dayofmonth"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "31"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "33"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2519,7 +2117,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "dayofmonth",
+                                "maximumValue": "31",
+                                "minimumValue": "1",
+                                "sourceOrdering": 33,
+                                "isNullable": true,
+                                "displayName": "Day Of Month",
+                                "description": "The day of the month on which the recurring appointment occurs."
                             },
                             {
                                 "name": "statusCode",
@@ -2599,28 +2204,14 @@
                                                     "explanation": "This attribute 'statusCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                                                     "name": "statusCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "statuscode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "34"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2662,25 +2253,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 34,
+                                "isNullable": true,
+                                "displayName": "Status Reason",
+                                "description": "Select the recurring appointment's status."
                             },
                             {
                                 "name": "organizer",
                                 "relationship": "hasA",
                                 "dataType": "partylist",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "organizer"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "35"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
@@ -2689,9 +2273,6 @@
                                                 "value": "single"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2734,28 +2315,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "organizer",
+                                "sourceOrdering": 35,
+                                "isNullable": true,
+                                "displayName": "Organizer",
+                                "description": "Enter the user who is in charge of coordinating or leading the recurring appointment to make sure the appointment is displayed in the user's My Activities view."
                             },
                             {
                                 "name": "startTime",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "starttime"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "36"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2797,41 +2368,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "starttime",
+                                "sourceOrdering": 36,
+                                "isNullable": true,
+                                "displayName": "Pattern Start Time",
+                                "description": "Start time of the recurring appointment series."
                             },
                             {
                                 "name": "occurrences",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "occurrences"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "999"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "37"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2873,7 +2421,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "occurrences",
+                                "maximumValue": "999",
+                                "minimumValue": "1",
+                                "sourceOrdering": 37,
+                                "isNullable": true,
+                                "displayName": "Occurrences",
+                                "description": "Number of appointment occurrences in a recurring appointment series."
                             },
                             {
                                 "relationship": {
@@ -2883,25 +2438,13 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'KnowledgeArticle and Contact and Account and KnowledgeBaseRecord' adds the 'regardingObjectId' attribute below to the 'RecurringAppointment' entity as a key",
+                                                    "explanation": "This 'referencesA' relationship to the entity 'KnowledgeBaseRecord and Account and Contact and KnowledgeArticle' adds the 'regardingObjectId' attribute below to the 'RecurringAppointment' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
                                                         "name": "regardingObjectId",
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "regardingobjectid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "38"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
@@ -2910,9 +2453,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -2955,7 +2495,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "regardingobjectid",
+                                                        "sourceOrdering": 38,
+                                                        "isNullable": true,
+                                                        "displayName": "Regarding",
+                                                        "description": "Choose the record that the recurring appointment series relates to."
                                                     }
                                                 }
                                             ]
@@ -2964,23 +2509,12 @@
                                 },
                                 "entity": [
                                     {
-                                        "entityReference": "KnowledgeArticle",
+                                        "entityReference": "KnowledgeBaseRecord",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
+                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
                                                 ]
                                             }
                                         ]
@@ -2997,12 +2531,23 @@
                                         ]
                                     },
                                     {
-                                        "entityReference": "KnowledgeBaseRecord",
+                                        "entityReference": "Contact",
                                         "appliedTraits": [
                                             {
                                                 "traitReference": "is.identifiedBy",
                                                 "arguments": [
-                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                    "Contact/(resolvedAttributes)/contactId"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "entityReference": "KnowledgeArticle",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
                                                 ]
                                             }
                                         ]
@@ -3014,21 +2559,6 @@
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isalldayevent"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "40"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3070,28 +2600,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isalldayevent",
+                                "sourceOrdering": 40,
+                                "isNullable": true,
+                                "displayName": "All Day Event",
+                                "description": "Select whether the recurring appointment is an all-day event to make sure that the required resources are scheduled for the full day."
                             },
                             {
                                 "name": "seriesStatus",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "seriesstatus"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "41"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3133,28 +2653,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "seriesstatus",
+                                "sourceOrdering": 41,
+                                "isNullable": true,
+                                "displayName": "Series Status",
+                                "description": "Indicates whether the recurring appointment series is active or inactive."
                             },
                             {
                                 "name": "createdOn",
                                 "relationship": "createdOn",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "createdon"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "42"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3196,25 +2706,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "createdon",
+                                "sourceOrdering": 42,
+                                "isNullable": true,
+                                "displayName": "Created On",
+                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
                             },
                             {
                                 "name": "isNthMonthly",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isnthmonthly"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "43"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3256,7 +2759,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isnthmonthly",
+                                "sourceOrdering": 43,
+                                "displayName": "Nth Monthly",
+                                "description": "Indicates whether the recurring appointment series should occur after every N months. Valid for monthly recurrence pattern only."
                             },
                             {
                                 "relationship": {
@@ -3274,18 +2781,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "owninguser"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "44"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -3293,9 +2788,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -3338,7 +2830,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "owninguser",
+                                                        "sourceOrdering": 44,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning User",
+                                                        "description": "Unique identifier of the user who owns the recurring appointment series."
                                                     }
                                                 }
                                             ]
@@ -3373,18 +2870,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "45"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -3392,9 +2877,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -3437,7 +2919,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 45,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By",
+                                                        "description": "Shows who created the record."
                                                     }
                                                 }
                                             ]
@@ -3461,21 +2948,6 @@
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "endtime"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "46"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3517,41 +2989,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "endtime",
+                                "sourceOrdering": 46,
+                                "isNullable": true,
+                                "displayName": "Pattern End Time",
+                                "description": "End time of the associated activity."
                             },
                             {
                                 "name": "daysOfWeekMask",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "daysofweekmask"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "127"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "48"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3593,37 +3042,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "daysofweekmask",
+                                "maximumValue": "127",
+                                "minimumValue": "1",
+                                "sourceOrdering": 48,
+                                "isNullable": true,
+                                "displayName": "Days Of Week Mask",
+                                "description": "Bitmask that represents the days of the week on which the recurring appointment occurs."
                             },
                             {
                                 "name": "subject",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "subject"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "200"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "49"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3665,37 +3097,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "subject",
+                                "maximumLength": 200,
+                                "sourceOrdering": 49,
+                                "isNullable": true,
+                                "displayName": "Subject",
+                                "description": "Type a short description about the objective or primary topic of the recurring appointment."
                             },
                             {
                                 "name": "description",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "description"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "2000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "50"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -3737,7 +3151,13 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "description",
+                                "maximumLength": 1048576,
+                                "sourceOrdering": 50,
+                                "isNullable": true,
+                                "displayName": "Description",
+                                "description": "Type additional information to describe the recurring appointment, such as key talking points or objectives."
                             },
                             {
                                 "relationship": {
@@ -3754,18 +3174,6 @@
                                                         "relationship": "identifiedBy",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "activityid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "51"
-                                                                ]
-                                                            },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
                                                                 "arguments": [
@@ -3807,7 +3215,11 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 51,
+                                                        "displayName": "Recurring Appointment",
+                                                        "description": "Unique identifier of the recurring appointment series."
                                                     }
                                                 }
                                             ]
@@ -3842,18 +3254,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "52"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -3861,9 +3261,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -3906,7 +3303,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 52,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By",
+                                                        "description": "Shows who last updated the record."
                                                     }
                                                 }
                                             ]
@@ -3931,18 +3333,6 @@
                                 "dataType": "partylist",
                                 "appliedTraits": [
                                     {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "requiredattendees"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "53"
-                                        ]
-                                    },
-                                    {
                                         "traitReference": "is.CDS.lookup",
                                         "arguments": [
                                             {
@@ -3950,9 +3340,6 @@
                                                 "value": "multi"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
                                     },
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3995,7 +3382,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "requiredattendees",
+                                "sourceOrdering": 53,
+                                "isNullable": true,
+                                "displayName": "Required Attendees",
+                                "description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the recurring appointment."
                             },
                             {
                                 "name": "instance",
@@ -4053,28 +3445,14 @@
                                                     "explanation": "This attribute 'instance_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'instance'",
                                                     "name": "instance_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "instance"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "54"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4116,37 +3494,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "instance",
+                                "sourceOrdering": 54,
+                                "isNullable": true,
+                                "displayName": "Instance",
+                                "description": "Specifies the recurring appointment series to occur on every Nth day of a month. Valid for monthly and yearly recurrence patterns only."
                             },
                             {
                                 "name": "deletedExceptionsList",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "deletedexceptionslist"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "1073741823"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "55"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4188,28 +3547,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "deletedexceptionslist",
+                                "maximumLength": 1073741823,
+                                "sourceOrdering": 55,
+                                "isNullable": true,
+                                "displayName": "Deleted Appointments",
+                                "description": "List of deleted instances of the recurring appointment series."
                             },
                             {
                                 "name": "versionNumber",
                                 "relationship": "hasA",
                                 "dataType": "bigInteger",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "versionnumber"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "56"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4219,41 +3569,16 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 56,
+                                "isNullable": true
                             },
                             {
                                 "name": "interval",
                                 "relationship": "hasA",
                                 "dataType": "integer",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "interval"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "1000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "58"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4295,7 +3620,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "interval",
+                                "maximumValue": "1000",
+                                "minimumValue": "1",
+                                "sourceOrdering": 58,
+                                "isNullable": true,
+                                "displayName": "Interval",
+                                "description": "Number of units of a given recurrence type between occurrences."
                             },
                             {
                                 "name": "duration",
@@ -4303,40 +3635,10 @@
                                 "dataType": {
                                     "dataTypeReference": "integer",
                                     "appliedTraits": [
-                                        {
-                                            "traitReference": "means.measurement.duration"
-                                        }
+                                        "means.measurement.duration"
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "duration"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "0"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "2147483647"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "59"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4378,7 +3680,14 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "duration",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
+                                "sourceOrdering": 59,
+                                "isNullable": true,
+                                "displayName": "Duration",
+                                "description": "Duration of the recurring appointment series in minutes."
                             },
                             {
                                 "name": "monthOfYear",
@@ -4394,48 +3703,6 @@
                                                         "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
                                                         "entityShape": "listLookupValues",
                                                         "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "November",
-                                                                "11",
-                                                                "11"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "December",
-                                                                "12",
-                                                                "12"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "June",
-                                                                "6",
-                                                                "6"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "July",
-                                                                "7",
-                                                                "7"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "August",
-                                                                "8",
-                                                                "8"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "September",
-                                                                "9",
-                                                                "9"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "October",
-                                                                "10",
-                                                                "10"
-                                                            ],
                                                             [
                                                                 "en",
                                                                 "Invalid Month Of Year",
@@ -4471,6 +3738,48 @@
                                                                 "May",
                                                                 "5",
                                                                 "5"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "June",
+                                                                "6",
+                                                                "6"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "July",
+                                                                "7",
+                                                                "7"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "August",
+                                                                "8",
+                                                                "8"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "September",
+                                                                "9",
+                                                                "9"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "October",
+                                                                "10",
+                                                                "10"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "November",
+                                                                "11",
+                                                                "11"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "December",
+                                                                "12",
+                                                                "12"
                                                             ]
                                                         ]
                                                     }
@@ -4484,28 +3793,14 @@
                                                     "explanation": "This attribute 'monthOfYear_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'monthOfYear'",
                                                     "name": "monthOfYear_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "monthofyear"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "60"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4547,37 +3842,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "monthofyear",
+                                "sourceOrdering": 60,
+                                "isNullable": true,
+                                "displayName": "Month Of Year",
+                                "description": "Indicates the month of the year for the recurrence pattern."
                             },
                             {
                                 "name": "location",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "location"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "200"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "61"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4619,28 +3895,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "location",
+                                "maximumLength": 200,
+                                "sourceOrdering": 61,
+                                "isNullable": true,
+                                "displayName": "Location",
+                                "description": "Type the location where the recurring appointment will take place, such as a conference room or customer office."
                             },
                             {
                                 "name": "scheduledStart",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "scheduledstart"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "89"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4682,28 +3949,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 89,
+                                "isNullable": true,
+                                "displayName": "Start Time",
+                                "description": "Scheduled start time of the recurring appointment series."
                             },
                             {
                                 "name": "scheduledEnd",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "scheduledend"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "90"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4745,7 +4002,12 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 90,
+                                "isNullable": true,
+                                "displayName": "End Time",
+                                "description": "Scheduled end time of the recurring appointment series."
                             },
                             {
                                 "name": "activityTypeCode",
@@ -4763,51 +4025,15 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Survey Activity",
-                                                                "10196",
-                                                                "17"
+                                                                "Fax",
+                                                                "4204",
+                                                                "0"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Recurring Appointment",
-                                                                "4251",
-                                                                "6"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Campaign Response",
-                                                                "4401",
-                                                                "9"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Campaign Activity",
-                                                                "4402",
-                                                                "8"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Quick Campaign",
-                                                                "4406",
-                                                                "7"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Alert Subscription",
-                                                                "10022",
-                                                                "15"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Service Activity",
-                                                                "4214",
-                                                                "11"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Appointment",
-                                                                "4201",
-                                                                "4"
+                                                                "Phone Call",
+                                                                "4210",
+                                                                "1"
                                                             ],
                                                             [
                                                                 "en",
@@ -4817,9 +4043,45 @@
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Fax",
-                                                                "4204",
-                                                                "0"
+                                                                "Letter",
+                                                                "4207",
+                                                                "3"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Appointment",
+                                                                "4201",
+                                                                "4"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Task",
+                                                                "4212",
+                                                                "5"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Recurring Appointment",
+                                                                "4251",
+                                                                "6"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Quick Campaign",
+                                                                "4406",
+                                                                "7"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Campaign Activity",
+                                                                "4402",
+                                                                "8"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Campaign Response",
+                                                                "4401",
+                                                                "9"
                                                             ],
                                                             [
                                                                 "en",
@@ -4829,15 +4091,9 @@
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Letter",
-                                                                "4207",
-                                                                "3"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Invite Redemption",
-                                                                "10025",
-                                                                "16"
+                                                                "Service Activity",
+                                                                "4214",
+                                                                "11"
                                                             ],
                                                             [
                                                                 "en",
@@ -4853,21 +4109,27 @@
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Phone Call",
-                                                                "4210",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
                                                                 "Quote Close",
                                                                 "4211",
                                                                 "14"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Task",
-                                                                "4212",
-                                                                "5"
+                                                                "Alert Subscription",
+                                                                "10030",
+                                                                "15"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Invite Redemption",
+                                                                "10033",
+                                                                "16"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Portal Comment",
+                                                                "10093",
+                                                                "17"
                                                             ]
                                                         ]
                                                     }
@@ -4881,25 +4143,14 @@
                                                     "explanation": "This attribute 'activityTypeCode_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'activityTypeCode'",
                                                     "name": "activityTypeCode_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "activitytypecode"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "91"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -4941,25 +4192,17 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "activitytypecode",
+                                "sourceOrdering": 91,
+                                "displayName": "Activity Type",
+                                "description": "Type of activity."
                             },
                             {
                                 "name": "isRegularActivity",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "isregularactivity"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "93"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5001,7 +4244,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "isregularactivity",
+                                "sourceOrdering": 93,
+                                "displayName": "Is Regular Activity",
+                                "description": "Indicates whether the activity is a regular activity type or event type."
                             },
                             {
                                 "name": "patternEndType",
@@ -5047,25 +4294,14 @@
                                                     "explanation": "This attribute 'patternEndType_display' is added to the 'RecurringAppointment' entity to provide the localized display text for the value of the listLookup attribute 'patternEndType'",
                                                     "name": "patternEndType_display",
                                                     "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText"
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
                                     ]
                                 },
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "patternendtype"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "95"
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5107,7 +4343,11 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "patternendtype",
+                                "sourceOrdering": 95,
+                                "displayName": "Pattern End Type",
+                                "description": "Select the type of end date for the recurring appointment, such as no end date or the number of occurrences."
                             },
                             {
                                 "relationship": {
@@ -5125,18 +4365,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "modifiedonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "96"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -5144,9 +4372,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -5189,7 +4414,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 96,
+                                                        "isNullable": true,
+                                                        "displayName": "Modified By (Delegate)",
+                                                        "description": "Shows who last updated the record on behalf of another user."
                                                     }
                                                 }
                                             ]
@@ -5224,18 +4454,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "createdonbehalfby"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "100"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -5243,9 +4461,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -5288,7 +4503,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 100,
+                                                        "isNullable": true,
+                                                        "displayName": "Created By (Delegate)",
+                                                        "description": "Shows who created the record on behalf of another user."
                                                     }
                                                 }
                                             ]
@@ -5323,18 +4543,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "owningteam"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "104"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -5342,9 +4550,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -5387,7 +4592,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "owningteam",
+                                                        "sourceOrdering": 104,
+                                                        "isNullable": true,
+                                                        "displayName": "Owning Team",
+                                                        "description": "Unique identifier of the team who owns the recurring appointment series."
                                                     }
                                                 }
                                             ]
@@ -5422,18 +4632,6 @@
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
                                                             {
-                                                                "traitReference": "is.CDS.sourceNamed",
-                                                                "arguments": [
-                                                                    "transactioncurrencyid"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.CDS.ordered",
-                                                                "arguments": [
-                                                                    "105"
-                                                                ]
-                                                            },
-                                                            {
                                                                 "traitReference": "is.CDS.lookup",
                                                                 "arguments": [
                                                                     {
@@ -5441,9 +4639,6 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.nullable"
                                                             },
                                                             {
                                                                 "traitReference": "is.requiredAtLevel",
@@ -5486,7 +4681,12 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ]
+                                                        ],
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 105,
+                                                        "isNullable": true,
+                                                        "displayName": "Currency",
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
                                                     }
                                                 }
                                             ]
@@ -5510,34 +4710,6 @@
                                 "relationship": "hasA",
                                 "dataType": "decimal",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "exchangerate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "minimumValue",
-                                                "value": "1E-10"
-                                            },
-                                            {
-                                                "name": "maximumValue",
-                                                "value": "100000000000"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "107"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5579,28 +4751,20 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "exchangerate",
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10",
+                                "sourceOrdering": 107,
+                                "isNullable": true,
+                                "displayName": "Exchange Rate",
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
                             },
                             {
                                 "name": "isMapiPrivate",
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "ismapiprivate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "108"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5642,28 +4806,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "ismapiprivate",
+                                "sourceOrdering": 108,
+                                "isNullable": true,
+                                "displayName": "Is Private",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "processId",
                                 "relationship": "hasA",
                                 "dataType": "guid",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "processid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "110"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5705,28 +4859,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "processid",
+                                "sourceOrdering": 110,
+                                "isNullable": true,
+                                "displayName": "Process",
+                                "description": "Shows the ID of the process."
                             },
                             {
                                 "name": "stageId",
                                 "relationship": "hasA",
                                 "dataType": "guid",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "stageid"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "111"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5768,37 +4912,18 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "stageid",
+                                "sourceOrdering": 111,
+                                "isNullable": true,
+                                "displayName": "Process Stage",
+                                "description": "Shows the ID of the stage."
                             },
                             {
                                 "name": "traversedPath",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "traversedpath"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "1250"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "112"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5840,28 +4965,19 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "traversedpath",
+                                "maximumLength": 1250,
+                                "sourceOrdering": 112,
+                                "isNullable": true,
+                                "displayName": "Traversed Path",
+                                "description": "For internal use only."
                             },
                             {
                                 "name": "sortDate",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "sortdate"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.CDS.ordered",
-                                        "arguments": [
-                                            "113"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.nullable"
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -5903,7 +5019,67 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                "sourceName": "sortdate",
+                                "sourceOrdering": 113,
+                                "isNullable": true,
+                                "displayName": "Sort Date",
+                                "description": "Shows the date and time by which the activities are sorted."
+                            },
+                            {
+                                "name": "isUnsafe",
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "IsUnsafe"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "isunsafe",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
+                                "sourceOrdering": 115,
+                                "isNullable": true,
+                                "displayName": "IsUnsafe",
+                                "description": "For internal use only."
                             }
                         ]
                     }

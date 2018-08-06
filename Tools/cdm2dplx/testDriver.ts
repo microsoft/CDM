@@ -2,6 +2,7 @@ import * as cdm from "../cdm-types/cdm-types"
 import * as cdm2dplx from "../cdm2dplx/cdm2dplx"
 import * as loc from "../local-corpus/local-corpus";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { version } from "punycode";
 
 
 class Startup {
@@ -9,21 +10,21 @@ class Startup {
 
         let cdmCorpus : cdm.Corpus;
         let pathToDocRoot = "../../schemaDocuments";
+        //let pathToDocRoot = "../../test";
         //pathToDocRoot = "/cdsa schemas/credandcollect";
 
-        // run over input folders recursively and process them into a hierarchical corpus of schema docs
+        //let version = "";
+        let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
-        cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+        cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
-        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), "analyticalCommon");
+        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
 
-        let statusRpt = loc.consoleStatusReport;
-
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
-
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
+            
             //this.listAllTraits(cdmCorpus);
-            this.createTestDplx(cdmCorpus);
-            //this.createEachDplx(cdmCorpus, ".");
+            //this.createTestDplx(cdmCorpus);
+            this.createEachDplx(cdmCorpus, pathToDocRoot, version);
             console.log('done');
 
         }).catch();
@@ -43,7 +44,7 @@ class Startup {
                             doc.getDefinitions().forEach(def => {
                                 if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
                                     let ent = def as cdm.ICdmEntityDef;
-                                    let rtsEnt = ent.getResolvedTraits();
+                                    let rtsEnt = ent.getResolvedTraits(doc);
                                     rtsEnt.set.forEach(rt => {
                                         let rtName = rt.traitName;
                                         if (!seen.has(rtName)) {
@@ -51,7 +52,7 @@ class Startup {
                                             seen.add(rtName);
                                         }
                                     });
-                                    let ras = ent.getResolvedAttributes();
+                                    let ras = ent.getResolvedAttributes(doc);
                                     ras.set.forEach(ra => {
                                         let rtsAtt = ra.resolvedTraits;
                                         rtsAtt.set.forEach(rt => {
@@ -77,7 +78,6 @@ class Startup {
         seekTraits(cdmCorpus);
     }
 
-
     public static createTestDplx(cdmCorpus : cdm.Corpus) {
         let converter = new cdm2dplx.Converter() as cdm2dplx.IConvertToDplx;
         converter.bindingType="byol"
@@ -98,14 +98,15 @@ class Startup {
 
         set.push(ent);
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Lead.cdm.json/Lead") as cdm.ICdmEntityDef);
-        let dplx = converter.convertEntities(set, "ExampleDataPool");
+        let dplx = converter.convertEntities(cdmCorpus, set, "ExampleDataFlow");
     }
 
-    public static createEachDplx(cdmCorpus : cdm.Corpus, outRoot : string) {
+    public static createEachDplx(cdmCorpus : cdm.Corpus, outRoot : string, version : string) {
         let converter = new cdm2dplx.Converter() as cdm2dplx.IConvertToDplx;
         converter.bindingType="none"
         converter.relationshipsType="all";
         converter.schemaUriBase = "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments";
+        converter.schemaVersion = version;
 
         let dplxFolders = (folder : cdm.ICdmFolderDef) => {
 
@@ -121,9 +122,9 @@ class Startup {
                             doc.getDefinitions().forEach(def => {
                                 if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
                                     let ent = def as cdm.ICdmEntityDef;
-                                    let dplx = converter.convertEntities([ent], "ReferenceDataPool" + ent.getObjectPath().replace(/(\/)/g, "."));
+                                    let dplx = converter.convertEntities(cdmCorpus, [ent], "");
                                     let content = JSON.stringify(dplx, null, 2);
-                                    writeFileSync(folderPath + ent.getName() + ".dplx", content, "utf8");
+                                    writeFileSync(folderPath + ent.getName() + "_df" + converter.getPostFix(), content, "utf8");
                                 }
                             });
                         
