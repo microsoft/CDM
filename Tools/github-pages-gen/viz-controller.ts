@@ -1184,7 +1184,7 @@ function makeParamValue(param, value) {
     else {
         // stick json in there
         var code = controller.document.createElement("code");
-        var json = JSON.stringify(value, null, 2);
+        var json = JSON.stringify(value.copyData(controller.cdmDocSelected), null, 2);
         if (json.length > 67)
             json = json.slice(0, 50) + "...(see JSON tab)";
         code.appendChild(controller.document.createTextNode(json));
