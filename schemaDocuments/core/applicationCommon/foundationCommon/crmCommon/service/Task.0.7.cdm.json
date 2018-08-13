@@ -1,0 +1,137 @@
+{
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "_allImports.0.7.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Task",
+            "extendsEntity": "base_Task/Task",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        "0.7"
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/service/Task.cdm.json/Task/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Service' adds the 'serviceId' attribute below to the 'Task' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "serviceId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Service"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Choose the service that is associated with this activity."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Service",
+                                                        "description": "Choose the service that is associated with this activity.",
+                                                        "isNullable": true,
+                                                        "sourceName": "serviceid",
+                                                        "sourceOrdering": 10000
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Service",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Service/(resolvedAttributes)/serviceId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

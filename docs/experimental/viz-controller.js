@@ -116,54 +116,21 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             controller.mainContainer.messageHandle("loadResolveStarting", null, null);
             loadDocuments(messageType);
         }
-        else if (messageType == "navigateRelatedSelect" || messageType == "navigateEntitySelect") {
+        else if (messageType == "navigateEntitySelect") {
             // if control held then add else replace
             if (!data2 || !controller.multiSelectEntityList)
                 controller.multiSelectEntityList = new Set();
-            if (messageType == "navigateEntitySelect") {
-                // single click on an entity or folder. add or remove single or all in folder
-                // request the selected things to report back, this will update the map
-                controller.mainContainer.messageHandle("reportSelection", data1, null);
-            }
-            else {
-                // double click on an entity. go find all related and related related entities.
-                // loop over every entity and find ones that are currently NOT in the select list but are being pointed at by ones in the list.
-                // these get added to the list and we keep going
-                let entDataSelect = entityFromId(data1.id);
-                controller.multiSelectEntityList.add(entDataSelect);
-                let added = 1;
-                while (added > 0) {
-                    added = 0;
-                    let toAdd = new Array();
-                    controller.idLookup.forEach((entStateOther, id) => {
-                        if (entStateOther.relsIn) {
-                            entStateOther.relsIn.forEach((r) => {
-                                let entStateRef = controller.entity2state.get(r.referencingEntity);
-                                if (entStateRef === entDataSelect) {
-                                    if (!controller.multiSelectEntityList.has(entStateOther)) {
-                                        toAdd.push(entStateOther);
-                                        added++;
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    if (added)
-                        toAdd.forEach(e => { controller.multiSelectEntityList.add(e); });
-                    // only go one level
-                    added = 0;
-                }
-            }
+            // request the selected things to report back, this will update the map
+            controller.mainContainer.messageHandle("reportSelection", data1, null);
             // there could be multiple versions of the same entity in this set,
             // remove anything 'earlier' in the inheritence tree
             var toRemove = new Array();
             controller.multiSelectEntityList.forEach(e => {
                 var entity = e.entity;
                 while (entity) {
-                    let base;
-                    let baseRef = entity.getExtendsEntityRef();
-                    if (baseRef) {
-                        base = baseRef.getObjectDef(entity.declaredInDocument); // turn ref into def
+                    var base = entity.getExtendsEntityRef();
+                    if (base) {
+                        base = base.getObjectDef(); // turn ref into def
                         if (entity.getName() == base.getName())
                             toRemove.push(base);
                         else
@@ -178,8 +145,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     controller.multiSelectEntityList.delete(baseState);
             });
             // repaint that selection
-            let singleSelected = controller.multiSelectEntityList.size == 1 ? controller.multiSelectEntityList.values().next().value : undefined;
-            controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, singleSelected);
+            controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, controller.multiSelectEntityList.size == 1 ? controller.multiSelectEntityList.values().next().value : undefined);
         }
         else if (messageType == "reportSelection") {
             // add or remove
@@ -187,27 +153,6 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                 controller.multiSelectEntityList.delete(data1);
             else
                 controller.multiSelectEntityList.add(data1);
-        }
-        else if (messageType == "searchAdd") {
-            if (controller.searchTerm == undefined)
-                controller.searchTerm = "";
-            controller.searchTerm += data1;
-            controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
-        }
-        else if (messageType == "searchRemove") {
-            if (controller.searchTerm && controller.searchTerm.length > 0) {
-                if (controller.searchTerm.length == 1)
-                    controller.searchTerm = undefined;
-                else
-                    controller.searchTerm = controller.searchTerm.slice(0, controller.searchTerm.length - 1);
-                controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
-            }
-        }
-        else if (messageType == "searchClear") {
-            if (controller.searchTerm) {
-                controller.searchTerm = undefined;
-                controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
-            }
         }
         else {
             controller.mainContainer.messageHandle(messageType, data1, data2);
@@ -241,6 +186,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     controller.mainContainer.messageHandle("resolveStarting", null, null);
                     // now create corpus
                     controller.corpus = new cdm.Corpus(controller.navData.readRoot);
+                    controller.corpus.statusLevel = cdm.cdmStatusLevel.progress;
                     buildCorpus(controller.corpus, controller.corpus, controller.hier);
                     // validate whole corpus
                     controller.appState = "resolveMode";
@@ -359,7 +305,6 @@ function buildNavigation(hier, alternate) {
                 entItem.messageHandlePing = messageHandlePingParent;
                 entItem.messageHandle = messageHandleItem;
                 entItem.onclick = controller.onclickDetailItem;
-                entItem.ondblclick = controller.ondblclickDetailItem;
                 detailCont.appendChild(entItem);
             }
         });
@@ -407,8 +352,6 @@ function indexResolvedEntities() {
             entState.entity = controller.corpus.getObjectFromCorpusPath(path);
             entState.relsOut = new Array();
             entState.relsIn = new Array();
-            entState.referencedEntityNames = new Set();
-            entState.referencedEntityCache = new Map();
             // make a lookup from entity to entityState
             controller.entity2state.set(entState.entity, entState);
         }
@@ -416,28 +359,25 @@ function indexResolvedEntities() {
     // now confident that lookup should work, cache all the relationship complexity
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState == 1 && entState.entity) {
-            var rels = entState.entity.getResolvedEntityReferences(entState.entity.declaredInDocument);
+            var rels = entState.entity.getResolvedEntityReferences();
             if (rels) {
                 rels.set.forEach(resEntRef => {
                     var referencingEntity = resEntRef.referencing.entity;
                     var referencingAttribute = resEntRef.referencing.getFirstAttribute(); // assumes single column keys
                     resEntRef.referenced.forEach(resEntRefSideReferenced => {
                         var referencedEntity = resEntRefSideReferenced.entity;
-                        if (referencedEntity) {
-                            var referencedAttribute = resEntRefSideReferenced.getFirstAttribute(); // assumes single column keys
-                            entState.referencedEntityNames.add(referencedEntity.getName());
-                            entState.relsOut.push({
+                        var referencedAttribute = resEntRefSideReferenced.getFirstAttribute(); // assumes single column keys
+                        entState.relsOut.push({
+                            referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
+                            referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
+                        });
+                        // also go the other way
+                        var entStateOther = controller.entity2state.get(referencedEntity);
+                        if (entStateOther) {
+                            entStateOther.relsIn.push({
                                 referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
                                 referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
                             });
-                            // also go the other way
-                            var entStateOther = controller.entity2state.get(referencedEntity);
-                            if (entStateOther) {
-                                entStateOther.relsIn.push({
-                                    referencingEntity: referencingEntity, referencingAttribute: referencingAttribute,
-                                    referencedEntity: referencedEntity, referencedAttribute: referencedAttribute
-                                });
-                            }
                         }
                     });
                 });
@@ -509,7 +449,6 @@ function resolveCorpus(messageType) {
     };
     controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "resolving imports...");
     // first resolve all of the imports to pull other docs into the namespace
-    controller.corpus.setResolutionCallback(statusRpt, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
     controller.corpus.resolveImports((uri) => {
         if (messageType == "githubLoadRequest") {
             return new Promise((resolve, reject) => {
@@ -528,12 +467,12 @@ function resolveCorpus(messageType) {
         else {
             controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, `can't resolve import of '${uri}' in local file mode. you must load the file directly.`);
         }
-    }).then((r) => {
+    }, statusRpt).then((r) => {
         // success resolving all imports
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep, statusRpt, cdm.cdmStatusLevel.error).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -600,33 +539,25 @@ function messageHandleItem(messageType, data1, data2) {
         return;
     }
     var entityStateThis = entityFromId(this.id);
-    let searchFound = true;
     if (entityStateThis.loadState == 1) {
         if (messageType === "reportSelection") {
             // report for us or for null (folder above us)
             if (entityStateThis === data1 || !data1)
                 controller.mainContainer.messageHandlePing("reportSelection", entityStateThis);
         }
-        if (messageType === "applySearchTerm") {
-            let searchTerm = data1;
-            if (searchTerm) {
-                searchFound = entityStateThis.name.toUpperCase().includes(searchTerm.toUpperCase());
-            }
-            this.style.filter = searchFound ? "" : "brightness(0.7)";
-        }
         if (messageType === "navigateEntitySelect" || messageType == "listItemSelect") {
             // handle the attribute select first
             if (messageType == "listItemSelect" && data1.resolvedName) {
                 let cdmAttribute = data1.attribute;
                 background = "var(--item-back-normal)";
-                // does the attribute pointed at this? yes if 
+                // does the attribute pointed at this?
                 var isReferencing = (entityStateThis.relsIn.some((r) => { return r.referencingAttribute && r.referencingAttribute.attribute === cdmAttribute; }));
                 // does the attribute get pointed at by this?
                 var isReferenced = (entityStateThis.relsOut.some((r) => { return r.referencedAttribute && r.referencedAttribute.attribute === cdmAttribute; }));
                 this.style.background = selectBackground(isReferencing, isReferenced, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
             }
             else {
-                let entitySelcted;
+                var entitySelcted;
                 if (messageType === "navigateEntitySelect") {
                     let set = data1;
                     // selection is shown with a fat border
@@ -645,52 +576,25 @@ function messageHandleItem(messageType, data1, data2) {
                     // must be list select from multi entity 
                     entitySelcted = data1.entity;
                 }
-                controller.cdmDocSelected = undefined;
                 if (entitySelcted) {
                     // base and extensions are shown with background
                     // get info about any baseclass of this entity
-                    controller.cdmDocSelected = entitySelcted.declaredInDocument;
                     if (entityStateThis.entity) {
-                        let baseThis;
-                        let baseThisRef = entityStateThis.entity.getExtendsEntityRef();
-                        if (baseThisRef)
-                            baseThis = baseThisRef.getObjectDef(controller.cdmDocSelected); // turn ref into def
+                        var baseThis = entityStateThis.entity.getExtendsEntityRef();
+                        if (baseThis)
+                            baseThis = baseThis.getObjectDef(); // turn ref into def
                         // selected base
-                        let baseSelect;
-                        let baseSelectRef = entitySelcted.getExtendsEntityRef();
-                        if (baseSelectRef)
-                            baseSelect = baseSelectRef.getObjectDef(controller.cdmDocSelected);
+                        var baseSelect = entitySelcted.getExtendsEntityRef();
+                        if (baseSelect)
+                            baseSelect = baseSelect.getObjectDef();
                         background = "var(--item-back-normal)";
                         if (baseSelect === entityStateThis.entity)
                             background = "var(--item-back-base)";
                         if (baseThis === entitySelcted)
                             background = "var(--item-back-extension)";
                         // does this entity point at the selection
-                        // first see if we cached the answer from the last time asked
-                        var isReferencing = false;
-                        if (entityStateThis.referencedEntityCache.has(entitySelcted))
-                            isReferencing = entityStateThis.referencedEntityCache.get(entitySelcted);
-                        else {
-                            // need to figure the answer and then save it for next time
-                            if (entityStateThis.referencedEntityNames.has(entitySelcted.getName())) {
-                                // yes, something with the same name, but to be specific we must resolve this entity's relationships from the POV of the selected document
-                                isReferencing = false;
-                                var rels = entityStateThis.entity.getResolvedEntityReferences(controller.cdmDocSelected);
-                                if (rels) {
-                                    rels.set.some(resEntRef => {
-                                        return resEntRef.referenced.some(resEntRefSideReferenced => {
-                                            var referencedEntity = resEntRefSideReferenced.entity;
-                                            if (referencedEntity === entitySelcted) {
-                                                isReferencing = true;
-                                                return true;
-                                            }
-                                        });
-                                    });
-                                }
-                            }
-                            entityStateThis.referencedEntityCache.set(entitySelcted, isReferencing);
-                        }
-                        // does the selection point at this. already cached from that POV
+                        var isReferencing = (entityStateThis.relsOut.some((r) => { return r.referencedEntity === entitySelcted; }));
+                        // does the selection point at this
                         var isReferenced = (entityStateThis.relsIn.some((r) => { return r.referencingEntity === entitySelcted; }));
                         this.style.background = selectBackground(isReferenced, isReferencing, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
                     }
@@ -728,8 +632,8 @@ function messageHandleList(messageType, data1, data2) {
             // use the resolved attributes from the entity
             let entity = data2.entity;
             if (data1 && entity) {
-                let atts = entity.getResolvedAttributes(entity.declaredInDocument);
-                let inherited = entity.countInheritedAttributes(entity.declaredInDocument);
+                let atts = entity.getResolvedAttributes();
+                let inherited = entity.countInheritedAttributes();
                 if (atts) {
                     atts.set = atts.set.sort(function (l, r) {
                         if ((l.insertOrder < inherited) == (r.insertOrder < inherited))
@@ -743,7 +647,6 @@ function messageHandleList(messageType, data1, data2) {
                         aSpan.className = "list_item";
                         aSpan.textContent = att.resolvedName;
                         aSpan.cdmObject = att;
-                        aSpan.cdmSource = entity;
                         aSpan.onclick = controller.onclickListItem;
                         aSpan.messageHandle = messageHandleListItem;
                         aSpan.inherited = att.insertOrder < inherited;
@@ -756,23 +659,7 @@ function messageHandleList(messageType, data1, data2) {
     this.messageHandleBroadcast(messageType, data1, data2);
 }
 function messageHandleListItem(messageType, data1, data2) {
-    if (messageType === "applySearchTerm") {
-        let searchFound = true;
-        let searchTerm = data1;
-        if (searchTerm) {
-            let searchAgainst;
-            if (this.cdmObject) {
-                if (this.cdmObject.resolvedName)
-                    searchAgainst = this.cdmObject.resolvedName;
-                else if (this.cdmObject.getName)
-                    searchAgainst = this.cdmObject.getName();
-                if (searchAgainst)
-                    searchFound = searchAgainst.toUpperCase().includes(searchTerm.toUpperCase());
-            }
-        }
-        this.style.filter = searchFound ? "" : "brightness(0.7)";
-    }
-    else if (messageType === "navigateEntitySelect") {
+    if (messageType === "navigateEntitySelect") {
         if (data2) {
             var entityState = data2;
             var background = "var(--item-back-normal)";
@@ -833,49 +720,6 @@ function messageHandleDetailStatus(messageType, data1, data2) {
         this.style.display = (data1 != "status_tab") ? "none" : "block";
     }
 }
-function applySearchTerm(html) {
-    if (!controller.searchTerm)
-        return html;
-    let localTerm = controller.searchTerm.replace(/([^a-zA-Z0-9.])/g, "");
-    if (localTerm.length > 0) {
-        // only apply term to text not inside html
-        // regex not supporting lookbehinds means do this the hard way
-        let getNextSegment = (startAt) => {
-            let end = html.indexOf("<", startAt);
-            if (end == -1)
-                return [startAt, html.length];
-            if (end > startAt)
-                return [startAt, end];
-            // must start with a tag, so find end. assume there are no embedded tag ending inside this tag
-            let newStartAt = html.indexOf(">", startAt);
-            if (newStartAt == -1)
-                return [html.length, html.length];
-            end = html.indexOf("<", newStartAt);
-            if (end == -1)
-                return [newStartAt, html.length];
-            if (end > startAt)
-                return [newStartAt, end];
-        };
-        let search = new RegExp(`(${localTerm})`, "g");
-        let newHtml = "";
-        let lastStart = 0;
-        let sourceLen = html.length;
-        do {
-            let seg = getNextSegment(lastStart);
-            let segStart = seg["0"];
-            let segEnd = seg["1"];
-            // add any html tag that got skipped
-            if (segStart > lastStart)
-                newHtml += html.slice(lastStart, segStart);
-            // replace in the segment
-            let segmentNew = html.slice(segStart, segEnd).replace(search, "<mark>$1</mark>");
-            newHtml += segmentNew;
-            lastStart = segEnd;
-        } while (lastStart < sourceLen);
-        html = newHtml;
-    }
-    return html;
-}
 function messageHandleDetailDPLX(messageType, data1, data2) {
     if (messageType == "detailTabSelect") {
         this.style.display = (data1 != "dplx_tab") ? "none" : "block";
@@ -884,29 +728,21 @@ function messageHandleDetailDPLX(messageType, data1, data2) {
     if (messageType == "navigateEntitySelect") {
         changeDPLX();
     }
-    if (messageType == "applySearchTerm") {
-        changeDPLX();
-    }
 }
 function changeDPLX() {
     if (controller.DplxPane.style.display == "block") {
         var jsonText = "";
         if (controller.multiSelectEntityList && controller.multiSelectEntityList.size) {
             let converter = new cdm2dplx.Converter();
-            converter.bindingType = "none";
-            converter.relationshipsType = "all";
-            converter.schemaUriBase = "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments";
-            converter.schemaVersion = "0.7";
-            // converter.bindingType="byol"
-            // converter.relationshipsType="inclusive";
-            // converter.schemaUriBase = "";
-            // converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
+            converter.bindingType = "byol";
+            converter.relationshipsType = "inclusive";
+            converter.schemaUriBase = "";
+            converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
             let set = new Array();
             controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
                 set.push(entState.entity); });
-            let dplx = converter.convertEntities(controller.corpus, set, "exampleDataFlowForBYOD");
+            let dplx = converter.convertEntities(set, "exampleDataPoolForBYOD");
             jsonText = JSON.stringify(dplx, null, 2);
-            jsonText = applySearchTerm(jsonText);
         }
         controller.DplxPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
@@ -929,9 +765,6 @@ function messageHandleDetailJson(messageType, data1, data2) {
             cdmObject = data1.entity;
         }
     }
-    if (messageType == "applySearchTerm") {
-        drawJsonStack();
-    }
     if (cdmObject) {
         clearJsonPane();
         pushJsonPane(cdmObject);
@@ -953,38 +786,37 @@ function detailJsonJump(path) {
     pushJsonPane(detailObject);
 }
 function drawJsonStack() {
-    if (controller.JsonStack && controller.JsonStack.length) {
-        let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
-        let json = cdmObject.copyData(controller.cdmDocSelected, true);
-        let jsonText = JSON.stringify(json, null, 2);
-        // string refs got exploded. turn them back into strings with links
-        jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
-        if (controller.JsonStack.length > 1)
-            controller.backButton.style.display = "inline-block";
-        else
-            controller.backButton.style.display = "none";
-        jsonText = applySearchTerm(jsonText);
-        controller.JsonPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
-    }
+    let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
+    let json = cdmObject.copyData(true);
+    let jsonText = JSON.stringify(json, null, 2);
+    // string refs got exploded. turn them back into strings with links
+    jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
+    if (controller.JsonStack.length > 1)
+        controller.backButton.style.display = "inline-block";
+    else
+        controller.backButton.style.display = "none";
+    controller.JsonPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
 }
 function makeParamValue(param, value) {
     if (!value)
         return controller.document.createTextNode("");
     // if a string constant, call get value to turn into itself or a reference if that is what is held there
-    if (typeof (value) === "string")
-        return controller.document.createTextNode(value);
+    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
+        value = value.getValue();
+    // if still  a string, it is just a string
+    if (value.getObjectType() == cdm.cdmObjectType.stringConstant)
+        return controller.document.createTextNode(value.getConstant());
     // if this is a constant table, then expand into an html table
-    let entDef;
-    if (value.getObjectType() == cdm.cdmObjectType.entityRef && (entDef = value.getObjectDef(controller.cdmDocSelected)) && entDef.getObjectType() == cdm.cdmObjectType.constantEntityDef) {
-        let entShape = entDef.getEntityShape().getObjectDef(controller.cdmDocSelected);
-        var entValues = entDef.getConstantValues();
+    if (value.getObjectType() == cdm.cdmObjectType.entityRef && value.getObjectDef().getObjectType() == cdm.cdmObjectType.constantEntityDef) {
+        var entShape = value.getObjectDef().getEntityShape();
+        var entValues = value.getObjectDef().getConstantValues();
         if (!entValues && entValues.length == 0)
             return controller.document.createTextNode("empty table");
         var valueTable = controller.document.createElement("table");
         valueTable.className = "trait_param_value_table";
         var valueRow = controller.document.createElement("tr");
         valueRow.className = "trait_param_value_table_header_row";
-        var shapeAtts = entShape.getResolvedAttributes(controller.cdmDocSelected);
+        var shapeAtts = entShape.getResolvedAttributes();
         let l = shapeAtts.set.length;
         for (var i = 0; i < l; i++) {
             var th = controller.document.createElement("th");
@@ -1017,7 +849,7 @@ function makeParamValue(param, value) {
     else {
         // stick json in there
         var code = controller.document.createElement("code");
-        var json = JSON.stringify(value.copyData(controller.cdmDocSelected), null, 2);
+        var json = JSON.stringify(value, null, 2);
         if (json.length > 67)
             json = json.slice(0, 50) + "...(see JSON tab)";
         code.appendChild(controller.document.createTextNode(json));
@@ -1038,7 +870,7 @@ function makeParamRow(param, value) {
     var td = controller.document.createElement("td");
     td.className = "trait_parameter_table_detail_type";
     if (param.getDataTypeRef())
-        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef(controller.cdmDocSelected).getName()));
+        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef().getName()));
     paramRow.appendChild(td);
     var td = controller.document.createElement("td");
     td.className = "trait_parameter_table_detail_explanation";
@@ -1111,11 +943,10 @@ function messageHandleDetailTraits(messageType, data1, data2) {
         this.style.display = (data1 != "trait_tab") ? "none" : "block";
         return;
     }
-    let cdmObject;
+    var cdmObject;
     if (messageType == "navigateEntitySelect") {
-        if (data2) {
+        if (data2)
             cdmObject = data2.entity;
-        }
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
@@ -1129,7 +960,7 @@ function messageHandleDetailTraits(messageType, data1, data2) {
     if (cdmObject) {
         while (this.childNodes.length > 0)
             this.removeChild(this.lastChild);
-        var rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
+        var rts = cdmObject.getResolvedTraits();
         if (rts) {
             var traitTable = controller.document.createElement("table");
             traitTable.className = "trait_table";
@@ -1149,7 +980,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
     let isAtt = false;
     if (messageType == "navigateEntitySelect") {
         if (data2) {
-            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected);
+            resolvedObject = data2.entity.getResolvedEntity();
         }
     }
     if (messageType == "listItemSelect") {
@@ -1159,7 +990,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
         }
         else {
             // assume entity
-            resolvedObject = data1.entity.getResolvedEntity(controller.cdmDocSelected);
+            resolvedObject = data1.entity.getResolvedEntity();
         }
     }
     if (resolvedObject) {

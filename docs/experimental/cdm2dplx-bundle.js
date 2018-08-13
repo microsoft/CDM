@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class DataPoolImpl {
     constructor() {
-        this.name = "ExampleDataFlow";
-        this.culture = "en-US";
+        this.name = "ExampleDataPool";
+        this.culture = "en-EN";
         //this.collation = "_CS"
         //this.isHidden = false;
         //this.isGdpr = false;
@@ -85,9 +85,9 @@ class Converter {
         this.schemaVersion = "";
     }
     getPostFix() {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json";
+        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
     }
-    convertEntities(corpus, entities, dpName) {
+    convertEntities(entities, dpName) {
         let dp = new DataPoolImpl();
         dp.name = dpName;
         let entitiesIncluded = new Set();
@@ -95,11 +95,9 @@ class Converter {
         let postFix = this.getPostFix();
         for (let iEnt = 0; iEnt < entities.length; iEnt++) {
             const cdmEntity = entities[iEnt];
-            // set the resolution context to this document, so it used this entities point of view to find thing
-            let wrtDoc = cdmEntity.declaredInDocument;
             // remember what was sent to pick out the 'good' relationships at the end
             entitiesIncluded.add(cdmEntity);
-            let rels = cdmEntity.getResolvedEntityReferences(wrtDoc);
+            let rels = cdmEntity.getResolvedEntityReferences();
             if (rels)
                 relationshipsSeen.push(rels);
             // make the entity thing
@@ -110,7 +108,7 @@ class Converter {
             // datacategory is the same as name for cdm
             //dpEnt.dataCategory = dpEnt.name;
             // get the traits of the entity 
-            let rtsEnt = cdmEntity.getResolvedTraits(wrtDoc);
+            let rtsEnt = cdmEntity.getResolvedTraits();
             // the trait 'is.CDM.attributeGroup' contains a table of references to the 'special' attribute groups contained by the entity.
             // also look for the description, pii
             let isPII = false;
@@ -122,14 +120,14 @@ class Converter {
                     let ent;
                     let cv;
                     if ((pv = rt.parameterValues.getParameterValue("groupList")) &&
-                        (pv.value && (ent = pv.value.getObjectDef(wrtDoc))) &&
+                        (pv.value && (ent = pv.value.getObjectDef())) &&
                         (cv = ent.getConstantValues())) {
                         cv.forEach(r => {
                             // assume this is the right entity shape. just one attribute
                             let agPath = r[0];
                             // the attributegroup path is virtual from the root of the OM hierarchy out to the name of the attribute group.
                             // turn this into just the entity doc reference 
-                            let expectedEnding = `.cdm.json/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
+                            let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
                             if (agPath.endsWith(expectedEnding))
                                 agPath = agPath.slice(0, agPath.length - expectedEnding.length);
                             agPath += postFix;
@@ -139,14 +137,14 @@ class Converter {
                         });
                     }
                 }
-                if (rt.trait.isDerivedFrom(wrtDoc, "is.sensitive.PII"))
+                if (rt.trait.isDerivedFrom("is.sensitive.PII"))
                     isPII = true;
-                if (rt.trait.isDerivedFrom(wrtDoc, "is.hidden"))
+                if (rt.trait.isDerivedFrom("is.hidden"))
                     isHidden = true;
                 if (rt.traitName === "is.localized.describedAs") {
                     let localizedTableRef = rt.parameterValues.getParameterValue("localizedDisplayText").value;
                     if (localizedTableRef)
-                        dpEnt.description = localizedTableRef.getObjectDef(wrtDoc).lookupWhere(wrtDoc, "displayText", "languageTag", "en");
+                        dpEnt.description = localizedTableRef.getObjectDef().lookupWhere("displayText", "languageTag", "en");
                 }
                 // turn each trait into an annotation too
                 //this.traitToAnnotation(rt, dpEnt.annotations);
@@ -156,23 +154,23 @@ class Converter {
             // if (isHidden)
             //     dpEnt.isHidden = true;
             // get all attributes of the entity
-            let ras = cdmEntity.getResolvedAttributes(wrtDoc);
+            let ras = cdmEntity.getResolvedAttributes();
             ras.set.forEach(ra => {
                 let dpAtt = new DPAttributeImpl();
                 dpAtt.name = ra.resolvedName;
                 let descTrait;
-                if (descTrait = ra.resolvedTraits.find(wrtDoc, "is.localized.describedAs")) {
+                if (descTrait = ra.resolvedTraits.find("is.localized.describedAs")) {
                     let localizedTableRef = descTrait.parameterValues.getParameterValue("localizedDisplayText").value;
                     if (localizedTableRef)
-                        dpAtt.description = localizedTableRef.getObjectDef(wrtDoc).lookupWhere(wrtDoc, "displayText", "languageTag", "en");
+                        dpAtt.description = localizedTableRef.getObjectDef().lookupWhere("displayText", "languageTag", "en");
                 }
                 // if (ra.resolvedTraits.find("is.sensitive.PII")) 
                 //     dpAtt.pii = "CustomerContent";
                 // if (ra.resolvedTraits.find("is.hidden"))
                 //     dpAtt.isHidden = true;                    
                 let mapTrait;
-                if (mapTrait = ra.resolvedTraits.find(wrtDoc, "is.CDS.sourceNamed"))
-                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").getValueString(wrtDoc);
+                if (mapTrait = ra.resolvedTraits.find("is.CDS.sourceNamed"))
+                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").valueString;
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
                 // turn each trait into an annotation too
@@ -443,7 +441,7 @@ class Converter {
         }
         return baseType;
     }
-    traitToAnnotation(wrtDoc, rt, annotations) {
+    traitToAnnotation(rt, annotations) {
         // skip the ugly traits
         if (!rt.trait.ugly) {
             let annotationName = "trait." + rt.traitName;
@@ -453,7 +451,7 @@ class Converter {
             if (pv && pv.length) {
                 for (let i = 0; i < pv.length; i++) {
                     let paramName = pv.getParameter(i).getName();
-                    let paramValue = pv.getValueString(wrtDoc, i);
+                    let paramValue = pv.getValueString(i);
                     if (paramValue) {
                         annotation = new DPAnnotationImpl(annotationName + "." + paramName, paramValue);
                         annotations.push(annotation);
