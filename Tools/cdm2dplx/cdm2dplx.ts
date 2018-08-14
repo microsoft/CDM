@@ -194,7 +194,7 @@ export class Converter implements IConvertToDplx {
     public schemaVersion: string = "";
 
     getPostFix(): string {
-        return ".cdm" + (this.schemaVersion ? "." + this.schemaVersion : "") + ".json";
+        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json";
     }
 
     public convertEntities(corpus: cdm.Corpus, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
