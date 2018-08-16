@@ -1,5 +1,5 @@
 ### Click this image to explore the CDM entities using the Entity Navigator:
-[![Click to Launch the Entity Navigator](NavSnip.jpg)](https://microsoft.github.io/CDM/master/)
+[![Click to Launch the Entity Navigator](NavSnip.jpg)](https://microsoft.github.io/CDM/)
 ---
 ### Directory of CDM entities:
 >Note: Entities with multiple rows in the index below indicate that there is a base version of the entity (first occurrence), as well as extended versions with additional attributes added (e.g.with Sales / Services / Marketing specific additions)
