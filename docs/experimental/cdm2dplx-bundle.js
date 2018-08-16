@@ -85,7 +85,7 @@ class Converter {
         this.schemaVersion = "";
     }
     getPostFix() {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json"; 
+        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json";
     }
     convertEntities(corpus, entities, dpName) {
         let dp = new DataPoolImpl();

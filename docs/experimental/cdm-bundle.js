@@ -3409,6 +3409,8 @@ class cdmObjectRef extends cdmObject {
             // then check for the wrt doc
             // if neither of these is true, then resolve in the doc context
             // this behavior is modeled after virtual functions and the use of explicit calls to base class methods
+            if (!this.ctx)
+                return undefined;
             let res;
             if (this.monikeredDocument)
                 wrtDoc = this.monikeredDocument;
