@@ -64,7 +64,7 @@
                                 ],
                                 "sourceName": "adx_createdbyipaddress",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10009,
+                                "sourceOrdering": 10011,
                                 "isNullable": true,
                                 "displayName": "Created By IP Address"
                             },
@@ -101,7 +101,7 @@
                                 ],
                                 "sourceName": "adx_createdbyusername",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10010,
+                                "sourceOrdering": 10012,
                                 "isNullable": true,
                                 "displayName": "Created By Username"
                             },
@@ -138,7 +138,7 @@
                                 ],
                                 "sourceName": "adx_modifiedbyipaddress",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10011,
+                                "sourceOrdering": 10013,
                                 "isNullable": true,
                                 "displayName": "Modified By IP Address"
                             },
@@ -175,7 +175,7 @@
                                 ],
                                 "sourceName": "adx_modifiedbyusername",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10012,
+                                "sourceOrdering": 10014,
                                 "isNullable": true,
                                 "displayName": "Modified By Username"
                             },
@@ -212,7 +212,7 @@
                                 ],
                                 "sourceName": "adx_organizationname",
                                 "maximumLength": 250,
-                                "sourceOrdering": 10013,
+                                "sourceOrdering": 10015,
                                 "isNullable": true,
                                 "displayName": "Organization Name"
                             },
@@ -250,7 +250,7 @@
                                 "sourceName": "adx_timezone",
                                 "maximumValue": "1500",
                                 "minimumValue": "-1500",
-                                "sourceOrdering": 10014,
+                                "sourceOrdering": 10016,
                                 "isNullable": true,
                                 "displayName": "Time Zone"
                             },
@@ -321,7 +321,7 @@
                                                             }
                                                         ],
                                                         "sourceName": "msa_managingpartnerid",
-                                                        "sourceOrdering": 10015,
+                                                        "sourceOrdering": 10017,
                                                         "isNullable": true,
                                                         "displayName": "Managing Partner",
                                                         "description": "Unique identifier for Account associated with Contact."
@@ -344,19 +344,10 @@
                                 }
                             },
                             {
-                                "name": "preferredLanguage",
+                                "name": "disableWebTracking",
                                 "relationship": "hasA",
-                                "dataType": "entityId",
+                                "dataType": "boolean",
                                 "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -375,7 +366,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "Preferred Language"
+                                                            "Disable Web Tracking"
                                                         ]
                                                     ]
                                                 }
@@ -391,7 +382,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "User’s preferred portal language"
+                                                            "Indicates that the contact has opted out of web tracking."
                                                         ]
                                                     ]
                                                 }
@@ -399,11 +390,259 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "adx_preferredlanguageid",
-                                "sourceOrdering": 10018,
+                                "sourceName": "msdyn_disablewebtracking",
+                                "sourceOrdering": 10020,
                                 "isNullable": true,
-                                "displayName": "Preferred Language",
-                                "description": "User’s preferred portal language"
+                                "displayName": "Disable Web Tracking",
+                                "description": "Indicates that the contact has opted out of web tracking."
+                            },
+                            {
+                                "name": "isMinor",
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Minor"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates that the contact is considered a minor in their jurisdiction."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdyn_isminor",
+                                "sourceOrdering": 10022,
+                                "isNullable": true,
+                                "displayName": "Is Minor",
+                                "description": "Indicates that the contact is considered a minor in their jurisdiction."
+                            },
+                            {
+                                "name": "isMinorWithParentalConsent",
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Minor with Parental Consent"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates that the contact is considered a minor in their jurisdiction and has parental consent."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdyn_isminorwithparentalconsent",
+                                "sourceOrdering": 10024,
+                                "isNullable": true,
+                                "displayName": "Is Minor with Parental Consent",
+                                "description": "Indicates that the contact is considered a minor in their jurisdiction and has parental consent."
+                            },
+                            {
+                                "name": "portalTermsAgreementDate",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Portal Terms Agreement Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates the date and time that the person agreed to the portal terms and conditions."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdyn_portaltermsagreementdate",
+                                "sourceOrdering": 10026,
+                                "isNullable": true,
+                                "displayName": "Portal Terms Agreement Date",
+                                "description": "Indicates the date and time that the person agreed to the portal terms and conditions."
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'PortalLanguage' adds the 'preferredLanguage' attribute below to the 'Contact' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "name": "preferredLanguage",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Preferred Language"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "User’s preferred portal language"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "adx_preferredlanguageid",
+                                                        "sourceOrdering": 10027,
+                                                        "isNullable": true,
+                                                        "displayName": "Preferred Language",
+                                                        "description": "User’s preferred portal language"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "PortalLanguage",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "PortalLanguage/(resolvedAttributes)/portalLanguageId"
+                                            ]
+                                        }
+                                    ]
+                                }
                             },
                             {
                                 "name": "profileAlert",
@@ -437,7 +676,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_profilealert",
-                                "sourceOrdering": 10019,
+                                "sourceOrdering": 10028,
                                 "isNullable": true,
                                 "displayName": "Profile Alert"
                             },
@@ -473,7 +712,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_profilealertdate",
-                                "sourceOrdering": 10021,
+                                "sourceOrdering": 10030,
                                 "isNullable": true,
                                 "displayName": "Profile Alert Date"
                             },
@@ -510,7 +749,7 @@
                                 ],
                                 "sourceName": "adx_profilealertinstructions",
                                 "maximumLength": 4096,
-                                "sourceOrdering": 10022,
+                                "sourceOrdering": 10031,
                                 "isNullable": true,
                                 "displayName": "Profile Alert Instructions"
                             },
@@ -546,7 +785,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_profileisanonymous",
-                                "sourceOrdering": 10023,
+                                "sourceOrdering": 10032,
                                 "isNullable": true,
                                 "displayName": "Profile Is Anonymous"
                             },
@@ -582,7 +821,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_profilelastactivity",
-                                "sourceOrdering": 10025,
+                                "sourceOrdering": 10034,
                                 "isNullable": true,
                                 "displayName": "Profile Last Activity"
                             },
@@ -618,7 +857,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_profilemodifiedon",
-                                "sourceOrdering": 10026,
+                                "sourceOrdering": 10035,
                                 "isNullable": true,
                                 "displayName": "Profile Modified On"
                             },
@@ -655,7 +894,7 @@
                                 ],
                                 "sourceName": "adx_publicprofilecopy",
                                 "maximumLength": 64000,
-                                "sourceOrdering": 10027,
+                                "sourceOrdering": 10036,
                                 "isNullable": true,
                                 "displayName": "Public Profile Copy"
                             },
@@ -709,7 +948,7 @@
                                 "sourceName": "adx_identity_accessfailedcount",
                                 "maximumValue": "2147483647",
                                 "minimumValue": "-2147483648",
-                                "sourceOrdering": 10029,
+                                "sourceOrdering": 10038,
                                 "isNullable": true,
                                 "displayName": "Access Failed Count",
                                 "description": "Shows the current count of failed password attempts for the contact."
@@ -762,10 +1001,116 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_emailaddress1confirmed",
-                                "sourceOrdering": 10030,
+                                "sourceOrdering": 10039,
                                 "isNullable": true,
                                 "displayName": "Email Confirmed",
                                 "description": "Determines if the email is confirmed by the contact."
+                            },
+                            {
+                                "name": "lastSuccessfulLogin",
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Last Successful Login"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates the last date and time the user successfully signed in to a portal."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "adx_identity_lastsuccessfullogin",
+                                "sourceOrdering": 10041,
+                                "isNullable": true,
+                                "displayName": "Last Successful Login",
+                                "description": "Indicates the last date and time the user successfully signed in to a portal."
+                            },
+                            {
+                                "name": "localLoginDisabled",
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Local Login Disabled"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates that the contact can no longer sign in to the portal using the local account."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "adx_identity_locallogindisabled",
+                                "sourceOrdering": 10042,
+                                "isNullable": true,
+                                "displayName": "Local Login Disabled",
+                                "description": "Indicates that the contact can no longer sign in to the portal using the local account."
                             },
                             {
                                 "name": "lockoutEnabled",
@@ -815,7 +1160,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_lockoutenabled",
-                                "sourceOrdering": 10032,
+                                "sourceOrdering": 10044,
                                 "isNullable": true,
                                 "displayName": "Lockout Enabled",
                                 "description": "Determines if this contact will track failed access attempts and become locked after too many failed attempts. To prevent the contact from becoming locked, you can disable this setting."
@@ -868,7 +1213,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_lockoutenddate",
-                                "sourceOrdering": 10034,
+                                "sourceOrdering": 10046,
                                 "isNullable": true,
                                 "displayName": "Lockout End Date",
                                 "description": "Shows the moment in time when the locked contact becomes unlocked again."
@@ -921,7 +1266,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_logonenabled",
-                                "sourceOrdering": 10035,
+                                "sourceOrdering": 10047,
                                 "isNullable": true,
                                 "displayName": "Login Enabled",
                                 "description": "Determines if web authentication is enabled for the contact."
@@ -974,7 +1319,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_mobilephoneconfirmed",
-                                "sourceOrdering": 10037,
+                                "sourceOrdering": 10049,
                                 "isNullable": true,
                                 "displayName": "Mobile Phone Confirmed",
                                 "description": "Determines if the phone number is confirmed by the contact."
@@ -1012,7 +1357,7 @@
                                 ],
                                 "sourceName": "adx_identity_passwordhash",
                                 "maximumLength": 128,
-                                "sourceOrdering": 10039,
+                                "sourceOrdering": 10051,
                                 "isNullable": true,
                                 "displayName": "Password Hash"
                             },
@@ -1065,7 +1410,7 @@
                                 ],
                                 "sourceName": "adx_identity_securitystamp",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10040,
+                                "sourceOrdering": 10052,
                                 "isNullable": true,
                                 "displayName": "Security Stamp",
                                 "description": "A token used to manage the web authentication session."
@@ -1118,7 +1463,7 @@
                                     }
                                 ],
                                 "sourceName": "adx_identity_twofactorenabled",
-                                "sourceOrdering": 10041,
+                                "sourceOrdering": 10053,
                                 "isNullable": true,
                                 "displayName": "Two Factor Enabled",
                                 "description": "Determines if two-factor authentication is enabled for the contact."
@@ -1172,7 +1517,7 @@
                                 ],
                                 "sourceName": "adx_identity_username",
                                 "maximumLength": 100,
-                                "sourceOrdering": 10043,
+                                "sourceOrdering": 10055,
                                 "isNullable": true,
                                 "displayName": "User Name",
                                 "description": "Shows the user identity for local web authentication."

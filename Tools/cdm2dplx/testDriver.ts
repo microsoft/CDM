@@ -10,21 +10,21 @@ class Startup {
 
         let cdmCorpus : cdm.Corpus;
         let pathToDocRoot = "../../schemaDocuments";
+        //let pathToDocRoot = "../../test";
+        //pathToDocRoot = "/cdsa schemas/credandcollect";
 
-        let version = "";
-        //let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
+        //let version = "";
+        let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
-        cdmCorpus.statusLevel = cdm.cdmStatusLevel.progress;
+        cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
         loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
 
-        let statusRpt = loc.consoleStatusReport;
-
-        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmStatusLevel.error, statusRpt).then((r:boolean) =>{
+        loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
             
             //this.listAllTraits(cdmCorpus);
-            this.createTestDplx(cdmCorpus);
-            //this.createEachDplx(cdmCorpus, pathToDocRoot, version);
+            //this.createTestDplx(cdmCorpus);
+            this.createEachDplx(cdmCorpus, pathToDocRoot, version);
             console.log('done');
 
         }).catch();
@@ -44,7 +44,7 @@ class Startup {
                             doc.getDefinitions().forEach(def => {
                                 if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
                                     let ent = def as cdm.ICdmEntityDef;
-                                    let rtsEnt = ent.getResolvedTraits();
+                                    let rtsEnt = ent.getResolvedTraits(doc);
                                     rtsEnt.set.forEach(rt => {
                                         let rtName = rt.traitName;
                                         if (!seen.has(rtName)) {
@@ -52,7 +52,7 @@ class Startup {
                                             seen.add(rtName);
                                         }
                                     });
-                                    let ras = ent.getResolvedAttributes();
+                                    let ras = ent.getResolvedAttributes(doc);
                                     ras.set.forEach(ra => {
                                         let rtsAtt = ra.resolvedTraits;
                                         rtsAtt.set.forEach(rt => {
@@ -86,6 +86,7 @@ class Startup {
         let set = new Array<cdm.ICdmEntityDef>();
 
         let ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
+        //let ent = cdmCorpus.getObjectFromCorpusPath("/model/CollectionStatus.cdm.json/CollectionStatus") as cdm.ICdmEntityDef;
 
         // ignore this, just testing out the 'search for atts from traits' function
         //let eat = ent.getFriendlyFormat().toString(200, 20, 0, 2);
@@ -97,7 +98,7 @@ class Startup {
 
         set.push(ent);
         set.push(cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/crmCommon/Lead.cdm.json/Lead") as cdm.ICdmEntityDef);
-        let dplx = converter.convertEntities(set, "ExampleDataPool");
+        let dplx = converter.convertEntities(cdmCorpus, set, "ExampleDataFlow");
     }
 
     public static createEachDplx(cdmCorpus : cdm.Corpus, outRoot : string, version : string) {
@@ -121,9 +122,9 @@ class Startup {
                             doc.getDefinitions().forEach(def => {
                                 if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
                                     let ent = def as cdm.ICdmEntityDef;
-                                    let dplx = converter.convertEntities([ent], "");
+                                    let dplx = converter.convertEntities(cdmCorpus, [ent], "");
                                     let content = JSON.stringify(dplx, null, 2);
-                                    writeFileSync(folderPath + ent.getName() + converter.getPostFix(), content, "utf8");
+                                    writeFileSync(folderPath + ent.getName() + "_df" + converter.getPostFix(), content, "utf8");
                                 }
                             });
                         

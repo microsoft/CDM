@@ -11,7 +11,7 @@ export function consoleStatusReport(level: cdm.cdmStatusLevel, msg : string, pat
         console.log(msg);
 }
 
-export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, stopLevel : cdm.cdmStatusLevel, statusRpt : cdm.RptCallback) : Promise<boolean> {
+export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, finishStep : cdm.cdmValidationStep) : Promise<boolean> {
     return new Promise<boolean>((localCorpusResolve, localCorpusReject) => {
         console.log('resolving imports');
         // first resolve all of the imports to pull other docs into the namespace
@@ -26,14 +26,14 @@ export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, stopLevel : cdm.cdmSt
                         resolve([uri, data]);
                 })
             });
-        }, statusRpt).then((r:boolean) => {
+        }).then((r:boolean) => {
             // success resolving all imports
             console.log(r);
             let startTime = Date.now();
             console.log('validate schema:');
             if (r) {
                 let validateStep = (currentStep:cdm.cdmValidationStep)=> {
-                    return cdmCorpus.resolveReferencesAndValidate(currentStep, statusRpt, stopLevel).then((nextStep:cdm.cdmValidationStep) => {
+                    return cdmCorpus.resolveReferencesAndValidate(currentStep, finishStep).then((nextStep:cdm.cdmValidationStep) => {
                         if (nextStep == cdm.cdmValidationStep.error) {
                             console.log('validation step failed');
                         }
@@ -96,7 +96,8 @@ export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolde
             mkdirSync(folderPath);
         if (cdmFolder.getDocuments())
             cdmFolder.getDocuments().forEach(doc => {
-                let content = JSON.stringify(doc, null, 4);
+                let data = doc.copyData(doc);
+                let content = JSON.stringify(data, null, 4);
                 writeFileSync(folderPath + doc.getName(), content, "utf8");
             });
         if (cdmFolder.getSubFolders()) {

@@ -67,7 +67,7 @@ export interface IConvertToDplx {
     schemaUriBase : string; // schema URI base
     schemaVersion : string; // explicit version to add to schema references
     getPostFix(): string;
-    convertEntities(entities : cdm.ICdmEntityDef[], dpName : string) : DataPool;
+    convertEntities(corpus: cdm.Corpus, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ class DataPoolImpl implements DataPool {
     relationships: DPRelationship[];
 
     constructor() {
-        this.name = "ExampleDataPool";
-        this.culture = "en-EN";
+        this.name = "ExampleDataFlow";
+        this.culture = "en-US";
         //this.collation = "_CS"
         //this.isHidden = false;
         //this.isGdpr = false;
@@ -194,10 +194,10 @@ export class Converter implements IConvertToDplx {
     public schemaVersion: string = "";
 
     getPostFix(): string {
-        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".dplx";
+        return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json";
     }
 
-    public convertEntities(entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
+    public convertEntities(corpus: cdm.Corpus, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
         let dp = new DataPoolImpl();
         dp.name = dpName;
 
@@ -208,9 +208,13 @@ export class Converter implements IConvertToDplx {
 
         for (let iEnt = 0; iEnt < entities.length; iEnt++) {
             const cdmEntity = entities[iEnt];
+
+            // set the resolution context to this document, so it used this entities point of view to find thing
+            let wrtDoc = cdmEntity.declaredInDocument;
+
             // remember what was sent to pick out the 'good' relationships at the end
             entitiesIncluded.add(cdmEntity);
-            let rels = cdmEntity.getResolvedEntityReferences();
+            let rels = cdmEntity.getResolvedEntityReferences(wrtDoc);
             if(rels)
                 relationshipsSeen.push(rels);
 
@@ -225,7 +229,7 @@ export class Converter implements IConvertToDplx {
             //dpEnt.dataCategory = dpEnt.name;
             
             // get the traits of the entity 
-            let rtsEnt = cdmEntity.getResolvedTraits();
+            let rtsEnt = cdmEntity.getResolvedTraits(wrtDoc);
             // the trait 'is.CDM.attributeGroup' contains a table of references to the 'special' attribute groups contained by the entity.
             // also look for the description, pii
             let isPII = false;
@@ -237,14 +241,14 @@ export class Converter implements IConvertToDplx {
                     let ent : cdm.ICdmConstantEntityDef;
                     let cv : string[][];
                     if ((pv = rt.parameterValues.getParameterValue("groupList")) &&
-                        (pv.value && (ent = pv.value.getObjectDef())) &&
+                        (pv.value && (ent = (pv.value as cdm.ICdmObject).getObjectDef(wrtDoc))) &&
                         (cv = ent.getConstantValues())) {
                         cv.forEach(r => {
                             // assume this is the right entity shape. just one attribute
                             let agPath = r[0];
                             // the attributegroup path is virtual from the root of the OM hierarchy out to the name of the attribute group.
                             // turn this into just the entity doc reference 
-                            let expectedEnding = `/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
+                            let expectedEnding = `.cdm.json/${dpEnt.name}/hasAttributes/attributesAddedAtThisScope`;
                             if (agPath.endsWith(expectedEnding))
                                 agPath = agPath.slice(0, agPath.length - expectedEnding.length);
                             agPath += postFix;
@@ -254,14 +258,14 @@ export class Converter implements IConvertToDplx {
                         });
                     }
                 }
-                if (rt.trait.isDerivedFrom("is.sensitive.PII"))
+                if (rt.trait.isDerivedFrom(wrtDoc, "is.sensitive.PII"))
                     isPII=true;
-                if (rt.trait.isDerivedFrom("is.hidden"))
+                if (rt.trait.isDerivedFrom(wrtDoc, "is.hidden"))
                     isHidden = true;
                 if (rt.traitName === "is.localized.describedAs") {
                     let localizedTableRef = rt.parameterValues.getParameterValue("localizedDisplayText").value as cdm.cdmObjectRef;
                     if (localizedTableRef) 
-                        dpEnt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>().lookupWhere("displayText", "languageTag", "en");
+                        dpEnt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>(wrtDoc).lookupWhere(wrtDoc, "displayText", "languageTag", "en");
                 }
                 // turn each trait into an annotation too
                 //this.traitToAnnotation(rt, dpEnt.annotations);
@@ -272,16 +276,16 @@ export class Converter implements IConvertToDplx {
             //     dpEnt.isHidden = true;
 
             // get all attributes of the entity
-            let ras = cdmEntity.getResolvedAttributes();
+            let ras = cdmEntity.getResolvedAttributes(wrtDoc);
 
             ras.set.forEach(ra => {
                 let dpAtt = new DPAttributeImpl();
                 dpAtt.name = ra.resolvedName;
                 let descTrait;
-                if (descTrait = ra.resolvedTraits.find("is.localized.describedAs")) {
+                if (descTrait = ra.resolvedTraits.find(wrtDoc, "is.localized.describedAs")) {
                     let localizedTableRef = descTrait.parameterValues.getParameterValue("localizedDisplayText").value as cdm.cdmObjectRef;
                     if (localizedTableRef) 
-                        dpAtt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>().lookupWhere("displayText", "languageTag", "en");
+                        dpAtt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>(wrtDoc).lookupWhere(wrtDoc, "displayText", "languageTag", "en");
                 }
                 // if (ra.resolvedTraits.find("is.sensitive.PII")) 
                 //     dpAtt.pii = "CustomerContent";
@@ -289,8 +293,8 @@ export class Converter implements IConvertToDplx {
                 //     dpAtt.isHidden = true;                    
 
                 let mapTrait : cdm.ResolvedTrait;
-                if (mapTrait = ra.resolvedTraits.find("is.CDS.sourceNamed")) 
-                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").valueString;
+                if (mapTrait = ra.resolvedTraits.find(wrtDoc, "is.CDS.sourceNamed")) 
+                    dpAtt.sourceColumnName = mapTrait.parameterValues.getParameterValue("name").getValueString(wrtDoc);
 
                 dpAtt.dataType = this.traits2DataType(ra.resolvedTraits);
                 dpAtt.dataCategory = this.traits2DataCategory(ra.resolvedTraits);
@@ -311,7 +315,6 @@ export class Converter implements IConvertToDplx {
             dpEnt.cleanUp()
             dp.entities.push(dpEnt);
         }
-
         // now pick out all of the relationships that matter for the selected entities
         if (this.relationshipsType != "none") {
             relationshipsSeen.forEach(entRels => {
@@ -577,7 +580,7 @@ export class Converter implements IConvertToDplx {
         return baseType;
     }
 
-    traitToAnnotation(rt : cdm.ResolvedTrait, annotations : DPAnnotation[]) {
+    traitToAnnotation(wrtDoc: cdm.ICdmDocumentDef, rt : cdm.ResolvedTrait, annotations : DPAnnotation[]) {
         // skip the ugly traits
         if (!rt.trait.ugly) {
             let annotationName = "trait." + rt.traitName;
@@ -587,7 +590,7 @@ export class Converter implements IConvertToDplx {
             if (pv && pv.length) {
                 for (let i =0; i< pv.length; i++) {
                     let paramName = pv.getParameter(i).getName();
-                    let paramValue = pv.getValueString(i);
+                    let paramValue = pv.getValueString(wrtDoc, i);
                     if (paramValue) {
                         annotation = new DPAnnotationImpl(annotationName + "." + paramName, paramValue);
                         annotations.push(annotation);
