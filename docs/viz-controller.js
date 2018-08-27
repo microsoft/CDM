@@ -331,17 +331,33 @@ function buildNavigation(hier, alternate) {
     let pc = controller.document.createElement("span");
     pc.className = "parent_container";
     pc.style.background = alternate ? "var(--back-alternate1)" : "var(--back-alternate2)";
-    pc.messageHandlePing = messageHandlePingParent;
+    pc.messageHandlePing = messageHandlePingParentContainer;
     pc.messageHandle = messageHandleParentContainerBroadcast;
     pc.messageHandleBroadcast = messageHandleBroadcast;
     pc.folderState = hier;
+    var titleBar = controller.document.createElement("span");
+    pc.appendChild(titleBar);
+    titleBar.className = "group_title_bar";
+    titleBar.messageHandlePing = messageHandlePingParent;
     var title = controller.document.createElement("span");
-    pc.appendChild(title);
+    titleBar.appendChild(title);
     title.className = "group_title";
     title.id = hier.id;
     title.folderState = hier;
     title.appendChild(controller.document.createTextNode(hier.name));
     title.onclick = controller.onclickFolderItem;
+    var resizeUp = controller.document.createElement("span");
+    titleBar.appendChild(resizeUp);
+    resizeUp.className = "group_title_size";
+    resizeUp.appendChild(controller.document.createTextNode("+"));
+    resizeUp.onclick = controller.onclickResizeUp;
+    resizeUp.messageHandlePing = messageHandlePingParent;
+    var resizeDown = controller.document.createElement("span");
+    titleBar.appendChild(resizeDown);
+    resizeDown.className = "group_title_size";
+    resizeDown.appendChild(controller.document.createTextNode("-"));
+    resizeDown.onclick = controller.onclickResizeDown;
+    resizeDown.messageHandlePing = messageHandlePingParent;
     if (hier.entities) {
         var detailCont = controller.document.createElement("span");
         detailCont.className = "detail_container";
@@ -568,7 +584,33 @@ function messageHandleBroadcast(messageType, data1, data2) {
         }
     }
 }
+function resizeParentContainer(pc, direction) {
+    if (direction == "down") {
+        if (!pc.small || pc.small != true) {
+            pc.small = true;
+            pc.messageHandleBroadcast("resize", direction, null);
+        }
+    }
+    if (direction == "up") {
+        if (pc.small && pc.small == true) {
+            pc.small = false;
+            pc.messageHandleBroadcast("resize", direction, null);
+        }
+    }
+}
+function messageHandlePingParentContainer(messageType, data1, data2) {
+    if (messageType == "resize") {
+        resizeParentContainer(this, data1);
+    }
+    else {
+        this.parentElement.messageHandlePing(messageType, data1, data2);
+    }
+}
 function messageHandleParentContainerBroadcast(messageType, data1, data2) {
+    if (messageType === "resize") {
+        resizeParentContainer(this, data1);
+        return;
+    }
     if (messageType === "reportSelection") {
         // report for us or for null (folder above us)
         if (this.folderState === data1 || !data1) {
@@ -597,6 +639,13 @@ function messageHandleItem(messageType, data1, data2) {
             background = "var(--item-back-failed)";
         if (background)
             this.style.background = selectBackground(false, false, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
+        return;
+    }
+    if (messageType == "resize") {
+        if (data1 == "down")
+            this.style.fontSize = "var(--text-size-small)";
+        else if (data1 == "up")
+            this.style.fontSize = "var(--text-size-med)";
         return;
     }
     var entityStateThis = entityFromId(this.id);

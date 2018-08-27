@@ -120,6 +120,8 @@
             controller.onclickDetailItem = onclickDetailItem;
             controller.ondblclickDetailItem = ondblclickDetailItem;
             controller.onclickListItem = onclickListItem;
+            controller.onclickResizeUp = onclickResizeUp;
+            controller.onclickResizeDown = onclickResizeDown;
             document.onkeydown = onkeydownMain;
 
             init();
@@ -177,6 +179,14 @@
         function onclickDetailTab(fromId) {
             controller.mainContainer.messageHandlePing("detailTabSelect", fromId, null);
         }
+
+        function onclickResizeUp(event) {
+            this.messageHandlePing("resize", "up", null);
+        }
+        function onclickResizeDown(event) {
+            this.messageHandlePing("resize", "down", null);
+        }
+
 
         function onkeydownMain(event) {
             if (event.ctrlKey || event.altKey || event.key == "Shift")
