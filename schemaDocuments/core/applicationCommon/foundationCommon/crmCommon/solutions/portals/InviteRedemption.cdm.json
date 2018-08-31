@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "InviteRedemption",
-            "extendsEntity": "CdmObject",
+            "extendsEntity": "CdsStandard",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -69,95 +69,6 @@
                         ],
                         "members": [
                             {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningBusinessUnit",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Business Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the business unit that owns the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 1,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Business Unit",
-                                                        "description": "Shows the business unit that owns the activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "BusinessUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
                                 "name": "actualEnd",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
@@ -204,64 +115,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualend",
-                                "sourceOrdering": 2,
-                                "isNullable": true,
                                 "displayName": "Actual End",
-                                "description": "Enter the actual end time of the activity."
-                            },
-                            {
-                                "name": "versionNumber",
-                                "relationship": "hasA",
-                                "dataType": "bigInteger",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version number of the activity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 3,
+                                "description": "Enter the actual end time of the activity.",
                                 "isNullable": true,
-                                "displayName": "Version Number",
-                                "description": "Version number of the activity."
+                                "sourceName": "actualend",
+                                "sourceOrdering": 2
                             },
                             {
                                 "relationship": {
@@ -320,10 +178,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 4,
                                                         "displayName": "Activity",
-                                                        "description": "Shows the activity."
+                                                        "description": "Shows the activity.",
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 4
                                                     }
                                                 }
                                             ]
@@ -389,100 +247,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isbilled",
-                                "sourceOrdering": 5,
-                                "isNullable": true,
                                 "displayName": "Is Billed",
-                                "description": "Shows whether the activity was billed as part of resolving a case."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 6,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By",
-                                                        "description": "Shows who created the activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Shows whether the activity was billed as part of resolving a case.",
+                                "isNullable": true,
+                                "sourceName": "isbilled",
+                                "sourceOrdering": 5
                             },
                             {
                                 "name": "description",
@@ -531,65 +300,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "description",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 7,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Description of the activity."
-                            },
-                            {
-                                "name": "modifiedOn",
-                                "relationship": "modifiedOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Last Updated"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when activity was last modified."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 8,
+                                "description": "Description of the activity.",
                                 "isNullable": true,
-                                "displayName": "Last Updated",
-                                "description": "Shows the date and time when activity was last modified."
+                                "sourceName": "description",
+                                "sourceOrdering": 7,
+                                "maximumLength": 2000
                             },
                             {
                                 "name": "activityTypeCode",
@@ -666,10 +382,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activitytypecode",
-                                "sourceOrdering": 9,
                                 "displayName": "Activity Type",
-                                "description": "Shows the type of activity."
+                                "description": "Shows the type of activity.",
+                                "sourceName": "activitytypecode",
+                                "sourceOrdering": 9
                             },
                             {
                                 "name": "stateCode",
@@ -771,10 +487,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 10,
                                 "displayName": "Activity Status",
-                                "description": "Status of the activity."
+                                "description": "Status of the activity.",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 10
                             },
                             {
                                 "name": "scheduledEnd",
@@ -823,11 +539,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 11,
-                                "isNullable": true,
                                 "displayName": "Due Date",
-                                "description": "Enter the scheduled end time of the activity."
+                                "description": "Enter the scheduled end time of the activity.",
+                                "isNullable": true,
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 11
                             },
                             {
                                 "name": "scheduledDurationMinutes",
@@ -881,13 +597,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduleddurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Scheduled Duration",
-                                "description": "Enter the scheduled duration of the activity, in minutes."
+                                "description": "Enter the scheduled duration of the activity, in minutes.",
+                                "isNullable": true,
+                                "sourceName": "scheduleddurationminutes",
+                                "sourceOrdering": 12,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "actualDurationMinutes",
@@ -941,13 +657,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualdurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Actual Duration",
-                                "description": "Enter the actual duration of the activity in minutes."
+                                "description": "Enter the actual duration of the activity in minutes.",
+                                "isNullable": true,
+                                "sourceName": "actualdurationminutes",
+                                "sourceOrdering": 13,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "statusCode",
@@ -1063,112 +779,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Select the activity's status."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage or maintain the activity. This field is updated every time the activity is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 15,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage or maintain the activity. This field is updated every time the activity is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "description": "Select the activity's status.",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 14
                             },
                             {
                                 "name": "actualStart",
@@ -1217,64 +832,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualstart",
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "Actual Start",
-                                "description": "Enter the actual start time of the activity."
-                            },
-                            {
-                                "name": "createdOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date Created"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the activity was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 17,
+                                "description": "Enter the actual start time of the activity.",
                                 "isNullable": true,
-                                "displayName": "Date Created",
-                                "description": "Shows the date and time when the activity was created."
+                                "sourceName": "actualstart",
+                                "sourceOrdering": 16
                             },
                             {
                                 "name": "priorityCode",
@@ -1370,11 +932,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "prioritycode",
-                                "sourceOrdering": 18,
-                                "isNullable": true,
                                 "displayName": "Priority",
-                                "description": "Shows the priority of the activity."
+                                "description": "Shows the priority of the activity.",
+                                "isNullable": true,
+                                "sourceName": "prioritycode",
+                                "sourceOrdering": 18
                             },
                             {
                                 "relationship": {
@@ -1442,11 +1004,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 19,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Unique identifier of the object with which the activity is associated."
+                                                        "description": "Unique identifier of the object with which the activity is associated.",
+                                                        "isNullable": true,
+                                                        "sourceName": "regardingobjectid",
+                                                        "sourceOrdering": 19
                                                     }
                                                 }
                                             ]
@@ -1833,12 +1395,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subject",
-                                "maximumLength": 200,
-                                "sourceOrdering": 20,
-                                "isNullable": true,
                                 "displayName": "Subject",
-                                "description": "Subject associated with the activity."
+                                "description": "Subject associated with the activity.",
+                                "isNullable": true,
+                                "sourceName": "subject",
+                                "sourceOrdering": 20,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "isWorkflowCreated",
@@ -1887,11 +1449,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isworkflowcreated",
-                                "sourceOrdering": 21,
-                                "isNullable": true,
                                 "displayName": "Is Workflow Created",
-                                "description": "Shows whether the activity was created from a workflow rule."
+                                "description": "Shows whether the activity was created from a workflow rule.",
+                                "isNullable": true,
+                                "sourceName": "isworkflowcreated",
+                                "sourceOrdering": 21
                             },
                             {
                                 "name": "scheduledStart",
@@ -1940,299 +1502,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Start Date",
-                                "description": "Enter the scheduled end time of the activity."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 23,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By",
-                                                        "description": "Shows who last updated the activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'owningUser' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningUser",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning User"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user that owns the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 24,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user that owns the activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "timeZoneRuleVersionNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time Zone Rule Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 25,
+                                "description": "Enter the scheduled end time of the activity.",
                                 "isNullable": true,
-                                "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
-                            },
-                            {
-                                "name": "UTCConversionTimeZoneCode",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Shows the time zone code that was in use when the record was created."
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 22
                             },
                             {
                                 "name": "instanceTypeCode",
@@ -2340,10 +1614,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "instancetypecode",
-                                "sourceOrdering": 27,
                                 "displayName": "Recurring Instance Type",
-                                "description": "Shows the type of instance of a recurring series."
+                                "description": "Shows the type of instance of a recurring series.",
+                                "sourceName": "instancetypecode",
+                                "sourceOrdering": 27
                             },
                             {
                                 "name": "seriesId",
@@ -2392,11 +1666,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "seriesid",
-                                "sourceOrdering": 28,
-                                "isNullable": true,
                                 "displayName": "Series ID",
-                                "description": "Shows the ID of the recurring series of an instance."
+                                "description": "Shows the ID of the recurring series of an instance.",
+                                "isNullable": true,
+                                "sourceName": "seriesid",
+                                "sourceOrdering": 28
                             },
                             {
                                 "name": "isRegularActivity",
@@ -2445,277 +1719,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isregularactivity",
-                                "sourceOrdering": 29,
                                 "displayName": "Is Regular Activity",
-                                "description": "Shows whether the activity is a regular activity type or event type."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the activity pointer on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 30,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who last updated the activity pointer on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the activity pointer on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 31,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the activity pointer on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Team' adds the 'owningTeam' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningTeam",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Team"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the team that owns the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 32,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team that owns the activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "Team",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Team/(resolvedAttributes)/teamId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Shows whether the activity is a regular activity type or event type.",
+                                "sourceName": "isregularactivity",
+                                "sourceOrdering": 29
                             },
                             {
                                 "relationship": {
@@ -2783,11 +1790,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 33,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Unique identifier of the currency associated with the activitypointer."
+                                                        "description": "Unique identifier of the currency associated with the activitypointer.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 33
                                                     }
                                                 }
                                             ]
@@ -2853,13 +1860,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Exchange rate for the currency associated with the activitypointer with respect to the base currency."
+                                "description": "Exchange rate for the currency associated with the activitypointer with respect to the base currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 34,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
                                 "name": "leftVoiceMail",
@@ -2908,11 +1915,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "leftvoicemail",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Left Voice Mail",
-                                "description": "Select if the voice mail was left."
+                                "description": "Select if the voice mail was left.",
+                                "isNullable": true,
+                                "sourceName": "leftvoicemail",
+                                "sourceOrdering": 35
                             },
                             {
                                 "name": "community",
@@ -2989,11 +1996,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "community",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Social Channel",
-                                "description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only."
+                                "description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
+                                "isNullable": true,
+                                "sourceName": "community",
+                                "sourceOrdering": 36
                             },
                             {
                                 "name": "traversedPath",
@@ -3042,12 +2049,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "traversedpath",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "Traversed Path",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "traversedpath",
+                                "sourceOrdering": 37,
+                                "maximumLength": 1250
                             },
                             {
                                 "name": "isMapiPrivate",
@@ -3096,11 +2103,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "ismapiprivate",
-                                "sourceOrdering": 38,
-                                "isNullable": true,
                                 "displayName": "Is Private",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "ismapiprivate",
+                                "sourceOrdering": 38
                             },
                             {
                                 "name": "exchangeWebLink",
@@ -3149,12 +2156,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangeweblink",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 39,
-                                "isNullable": true,
                                 "displayName": "Exchange WebLink",
-                                "description": "Shows the web link of Activity of type email."
+                                "description": "Shows the web link of Activity of type email.",
+                                "isNullable": true,
+                                "sourceName": "exchangeweblink",
+                                "sourceOrdering": 39,
+                                "maximumLength": 1250
                             },
                             {
                                 "name": "exchangeItemId",
@@ -3203,12 +2210,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangeitemid",
-                                "maximumLength": 200,
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "Exchange Item ID",
-                                "description": "The message id of activity which is returned from Exchange Server."
+                                "description": "The message id of activity which is returned from Exchange Server.",
+                                "isNullable": true,
+                                "sourceName": "exchangeitemid",
+                                "sourceOrdering": 40,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "deliveryPriorityCode",
@@ -3285,11 +2292,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deliveryprioritycode",
-                                "sourceOrdering": 41,
-                                "isNullable": true,
                                 "displayName": "Delivery Priority",
-                                "description": "Shows the priority of delivery of the activity to the email server."
+                                "description": "Shows the priority of delivery of the activity to the email server.",
+                                "isNullable": true,
+                                "sourceName": "deliveryprioritycode",
+                                "sourceOrdering": 41
                             },
                             {
                                 "name": "sentOn",
@@ -3338,11 +2345,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "senton",
-                                "sourceOrdering": 42,
-                                "isNullable": true,
                                 "displayName": "Date Sent",
-                                "description": "Shows the date and time when the activity was sent."
+                                "description": "Shows the date and time when the activity was sent.",
+                                "isNullable": true,
+                                "sourceName": "senton",
+                                "sourceOrdering": 42
                             },
                             {
                                 "name": "deliveryLastAttemptedOn",
@@ -3391,11 +2398,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deliverylastattemptedon",
-                                "sourceOrdering": 43,
-                                "isNullable": true,
                                 "displayName": "Date Delivery Last Attempted",
-                                "description": "Shows the date and time when the delivery of the activity was last attempted."
+                                "description": "Shows the date and time when the delivery of the activity was last attempted.",
+                                "isNullable": true,
+                                "sourceName": "deliverylastattemptedon",
+                                "sourceOrdering": 43
                             },
                             {
                                 "name": "senderMailboxId",
@@ -3453,11 +2460,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sendermailboxid",
-                                "sourceOrdering": 44,
-                                "isNullable": true,
                                 "displayName": "Sender's Mailbox",
-                                "description": "Unique identifier of the mailbox associated with the sender of the email message."
+                                "description": "Unique identifier of the mailbox associated with the sender of the email message.",
+                                "isNullable": true,
+                                "sourceName": "sendermailboxid",
+                                "sourceOrdering": 44
                             },
                             {
                                 "name": "postponeActivityProcessingUntil",
@@ -3506,11 +2513,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "postponeactivityprocessinguntil",
-                                "sourceOrdering": 45,
-                                "isNullable": true,
                                 "displayName": "Delay activity processing until",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "postponeactivityprocessinguntil",
+                                "sourceOrdering": 45
                             },
                             {
                                 "name": "processId",
@@ -3559,11 +2566,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "processid",
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "Process",
-                                "description": "Shows the process."
+                                "description": "Shows the process.",
+                                "isNullable": true,
+                                "sourceName": "processid",
+                                "sourceOrdering": 46
                             },
                             {
                                 "name": "stageId",
@@ -3612,11 +2619,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stageid",
-                                "sourceOrdering": 47,
-                                "isNullable": true,
                                 "displayName": "Process Stage",
-                                "description": "Shows the stage."
+                                "description": "Shows the stage.",
+                                "isNullable": true,
+                                "sourceName": "stageid",
+                                "sourceOrdering": 47
                             },
                             {
                                 "name": "activityAdditionalParams",
@@ -3665,12 +2672,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activityadditionalparams",
-                                "maximumLength": 8192,
-                                "sourceOrdering": 48,
-                                "isNullable": true,
                                 "displayName": "Activity Additional Parameters",
-                                "description": "Additional information provided by the external application as JSON. For internal use only."
+                                "description": "Additional information provided by the external application as JSON. For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "activityadditionalparams",
+                                "sourceOrdering": 48,
+                                "maximumLength": 8192
                             },
                             {
                                 "relationship": {
@@ -3738,11 +2745,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slaid",
-                                                        "sourceOrdering": 49,
-                                                        "isNullable": true,
                                                         "displayName": "SLA",
-                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the case record."
+                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slaid",
+                                                        "sourceOrdering": 49
                                                     }
                                                 }
                                             ]
@@ -3827,11 +2834,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slainvokedid",
-                                                        "sourceOrdering": 50,
-                                                        "isNullable": true,
                                                         "displayName": "Last SLA applied",
-                                                        "description": "Last SLA that was applied to this case. This field is for internal use only."
+                                                        "description": "Last SLA that was applied to this case. This field is for internal use only.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slainvokedid",
+                                                        "sourceOrdering": 50
                                                     }
                                                 }
                                             ]
@@ -3897,13 +2904,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "onholdtime",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 51,
-                                "isNullable": true,
                                 "displayName": "On Hold Time (Minutes)",
-                                "description": "Shows how long, in minutes, that the record was on hold."
+                                "description": "Shows how long, in minutes, that the record was on hold.",
+                                "isNullable": true,
+                                "sourceName": "onholdtime",
+                                "sourceOrdering": 51,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "lastOnHoldTime",
@@ -3952,11 +2959,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "lastonholdtime",
-                                "sourceOrdering": 52,
-                                "isNullable": true,
                                 "displayName": "Last On Hold Time",
-                                "description": "Contains the date and time stamp of the last on hold time."
+                                "description": "Contains the date and time stamp of the last on hold time.",
+                                "isNullable": true,
+                                "sourceName": "lastonholdtime",
+                                "sourceOrdering": 52
                             },
                             {
                                 "name": "sortDate",
@@ -4005,11 +3012,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sortdate",
-                                "sourceOrdering": 53,
-                                "isNullable": true,
                                 "displayName": "Sort Date",
-                                "description": "Shows the date and time by which the activities are sorted."
+                                "description": "Shows the date and time by which the activities are sorted.",
+                                "isNullable": true,
+                                "sourceName": "sortdate",
+                                "sourceOrdering": 53
                             },
                             {
                                 "relationship": {
@@ -4077,11 +3084,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "serviceid",
-                                                        "sourceOrdering": 54,
-                                                        "isNullable": true,
                                                         "displayName": "Service",
-                                                        "description": "Unique identifier of an associated service."
+                                                        "description": "Unique identifier of an associated service.",
+                                                        "isNullable": true,
+                                                        "sourceName": "serviceid",
+                                                        "sourceOrdering": 54
                                                     }
                                                 }
                                             ]
@@ -4156,11 +3163,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "from",
-                                "sourceOrdering": 92,
-                                "isNullable": true,
                                 "displayName": "From",
-                                "description": "Enter the person who the activity is from."
+                                "description": "Enter the person who the activity is from.",
+                                "isNullable": true,
+                                "sourceName": "from",
+                                "sourceOrdering": 92
                             },
                             {
                                 "name": "to",
@@ -4218,11 +3225,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "to",
-                                "sourceOrdering": 93,
-                                "isNullable": true,
                                 "displayName": "To",
-                                "description": "Enter the person who is the receiver of the activity."
+                                "description": "Enter the person who is the receiver of the activity.",
+                                "isNullable": true,
+                                "sourceName": "to",
+                                "sourceOrdering": 93
                             },
                             {
                                 "name": "CC",
@@ -4280,11 +3287,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "cc",
-                                "sourceOrdering": 94,
-                                "isNullable": true,
                                 "displayName": "CC",
-                                "description": "Enter the carbon copy (cc) recipients of the activity."
+                                "description": "Enter the carbon copy (cc) recipients of the activity.",
+                                "isNullable": true,
+                                "sourceName": "cc",
+                                "sourceOrdering": 94
                             },
                             {
                                 "name": "BCC",
@@ -4342,11 +3349,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "bcc",
-                                "sourceOrdering": 95,
-                                "isNullable": true,
                                 "displayName": "BCC",
-                                "description": "Enter the blind carbon copy (bcc) recipients of the activity."
+                                "description": "Enter the blind carbon copy (bcc) recipients of the activity.",
+                                "isNullable": true,
+                                "sourceName": "bcc",
+                                "sourceOrdering": 95
                             },
                             {
                                 "name": "requiredAttendees",
@@ -4404,11 +3411,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "requiredattendees",
-                                "sourceOrdering": 96,
-                                "isNullable": true,
                                 "displayName": "Required Attendees",
-                                "description": "List of required attendees for the activity."
+                                "description": "List of required attendees for the activity.",
+                                "isNullable": true,
+                                "sourceName": "requiredattendees",
+                                "sourceOrdering": 96
                             },
                             {
                                 "name": "optionalAttendees",
@@ -4466,11 +3473,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "optionalattendees",
-                                "sourceOrdering": 97,
-                                "isNullable": true,
                                 "displayName": "Optional Attendees",
-                                "description": "List of optional attendees for the activity."
+                                "description": "List of optional attendees for the activity.",
+                                "isNullable": true,
+                                "sourceName": "optionalattendees",
+                                "sourceOrdering": 97
                             },
                             {
                                 "name": "organizer",
@@ -4528,11 +3535,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "organizer",
-                                "sourceOrdering": 98,
-                                "isNullable": true,
                                 "displayName": "Organizer",
-                                "description": "Enter the person who organized the activity."
+                                "description": "Enter the person who organized the activity.",
+                                "isNullable": true,
+                                "sourceName": "organizer",
+                                "sourceOrdering": 98
                             },
                             {
                                 "name": "resources",
@@ -4590,11 +3597,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "resources",
-                                "sourceOrdering": 99,
-                                "isNullable": true,
                                 "displayName": "Resources",
-                                "description": "Enter the users or facility/equipment that are required for the activity."
+                                "description": "Enter the users or facility/equipment that are required for the activity.",
+                                "isNullable": true,
+                                "sourceName": "resources",
+                                "sourceOrdering": 99
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -4643,66 +3650,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 100,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Shows the sequence number of the import that created this record."
-                            },
-                            {
-                                "name": "overriddenCreatedOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time that the record was migrated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 101,
+                                "description": "Shows the sequence number of the import that created this record.",
                                 "isNullable": true,
-                                "displayName": "Record Created On",
-                                "description": "Shows the date and time that the record was migrated."
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 100,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "customers",
@@ -4760,11 +3714,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "customers",
-                                "sourceOrdering": 102,
-                                "isNullable": true,
                                 "displayName": "Customers",
-                                "description": "Customer with which the activity is associated."
+                                "description": "Customer with which the activity is associated.",
+                                "isNullable": true,
+                                "sourceName": "customers",
+                                "sourceOrdering": 102
                             },
                             {
                                 "name": "partners",
@@ -4822,11 +3776,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "partners",
-                                "sourceOrdering": 103,
-                                "isNullable": true,
                                 "displayName": "Outsource Vendors",
-                                "description": "Shows the outsource vendor who the activity is associated with."
+                                "description": "Shows the outsource vendor who the activity is associated with.",
+                                "isNullable": true,
+                                "sourceName": "partners",
+                                "sourceOrdering": 103
                             },
                             {
                                 "name": "ipAddress",
@@ -4859,11 +3813,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "adx_ipaddress",
-                                "maximumLength": 128,
-                                "sourceOrdering": 104,
+                                "displayName": "IP Address",
                                 "isNullable": true,
-                                "displayName": "IP Address"
+                                "sourceName": "adx_ipaddress",
+                                "sourceOrdering": 104,
+                                "maximumLength": 128
                             }
                         ]
                     }

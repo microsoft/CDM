@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "Fax",
-            "extendsEntity": "CdmObject",
+            "extendsEntity": "CdsStandard",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -134,11 +134,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 1,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Choose the record that the fax relates to."
+                                                        "description": "Choose the record that the fax relates to.",
+                                                        "isNullable": true,
+                                                        "sourceName": "regardingobjectid",
+                                                        "sourceOrdering": 1
                                                     }
                                                 }
                                             ]
@@ -244,155 +244,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduleddurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 2,
-                                "isNullable": true,
                                 "displayName": "Scheduled Duration",
-                                "description": "Shows the expected duration of the fax activity, in minutes."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningBusinessUnit",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Business Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the business unit that owns the fax activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 3,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier of the business unit that owns the fax activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "BusinessUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "createdOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 4,
+                                "description": "Shows the expected duration of the fax activity, in minutes.",
                                 "isNullable": true,
-                                "displayName": "Created On",
-                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "sourceName": "scheduleddurationminutes",
+                                "sourceOrdering": 2,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "coverPageName",
@@ -441,12 +299,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "coverpagename",
-                                "maximumLength": 100,
-                                "sourceOrdering": 5,
-                                "isNullable": true,
                                 "displayName": "Cover Page Name",
-                                "description": "Type the name of the cover page to use when sending the fax."
+                                "description": "Type the name of the cover page to use when sending the fax.",
+                                "isNullable": true,
+                                "sourceName": "coverpagename",
+                                "sourceOrdering": 5,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "billingCode",
@@ -495,12 +353,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "billingcode",
-                                "maximumLength": 50,
-                                "sourceOrdering": 6,
-                                "isNullable": true,
                                 "displayName": "Billing Code",
-                                "description": "Type the billing code for the fax to make sure the fax is charged to the correct sender or customer account."
+                                "description": "Type the billing code for the fax to make sure the fax is charged to the correct sender or customer account.",
+                                "isNullable": true,
+                                "sourceName": "billingcode",
+                                "sourceOrdering": 6,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "actualDurationMinutes",
@@ -554,13 +412,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualdurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 7,
-                                "isNullable": true,
                                 "displayName": "Duration",
-                                "description": "Type the number of minutes spent creating and sending the fax. The duration is used in reporting."
+                                "description": "Type the number of minutes spent creating and sending the fax. The duration is used in reporting.",
+                                "isNullable": true,
+                                "sourceName": "actualdurationminutes",
+                                "sourceOrdering": 7,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "stateCode",
@@ -656,10 +514,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 8,
                                 "displayName": "Activity Status",
-                                "description": "Shows whether the fax activity is open, completed, or canceled. Completed and canceled fax activities are read-only and can't be edited."
+                                "description": "Shows whether the fax activity is open, completed, or canceled. Completed and canceled fax activities are read-only and can't be edited.",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 8
                             },
                             {
                                 "name": "numberOfPages",
@@ -708,13 +566,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "numberofpages",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 9,
-                                "isNullable": true,
                                 "displayName": "Number of Pages",
-                                "description": "Type the number of pages included in the fax."
+                                "description": "Type the number of pages included in the fax.",
+                                "isNullable": true,
+                                "sourceName": "numberofpages",
+                                "sourceOrdering": 9,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "description",
@@ -763,12 +621,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "description",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 10,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Type additional information to describe the fax, such as the primary message or the products and services featured."
+                                "description": "Type additional information to describe the fax, such as the primary message or the products and services featured.",
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 10,
+                                "maximumLength": 2000
                             },
                             {
                                 "name": "scheduledEnd",
@@ -817,11 +675,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 11,
-                                "isNullable": true,
                                 "displayName": "Due Date",
-                                "description": "Enter the expected due date and time."
+                                "description": "Enter the expected due date and time.",
+                                "isNullable": true,
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 11
                             },
                             {
                                 "name": "faxNumber",
@@ -870,12 +728,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "faxnumber",
-                                "maximumLength": 200,
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Fax Number",
-                                "description": "Type the recipient's fax number."
+                                "description": "Type the recipient's fax number.",
+                                "isNullable": true,
+                                "sourceName": "faxnumber",
+                                "sourceOrdering": 12,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "to",
@@ -933,11 +791,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "to",
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "To",
-                                "description": "Enter the account, contact, lead, queue, or user recipients for the fax."
+                                "description": "Enter the account, contact, lead, queue, or user recipients for the fax.",
+                                "isNullable": true,
+                                "sourceName": "to",
+                                "sourceOrdering": 13
                             },
                             {
                                 "name": "category",
@@ -986,12 +844,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "category",
-                                "maximumLength": 250,
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "Category",
-                                "description": "Type a category to identify the fax type, such as sales offer or press release, to tie the fax to a business group or function."
+                                "description": "Type a category to identify the fax type, such as sales offer or press release, to tie the fax to a business group or function.",
+                                "isNullable": true,
+                                "sourceName": "category",
+                                "sourceOrdering": 15,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "actualStart",
@@ -1040,11 +898,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualstart",
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "Actual Start",
-                                "description": "Enter the actual start date and time for the fax. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the fax."
+                                "description": "Enter the actual start date and time for the fax. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the fax.",
+                                "isNullable": true,
+                                "sourceName": "actualstart",
+                                "sourceOrdering": 16
                             },
                             {
                                 "name": "tsid",
@@ -1093,12 +951,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "tsid",
-                                "maximumLength": 20,
-                                "sourceOrdering": 17,
-                                "isNullable": true,
                                 "displayName": "Transmit. Station Id",
-                                "description": "Type the Transmitting Subscriber ID (TSID) associated with a send action. This is typically a combination of the recipient's fax or phone number and company name."
+                                "description": "Type the Transmitting Subscriber ID (TSID) associated with a send action. This is typically a combination of the recipient's fax or phone number and company name.",
+                                "isNullable": true,
+                                "sourceName": "tsid",
+                                "sourceOrdering": 17,
+                                "maximumLength": 20
                             },
                             {
                                 "name": "isWorkflowCreated",
@@ -1147,165 +1005,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isworkflowcreated",
-                                "sourceOrdering": 19,
-                                "isNullable": true,
                                 "displayName": "Is Workflow Created",
-                                "description": "Indication of whether the fax activity was created by a workflow rule."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 20,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "versionNumber",
-                                "relationship": "hasA",
-                                "dataType": "bigInteger",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version number of the fax."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 21,
+                                "description": "Indication of whether the fax activity was created by a workflow rule.",
                                 "isNullable": true,
-                                "displayName": "Version Number",
-                                "description": "Version number of the fax."
+                                "sourceName": "isworkflowcreated",
+                                "sourceOrdering": 19
                             },
                             {
                                 "name": "actualEnd",
@@ -1354,11 +1058,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualend",
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Actual End",
-                                "description": "Enter the actual end date and time of the fax. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the fax."
+                                "description": "Enter the actual end date and time of the fax. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the fax.",
+                                "isNullable": true,
+                                "sourceName": "actualend",
+                                "sourceOrdering": 22
                             },
                             {
                                 "name": "directionCode",
@@ -1407,64 +1111,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "directioncode",
-                                "sourceOrdering": 23,
-                                "isNullable": true,
                                 "displayName": "Direction",
-                                "description": "Select the direction of the fax as incoming or outbound."
-                            },
-                            {
-                                "name": "modifiedOn",
-                                "relationship": "modifiedOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 24,
+                                "description": "Select the direction of the fax as incoming or outbound.",
                                 "isNullable": true,
-                                "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "sourceName": "directioncode",
+                                "sourceOrdering": 23
                             },
                             {
                                 "name": "scheduledStart",
@@ -1513,11 +1164,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 25,
-                                "isNullable": true,
                                 "displayName": "Start Date",
-                                "description": "Enter the expected due date and time."
+                                "description": "Enter the expected due date and time.",
+                                "isNullable": true,
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 25
                             },
                             {
                                 "name": "from",
@@ -1575,11 +1226,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "from",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "From",
-                                "description": "Enter the account, contact, lead, queue, or user who sent the fax."
+                                "description": "Enter the account, contact, lead, queue, or user who sent the fax.",
+                                "isNullable": true,
+                                "sourceName": "from",
+                                "sourceOrdering": 26
                             },
                             {
                                 "relationship": {
@@ -1638,10 +1289,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 27,
                                                         "displayName": "Fax",
-                                                        "description": "Unique identifier of the fax activity."
+                                                        "description": "Unique identifier of the fax activity.",
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 27
                                                     }
                                                 }
                                             ]
@@ -1655,95 +1306,6 @@
                                             "traitReference": "is.identifiedBy",
                                             "arguments": [
                                                 "Activity/(resolvedAttributes)/activityId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 28,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By",
-                                                        "description": "Shows who last updated the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
                                             ]
                                         }
                                     ]
@@ -1870,11 +1432,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 29,
-                                "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Select the fax's status."
+                                "description": "Select the fax's status.",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 29
                             },
                             {
                                 "name": "subject",
@@ -1923,12 +1485,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subject",
-                                "maximumLength": 200,
-                                "sourceOrdering": 30,
-                                "isNullable": true,
                                 "displayName": "Subject",
-                                "description": "Type a short description about the objective or primary topic of the fax."
+                                "description": "Type a short description about the objective or primary topic of the fax.",
+                                "isNullable": true,
+                                "sourceName": "subject",
+                                "sourceOrdering": 30,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "priorityCode",
@@ -2024,11 +1586,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "prioritycode",
-                                "sourceOrdering": 31,
-                                "isNullable": true,
                                 "displayName": "Priority",
-                                "description": "Select the priority so that preferred customers or critical issues are handled quickly."
+                                "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+                                "isNullable": true,
+                                "sourceName": "prioritycode",
+                                "sourceOrdering": 31
                             },
                             {
                                 "name": "subcategory",
@@ -2077,12 +1639,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subcategory",
-                                "maximumLength": 250,
-                                "sourceOrdering": 32,
-                                "isNullable": true,
                                 "displayName": "Sub-Category",
-                                "description": "Type a subcategory to identify the fax type to relate the activity to a specific product, sales region, business group, or other function."
+                                "description": "Type a subcategory to identify the fax type to relate the activity to a specific product, sales region, business group, or other function.",
+                                "isNullable": true,
+                                "sourceName": "subcategory",
+                                "sourceOrdering": 32,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "isBilled",
@@ -2131,297 +1693,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isbilled",
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Is Billed",
-                                "description": "Information regarding whether the fax activity was billed as part of resolving a case."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 34,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By",
-                                                        "description": "Shows who created the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'owningUser' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningUser",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning User"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user that owns the fax activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 35,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user that owns the fax activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "timeZoneRuleVersionNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time Zone Rule Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 52,
+                                "description": "Information regarding whether the fax activity was billed as part of resolving a case.",
                                 "isNullable": true,
-                                "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
-                            },
-                            {
-                                "name": "overriddenCreatedOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time that the record was migrated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 53,
-                                "isNullable": true,
-                                "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "sourceName": "isbilled",
+                                "sourceOrdering": 33
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -2470,246 +1746,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 55,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
-                            },
-                            {
-                                "name": "UTCConversionTimeZoneCode",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 56,
+                                "description": "Unique identifier of the data import or data migration that created this record.",
                                 "isNullable": true,
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 62,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 66,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who last updated the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 55,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "activityTypeCode",
@@ -2895,10 +1938,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activitytypecode",
-                                "sourceOrdering": 70,
                                 "displayName": "Activity Type",
-                                "description": "Type of activity."
+                                "description": "Type of activity.",
+                                "sourceName": "activitytypecode",
+                                "sourceOrdering": 70
                             },
                             {
                                 "name": "isRegularActivity",
@@ -2947,99 +1990,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isregularactivity",
-                                "sourceOrdering": 72,
                                 "displayName": "Is Regular Activity",
-                                "description": "Information regarding whether the activity is a regular activity type or event type."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Team' adds the 'owningTeam' attribute below to the 'Fax' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningTeam",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Team"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the team that owns the fax activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 74,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team that owns the fax activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "Team",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Team/(resolvedAttributes)/teamId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Information regarding whether the activity is a regular activity type or event type.",
+                                "sourceName": "isregularactivity",
+                                "sourceOrdering": 72
                             },
                             {
                                 "relationship": {
@@ -3107,11 +2061,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 75,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 75
                                                     }
                                                 }
                                             ]
@@ -3177,13 +2131,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 77,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 77,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
                                 "name": "processId",
@@ -3232,11 +2186,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "processid",
-                                "sourceOrdering": 78,
-                                "isNullable": true,
                                 "displayName": "Process",
-                                "description": "Shows the ID of the process."
+                                "description": "Shows the ID of the process.",
+                                "isNullable": true,
+                                "sourceName": "processid",
+                                "sourceOrdering": 78
                             },
                             {
                                 "name": "stageId",
@@ -3285,11 +2239,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stageid",
-                                "sourceOrdering": 79,
-                                "isNullable": true,
                                 "displayName": "Process Stage",
-                                "description": "Shows the ID of the stage."
+                                "description": "Shows the ID of the stage.",
+                                "isNullable": true,
+                                "sourceName": "stageid",
+                                "sourceOrdering": 79
                             },
                             {
                                 "name": "traversedPath",
@@ -3338,12 +2292,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "traversedpath",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 80,
-                                "isNullable": true,
                                 "displayName": "Traversed Path",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "traversedpath",
+                                "sourceOrdering": 80,
+                                "maximumLength": 1250
                             },
                             {
                                 "relationship": {
@@ -3411,11 +2365,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slaid",
-                                                        "sourceOrdering": 116,
-                                                        "isNullable": true,
                                                         "displayName": "SLA",
-                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the fax record."
+                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the fax record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slaid",
+                                                        "sourceOrdering": 116
                                                     }
                                                 }
                                             ]
@@ -3500,11 +2454,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slainvokedid",
-                                                        "sourceOrdering": 117,
-                                                        "isNullable": true,
                                                         "displayName": "Last SLA applied",
-                                                        "description": "Last SLA that was applied to this fax. This field is for internal use only."
+                                                        "description": "Last SLA that was applied to this fax. This field is for internal use only.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slainvokedid",
+                                                        "sourceOrdering": 117
                                                     }
                                                 }
                                             ]
@@ -3570,13 +2524,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "onholdtime",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 118,
-                                "isNullable": true,
                                 "displayName": "On Hold Time (Minutes)",
-                                "description": "Shows how long, in minutes, that the record was on hold."
+                                "description": "Shows how long, in minutes, that the record was on hold.",
+                                "isNullable": true,
+                                "sourceName": "onholdtime",
+                                "sourceOrdering": 118,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "lastOnHoldTime",
@@ -3625,11 +2579,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "lastonholdtime",
-                                "sourceOrdering": 119,
-                                "isNullable": true,
                                 "displayName": "Last On Hold Time",
-                                "description": "Contains the date and time stamp of the last on hold time."
+                                "description": "Contains the date and time stamp of the last on hold time.",
+                                "isNullable": true,
+                                "sourceName": "lastonholdtime",
+                                "sourceOrdering": 119
                             },
                             {
                                 "name": "sortDate",
@@ -3678,11 +2632,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sortdate",
-                                "sourceOrdering": 122,
-                                "isNullable": true,
                                 "displayName": "Sort Date",
-                                "description": "Shows the date and time by which the activities are sorted."
+                                "description": "Shows the date and time by which the activities are sorted.",
+                                "isNullable": true,
+                                "sourceName": "sortdate",
+                                "sourceOrdering": 122
                             }
                         ]
                     }

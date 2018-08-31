@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "Email",
-            "extendsEntity": "CdmObject",
+            "extendsEntity": "CdsStandard",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -115,11 +115,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 1,
-                                "isNullable": true,
                                 "displayName": "Start Date",
-                                "description": "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated."
+                                "description": "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated.",
+                                "isNullable": true,
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 1
                             },
                             {
                                 "name": "statusCode",
@@ -319,11 +319,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 2,
-                                "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Select the email's status."
+                                "description": "Select the email's status.",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 2
                             },
                             {
                                 "name": "submittedBy",
@@ -372,12 +372,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "submittedby",
-                                "maximumLength": 250,
-                                "sourceOrdering": 3,
-                                "isNullable": true,
                                 "displayName": "Submitted By",
-                                "description": "Shows the Microsoft Office Outlook account for the user who submitted the email to Microsoft Dynamics 365."
+                                "description": "Shows the Microsoft Office Outlook account for the user who submitted the email to Microsoft Dynamics 365.",
+                                "isNullable": true,
+                                "sourceName": "submittedby",
+                                "sourceOrdering": 3,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "description",
@@ -426,12 +426,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "description",
-                                "maximumLength": 1073741823,
-                                "sourceOrdering": 4,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Type the greeting and message text of the email."
+                                "description": "Type the greeting and message text of the email.",
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 4,
+                                "maximumLength": 1073741823
                             },
                             {
                                 "name": "to",
@@ -489,11 +489,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "to",
-                                "sourceOrdering": 5,
-                                "isNullable": true,
                                 "displayName": "To",
-                                "description": "Enter the account, contact, lead, queue, or user recipients for the email."
+                                "description": "Enter the account, contact, lead, queue, or user recipients for the email.",
+                                "isNullable": true,
+                                "sourceName": "to",
+                                "sourceOrdering": 5
                             },
                             {
                                 "name": "isWorkflowCreated",
@@ -542,11 +542,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isworkflowcreated",
-                                "sourceOrdering": 6,
-                                "isNullable": true,
                                 "displayName": "Is Workflow Created",
-                                "description": "Indication if the email was created by a workflow rule."
+                                "description": "Indication if the email was created by a workflow rule.",
+                                "isNullable": true,
+                                "sourceName": "isworkflowcreated",
+                                "sourceOrdering": 6
                             },
                             {
                                 "relationship": {
@@ -605,10 +605,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 7,
                                                         "displayName": "Email Message",
-                                                        "description": "Unique identifier of the email activity."
+                                                        "description": "Unique identifier of the email activity.",
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 7
                                                     }
                                                 }
                                             ]
@@ -674,11 +674,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 8,
-                                "isNullable": true,
                                 "displayName": "Due Date",
-                                "description": "Enter the expected due date and time for the activity to be completed to provide details about when the email will be sent."
+                                "description": "Enter the expected due date and time for the activity to be completed to provide details about when the email will be sent.",
+                                "isNullable": true,
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 8
                             },
                             {
                                 "name": "mimeType",
@@ -727,154 +727,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mimetype",
-                                "maximumLength": 256,
-                                "sourceOrdering": 9,
-                                "isNullable": true,
                                 "displayName": "Mime Type",
-                                "description": "MIME type of the email message data."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 10,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By",
-                                                        "description": "Shows who created the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "versionNumber",
-                                "relationship": "hasA",
-                                "dataType": "bigInteger",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version number of the email message."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 11,
+                                "description": "MIME type of the email message data.",
                                 "isNullable": true,
-                                "displayName": "Version Number",
-                                "description": "Version number of the email message."
+                                "sourceName": "mimetype",
+                                "sourceOrdering": 9,
+                                "maximumLength": 256
                             },
                             {
                                 "name": "readReceiptRequested",
@@ -923,11 +781,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "readreceiptrequested",
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Read Receipt Requested",
-                                "description": "Indicates that a read receipt is requested."
+                                "description": "Indicates that a read receipt is requested.",
+                                "isNullable": true,
+                                "sourceName": "readreceiptrequested",
+                                "sourceOrdering": 12
                             },
                             {
                                 "name": "subcategory",
@@ -976,12 +834,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subcategory",
-                                "maximumLength": 250,
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Sub-Category",
-                                "description": "Type a subcategory to identify the email type and relate the activity to a specific product, sales region, business group, or other function."
+                                "description": "Type a subcategory to identify the email type and relate the activity to a specific product, sales region, business group, or other function.",
+                                "isNullable": true,
+                                "sourceName": "subcategory",
+                                "sourceOrdering": 13,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "isBilled",
@@ -1030,11 +888,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isbilled",
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Is Billed",
-                                "description": "Information regarding whether the email activity was billed as part of resolving a case."
+                                "description": "Information regarding whether the email activity was billed as part of resolving a case.",
+                                "isNullable": true,
+                                "sourceName": "isbilled",
+                                "sourceOrdering": 14
                             },
                             {
                                 "name": "actualDurationMinutes",
@@ -1088,13 +946,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualdurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "Duration",
-                                "description": "Type the number of minutes spent creating and sending the email. The duration is used in reporting."
+                                "description": "Type the number of minutes spent creating and sending the email. The duration is used in reporting.",
+                                "isNullable": true,
+                                "sourceName": "actualdurationminutes",
+                                "sourceOrdering": 15,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "priorityCode",
@@ -1190,100 +1048,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "prioritycode",
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "Priority",
-                                "description": "Select the priority so that preferred customers or critical issues are handled quickly."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 17,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By",
-                                                        "description": "Shows who last updated the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+                                "isNullable": true,
+                                "sourceName": "prioritycode",
+                                "sourceOrdering": 16
                             },
                             {
                                 "name": "actualStart",
@@ -1332,11 +1101,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualstart",
-                                "sourceOrdering": 18,
-                                "isNullable": true,
                                 "displayName": "Actual Start",
-                                "description": "Enter the actual start date and time for the email. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the email."
+                                "description": "Enter the actual start date and time for the email. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the email.",
+                                "isNullable": true,
+                                "sourceName": "actualstart",
+                                "sourceOrdering": 18
                             },
                             {
                                 "name": "from",
@@ -1394,11 +1163,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "from",
-                                "sourceOrdering": 19,
-                                "isNullable": true,
                                 "displayName": "From",
-                                "description": "Enter the sender of the email."
+                                "description": "Enter the sender of the email.",
+                                "isNullable": true,
+                                "sourceName": "from",
+                                "sourceOrdering": 19
                             },
                             {
                                 "name": "directionCode",
@@ -1447,11 +1216,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "directioncode",
-                                "sourceOrdering": 20,
-                                "isNullable": true,
                                 "displayName": "Direction",
-                                "description": "Select the direction of the email as incoming or outbound."
+                                "description": "Select the direction of the email as incoming or outbound.",
+                                "isNullable": true,
+                                "sourceName": "directioncode",
+                                "sourceOrdering": 20
                             },
                             {
                                 "name": "actualEnd",
@@ -1500,11 +1269,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "actualend",
-                                "sourceOrdering": 21,
-                                "isNullable": true,
                                 "displayName": "Actual End",
-                                "description": "Enter the actual end date and time of the email. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the email."
+                                "description": "Enter the actual end date and time of the email. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the email.",
+                                "isNullable": true,
+                                "sourceName": "actualend",
+                                "sourceOrdering": 21
                             },
                             {
                                 "name": "trackingToken",
@@ -1553,12 +1322,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "trackingtoken",
-                                "maximumLength": 50,
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Tracking Token",
-                                "description": "Shows the tracking token assigned to the email to make sure responses are automatically tracked in Microsoft Dynamics 365."
+                                "description": "Shows the tracking token assigned to the email to make sure responses are automatically tracked in Microsoft Dynamics 365.",
+                                "isNullable": true,
+                                "sourceName": "trackingtoken",
+                                "sourceOrdering": 22,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "scheduledDurationMinutes",
@@ -1612,13 +1381,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduleddurationminutes",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 25,
-                                "isNullable": true,
                                 "displayName": "Scheduled Duration",
-                                "description": "Scheduled duration of the email activity, specified in minutes."
+                                "description": "Scheduled duration of the email activity, specified in minutes.",
+                                "isNullable": true,
+                                "sourceName": "scheduleddurationminutes",
+                                "sourceOrdering": 25,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "category",
@@ -1667,154 +1436,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "category",
-                                "maximumLength": 250,
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "Category",
-                                "description": "Type a category to identify the email type, such as lead outreach, customer follow-up, or service alert, to tie the email to a business group or function."
-                            },
-                            {
-                                "name": "createdOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 27,
+                                "description": "Type a category to identify the email type, such as lead outreach, customer follow-up, or service alert, to tie the email to a business group or function.",
                                 "isNullable": true,
-                                "displayName": "Created On",
-                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningBusinessUnit",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Business Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the business unit that owns the email activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 28,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier of the business unit that owns the email activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "BusinessUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "sourceName": "category",
+                                "sourceOrdering": 26,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "BCC",
@@ -1872,11 +1499,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "bcc",
-                                "sourceOrdering": 29,
-                                "isNullable": true,
                                 "displayName": "Bcc",
-                                "description": "Enter the recipients that are included on the email distribution, but are not displayed to other recipients."
+                                "description": "Enter the recipients that are included on the email distribution, but are not displayed to other recipients.",
+                                "isNullable": true,
+                                "sourceName": "bcc",
+                                "sourceOrdering": 29
                             },
                             {
                                 "name": "CC",
@@ -1934,11 +1561,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "cc",
-                                "sourceOrdering": 30,
-                                "isNullable": true,
                                 "displayName": "Cc",
-                                "description": "Enter the recipients that should be copied on the email."
+                                "description": "Enter the recipients that should be copied on the email.",
+                                "isNullable": true,
+                                "sourceName": "cc",
+                                "sourceOrdering": 30
                             },
                             {
                                 "name": "sender",
@@ -1987,12 +1614,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sender",
-                                "maximumLength": 250,
-                                "sourceOrdering": 31,
-                                "isNullable": true,
                                 "displayName": "From",
-                                "description": "Sender of the email."
+                                "description": "Sender of the email.",
+                                "isNullable": true,
+                                "sourceName": "sender",
+                                "sourceOrdering": 31,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "subject",
@@ -2041,65 +1668,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subject",
-                                "maximumLength": 200,
-                                "sourceOrdering": 32,
-                                "isNullable": true,
                                 "displayName": "Subject",
-                                "description": "Type a short description about the objective or primary topic of the email."
-                            },
-                            {
-                                "name": "modifiedOn",
-                                "relationship": "modifiedOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 33,
+                                "description": "Type a short description about the objective or primary topic of the email.",
                                 "isNullable": true,
-                                "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "sourceName": "subject",
+                                "sourceOrdering": 32,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "toRecipients",
@@ -2148,12 +1722,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "torecipients",
-                                "maximumLength": 500,
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "To Recipients",
-                                "description": "Shows the email addresses corresponding to the recipients."
+                                "description": "Shows the email addresses corresponding to the recipients.",
+                                "isNullable": true,
+                                "sourceName": "torecipients",
+                                "sourceOrdering": 34,
+                                "maximumLength": 500
                             },
                             {
                                 "name": "deliveryReceiptRequested",
@@ -2202,11 +1776,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deliveryreceiptrequested",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Delivery Receipt Requested",
-                                "description": "Select whether the sender should receive confirmation that the email was delivered."
+                                "description": "Select whether the sender should receive confirmation that the email was delivered.",
+                                "isNullable": true,
+                                "sourceName": "deliveryreceiptrequested",
+                                "sourceOrdering": 35
                             },
                             {
                                 "relationship": {
@@ -2274,11 +1848,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 36,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Choose the record that the email relates to."
+                                                        "description": "Choose the record that the email relates to.",
+                                                        "isNullable": true,
+                                                        "sourceName": "regardingobjectid",
+                                                        "sourceOrdering": 36
                                                     }
                                                 }
                                             ]
@@ -2426,111 +2000,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 37,
                                 "displayName": "Activity Status",
-                                "description": "Shows whether the email is open, completed, or canceled. Completed and canceled email is read-only and can't be edited."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 38,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "description": "Shows whether the email is open, completed, or canceled. Completed and canceled email is read-only and can't be edited.",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 37
                             },
                             {
                                 "name": "messageId",
@@ -2579,154 +2052,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "messageid",
-                                "maximumLength": 320,
-                                "sourceOrdering": 39,
-                                "isNullable": true,
                                 "displayName": "Message ID",
-                                "description": "Unique identifier of the email message. Used only for email that is received."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'owningUser' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningUser",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning User"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user who owns the email activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 40,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user who owns the email activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "overriddenCreatedOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time that the record was migrated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 59,
+                                "description": "Unique identifier of the email message. Used only for email that is received.",
                                 "isNullable": true,
-                                "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "sourceName": "messageid",
+                                "sourceOrdering": 39,
+                                "maximumLength": 320
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -2775,13 +2106,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 60,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
+                                "description": "Unique identifier of the data import or data migration that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 60,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "deliveryAttempts",
@@ -2830,13 +2161,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deliveryattempts",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 61,
-                                "isNullable": true,
                                 "displayName": "No. of Delivery Attempts",
-                                "description": "Shows the count of the number of attempts made to send the email. The count is used as an indicator of email routing issues."
+                                "description": "Shows the count of the number of attempts made to send the email. The count is used as an indicator of email routing issues.",
+                                "isNullable": true,
+                                "sourceName": "deliveryattempts",
+                                "sourceOrdering": 61,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "compressed",
@@ -2885,11 +2216,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "compressed",
-                                "sourceOrdering": 63,
-                                "isNullable": true,
                                 "displayName": "Compression",
-                                "description": "Indicates if the body is compressed."
+                                "description": "Indicates if the body is compressed.",
+                                "isNullable": true,
+                                "sourceName": "compressed",
+                                "sourceOrdering": 63
                             },
                             {
                                 "name": "notifications",
@@ -2985,299 +2316,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "notifications",
-                                "sourceOrdering": 64,
-                                "isNullable": true,
                                 "displayName": "Notifications",
-                                "description": "Select the notification code to identify issues with the email recipients or attachments, such as blocked attachments."
-                            },
-                            {
-                                "name": "timeZoneRuleVersionNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time Zone Rule Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 65,
+                                "description": "Select the notification code to identify issues with the email recipients or attachments, such as blocked attachments.",
                                 "isNullable": true,
-                                "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
-                            },
-                            {
-                                "name": "UTCConversionTimeZoneCode",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 66,
-                                "isNullable": true,
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 74,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 78,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who last updated the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "sourceName": "notifications",
+                                "sourceOrdering": 64
                             },
                             {
                                 "name": "activityTypeCode",
@@ -3463,10 +2506,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activitytypecode",
-                                "sourceOrdering": 82,
                                 "displayName": "Activity Type",
-                                "description": "Shows the type of activity."
+                                "description": "Shows the type of activity.",
+                                "sourceName": "activitytypecode",
+                                "sourceOrdering": 82
                             },
                             {
                                 "name": "isRegularActivity",
@@ -3515,99 +2558,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isregularactivity",
-                                "sourceOrdering": 84,
                                 "displayName": "Is Regular Activity",
-                                "description": "Information regarding whether the activity is a regular activity type or event type."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Team' adds the 'owningTeam' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningTeam",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Team"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the team who owns the email activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 86,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team who owns the email activity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "Team",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Team/(resolvedAttributes)/teamId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Information regarding whether the activity is a regular activity type or event type.",
+                                "sourceName": "isregularactivity",
+                                "sourceOrdering": 84
                             },
                             {
                                 "relationship": {
@@ -3675,11 +2629,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 87,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 87
                                                     }
                                                 }
                                             ]
@@ -3745,13 +2699,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 89,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 89,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
                                 "relationship": {
@@ -3819,11 +2773,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "emailsender",
-                                                        "sourceOrdering": 90,
-                                                        "isNullable": true,
                                                         "displayName": "Sender",
-                                                        "description": "Shows the sender of the email."
+                                                        "description": "Shows the sender of the email.",
+                                                        "isNullable": true,
+                                                        "sourceName": "emailsender",
+                                                        "sourceOrdering": 90
                                                     }
                                                 }
                                             ]
@@ -3943,11 +2897,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "sendersaccount",
-                                                        "sourceOrdering": 94,
-                                                        "isNullable": true,
                                                         "displayName": "Senders Account",
-                                                        "description": "Shows the parent account of the sender of the email."
+                                                        "description": "Shows the parent account of the sender of the email.",
+                                                        "isNullable": true,
+                                                        "sourceName": "sendersaccount",
+                                                        "sourceOrdering": 94
                                                     }
                                                 }
                                             ]
@@ -4013,12 +2967,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "attachmentcount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 96,
                                 "displayName": "Attachment Count",
-                                "description": "Shows the umber of attachments of the email message."
+                                "description": "Shows the umber of attachments of the email message.",
+                                "sourceName": "attachmentcount",
+                                "sourceOrdering": 96,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "senderMailboxId",
@@ -4076,11 +3030,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sendermailboxid",
-                                "sourceOrdering": 97,
-                                "isNullable": true,
                                 "displayName": "Sender's Mailbox",
-                                "description": "Select the mailbox associated with the sender of the email message."
+                                "description": "Select the mailbox associated with the sender of the email message.",
+                                "isNullable": true,
+                                "sourceName": "sendermailboxid",
+                                "sourceOrdering": 97
                             },
                             {
                                 "name": "deliveryPriorityCode",
@@ -4176,11 +3130,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deliveryprioritycode",
-                                "sourceOrdering": 100,
-                                "isNullable": true,
                                 "displayName": "Delivery Priority",
-                                "description": "Select the priority of delivery of the email to the email server."
+                                "description": "Select the priority of delivery of the email to the email server.",
+                                "isNullable": true,
+                                "sourceName": "deliveryprioritycode",
+                                "sourceOrdering": 100
                             },
                             {
                                 "relationship": {
@@ -4248,11 +3202,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "parentactivityid",
-                                                        "sourceOrdering": 102,
-                                                        "isNullable": true,
                                                         "displayName": "Parent Activity Id",
-                                                        "description": "Select the activity that the email is associated with."
+                                                        "description": "Select the activity that the email is associated with.",
+                                                        "isNullable": true,
+                                                        "sourceName": "parentactivityid",
+                                                        "sourceOrdering": 102
                                                     }
                                                 }
                                             ]
@@ -4318,12 +3272,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "inreplyto",
-                                "maximumLength": 320,
-                                "sourceOrdering": 104,
-                                "isNullable": true,
                                 "displayName": "In Reply To Message",
-                                "description": "Type the ID of the email message that this email activity is a response to."
+                                "description": "Type the ID of the email message that this email activity is a response to.",
+                                "isNullable": true,
+                                "sourceName": "inreplyto",
+                                "sourceOrdering": 104,
+                                "maximumLength": 320
                             },
                             {
                                 "name": "baseConversationIndexHash",
@@ -4372,13 +3326,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "baseconversationindexhash",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 105,
-                                "isNullable": true,
                                 "displayName": "Conversation Index (Hash)",
-                                "description": "Hash of base of conversation index."
+                                "description": "Hash of base of conversation index.",
+                                "isNullable": true,
+                                "sourceName": "baseconversationindexhash",
+                                "sourceOrdering": 105,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "conversationIndex",
@@ -4427,12 +3381,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "conversationindex",
-                                "maximumLength": 2048,
-                                "sourceOrdering": 106,
-                                "isNullable": true,
                                 "displayName": "Conversation Index",
-                                "description": "Identifier for all the email responses for this conversation."
+                                "description": "Identifier for all the email responses for this conversation.",
+                                "isNullable": true,
+                                "sourceName": "conversationindex",
+                                "sourceOrdering": 106,
+                                "maximumLength": 2048
                             },
                             {
                                 "name": "correlationMethod",
@@ -4558,11 +3512,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "correlationmethod",
-                                "sourceOrdering": 107,
-                                "isNullable": true,
                                 "displayName": "Correlation Method",
-                                "description": "Shows how an email is matched to an existing email in Microsoft Dynamics 365. For system use only."
+                                "description": "Shows how an email is matched to an existing email in Microsoft Dynamics 365. For system use only.",
+                                "isNullable": true,
+                                "sourceName": "correlationmethod",
+                                "sourceOrdering": 107
                             },
                             {
                                 "name": "sentOn",
@@ -4611,11 +3565,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "senton",
-                                "sourceOrdering": 108,
-                                "isNullable": true,
                                 "displayName": "Date Sent",
-                                "description": "Shows the date and time that the email was sent."
+                                "description": "Shows the date and time that the email was sent.",
+                                "isNullable": true,
+                                "sourceName": "senton",
+                                "sourceOrdering": 108
                             },
                             {
                                 "name": "postponeEmailProcessingUntil",
@@ -4664,11 +3618,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "postponeemailprocessinguntil",
-                                "sourceOrdering": 109,
-                                "isNullable": true,
                                 "displayName": "Delay email processing until",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "postponeemailprocessinguntil",
+                                "sourceOrdering": 109
                             },
                             {
                                 "name": "processId",
@@ -4717,11 +3671,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "processid",
-                                "sourceOrdering": 111,
-                                "isNullable": true,
                                 "displayName": "Process",
-                                "description": "Shows the ID of the process."
+                                "description": "Shows the ID of the process.",
+                                "isNullable": true,
+                                "sourceName": "processid",
+                                "sourceOrdering": 111
                             },
                             {
                                 "name": "stageId",
@@ -4770,11 +3724,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stageid",
-                                "sourceOrdering": 112,
-                                "isNullable": true,
                                 "displayName": "Process Stage",
-                                "description": "Shows the ID of the stage."
+                                "description": "Shows the ID of the stage.",
+                                "isNullable": true,
+                                "sourceName": "stageid",
+                                "sourceOrdering": 112
                             },
                             {
                                 "name": "activityAdditionalParams",
@@ -4823,12 +3777,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activityadditionalparams",
-                                "maximumLength": 8192,
-                                "sourceOrdering": 113,
-                                "isNullable": true,
                                 "displayName": "Additional Parameters",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "activityadditionalparams",
+                                "sourceOrdering": 113,
+                                "maximumLength": 8192
                             },
                             {
                                 "name": "isUnsafe",
@@ -4877,13 +3831,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isunsafe",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 115,
-                                "isNullable": true,
                                 "displayName": "IsUnsafe",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "isunsafe",
+                                "sourceOrdering": 115,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "relationship": {
@@ -4951,11 +3905,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slaid",
-                                                        "sourceOrdering": 116,
-                                                        "isNullable": true,
                                                         "displayName": "SLA",
-                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the email record."
+                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the email record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slaid",
+                                                        "sourceOrdering": 116
                                                     }
                                                 }
                                             ]
@@ -5040,11 +3994,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "slainvokedid",
-                                                        "sourceOrdering": 117,
-                                                        "isNullable": true,
                                                         "displayName": "Last SLA applied",
-                                                        "description": "Last SLA that was applied to this email. This field is for internal use only."
+                                                        "description": "Last SLA that was applied to this email. This field is for internal use only.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slainvokedid",
+                                                        "sourceOrdering": 117
                                                     }
                                                 }
                                             ]
@@ -5110,13 +4064,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "onholdtime",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 118,
-                                "isNullable": true,
                                 "displayName": "On Hold Time (Minutes)",
-                                "description": "Shows how long, in minutes, that the record was on hold."
+                                "description": "Shows how long, in minutes, that the record was on hold.",
+                                "isNullable": true,
+                                "sourceName": "onholdtime",
+                                "sourceOrdering": 118,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "lastOnHoldTime",
@@ -5165,11 +4119,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "lastonholdtime",
-                                "sourceOrdering": 119,
-                                "isNullable": true,
                                 "displayName": "Last On Hold Time",
-                                "description": "Contains the date and time stamp of the last on hold time."
+                                "description": "Contains the date and time stamp of the last on hold time.",
+                                "isNullable": true,
+                                "sourceName": "lastonholdtime",
+                                "sourceOrdering": 119
                             },
                             {
                                 "name": "traversedPath",
@@ -5218,12 +4172,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "traversedpath",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 123,
-                                "isNullable": true,
                                 "displayName": "Traversed Path",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "traversedpath",
+                                "sourceOrdering": 123,
+                                "maximumLength": 1250
                             },
                             {
                                 "name": "attachmentOpenCount",
@@ -5272,13 +4226,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "attachmentopencount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 126,
-                                "isNullable": true,
                                 "displayName": "Attachment Open Count",
-                                "description": "Shows the number of times an email attachment has been viewed."
+                                "description": "Shows the number of times an email attachment has been viewed.",
+                                "isNullable": true,
+                                "sourceName": "attachmentopencount",
+                                "sourceOrdering": 126,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "conversationTrackingId",
@@ -5327,11 +4281,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "conversationtrackingid",
-                                "sourceOrdering": 127,
-                                "isNullable": true,
                                 "displayName": "Conversation Tracking Id",
-                                "description": "Conversation Tracking Id."
+                                "description": "Conversation Tracking Id.",
+                                "isNullable": true,
+                                "sourceName": "conversationtrackingid",
+                                "sourceOrdering": 127
                             },
                             {
                                 "name": "delayedEmailSendTime",
@@ -5380,11 +4334,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "delayedemailsendtime",
-                                "sourceOrdering": 128,
-                                "isNullable": true,
                                 "displayName": "Send Later",
-                                "description": "Enter the expected date and time when email will be sent."
+                                "description": "Enter the expected date and time when email will be sent.",
+                                "isNullable": true,
+                                "sourceName": "delayedemailsendtime",
+                                "sourceOrdering": 128
                             },
                             {
                                 "name": "lastOpenedTime",
@@ -5433,11 +4387,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "lastopenedtime",
-                                "sourceOrdering": 129,
-                                "isNullable": true,
                                 "displayName": "Last Opened Time",
-                                "description": "Shows the latest date and time when email was opened."
+                                "description": "Shows the latest date and time when email was opened.",
+                                "isNullable": true,
+                                "sourceName": "lastopenedtime",
+                                "sourceOrdering": 129
                             },
                             {
                                 "name": "linksClickedCount",
@@ -5486,13 +4440,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "linksclickedcount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 130,
-                                "isNullable": true,
                                 "displayName": "Links Clicked Count",
-                                "description": "Shows the number of times a link in an email has been clicked."
+                                "description": "Shows the number of times a link in an email has been clicked.",
+                                "isNullable": true,
+                                "sourceName": "linksclickedcount",
+                                "sourceOrdering": 130,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "openCount",
@@ -5541,13 +4495,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "opencount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 131,
-                                "isNullable": true,
                                 "displayName": "Open Count",
-                                "description": "Shows the number of times an email has been opened."
+                                "description": "Shows the number of times an email has been opened.",
+                                "isNullable": true,
+                                "sourceName": "opencount",
+                                "sourceOrdering": 131,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "replyCount",
@@ -5596,13 +4550,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "replycount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 132,
-                                "isNullable": true,
                                 "displayName": "Reply Count",
-                                "description": "Shows the number of replies received for an email."
+                                "description": "Shows the number of replies received for an email.",
+                                "isNullable": true,
+                                "sourceName": "replycount",
+                                "sourceOrdering": 132,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "emailTrackingId",
@@ -5651,11 +4605,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailtrackingid",
-                                "sourceOrdering": 133,
-                                "isNullable": true,
                                 "displayName": "Email Tracking Id",
-                                "description": "Email Tracking Id."
+                                "description": "Email Tracking Id.",
+                                "isNullable": true,
+                                "sourceName": "emailtrackingid",
+                                "sourceOrdering": 133
                             },
                             {
                                 "name": "followEmailUserPreference",
@@ -5704,11 +4658,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "followemailuserpreference",
-                                "sourceOrdering": 134,
-                                "isNullable": true,
                                 "displayName": "Following",
-                                "description": "Select whether the email allows following recipient activities sent from Microsoft Dynamics 365.This is user preference state which can be overridden by system evaluated state."
+                                "description": "Select whether the email allows following recipient activities sent from Microsoft Dynamics 365.This is user preference state which can be overridden by system evaluated state.",
+                                "isNullable": true,
+                                "sourceName": "followemailuserpreference",
+                                "sourceOrdering": 134
                             },
                             {
                                 "name": "isEmailFollowed",
@@ -5757,11 +4711,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isemailfollowed",
-                                "sourceOrdering": 136,
-                                "isNullable": true,
                                 "displayName": "Followed",
-                                "description": "For internal use only. Shows whether this email is followed. This is evaluated state which overrides user selection of follow email."
+                                "description": "For internal use only. Shows whether this email is followed. This is evaluated state which overrides user selection of follow email.",
+                                "isNullable": true,
+                                "sourceName": "isemailfollowed",
+                                "sourceOrdering": 136
                             },
                             {
                                 "name": "emailReminderExpiryTime",
@@ -5810,11 +4764,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailreminderexpirytime",
-                                "sourceOrdering": 138,
-                                "isNullable": true,
                                 "displayName": "Email Reminder Expiry Time",
-                                "description": "Shows the date and time when an email reminder expires."
+                                "description": "Shows the date and time when an email reminder expires.",
+                                "isNullable": true,
+                                "sourceName": "emailreminderexpirytime",
+                                "sourceOrdering": 138
                             },
                             {
                                 "name": "emailReminderType",
@@ -5910,11 +4864,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailremindertype",
-                                "sourceOrdering": 139,
-                                "isNullable": true,
                                 "displayName": "Email Reminder Type",
-                                "description": "Shows the type of the email reminder."
+                                "description": "Shows the type of the email reminder.",
+                                "isNullable": true,
+                                "sourceName": "emailremindertype",
+                                "sourceOrdering": 139
                             },
                             {
                                 "name": "emailReminderStatus",
@@ -6016,11 +4970,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailreminderstatus",
-                                "sourceOrdering": 141,
-                                "isNullable": true,
                                 "displayName": "Email Reminder Status",
-                                "description": "Shows the status of the email reminder."
+                                "description": "Shows the status of the email reminder.",
+                                "isNullable": true,
+                                "sourceName": "emailreminderstatus",
+                                "sourceOrdering": 141
                             },
                             {
                                 "name": "emailReminderText",
@@ -6069,12 +5023,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailremindertext",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 143,
-                                "isNullable": true,
                                 "displayName": "Email Reminder Text",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "emailremindertext",
+                                "sourceOrdering": 143,
+                                "maximumLength": 1250
                             },
                             {
                                 "name": "templateId",
@@ -6132,11 +5086,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "templateid",
-                                "sourceOrdering": 146,
-                                "isNullable": true,
                                 "displayName": "ID for template used.",
-                                "description": "For internal use only. ID for template used in email."
+                                "description": "For internal use only. ID for template used in email.",
+                                "isNullable": true,
+                                "sourceName": "templateid",
+                                "sourceOrdering": 146
                             },
                             {
                                 "name": "reminderActionCardId",
@@ -6185,11 +5139,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "reminderactioncardid",
-                                "sourceOrdering": 147,
-                                "isNullable": true,
                                 "displayName": "Reminder Action Card Id.",
-                                "description": "Reminder Action Card Id."
+                                "description": "Reminder Action Card Id.",
+                                "isNullable": true,
+                                "sourceName": "reminderactioncardid",
+                                "sourceOrdering": 147
                             },
                             {
                                 "name": "sortDate",
@@ -6238,11 +5192,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sortdate",
-                                "sourceOrdering": 149,
-                                "isNullable": true,
                                 "displayName": "Sort Date",
-                                "description": "Shows the date and time by which the activities are sorted."
+                                "description": "Shows the date and time by which the activities are sorted.",
+                                "isNullable": true,
+                                "sourceName": "sortdate",
+                                "sourceOrdering": 149
                             },
                             {
                                 "name": "isEmailReminderSet",
@@ -6291,11 +5245,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isemailreminderset",
-                                "sourceOrdering": 151,
-                                "isNullable": true,
                                 "displayName": "Reminder Set",
-                                "description": "For internal use only. Shows whether this email Reminder is Set."
+                                "description": "For internal use only. Shows whether this email Reminder is Set.",
+                                "isNullable": true,
+                                "sourceName": "isemailreminderset",
+                                "sourceOrdering": 151
                             }
                         ]
                     }

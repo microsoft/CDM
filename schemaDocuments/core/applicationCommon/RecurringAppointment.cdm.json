@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "RecurringAppointment",
-            "extendsEntity": "CdmObject",
+            "extendsEntity": "CdsStandard",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -115,10 +115,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isweekdaypattern",
-                                "sourceOrdering": 1,
                                 "displayName": "Every Weekday",
-                                "description": "Indicates whether the weekly recurrence pattern is a daily weekday pattern. Valid for weekly recurrence pattern only."
+                                "description": "Indicates whether the weekly recurrence pattern is a daily weekday pattern. Valid for weekly recurrence pattern only.",
+                                "sourceName": "isweekdaypattern",
+                                "sourceOrdering": 1
                             },
                             {
                                 "name": "ruleId",
@@ -176,64 +176,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "ruleid",
-                                "sourceOrdering": 2,
-                                "isNullable": true,
                                 "displayName": "Recurrence Rule",
-                                "description": "Unique identifier of the recurrence rule that is associated with the recurring appointment series."
-                            },
-                            {
-                                "name": "overriddenCreatedOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time that the record was migrated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 3,
+                                "description": "Unique identifier of the recurrence rule that is associated with the recurring appointment series.",
                                 "isNullable": true,
-                                "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "sourceName": "ruleid",
+                                "sourceOrdering": 2
                             },
                             {
                                 "name": "isNthYearly",
@@ -282,10 +229,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isnthyearly",
-                                "sourceOrdering": 4,
                                 "displayName": "Nth Yearly",
-                                "description": "Indicates whether the recurring appointment series should occur after every N years. Valid for yearly recurrence pattern only."
+                                "description": "Indicates whether the recurring appointment series should occur after every N years. Valid for yearly recurrence pattern only.",
+                                "sourceName": "isnthyearly",
+                                "sourceOrdering": 4
                             },
                             {
                                 "name": "stateCode",
@@ -387,152 +334,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 5,
                                 "displayName": "Status",
-                                "description": "Shows whether the recurring appointment is open, scheduled, completed, or canceled. Completed and canceled appointments are read-only and can't be edited."
-                            },
-                            {
-                                "name": "modifiedOn",
-                                "relationship": "modifiedOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 6,
-                                "isNullable": true,
-                                "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningBusinessUnit",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Business Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the business unit that owns the recurring appointment series."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 7,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier of the business unit that owns the recurring appointment series."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "BusinessUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Shows whether the recurring appointment is open, scheduled, completed, or canceled. Completed and canceled appointments are read-only and can't be edited.",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 5
                             },
                             {
                                 "name": "groupId",
@@ -590,66 +395,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "groupid",
-                                "sourceOrdering": 8,
-                                "isNullable": true,
                                 "displayName": "Group Id",
-                                "description": "Unique identifier of the recurring appointment series for which the recurrence information was updated. "
-                            },
-                            {
-                                "name": "UTCConversionTimeZoneCode",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 9,
+                                "description": "Unique identifier of the recurring appointment series for which the recurrence information was updated. ",
                                 "isNullable": true,
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
+                                "sourceName": "groupid",
+                                "sourceOrdering": 8
                             },
                             {
                                 "name": "optionalAttendees",
@@ -707,11 +457,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "optionalattendees",
-                                "sourceOrdering": 10,
-                                "isNullable": true,
                                 "displayName": "Optional Attendees",
-                                "description": "Enter the account, contact, lead, user, or other equipment resources that are not needed at the recurring appointment, but can optionally attend."
+                                "description": "Enter the account, contact, lead, user, or other equipment resources that are not needed at the recurring appointment, but can optionally attend.",
+                                "isNullable": true,
+                                "sourceName": "optionalattendees",
+                                "sourceOrdering": 10
                             },
                             {
                                 "name": "lastExpandedInstanceDate",
@@ -760,11 +510,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "lastexpandedinstancedate",
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Last Expanded Instance Date",
-                                "description": "Date of last expanded instance of a recurring appointment series."
+                                "description": "Date of last expanded instance of a recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "lastexpandedinstancedate",
+                                "sourceOrdering": 12
                             },
                             {
                                 "name": "effectiveEndDate",
@@ -813,11 +563,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "effectiveenddate",
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Effective End Date",
-                                "description": "Actual end date of the recurring appointment series based on the specified end date and recurrence pattern."
+                                "description": "Actual end date of the recurring appointment series based on the specified end date and recurrence pattern.",
+                                "isNullable": true,
+                                "sourceName": "effectiveenddate",
+                                "sourceOrdering": 13
                             },
                             {
                                 "name": "patternStartDate",
@@ -866,11 +616,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "patternstartdate",
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Recurrence Range Start",
-                                "description": "Start date of the recurrence range."
+                                "description": "Start date of the recurrence range.",
+                                "isNullable": true,
+                                "sourceName": "patternstartdate",
+                                "sourceOrdering": 14
                             },
                             {
                                 "name": "isWorkflowCreated",
@@ -919,11 +669,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isworkflowcreated",
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "Is Workflow Created",
-                                "description": "Indicates whether the recurring appointment series was created from a workflow rule."
+                                "description": "Indicates whether the recurring appointment series was created from a workflow rule.",
+                                "isNullable": true,
+                                "sourceName": "isworkflowcreated",
+                                "sourceOrdering": 15
                             },
                             {
                                 "name": "instanceTypeCode",
@@ -1031,10 +781,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "instancetypecode",
-                                "sourceOrdering": 16,
                                 "displayName": "Appointment Type",
-                                "description": "Type of instance of a recurring appointment series."
+                                "description": "Type of instance of a recurring appointment series.",
+                                "sourceName": "instancetypecode",
+                                "sourceOrdering": 16
                             },
                             {
                                 "name": "isRegenerate",
@@ -1083,10 +833,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isregenerate",
-                                "sourceOrdering": 17,
                                 "displayName": "Regenerate",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "sourceName": "isregenerate",
+                                "sourceOrdering": 17
                             },
                             {
                                 "name": "firstDayOfWeek",
@@ -1135,13 +885,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "firstdayofweek",
-                                "maximumValue": "6",
-                                "minimumValue": "0",
-                                "sourceOrdering": 18,
-                                "isNullable": true,
                                 "displayName": "First Day Of Week",
-                                "description": "First day of week for the recurrence pattern."
+                                "description": "First day of week for the recurrence pattern.",
+                                "isNullable": true,
+                                "sourceName": "firstdayofweek",
+                                "sourceOrdering": 18,
+                                "maximumValue": "6",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "subcategory",
@@ -1190,12 +940,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subcategory",
-                                "maximumLength": 250,
-                                "sourceOrdering": 19,
-                                "isNullable": true,
                                 "displayName": "Sub-Category",
-                                "description": "Type a subcategory to identify the recurring appointment type and relate the activity to a specific product, sales region, business group, or other function."
+                                "description": "Type a subcategory to identify the recurring appointment type and relate the activity to a specific product, sales region, business group, or other function.",
+                                "isNullable": true,
+                                "sourceName": "subcategory",
+                                "sourceOrdering": 19,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "category",
@@ -1244,12 +994,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "category",
-                                "maximumLength": 250,
-                                "sourceOrdering": 20,
-                                "isNullable": true,
                                 "displayName": "Category",
-                                "description": "Type a category to identify the recurring appointment type, such as status meeting or service call, to tie the appointment to a business group or function."
+                                "description": "Type a category to identify the recurring appointment type, such as status meeting or service call, to tie the appointment to a business group or function.",
+                                "isNullable": true,
+                                "sourceName": "category",
+                                "sourceOrdering": 20,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -1298,13 +1048,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 21,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
+                                "description": "Unique identifier of the data import or data migration that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 21,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "outlookOwnerApptId",
@@ -1353,13 +1103,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "outlookownerapptid",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Outlook Recurring Appointment Master Owner",
-                                "description": "Unique identifier of the Microsoft Office Outlook recurring appointment series owner that correlates to the PR_OWNER_APPT_ID MAPI property."
+                                "description": "Unique identifier of the Microsoft Office Outlook recurring appointment series owner that correlates to the PR_OWNER_APPT_ID MAPI property.",
+                                "isNullable": true,
+                                "sourceName": "outlookownerapptid",
+                                "sourceOrdering": 22,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "recurrencePatternType",
@@ -1461,10 +1211,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "recurrencepatterntype",
-                                "sourceOrdering": 23,
                                 "displayName": "Recurrence Frequency",
-                                "description": "Select the pattern type for the recurring appointment to indicate whether the appointment occurs daily, weekly, monthly, or yearly."
+                                "description": "Select the pattern type for the recurring appointment to indicate whether the appointment occurs daily, weekly, monthly, or yearly.",
+                                "sourceName": "recurrencepatterntype",
+                                "sourceOrdering": 23
                             },
                             {
                                 "name": "nextExpansionInstanceDate",
@@ -1513,11 +1263,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "nextexpansioninstancedate",
-                                "sourceOrdering": 24,
-                                "isNullable": true,
                                 "displayName": "Next Expanded Instance Date",
-                                "description": "Date of the next expanded instance of a recurring appointment series."
+                                "description": "Date of the next expanded instance of a recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "nextexpansioninstancedate",
+                                "sourceOrdering": 24
                             },
                             {
                                 "name": "expansionStateCode",
@@ -1613,11 +1363,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "expansionstatecode",
-                                "sourceOrdering": 25,
-                                "isNullable": true,
                                 "displayName": "Expansion State Code",
-                                "description": "State code to indicate whether the recurring appointment series is expanded fully or partially."
+                                "description": "State code to indicate whether the recurring appointment series is expanded fully or partially.",
+                                "isNullable": true,
+                                "sourceName": "expansionstatecode",
+                                "sourceOrdering": 25
                             },
                             {
                                 "name": "priorityCode",
@@ -1713,11 +1463,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "prioritycode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "Priority",
-                                "description": "Select the priority so that preferred customers or critical issues are handled quickly."
+                                "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
+                                "isNullable": true,
+                                "sourceName": "prioritycode",
+                                "sourceOrdering": 26
                             },
                             {
                                 "name": "isBilled",
@@ -1766,11 +1516,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isbilled",
-                                "sourceOrdering": 27,
-                                "isNullable": true,
                                 "displayName": "Is Billed",
-                                "description": "Indicates whether the recurring appointment series was billed as part of resolving a case."
+                                "description": "Indicates whether the recurring appointment series was billed as part of resolving a case.",
+                                "isNullable": true,
+                                "sourceName": "isbilled",
+                                "sourceOrdering": 27
                             },
                             {
                                 "name": "patternEndDate",
@@ -1819,49 +1569,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "patternenddate",
-                                "sourceOrdering": 28,
-                                "isNullable": true,
                                 "displayName": "Recurrence Range End",
-                                "description": "End date of the recurrence range."
-                            },
-                            {
-                                "name": "timeZoneRuleVersionNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 29,
+                                "description": "End date of the recurrence range.",
                                 "isNullable": true,
-                                "description": "For internal use only."
+                                "sourceName": "patternenddate",
+                                "sourceOrdering": 28
                             },
                             {
                                 "name": "globalObjectId",
@@ -1910,12 +1622,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "globalobjectid",
-                                "maximumLength": 300,
-                                "sourceOrdering": 30,
-                                "isNullable": true,
                                 "displayName": "Outlook Recurring Appointment Master",
-                                "description": "Unique Outlook identifier to correlate recurring appointment series across Exchange mailboxes."
+                                "description": "Unique Outlook identifier to correlate recurring appointment series across Exchange mailboxes.",
+                                "isNullable": true,
+                                "sourceName": "globalobjectid",
+                                "sourceOrdering": 30,
+                                "maximumLength": 300
                             },
                             {
                                 "name": "effectiveStartDate",
@@ -1964,112 +1676,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "effectivestartdate",
-                                "sourceOrdering": 31,
-                                "isNullable": true,
                                 "displayName": "Effective Start Date",
-                                "description": "Actual start date of the recurring appointment series based on the specified start date and recurrence pattern."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 32,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "description": "Actual start date of the recurring appointment series based on the specified start date and recurrence pattern.",
+                                "isNullable": true,
+                                "sourceName": "effectivestartdate",
+                                "sourceOrdering": 31
                             },
                             {
                                 "name": "dayOfMonth",
@@ -2118,13 +1729,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "dayofmonth",
-                                "maximumValue": "31",
-                                "minimumValue": "1",
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Day Of Month",
-                                "description": "The day of the month on which the recurring appointment occurs."
+                                "description": "The day of the month on which the recurring appointment occurs.",
+                                "isNullable": true,
+                                "sourceName": "dayofmonth",
+                                "sourceOrdering": 33,
+                                "maximumValue": "31",
+                                "minimumValue": "1"
                             },
                             {
                                 "name": "statusCode",
@@ -2254,11 +1865,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Select the recurring appointment's status."
+                                "description": "Select the recurring appointment's status.",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 34
                             },
                             {
                                 "name": "organizer",
@@ -2316,11 +1927,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "organizer",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Organizer",
-                                "description": "Enter the user who is in charge of coordinating or leading the recurring appointment to make sure the appointment is displayed in the user's My Activities view."
+                                "description": "Enter the user who is in charge of coordinating or leading the recurring appointment to make sure the appointment is displayed in the user's My Activities view.",
+                                "isNullable": true,
+                                "sourceName": "organizer",
+                                "sourceOrdering": 35
                             },
                             {
                                 "name": "startTime",
@@ -2369,11 +1980,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "starttime",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Pattern Start Time",
-                                "description": "Start time of the recurring appointment series."
+                                "description": "Start time of the recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "starttime",
+                                "sourceOrdering": 36
                             },
                             {
                                 "name": "occurrences",
@@ -2422,13 +2033,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "occurrences",
-                                "maximumValue": "999",
-                                "minimumValue": "1",
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "Occurrences",
-                                "description": "Number of appointment occurrences in a recurring appointment series."
+                                "description": "Number of appointment occurrences in a recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "occurrences",
+                                "sourceOrdering": 37,
+                                "maximumValue": "999",
+                                "minimumValue": "1"
                             },
                             {
                                 "relationship": {
@@ -2496,11 +2107,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 38,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Choose the record that the recurring appointment series relates to."
+                                                        "description": "Choose the record that the recurring appointment series relates to.",
+                                                        "isNullable": true,
+                                                        "sourceName": "regardingobjectid",
+                                                        "sourceOrdering": 38
                                                     }
                                                 }
                                             ]
@@ -2601,11 +2212,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isalldayevent",
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "All Day Event",
-                                "description": "Select whether the recurring appointment is an all-day event to make sure that the required resources are scheduled for the full day."
+                                "description": "Select whether the recurring appointment is an all-day event to make sure that the required resources are scheduled for the full day.",
+                                "isNullable": true,
+                                "sourceName": "isalldayevent",
+                                "sourceOrdering": 40
                             },
                             {
                                 "name": "seriesStatus",
@@ -2654,64 +2265,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "seriesstatus",
-                                "sourceOrdering": 41,
-                                "isNullable": true,
                                 "displayName": "Series Status",
-                                "description": "Indicates whether the recurring appointment series is active or inactive."
-                            },
-                            {
-                                "name": "createdOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 42,
+                                "description": "Indicates whether the recurring appointment series is active or inactive.",
                                 "isNullable": true,
-                                "displayName": "Created On",
-                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "sourceName": "seriesstatus",
+                                "sourceOrdering": 41
                             },
                             {
                                 "name": "isNthMonthly",
@@ -2760,188 +2318,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isnthmonthly",
-                                "sourceOrdering": 43,
                                 "displayName": "Nth Monthly",
-                                "description": "Indicates whether the recurring appointment series should occur after every N months. Valid for monthly recurrence pattern only."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'owningUser' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningUser",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning User"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user who owns the recurring appointment series."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 44,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user who owns the recurring appointment series."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdBy' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 45,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By",
-                                                        "description": "Shows who created the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Indicates whether the recurring appointment series should occur after every N months. Valid for monthly recurrence pattern only.",
+                                "sourceName": "isnthmonthly",
+                                "sourceOrdering": 43
                             },
                             {
                                 "name": "endTime",
@@ -2990,11 +2370,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "endtime",
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "Pattern End Time",
-                                "description": "End time of the associated activity."
+                                "description": "End time of the associated activity.",
+                                "isNullable": true,
+                                "sourceName": "endtime",
+                                "sourceOrdering": 46
                             },
                             {
                                 "name": "daysOfWeekMask",
@@ -3043,13 +2423,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "daysofweekmask",
-                                "maximumValue": "127",
-                                "minimumValue": "1",
-                                "sourceOrdering": 48,
-                                "isNullable": true,
                                 "displayName": "Days Of Week Mask",
-                                "description": "Bitmask that represents the days of the week on which the recurring appointment occurs."
+                                "description": "Bitmask that represents the days of the week on which the recurring appointment occurs.",
+                                "isNullable": true,
+                                "sourceName": "daysofweekmask",
+                                "sourceOrdering": 48,
+                                "maximumValue": "127",
+                                "minimumValue": "1"
                             },
                             {
                                 "name": "subject",
@@ -3098,12 +2478,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subject",
-                                "maximumLength": 200,
-                                "sourceOrdering": 49,
-                                "isNullable": true,
                                 "displayName": "Subject",
-                                "description": "Type a short description about the objective or primary topic of the recurring appointment."
+                                "description": "Type a short description about the objective or primary topic of the recurring appointment.",
+                                "isNullable": true,
+                                "sourceName": "subject",
+                                "sourceOrdering": 49,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "description",
@@ -3152,12 +2532,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "description",
-                                "maximumLength": 1048576,
-                                "sourceOrdering": 50,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Type additional information to describe the recurring appointment, such as key talking points or objectives."
+                                "description": "Type additional information to describe the recurring appointment, such as key talking points or objectives.",
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 50,
+                                "maximumLength": 1048576
                             },
                             {
                                 "relationship": {
@@ -3216,10 +2596,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 51,
                                                         "displayName": "Recurring Appointment",
-                                                        "description": "Unique identifier of the recurring appointment series."
+                                                        "description": "Unique identifier of the recurring appointment series.",
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 51
                                                     }
                                                 }
                                             ]
@@ -3233,95 +2613,6 @@
                                             "traitReference": "is.identifiedBy",
                                             "arguments": [
                                                 "Activity/(resolvedAttributes)/activityId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedBy' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 52,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By",
-                                                        "description": "Shows who last updated the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
                                             ]
                                         }
                                     ]
@@ -3383,11 +2674,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "requiredattendees",
-                                "sourceOrdering": 53,
-                                "isNullable": true,
                                 "displayName": "Required Attendees",
-                                "description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the recurring appointment."
+                                "description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the recurring appointment.",
+                                "isNullable": true,
+                                "sourceName": "requiredattendees",
+                                "sourceOrdering": 53
                             },
                             {
                                 "name": "instance",
@@ -3495,11 +2786,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "instance",
-                                "sourceOrdering": 54,
-                                "isNullable": true,
                                 "displayName": "Instance",
-                                "description": "Specifies the recurring appointment series to occur on every Nth day of a month. Valid for monthly and yearly recurrence patterns only."
+                                "description": "Specifies the recurring appointment series to occur on every Nth day of a month. Valid for monthly and yearly recurrence patterns only.",
+                                "isNullable": true,
+                                "sourceName": "instance",
+                                "sourceOrdering": 54
                             },
                             {
                                 "name": "deletedExceptionsList",
@@ -3548,31 +2839,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "deletedexceptionslist",
-                                "maximumLength": 1073741823,
-                                "sourceOrdering": 55,
-                                "isNullable": true,
                                 "displayName": "Deleted Appointments",
-                                "description": "List of deleted instances of the recurring appointment series."
-                            },
-                            {
-                                "name": "versionNumber",
-                                "relationship": "hasA",
-                                "dataType": "bigInteger",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 56,
-                                "isNullable": true
+                                "description": "List of deleted instances of the recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "deletedexceptionslist",
+                                "sourceOrdering": 55,
+                                "maximumLength": 1073741823
                             },
                             {
                                 "name": "interval",
@@ -3621,13 +2893,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "interval",
-                                "maximumValue": "1000",
-                                "minimumValue": "1",
-                                "sourceOrdering": 58,
-                                "isNullable": true,
                                 "displayName": "Interval",
-                                "description": "Number of units of a given recurrence type between occurrences."
+                                "description": "Number of units of a given recurrence type between occurrences.",
+                                "isNullable": true,
+                                "sourceName": "interval",
+                                "sourceOrdering": 58,
+                                "maximumValue": "1000",
+                                "minimumValue": "1"
                             },
                             {
                                 "name": "duration",
@@ -3681,13 +2953,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "duration",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 59,
-                                "isNullable": true,
                                 "displayName": "Duration",
-                                "description": "Duration of the recurring appointment series in minutes."
+                                "description": "Duration of the recurring appointment series in minutes.",
+                                "isNullable": true,
+                                "sourceName": "duration",
+                                "sourceOrdering": 59,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "monthOfYear",
@@ -3843,11 +3115,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "monthofyear",
-                                "sourceOrdering": 60,
-                                "isNullable": true,
                                 "displayName": "Month Of Year",
-                                "description": "Indicates the month of the year for the recurrence pattern."
+                                "description": "Indicates the month of the year for the recurrence pattern.",
+                                "isNullable": true,
+                                "sourceName": "monthofyear",
+                                "sourceOrdering": 60
                             },
                             {
                                 "name": "location",
@@ -3896,12 +3168,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "location",
-                                "maximumLength": 200,
-                                "sourceOrdering": 61,
-                                "isNullable": true,
                                 "displayName": "Location",
-                                "description": "Type the location where the recurring appointment will take place, such as a conference room or customer office."
+                                "description": "Type the location where the recurring appointment will take place, such as a conference room or customer office.",
+                                "isNullable": true,
+                                "sourceName": "location",
+                                "sourceOrdering": 61,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "scheduledStart",
@@ -3950,11 +3222,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 89,
-                                "isNullable": true,
                                 "displayName": "Start Time",
-                                "description": "Scheduled start time of the recurring appointment series."
+                                "description": "Scheduled start time of the recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 89
                             },
                             {
                                 "name": "scheduledEnd",
@@ -4003,11 +3275,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 90,
-                                "isNullable": true,
                                 "displayName": "End Time",
-                                "description": "Scheduled end time of the recurring appointment series."
+                                "description": "Scheduled end time of the recurring appointment series.",
+                                "isNullable": true,
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 90
                             },
                             {
                                 "name": "activityTypeCode",
@@ -4193,10 +3465,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activitytypecode",
-                                "sourceOrdering": 91,
                                 "displayName": "Activity Type",
-                                "description": "Type of activity."
+                                "description": "Type of activity.",
+                                "sourceName": "activitytypecode",
+                                "sourceOrdering": 91
                             },
                             {
                                 "name": "isRegularActivity",
@@ -4245,10 +3517,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isregularactivity",
-                                "sourceOrdering": 93,
                                 "displayName": "Is Regular Activity",
-                                "description": "Indicates whether the activity is a regular activity type or event type."
+                                "description": "Indicates whether the activity is a regular activity type or event type.",
+                                "sourceName": "isregularactivity",
+                                "sourceOrdering": 93
                             },
                             {
                                 "name": "patternEndType",
@@ -4344,277 +3616,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "patternendtype",
-                                "sourceOrdering": 95,
                                 "displayName": "Pattern End Type",
-                                "description": "Select the type of end date for the recurring appointment, such as no end date or the number of occurrences."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who last updated the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 96,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who last updated the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows who created the record on behalf of another user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 100,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Team' adds the 'owningTeam' attribute below to the 'RecurringAppointment' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningTeam",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Team"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the team who owns the recurring appointment series."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 104,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team who owns the recurring appointment series."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "Team",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Team/(resolvedAttributes)/teamId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Select the type of end date for the recurring appointment, such as no end date or the number of occurrences.",
+                                "sourceName": "patternendtype",
+                                "sourceOrdering": 95
                             },
                             {
                                 "relationship": {
@@ -4682,11 +3687,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 105,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 105
                                                     }
                                                 }
                                             ]
@@ -4752,13 +3757,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 107,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 107,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
                                 "name": "isMapiPrivate",
@@ -4807,11 +3812,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "ismapiprivate",
-                                "sourceOrdering": 108,
-                                "isNullable": true,
                                 "displayName": "Is Private",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "ismapiprivate",
+                                "sourceOrdering": 108
                             },
                             {
                                 "name": "processId",
@@ -4860,11 +3865,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "processid",
-                                "sourceOrdering": 110,
-                                "isNullable": true,
                                 "displayName": "Process",
-                                "description": "Shows the ID of the process."
+                                "description": "Shows the ID of the process.",
+                                "isNullable": true,
+                                "sourceName": "processid",
+                                "sourceOrdering": 110
                             },
                             {
                                 "name": "stageId",
@@ -4913,11 +3918,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stageid",
-                                "sourceOrdering": 111,
-                                "isNullable": true,
                                 "displayName": "Process Stage",
-                                "description": "Shows the ID of the stage."
+                                "description": "Shows the ID of the stage.",
+                                "isNullable": true,
+                                "sourceName": "stageid",
+                                "sourceOrdering": 111
                             },
                             {
                                 "name": "traversedPath",
@@ -4966,12 +3971,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "traversedpath",
-                                "maximumLength": 1250,
-                                "sourceOrdering": 112,
-                                "isNullable": true,
                                 "displayName": "Traversed Path",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "traversedpath",
+                                "sourceOrdering": 112,
+                                "maximumLength": 1250
                             },
                             {
                                 "name": "sortDate",
@@ -5020,11 +4025,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "sortdate",
-                                "sourceOrdering": 113,
-                                "isNullable": true,
                                 "displayName": "Sort Date",
-                                "description": "Shows the date and time by which the activities are sorted."
+                                "description": "Shows the date and time by which the activities are sorted.",
+                                "isNullable": true,
+                                "sourceName": "sortdate",
+                                "sourceOrdering": 113
                             },
                             {
                                 "name": "isUnsafe",
@@ -5073,13 +4078,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isunsafe",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0",
-                                "sourceOrdering": 115,
-                                "isNullable": true,
                                 "displayName": "IsUnsafe",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "isunsafe",
+                                "sourceOrdering": 115,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0"
                             }
                         ]
                     }
