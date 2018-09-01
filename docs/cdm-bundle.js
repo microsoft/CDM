@@ -1132,14 +1132,20 @@ class ResolvedAttributeSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
-    removeRequestedAtts() {
+    removeRequestedAtts(marker) {
         //let bodyCode = () =>
         {
+            // track the deletes 'under' a certain index
+            let oldMarker = 0;
+            if (marker) {
+                oldMarker = marker["0"];
+            }
+            let newMarker = oldMarker;
             // for every attribute in the set run any attribute removers on the traits they have
             let appliedAttSet = new ResolvedAttributeSet(this.wrtDoc);
             let l = this.set.length;
-            for (let i = 0; i < l; i++) {
-                let resAtt = this.set[i];
+            for (let iAtt = 0; iAtt < l; iAtt++) {
+                let resAtt = this.set[iAtt];
                 if (resAtt.resolvedTraits) {
                     let l = resAtt.resolvedTraits.size;
                     for (let i = 0; resAtt && i < l; i++) {
@@ -1154,6 +1160,8 @@ class ResolvedAttributeSet extends refCounted {
                                         let result = apl.attributeRemove(this.wrtDoc, resAtt, rt);
                                         if (result.shouldDelete) {
                                             resAtt = null;
+                                            if (iAtt < oldMarker)
+                                                newMarker--;
                                         }
                                     }
                                 }
@@ -1163,6 +1171,9 @@ class ResolvedAttributeSet extends refCounted {
                 }
                 if (resAtt)
                     appliedAttSet.merge(resAtt);
+            }
+            if (marker) {
+                marker["1"] = newMarker;
             }
             // now we are that (or a copy)
             let rasResult = this;
@@ -1369,7 +1380,10 @@ class ResolvedAttributeSetBuilder {
         //let bodyCode = () =>
         {
             if (this.ras) {
-                this.takeReference(this.ras.removeRequestedAtts());
+                let marker = [0, 0];
+                marker["0"] = this.inheritedMark;
+                this.takeReference(this.ras.removeRequestedAtts(marker));
+                this.inheritedMark = marker["1"];
             }
         }
         //return p.measure(bodyCode);
