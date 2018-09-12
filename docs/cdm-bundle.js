@@ -121,16 +121,36 @@ function trackVisits(path) {
     if (path == "Case/hasAttributes/attributesAddedAtThisScope/members/(unspecified)")
         return true;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//  classes for resolution of refereneces and representing constructed traits, attributes and relationships
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  parameters and arguments in traits
-////////////////////////////////////////////////////////////////////////////////////////////////////
+class stringSpewCatcher {
+    constructor() {
+        this.content = "";
+        this.segment = "";
+    }
+    clear() {
+        this.content = "";
+        this.segment = "";
+    }
+    spewLine(spew) {
+        this.segment += spew + "\n";
+        if (this.segment.length > 1000) {
+            this.content += this.segment;
+            this.segment = "";
+        }
+    }
+    getContent() {
+        return this.content + this.segment;
+    }
+}
+exports.stringSpewCatcher = stringSpewCatcher;
+class consoleSpewCatcher {
+    clear() {
+        console.clear();
+    }
+    spewLine(spew) {
+        console.log(spew);
+    }
+}
+exports.consoleSpewCatcher = consoleSpewCatcher;
 class ParameterCollection {
     constructor(prior) {
         //let bodyCode = () =>
@@ -228,7 +248,7 @@ class ParameterValue {
                 }
                 // should be a reference to an object
                 let data = value.copyData(wrtDoc, false);
-                if (typeof (data === "string"))
+                if (typeof (data) === "string")
                     return data;
                 return JSON.stringify(data);
             }
@@ -246,17 +266,24 @@ class ParameterValue {
     setValue(wrtDoc, newValue) {
         //let bodyCode = () =>
         {
-            this.value = ParameterValue.getReplacementValue(wrtDoc, this.value, newValue);
+            this.value = ParameterValue.getReplacementValue(wrtDoc, this.value, newValue, true);
         }
         //return p.measure(bodyCode);
     }
-    static getReplacementValue(wrtDoc, oldValue, newValue) {
+    static getReplacementValue(wrtDoc, oldValue, newValue, wasSet) {
         //let bodyCode = () =>
         {
             if (!oldValue)
                 return newValue;
-            if (typeof (oldValue) == "string")
+            if (!wasSet) {
+                // must explicitly set a value to override
+                // if a new value is not set, then newValue holds nothing or the default.
+                // in this case, if there was already a value in this argument then just keep using it.
+                return oldValue;
+            }
+            if (typeof (oldValue) == "string") {
                 return newValue;
+            }
             let ov = oldValue;
             let nv = newValue;
             // replace an old table with a new table? actually just mash them together
@@ -310,21 +337,22 @@ class ParameterValue {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
-            console.log(`${indent}${this.name}:${this.getValueString(null)}`);
+            to.spewLine(`${indent}${this.name}:${this.getValueString(wrtDoc)}`);
         }
         //return p.measure(bodyCode);
     }
 }
 exports.ParameterValue = ParameterValue;
 class ParameterValueSet {
-    constructor(pc, values) {
+    constructor(pc, values, wasSet) {
         //let bodyCode = () =>
         {
             this.pc = pc;
             this.values = values;
+            this.wasSet = wasSet;
         }
         //return p.measure(bodyCode);
     }
@@ -377,7 +405,7 @@ class ParameterValueSet {
         //let bodyCode = () =>
         {
             let i = this.pc.getParameterIndex(pName);
-            this.values[i] = ParameterValue.getReplacementValue(wrtDoc, this.values[i], value);
+            this.values[i] = ParameterValue.getReplacementValue(wrtDoc, this.values[i], value, true);
         }
         //return p.measure(bodyCode);
     }
@@ -385,18 +413,19 @@ class ParameterValueSet {
         //let bodyCode = () =>
         {
             let copyValues = this.values.slice(0);
-            let copy = new ParameterValueSet(this.pc, copyValues);
+            let copyWasSet = this.wasSet.slice(0);
+            let copy = new ParameterValueSet(this.pc, copyValues, copyWasSet);
             return copy;
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
             let l = this.length;
             for (let i = 0; i < l; i++) {
                 let pv = new ParameterValue(this.pc.sequence[i], this.values[i]);
-                pv.spew(indent + '-');
+                pv.spew(wrtDoc, to, indent + '-');
             }
         }
         //return p.measure(bodyCode);
@@ -407,10 +436,10 @@ exports.ParameterValueSet = ParameterValueSet;
 //  resolved traits
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class ResolvedTrait {
-    constructor(trait, pc, values) {
+    constructor(trait, pc, values, wasSet) {
         //let bodyCode = () =>
         {
-            this.parameterValues = new ParameterValueSet(pc, values);
+            this.parameterValues = new ParameterValueSet(pc, values, wasSet);
             this.trait = trait;
         }
         //return p.measure(bodyCode);
@@ -422,11 +451,11 @@ class ResolvedTrait {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
-            console.log(`${indent}[${this.traitName}]`);
-            this.parameterValues.spew(indent + '-');
+            to.spewLine(`${indent}[${this.traitName}]`);
+            this.parameterValues.spew(wrtDoc, to, indent + '-');
         }
         //return p.measure(bodyCode);
     }
@@ -434,7 +463,7 @@ class ResolvedTrait {
         //let bodyCode = () =>
         {
             let copyParamValues = this.parameterValues.copy();
-            let copy = new ResolvedTrait(this.trait, copyParamValues.pc, copyParamValues.values);
+            let copy = new ResolvedTrait(this.trait, copyParamValues.pc, copyParamValues.values, copyParamValues.wasSet);
             return copy;
         }
         //return p.measure(bodyCode);
@@ -490,12 +519,13 @@ class ResolvedTraitSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
-    merge(toMerge, copyOnWrite) {
+    merge(toMerge) {
         //let bodyCode = () =>
         {
             let traitSetResult = this;
             let trait = toMerge.trait;
             let av = toMerge.parameterValues.values;
+            let wasSet = toMerge.parameterValues.wasSet;
             if (traitSetResult.lookupByTrait.has(trait)) {
                 let rtOld = traitSetResult.lookupByTrait.get(trait);
                 let avOld = rtOld.parameterValues.values;
@@ -503,18 +533,11 @@ class ResolvedTraitSet extends refCounted {
                 let l = av.length;
                 for (let i = 0; i < l; i++) {
                     if (av[i] != avOld[i]) {
-                        if (traitSetResult === this && copyOnWrite) {
-                            traitSetResult = traitSetResult.shallowCopyWithException(trait); // copy on write
-                            rtOld = traitSetResult.lookupByTrait.get(trait);
-                            avOld = rtOld.parameterValues.values;
-                        }
-                        avOld[i] = ParameterValue.getReplacementValue(this.wrtDoc, avOld[i], av[i]);
+                        avOld[i] = ParameterValue.getReplacementValue(this.wrtDoc, avOld[i], av[i], wasSet[i]);
                     }
                 }
             }
             else {
-                if (this.refCnt > 1)
-                    traitSetResult = traitSetResult.shallowCopy(); // copy on write
                 toMerge = toMerge.copy();
                 traitSetResult.set.push(toMerge);
                 traitSetResult.lookupByTrait.set(trait, toMerge);
@@ -531,7 +554,7 @@ class ResolvedTraitSet extends refCounted {
                 let l = toMerge.set.length;
                 for (let i = 0; i < l; i++) {
                     const rt = toMerge.set[i];
-                    let traitSetMerge = traitSetResult.merge(rt, this.refCnt > 1);
+                    let traitSetMerge = traitSetResult.merge(rt);
                     if (traitSetMerge !== traitSetResult) {
                         traitSetResult = traitSetMerge;
                     }
@@ -680,9 +703,6 @@ class ResolvedTraitSet extends refCounted {
         //let bodyCode = () =>
         {
             let altered = this;
-            //if (altered.refCnt > 1) {
-            altered = this.shallowCopyWithException(toTrait);
-            //}
             altered.get(toTrait).parameterValues.setParameterValue(this.wrtDoc, paramName, value);
             return altered;
         }
@@ -699,23 +719,19 @@ class ResolvedTraitSet extends refCounted {
                 let idx = pc.getParameterIndex(paramName);
                 if (idx != undefined) {
                     if (av[idx] === valueWhen) {
-                        if (traitSetResult.refCnt > 1) {
-                            traitSetResult = traitSetResult.shallowCopyWithException(rt.trait); // copy on write
-                            av = traitSetResult.set[i].parameterValues.values;
-                        }
-                        av[idx] = ParameterValue.getReplacementValue(wrtDoc, av[idx], valueNew);
+                        av[idx] = ParameterValue.getReplacementValue(wrtDoc, av[idx], valueNew, true);
                     }
                 }
             }
         }
         return traitSetResult;
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
             let l = this.set.length;
             for (let i = 0; i < l; i++) {
-                this.set[i].spew(indent);
+                this.set[i].spew(wrtDoc, to, indent);
             }
             ;
         }
@@ -772,7 +788,7 @@ class ResolvedTraitSetBuilder {
         //let bodyCode = () =>
         {
             this.takeReference(new ResolvedTraitSet(this.wrtDoc));
-            this.rts.merge(rt, false);
+            this.rts.merge(rt);
         }
         //return p.measure(bodyCode);
     }
@@ -786,13 +802,8 @@ class ResolvedTraitSetBuilder {
                     let newVal = arg.getValue();
                     // get the value index from the parameter collection given the parameter that this argument is setting
                     let iParam = resTrait.parameterValues.indexOf(arg.getParameterDef());
-                    if (this.rts.refCnt > 1 && av[iParam] != newVal) {
-                        // make a copy and try again
-                        this.takeReference(this.rts.shallowCopyWithException(trait));
-                        resTrait = this.rts.get(trait);
-                        av = resTrait.parameterValues.values;
-                    }
-                    av[iParam] = ParameterValue.getReplacementValue(this.wrtDoc, av[iParam], newVal);
+                    av[iParam] = ParameterValue.getReplacementValue(this.wrtDoc, av[iParam], newVal, true);
+                    resTrait.parameterValues.wasSet[iParam] = true;
                 }
             }
         }
@@ -849,11 +860,11 @@ class ResolvedAttribute {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
-            console.log(`${indent}[${this.resolvedName}]`);
-            this.resolvedTraits.spew(indent + '-');
+            to.spewLine(`${indent}[${this.resolvedName}]`);
+            this.resolvedTraits.spew(wrtDoc, to, indent + '-');
         }
         //return p.measure(bodyCode);
     }
@@ -1305,12 +1316,12 @@ class ResolvedAttributeSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
             let l = this.set.length;
             for (let i = 0; i < l; i++) {
-                this.set[i].spew(indent);
+                this.set[i].spew(wrtDoc, to, indent);
             }
         }
         //return p.measure(bodyCode);
@@ -1420,11 +1431,11 @@ class ResolvedEntityReferenceSide {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
-            console.log(`${indent} ent=${this.entity.getName()}`);
-            this.rasb.ras.spew(indent + '  atts:');
+            to.spewLine(`${indent} ent=${this.entity.getName()}`);
+            this.rasb.ras.spew(wrtDoc, to, indent + '  atts:');
         }
         //return p.measure(bodyCode);
     }
@@ -1453,12 +1464,12 @@ class ResolvedEntityReference {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
-            this.referencing.spew(indent + "(referencing)");
+            this.referencing.spew(wrtDoc, to, indent + "(referencing)");
             for (let i = 0; i < this.referenced.length; i++) {
-                this.referenced[i].spew(indent + `(referenced[${i}])`);
+                this.referenced[i].spew(wrtDoc, to, indent + `(referenced[${i}])`);
             }
         }
         //return p.measure(bodyCode);
@@ -1494,6 +1505,21 @@ class ResolvedEntity {
         this.t2pm = new traitToPropertyMap();
         this.t2pm.initForResolvedEntity(this.resolvedTraits);
         return this.t2pm;
+    }
+    spew(wrtDoc, to, indent) {
+        //let bodyCode = () =>
+        {
+            to.spewLine(indent + "=====ENTITY=====");
+            to.spewLine(indent + this.resolvedName);
+            to.spewLine(indent + "================");
+            to.spewLine(indent + "traits:");
+            this.resolvedTraits.spew(wrtDoc, to, indent + " ");
+            to.spewLine("attributes:");
+            this.resolvedAttributes.spew(wrtDoc, to, indent + " ");
+            to.spewLine("relationships:");
+            this.resolvedEntityReferences.spew(wrtDoc, to, indent + " ");
+        }
+        //return p.measure(bodyCode);
     }
 }
 exports.ResolvedEntity = ResolvedEntity;
@@ -1546,11 +1572,11 @@ class ResolvedEntityReferenceSet {
         }
         //return p.measure(bodyCode);
     }
-    spew(indent) {
+    spew(wrtDoc, to, indent) {
         //let bodyCode = () =>
         {
             for (let i = 0; i < this.set.length; i++) {
-                this.set[i].spew(indent + `(rer[${i}])`);
+                this.set[i].spew(wrtDoc, to, indent + `(rer[${i}])`);
             }
         }
         //return p.measure(bodyCode);
@@ -4096,6 +4122,7 @@ class TraitImpl extends cdmObjectDef {
                 this.hasSetFlags = true;
                 let pc = this.getAllParameters(rtsb.wrtDoc);
                 let av = new Array();
+                let wasSet = new Array();
                 for (let i = 0; i < pc.sequence.length; i++) {
                     // either use the default value or (higher precidence) the value taken from the base reference
                     let value = pc.sequence[i].defaultValue;
@@ -4106,8 +4133,9 @@ class TraitImpl extends cdmObjectDef {
                             value = baseValue;
                     }
                     av.push(value);
+                    wasSet.push(false);
                 }
-                rtsb.ownOne(new ResolvedTrait(this, pc, av));
+                rtsb.ownOne(new ResolvedTrait(this, pc, av, wasSet));
             }
         }
         //return p.measure(bodyCode);

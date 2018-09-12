@@ -76,7 +76,19 @@ export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef
         else {
             let postfix = dirEntry.slice(dirEntry.indexOf("."));
             if (postfix == endMatch) {
-                let sourceDoc = readFileSync(entryName, "utf8");
+                let sourceBuff = readFileSync(entryName);
+                if (sourceBuff.length > 3) {
+                    let bom1 = sourceBuff.readInt8(0);
+                    let bom2 = sourceBuff.readInt8(1);
+                    let bom3 = sourceBuff.readInt8(2);
+                    if (bom1 == -17 && bom2 == -69 && bom3 == -65) {
+                        // this is ff fe encode in utf8 and is the bom that json parser hates.
+                        sourceBuff.writeInt8(32, 0);
+                        sourceBuff.writeInt8(32, 1);
+                        sourceBuff.writeInt8(32, 2);
+                    }
+                }
+                let sourceDoc = sourceBuff.toString();
                 corpus.addDocumentFromContent(folder.getRelativePath() +  dirEntry, sourceDoc);
             }
         }
@@ -98,7 +110,7 @@ export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolde
             cdmFolder.getDocuments().forEach(doc => {
                 let data = doc.copyData(doc);
                 let content = JSON.stringify(data, null, 4);
-                writeFileSync(folderPath + doc.getName(), content, "utf8");
+                writeFileSync(folderPath + doc.getName(), content);
             });
         if (cdmFolder.getSubFolders()) {
             cdmFolder.getSubFolders().forEach(f => {

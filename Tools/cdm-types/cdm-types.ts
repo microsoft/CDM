@@ -587,6 +587,47 @@ function trackVisits(path)
 //  parameters and arguments in traits
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export interface spewCatcher
+{
+    clear();
+    spewLine(spew:string);
+}
+
+export class stringSpewCatcher implements spewCatcher
+{
+    content : string = "";
+    segment : string = "";
+    public clear()
+    {
+        this.content = "";
+        this.segment = "";
+    }
+    public spewLine(spew:string)
+    {
+        this.segment += spew + "\n";
+        if (this.segment.length > 1000)
+        {
+            this.content += this.segment;
+            this.segment = "";
+        }
+    }
+    public getContent()
+    {
+        return this.content + this.segment;
+    }
+}
+export class consoleSpewCatcher implements spewCatcher
+{
+    public clear()
+    {
+        console.clear()
+    }
+    public spewLine(spew:string)
+    {
+        console.log(spew);
+    }
+}
+
 export class ParameterCollection
 {
     sequence: ICdmParameterDef[];
@@ -703,7 +744,7 @@ export class ParameterValue
                 }
                 // should be a reference to an object
                 let data = value.copyData(wrtDoc, false);
-                if (typeof(data === "string"))
+                if (typeof(data) === "string")
                     return data;
 
                 return JSON.stringify(data);
@@ -724,18 +765,28 @@ export class ParameterValue
     {
         //let bodyCode = () =>
         {
-            this.value = ParameterValue.getReplacementValue(wrtDoc, this.value, newValue);
+            this.value = ParameterValue.getReplacementValue(wrtDoc, this.value, newValue, true);
         }
         //return p.measure(bodyCode);
     }
-    public static getReplacementValue(wrtDoc : ICdmDocumentDef, oldValue: ArgumentValue, newValue: ArgumentValue): ArgumentValue
+    public static getReplacementValue(wrtDoc : ICdmDocumentDef, oldValue: ArgumentValue, newValue: ArgumentValue, wasSet:boolean): ArgumentValue
     {
         //let bodyCode = () =>
         {
             if (!oldValue)
                 return newValue;
-            if (typeof(oldValue) == "string")
+
+            if (!wasSet)
+            {
+                // must explicitly set a value to override
+                // if a new value is not set, then newValue holds nothing or the default.
+                // in this case, if there was already a value in this argument then just keep using it.
+                return oldValue;
+            }
+
+            if (typeof(oldValue) == "string") {
                 return newValue;
+            }
             let ov = oldValue as ICdmObject;
             let nv = newValue as ICdmObject;
             // replace an old table with a new table? actually just mash them together
@@ -795,11 +846,11 @@ export class ParameterValue
         }
         //return p.measure(bodyCode);
     }
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
-            console.log(`${indent}${this.name}:${this.getValueString(null)}`);
+            to.spewLine(`${indent}${this.name}:${this.getValueString(wrtDoc)}`);
         }
         //return p.measure(bodyCode);
     }
@@ -810,12 +861,14 @@ export class ParameterValueSet
 {
     pc: ParameterCollection;
     values: ArgumentValue[];
-    constructor(pc: ParameterCollection, values: ArgumentValue[])
+    wasSet: boolean[];
+    constructor(pc: ParameterCollection, values: ArgumentValue[], wasSet:boolean[])
     {
         //let bodyCode = () =>
         {
             this.pc = pc;
             this.values = values;
+            this.wasSet = wasSet;
         }
         //return p.measure(bodyCode);
     }
@@ -876,7 +929,7 @@ export class ParameterValueSet
         //let bodyCode = () =>
         {
             let i = this.pc.getParameterIndex(pName);
-            this.values[i] = ParameterValue.getReplacementValue(wrtDoc, this.values[i], value);
+            this.values[i] = ParameterValue.getReplacementValue(wrtDoc, this.values[i], value, true);
         }
         //return p.measure(bodyCode);
     }
@@ -886,20 +939,21 @@ export class ParameterValueSet
         //let bodyCode = () =>
         {
             let copyValues = this.values.slice(0);
-            let copy = new ParameterValueSet(this.pc, copyValues);
+            let copyWasSet = this.wasSet.slice(0);
+            let copy = new ParameterValueSet(this.pc, copyValues, copyWasSet);
             return copy;
         }
         //return p.measure(bodyCode);
     }
 
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
             let l = this.length;
             for (let i = 0; i < l; i++) {
                 let pv = new ParameterValue(this.pc.sequence[i], this.values[i]);
-                pv.spew(indent + '-');
+                pv.spew(wrtDoc, to, indent + '-');
             }
         }
         //return p.measure(bodyCode);
@@ -914,11 +968,11 @@ export class ResolvedTrait
 {
     public trait: ICdmTraitDef;
     public parameterValues: ParameterValueSet;
-    constructor(trait: ICdmTraitDef, pc: ParameterCollection, values: ArgumentValue[])
+    constructor(trait: ICdmTraitDef, pc: ParameterCollection, values: ArgumentValue[], wasSet: boolean[])
     {
         //let bodyCode = () =>
         {
-            this.parameterValues = new ParameterValueSet(pc, values);
+            this.parameterValues = new ParameterValueSet(pc, values, wasSet);
             this.trait = trait;
         }
         //return p.measure(bodyCode);
@@ -931,12 +985,12 @@ export class ResolvedTrait
         }
         //return p.measure(bodyCode);
     }
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
-            console.log(`${indent}[${this.traitName}]`);
-            this.parameterValues.spew(indent + '-');
+            to.spewLine(`${indent}[${this.traitName}]`);
+            this.parameterValues.spew(wrtDoc, to, indent + '-');
         }
         //return p.measure(bodyCode);
     }
@@ -945,7 +999,7 @@ export class ResolvedTrait
         //let bodyCode = () =>
         {
             let copyParamValues = this.parameterValues.copy();
-            let copy = new ResolvedTrait(this.trait, copyParamValues.pc, copyParamValues.values);
+            let copy = new ResolvedTrait(this.trait, copyParamValues.pc, copyParamValues.values, copyParamValues.wasSet);
             return copy;
         }
         //return p.measure(bodyCode);
@@ -1013,13 +1067,14 @@ export class ResolvedTraitSet extends refCounted
         }
         //return p.measure(bodyCode);
     }
-    public merge(toMerge: ResolvedTrait, copyOnWrite: boolean): ResolvedTraitSet
+    public merge(toMerge: ResolvedTrait): ResolvedTraitSet
     {
         //let bodyCode = () =>
         {
             let traitSetResult: ResolvedTraitSet = this;
             let trait: ICdmTraitDef = toMerge.trait;
             let av: ArgumentValue[] = toMerge.parameterValues.values;
+            let wasSet: boolean[] = toMerge.parameterValues.wasSet;
             if (traitSetResult.lookupByTrait.has(trait)) {
                 let rtOld = traitSetResult.lookupByTrait.get(trait);
                 let avOld = rtOld.parameterValues.values;
@@ -1027,18 +1082,11 @@ export class ResolvedTraitSet extends refCounted
                 let l = av.length;
                 for (let i = 0; i < l; i++) {
                     if (av[i] != avOld[i]) {
-                        if (traitSetResult === this && copyOnWrite) {
-                            traitSetResult = traitSetResult.shallowCopyWithException(trait); // copy on write
-                            rtOld = traitSetResult.lookupByTrait.get(trait);
-                            avOld = rtOld.parameterValues.values;
-                        }
-                        avOld[i] = ParameterValue.getReplacementValue(this.wrtDoc, avOld[i], av[i]);
+                        avOld[i] = ParameterValue.getReplacementValue(this.wrtDoc, avOld[i], av[i], wasSet[i]);
                     }
                 }
             }
             else {
-                if (this.refCnt > 1)
-                    traitSetResult = traitSetResult.shallowCopy(); // copy on write
                 toMerge = toMerge.copy();
                 traitSetResult.set.push(toMerge);
                 traitSetResult.lookupByTrait.set(trait, toMerge);
@@ -1059,7 +1107,7 @@ export class ResolvedTraitSet extends refCounted
                 let l = toMerge.set.length;
                 for (let i = 0; i < l; i++) {
                     const rt = toMerge.set[i];
-                    let traitSetMerge = traitSetResult.merge(rt, this.refCnt > 1);
+                    let traitSetMerge = traitSetResult.merge(rt);
                     if (traitSetMerge !== traitSetResult) {
                         traitSetResult = traitSetMerge
                     }
@@ -1226,10 +1274,6 @@ export class ResolvedTraitSet extends refCounted
         //let bodyCode = () =>
         {
             let altered: ResolvedTraitSet = this;
-            //if (altered.refCnt > 1) {
-            altered = this.shallowCopyWithException(toTrait);
-            //}
-
             altered.get(toTrait).parameterValues.setParameterValue(this.wrtDoc, paramName, value);
             return altered;
         }
@@ -1250,11 +1294,7 @@ export class ResolvedTraitSet extends refCounted
                 {
                     if (av[idx] === valueWhen)
                     {
-                        if (traitSetResult.refCnt > 1) {
-                            traitSetResult = traitSetResult.shallowCopyWithException(rt.trait); // copy on write
-                            av = traitSetResult.set[i].parameterValues.values;
-                        }
-                        av[idx] = ParameterValue.getReplacementValue(wrtDoc, av[idx], valueNew)
+                        av[idx] = ParameterValue.getReplacementValue(wrtDoc, av[idx], valueNew, true)
                     }
                 }
             }
@@ -1262,13 +1302,13 @@ export class ResolvedTraitSet extends refCounted
         return traitSetResult;
     }
 
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
             let l = this.set.length;
             for (let i = 0; i < l; i++) {
-                this.set[i].spew(indent);
+                this.set[i].spew(wrtDoc, to, indent);
             };
         }
         //return p.measure(bodyCode);
@@ -1335,7 +1375,7 @@ class ResolvedTraitSetBuilder
         //let bodyCode = () =>
         {
             this.takeReference(new ResolvedTraitSet(this.wrtDoc));
-            this.rts.merge(rt, false);
+            this.rts.merge(rt);
         }
         //return p.measure(bodyCode);
     }
@@ -1352,14 +1392,8 @@ class ResolvedTraitSetBuilder
                     let newVal = arg.getValue();
                     // get the value index from the parameter collection given the parameter that this argument is setting
                     let iParam = resTrait.parameterValues.indexOf(arg.getParameterDef());
-                    if (this.rts.refCnt > 1 && av[iParam] != newVal) {
-                        // make a copy and try again
-                        this.takeReference(this.rts.shallowCopyWithException(trait));
-                        resTrait = this.rts.get(trait);
-                        av = resTrait.parameterValues.values;
-                    }
-                    av[iParam] = ParameterValue.getReplacementValue(this.wrtDoc, av[iParam], newVal);
-
+                    av[iParam] = ParameterValue.getReplacementValue(this.wrtDoc, av[iParam], newVal, true);
+                    resTrait.parameterValues.wasSet[iParam] = true;
                 }
             }
         }
@@ -1431,12 +1465,12 @@ export class ResolvedAttribute
         }
         //return p.measure(bodyCode);
     }
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
-            console.log(`${indent}[${this.resolvedName}]`);
-            this.resolvedTraits.spew(indent + '-');
+            to.spewLine(`${indent}[${this.resolvedName}]`);
+            this.resolvedTraits.spew(wrtDoc, to, indent + '-');
         }
         //return p.measure(bodyCode);
     }
@@ -1941,13 +1975,13 @@ export class ResolvedAttributeSet extends refCounted
         }
         //return p.measure(bodyCode);
     }
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
             let l = this.set.length;
             for (let i = 0; i < l; i++) {
-                this.set[i].spew(indent);
+                this.set[i].spew(wrtDoc, to, indent);
             }
         }
         //return p.measure(bodyCode);
@@ -2080,12 +2114,12 @@ export class ResolvedEntityReferenceSide
         }
         //return p.measure(bodyCode);
     }
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
-            console.log(`${indent} ent=${this.entity.getName()}`);
-            this.rasb.ras.spew(indent + '  atts:');
+            to.spewLine(`${indent} ent=${this.entity.getName()}`);
+            this.rasb.ras.spew(wrtDoc, to, indent + '  atts:');
         }
         //return p.measure(bodyCode);
     }
@@ -2124,13 +2158,13 @@ export class ResolvedEntityReference
         //return p.measure(bodyCode);
     }
 
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
-            this.referencing.spew(indent + "(referencing)");
+            this.referencing.spew(wrtDoc, to, indent + "(referencing)");
             for (let i = 0; i < this.referenced.length; i++) {
-                this.referenced[i].spew(indent + `(referenced[${i}])`);
+                this.referenced[i].spew(wrtDoc, to, indent + `(referenced[${i}])`);
             }
         }
         //return p.measure(bodyCode);
@@ -2181,6 +2215,23 @@ export class ResolvedEntity
         this.t2pm = new traitToPropertyMap();
         this.t2pm.initForResolvedEntity(this.resolvedTraits);
         return this.t2pm;
+    }
+
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
+    {
+        //let bodyCode = () =>
+        {
+            to.spewLine(indent + "=====ENTITY=====");
+            to.spewLine(indent + this.resolvedName);
+            to.spewLine(indent + "================");
+            to.spewLine(indent + "traits:");
+            this.resolvedTraits.spew(wrtDoc, to, indent + " ");
+            to.spewLine("attributes:");
+            this.resolvedAttributes.spew(wrtDoc, to, indent + " ");
+            to.spewLine("relationships:");
+            this.resolvedEntityReferences.spew(wrtDoc, to, indent + " ");
+        }
+        //return p.measure(bodyCode);
     }
 }
 
@@ -2244,12 +2295,12 @@ export class ResolvedEntityReferenceSet
         //return p.measure(bodyCode);
     }
 
-    public spew(indent: string)
+    public spew(wrtDoc : ICdmDocumentDef, to:spewCatcher, indent: string)
     {
         //let bodyCode = () =>
         {
             for (let i = 0; i < this.set.length; i++) {
-                this.set[i].spew(indent + `(rer[${i}])`);
+                this.set[i].spew(wrtDoc, to, indent + `(rer[${i}])`);
             }
         }
         //return p.measure(bodyCode);
@@ -5207,6 +5258,7 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
                 this.hasSetFlags = true;
                 let pc = this.getAllParameters(rtsb.wrtDoc);
                 let av = new Array<ArgumentValue>();
+                let wasSet = new Array<boolean>();
                 for (let i = 0; i < pc.sequence.length; i++) {
                     // either use the default value or (higher precidence) the value taken from the base reference
                     let value: ArgumentValue = (pc.sequence[i] as ParameterImpl).defaultValue;
@@ -5217,8 +5269,9 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
                             value = baseValue;
                     }
                     av.push(value);
+                    wasSet.push(false);
                 }
-                rtsb.ownOne(new ResolvedTrait(this, pc, av));
+                rtsb.ownOne(new ResolvedTrait(this, pc, av, wasSet));
             }
         }
         //return p.measure(bodyCode);
