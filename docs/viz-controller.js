@@ -93,7 +93,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
         return;
     }
     if (controller.appState === "navigateMode") {
-        if (messageType === "githubLoadRequest" || messageType === "filesLoadRequest") {
+        if (messageType === "githubLoadRequest" || messageType === "filesLoadRequest" || messageType === "vstsLoadRequest") {
             controller.pendingLoads = new Set();
             controller.loadFails = 0;
             controller.appState = "loadMode";
@@ -106,6 +106,12 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                 // construct a nav hierarchy from the set of file paths selected by the user
                 controller.navData = fileListToNavData(data1);
             }
+		if(messageType === "vstsLoadRequest")
+		{
+			controller.navData = vstsToNavData(data1);
+			controller.navData.readRoot = data2[0];
+			controller.navData.VSTSToken = data2[1];
+		}
             clearLoadState(controller.navData.root);
             // build a hierarchy from the built in data
             controller.hier = controller.navData.root;
@@ -266,6 +272,88 @@ function messageHandlePingMainControl(messageType, data1, data2) {
         }
     }
 }
+
+async function getVSTSCall(path, token) {
+	const Url = path;
+	const otherParam = {
+		headers: {
+			"Authorization": "Basic " + window.btoa(":" + token),
+			"content-type": "application/json" 
+		},
+		method:"GET"
+	};
+	var output = null;
+	const request = async () => {
+		const response = await fetch(Url, otherParam);
+		output = await response.json();
+	}
+	await request();
+	return output;
+}
+
+function vstsToNavData(fileList) {
+    let noUX = new Set();
+    noUX.add("schema");
+    noUX.add("primitives");
+    noUX.add("foundations");
+    noUX.add("meanings");
+    noUX.add("dwConcepts");
+    noUX.add("_allImports");
+    noUX.add("cdsConcepts");
+    noUX.add("wellKnownCDSAttributeGroups");
+    let iFolder = 1;
+    let root = { id: `Folder${iFolder}`, name: "", entities: null, folders: null };
+    iFolder++;
+    let iEnt = 1;
+    let pathToFolder = (path, under) => {
+        let iSub = path.indexOf("/");
+        let subPath;
+        if (iSub == -1)
+            subPath = path;
+        else
+            subPath = path.slice(0, iSub);
+        if (!under.folders)
+            under.folders = new Array();
+        let folderSub = under.folders.find(f => f.name === subPath);
+        if (!folderSub) {
+            folderSub = { id: `Folder${iFolder}`, name: subPath, entities: null, folders: null };
+            iFolder++;
+            under.folders.push(folderSub);
+        }
+        if (iSub == -1)
+            return folderSub;
+        return pathToFolder(path.slice(iSub + 1), folderSub);
+    };
+    for (let iFile = 0; iFile < fileList.length; iFile++) {
+        let file = fileList[iFile];
+        if (file.name.endsWith(".cdm.json")) {
+            let entName = file.name.slice(0, file.name.indexOf("."));
+            let makeUX = !noUX.has(entName);
+            let f;
+            let path = (file.path && file.path.length) ? file.path : "";
+            // the first dir name is this and path ends with file. so cleanup
+            let startAt = path.indexOf("/") + 1;
+            if (startAt) {
+                path = path.slice(startAt, path.length - (file.name.length + 1));
+            }
+            if (path != "") {
+                f = pathToFolder(path, root);
+                path = "/" + path + "/";
+            }
+            else
+                f = root;
+            let ent = { id: `Entity${iEnt}`, createUX: makeUX, description: "", path: path, docName: file.name, name: entName,
+                file: file, loadState: 0, folderId: f.id };
+            iEnt++;
+            if (!f.entities)
+                f.entities = new Array();
+            f.entities.push(ent);
+        }
+    }
+    return { readRoot: "", sourceRoot: "", root: root };
+}
+
+
 function fileListToNavData(fileList) {
     let noUX = new Set();
     noUX.add("schema");
@@ -474,6 +562,12 @@ function loadDocuments(messageType) {
         if (entState.loadState != undefined && entState.loadState != 1)
             controller.mainContainer.messageHandlePing("loadPending", entState, null);
     });
+
+	var splitter =  "";
+	if(messageType == "vstsLoadRequest"){ splitter = controller.navData.readRoot.split("?scopePath=")[1].split("&recursionLevel")[0]; }
+
+	controller.navData.splitter = splitter;	
+
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState != undefined && entState.loadState != 1) {
             if (messageType == "githubLoadRequest") {
@@ -499,6 +593,29 @@ function loadDocuments(messageType) {
                 };
                 reader.readAsText(entState.file);
             }
+		
+		if( messageType == "vstsLoadRequest")
+		{
+			const otherParam = {
+				headers: {
+					"Authorization": "Basic " + window.btoa(":" + controller.navData.VSTSToken),
+					"content-type": "application/json" 
+				},
+				method:"GET"
+			};
+			let splits = controller.navData.readRoot.split(splitter);
+			fetch(splits[0] + entState.path + entState.docName + '&versionType=Branch&versionOptions=None', otherParam).then(function (response) {
+				return response.json();
+			}).then(function (data) {
+				controller.mainContainer.messageHandlePing("loadSuccess", entState, data);
+			}).catch(function (reason) {
+				controller.mainContainer.messageHandlePing("loadFail", entState, reason);
+			}).then(function (done) {
+				controller.mainContainer.messageHandlePing("loadModeResult", messageType, null);
+			});
+		}
+		
+
         }
     });
 }
@@ -525,6 +642,27 @@ function resolveCorpus(messageType) {
                 });
             });
         }
+	else if (messageType == "vstsLoadRequest")
+	{
+	   return new Promise((resolve, reject) => {
+		const otherParam = {
+				headers: {
+					"Authorization": "Basic " + window.btoa(":" + controller.navData.VSTSToken),
+					"content-type": "application/json" 
+				},
+				method:"GET"
+			};
+			let splits = controller.navData.readRoot.split(controller.navData.splitter);
+			let filler = controller.navData.splitter.split('/')[1];
+		fetch(splits[0] + '/' + filler + uri + '&versionType=Branch&versionOptions=None', otherParam).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    resolve([uri, data]);
+                }).catch(function (reason) {
+                    reject([uri, reason]);
+                });
+            });
+	}
         else {
             controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, `can't resolve import of '${uri}' in local file mode. you must load the file directly.`);
         }
@@ -1149,7 +1287,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
     let isAtt = false;
     if (messageType == "navigateEntitySelect") {
         if (data2) {
-            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected);
+            resolvedObject = data2.getResolvedEntity(controller.cdmDocSelected);
         }
     }
     if (messageType == "listItemSelect") {
