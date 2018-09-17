@@ -566,6 +566,8 @@ function loadDocuments(messageType) {
 	var splitter =  "";
 	if(messageType == "vstsLoadRequest"){ splitter = controller.navData.readRoot.split("?scopePath=")[1].split("&recursionLevel")[0]; }
 
+	controller.navData.splitter = splitter;	
+
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState != undefined && entState.loadState != 1) {
             if (messageType == "githubLoadRequest") {
@@ -640,6 +642,27 @@ function resolveCorpus(messageType) {
                 });
             });
         }
+	else if (messageType == "vstsLoadRequest")
+	{
+	   return new Promise((resolve, reject) => {
+		const otherParam = {
+				headers: {
+					"Authorization": "Basic " + window.btoa(":" + controller.navData.VSTSToken),
+					"content-type": "application/json" 
+				},
+				method:"GET"
+			};
+			let splits = controller.navData.readRoot.split(controller.navData.splitter);
+			let filler = controller.navData.splitter.split('/')[1];
+		fetch(splits[0] + '/' + filler + uri + '&versionType=Branch&versionOptions=None', otherParam).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    resolve([uri, data]);
+                }).catch(function (reason) {
+                    reject([uri, reason]);
+                });
+            });
+	}
         else {
             controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, `can't resolve import of '${uri}' in local file mode. you must load the file directly.`);
         }
