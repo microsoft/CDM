@@ -157,6 +157,36 @@
         function onclickFiles(files) {
             controller.mainContainer.messageHandlePing("filesLoadRequest", files, null);
         }
+	function onclickVSTS(path, token) {
+		let vstsFunc = async function() {
+			console.log(path, token);
+			let files = null
+			await getVSTSCall(path, token).then(data =>{
+				files = data;
+			});
+			files = files.value;
+			var filteredFiles = [];
+			
+			for(var i = 0; i < files.length; i++)
+			{
+				if(files[i].path.includes(".cdm.json"))
+				{
+					let file = null;
+					await getVSTSCall(files[i].url, token).then(data =>{
+						file = data;
+					});
+					files[i].fileData = file;
+					files[i].lastModified = 0;
+					files[i].name = files[i].path.split("/")[files[i].path.split("/").length - 1];
+					files[i].type = "application/json";
+					filteredFiles.push(files[i]);
+				}
+			}
+
+			controller.mainContainer.messageHandlePing("vstsLoadRequest", filteredFiles, [path, token]);
+		}
+		vstsFunc();
+	}
 
         function onclickFolderItem(event) {
             controller.mainContainer.messageHandlePing("navigateEntitySelect", this.folderState, event.ctrlKey);
@@ -200,6 +230,12 @@
                 <button id="github_button" class="button" onclick=onclickGithub()>Load from Github!</button>
                 <button id="local_button" class="button" onclick="document.getElementById('local-files').click();">Load from files...</button>
                 <input type="file" multiple directory webkitdirectory accept=".json" id="local-files" name="file" style="display: none" onchange="onclickFiles(document.getElementById('local-files').files)">
+		<button id="vsts_button" class="button" onclick="document.getElementById('vsts-input').style.display = 'inline';">Load from vsts!</button>
+		<div id="vsts-input" style="position: absolute; display: none; z-index: 10000; top: 40px; left: 250px; background: Gainsboro; border: solid black 1px; padding: 5px;">
+                	<div style="padding-top:5px;">VSTS Path:</div> <input type="text" id="vsts-files" name="vsts">
+                	<div style="padding-top:5px;">Security Token:</div> <input type="text" id="vsts-token" name="vsts">
+			<button id="vsts-submit" class="button" onclick="onclickVSTS(document.getElementById('vsts-files').value, document.getElementById('vsts-token').value); document.getElementById('vsts-input').style.display = 'none';">Submit</button>
+		</div>
             </span>
         </span>
         <span class="fixed_container" id="navigate_host_pane">
