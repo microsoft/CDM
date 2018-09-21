@@ -7,7 +7,7 @@
     ],
     "definitions": [
         {
-            "entityName": "EventCheckIn",
+            "entityName": "ContactCheckedIntoEvent",
             "extendsEntity": "CdmObject",
             "exhibitsTraits": {
                 "value": [
@@ -542,6 +542,57 @@
                                 "isNullable": true
                             },
                             {
+                                "name": "eventCheckinId",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "eventcheckinid"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "eventcheckinid"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "eventcheckinid",
+                                "description": "eventcheckinid",
+                                "isNullable": true
+                            },
+                            {
                                 "name": "contactId",
                                 "relationship": "hasA",
                                 "dataType": "string",
@@ -807,7 +858,7 @@
                                                 "entityShape": "attributeGroupSet",
                                                 "constantValues": [
                                                     [
-                                                        "/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/interactions/EventCheckin.cdm.json/EventCheckIn/hasAttributes/attributesAddedAtThisScope"
+                                                        "/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/interactions/ContactCheckedIntoEvent.cdm.json/ContactCheckedIntoEvent/hasAttributes/attributesAddedAtThisScope"
                                                     ]
                                                 ]
                                             }
@@ -820,7 +871,8 @@
                     }
                 }
             ],
-            "displayName": "Event check-in"
+            "displayName": "Event check-in",
+            "sourceName": "EventCheckin"
         }
     ]
 }
