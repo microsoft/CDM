@@ -4,7 +4,7 @@ The Common Data Model is a declarative specification, and definition of standard
 
 ### Open Data Initiative
 
-As annouced at Microsoft Inspire, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
+As annouced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
 
 CDM is already supported in the Common Data Service, Dynamics 365, PowerApps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
 
