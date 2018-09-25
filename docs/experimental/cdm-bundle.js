@@ -516,6 +516,7 @@ class ResolvedTraitSet extends refCounted {
             this.wrtDoc = wrtDoc;
             this.set = new Array();
             this.lookupByTrait = new Map();
+            this.modifiesAttributes = false;
         }
         //return p.measure(bodyCode);
     }
@@ -526,6 +527,8 @@ class ResolvedTraitSet extends refCounted {
             let trait = toMerge.trait;
             let av = toMerge.parameterValues.values;
             let wasSet = toMerge.parameterValues.wasSet;
+            if (!this.modifiesAttributes)
+                this.modifiesAttributes = trait.modifiesAttributes;
             if (traitSetResult.lookupByTrait.has(trait)) {
                 let rtOld = traitSetResult.lookupByTrait.get(trait);
                 let avOld = rtOld.parameterValues.values;
@@ -726,12 +729,16 @@ class ResolvedTraitSet extends refCounted {
         }
         return traitSetResult;
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
             let l = this.set.length;
+            let list = this.set;
+            if (nameSort)
+                list = list.sort((l, r) => l.traitName.localeCompare(r.traitName));
             for (let i = 0; i < l; i++) {
-                this.set[i].spew(wrtDoc, to, indent);
+                // comment this line to simplify spew results to stop at attribute names
+                list[i].spew(wrtDoc, to, indent);
             }
             ;
         }
@@ -860,11 +867,11 @@ class ResolvedAttribute {
         }
         //return p.measure(bodyCode);
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
             to.spewLine(`${indent}[${this.resolvedName}]`);
-            this.resolvedTraits.spew(wrtDoc, to, indent + '-');
+            this.resolvedTraits.spew(wrtDoc, to, indent + '-', nameSort);
         }
         //return p.measure(bodyCode);
     }
@@ -986,23 +993,23 @@ class ResolvedAttributeSet extends refCounted {
         {
             // if there was no continuation set provided, build one 
             if (!continuationsIn) {
+                if (!traits || !traits.modifiesAttributes)
+                    return null;
                 continuationsIn = new ApplierContinuationSet();
                 // collect a set of appliers for all traits
                 let appliers = new Array();
                 let iApplier = 0;
-                if (traits) {
-                    let l = traits.size;
-                    for (let i = 0; i < l; i++) {
-                        const rt = traits.set[i];
-                        if (rt.trait.modifiesAttributes) {
-                            let traitAppliers = rt.trait.getTraitAppliers();
-                            if (traitAppliers) {
-                                let l = traitAppliers.length;
-                                for (let ita = 0; ita < l; ita++) {
-                                    const apl = traitAppliers[ita];
-                                    if (apl.attributeAdd)
-                                        appliers.push([rt, apl]);
-                                }
+                let l = traits.size;
+                for (let i = 0; i < l; i++) {
+                    const rt = traits.set[i];
+                    if (rt.trait.modifiesAttributes) {
+                        let traitAppliers = rt.trait.getTraitAppliers();
+                        if (traitAppliers) {
+                            let l = traitAppliers.length;
+                            for (let ita = 0; ita < l; ita++) {
+                                const apl = traitAppliers[ita];
+                                if (apl.attributeAdd)
+                                    appliers.push([rt, apl]);
                             }
                         }
                     }
@@ -1026,31 +1033,26 @@ class ResolvedAttributeSet extends refCounted {
                 }
             }
             // for every attribute in the set run any attribute adders and collect results in a new set
-            let addedAttSet = new ResolvedAttributeSet(this.wrtDoc);
-            addedAttSet.addRef();
+            let addedAttSet = new ResolvedAttributeSetBuilder(this.wrtDoc);
             let continuationsOut = new ApplierContinuationSet();
             for (const continueWith of continuationsIn.continuations) {
                 if (continueWith.applier.willAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, continueWith.continuationState)) {
                     let result = continueWith.applier.attributeAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, continueWith.continuationState);
                     // create a new resolved attribute and apply the traits that it has
-                    let newAttSet = new ResolvedAttributeSet(this.wrtDoc);
-                    newAttSet.addRef();
-                    let mergeOne = newAttSet.merge(new ResolvedAttribute(this.wrtDoc, result.addedAttribute).copy(this.wrtDoc));
-                    mergeOne.addRef();
-                    newAttSet.release();
-                    newAttSet = mergeOne;
-                    newAttSet.applyTraits(result.addedAttribute.getResolvedTraits(this.wrtDoc));
+                    let rtsNew = result.addedAttribute.getResolvedTraits(this.wrtDoc);
+                    let newRasb = new ResolvedAttributeSetBuilder(this.wrtDoc);
+                    newRasb.ownOne(new ResolvedAttribute(this.wrtDoc, result.addedAttribute).copy(this.wrtDoc));
+                    newRasb.applyTraits(rtsNew);
+                    // recursion. the new attribute might have traits that add attriutes. Do that 
+                    newRasb.mergeTraitAttributes(rtsNew);
                     // accumulate all added
-                    let mergeResult = addedAttSet.mergeSet(newAttSet);
-                    mergeResult.addRef();
-                    addedAttSet.release();
-                    addedAttSet = mergeResult;
+                    addedAttSet.mergeAttributes(newRasb.giveReference());
                     // if a continue requested, add to list
                     if (result.continuationState)
                         continuationsOut.continuations.push({ applier: continueWith.applier, resAtt: continueWith.resAtt, resTrait: continueWith.resTrait, continuationState: result.continuationState });
                 }
             }
-            continuationsOut.rasResult = this.mergeSet(addedAttSet);
+            continuationsOut.rasResult = this.mergeSet(addedAttSet.giveReference());
             continuationsOut.rasResult.addRef();
             if (!continuationsOut.continuations.length)
                 continuationsOut.continuations = null;
@@ -1316,12 +1318,17 @@ class ResolvedAttributeSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
             let l = this.set.length;
-            for (let i = 0; i < l; i++) {
-                this.set[i].spew(wrtDoc, to, indent);
+            if (l > 0) {
+                let list = this.set;
+                if (nameSort)
+                    list = list.sort((l, r) => l.resolvedName.localeCompare(r.resolvedName));
+                for (let i = 0; i < l; i++) {
+                    list[i].spew(wrtDoc, to, indent, nameSort);
+                }
             }
         }
         //return p.measure(bodyCode);
@@ -1357,6 +1364,15 @@ class ResolvedAttributeSetBuilder {
         }
         //return p.measure(bodyCode);
     }
+    giveReference() {
+        let rasRef = this.ras;
+        if (this.ras) {
+            this.ras.release();
+            if (this.ras.refCnt == 0)
+                this.ras = null;
+        }
+        return rasRef;
+    }
     ownOne(ra) {
         //let bodyCode = () =>
         {
@@ -1381,6 +1397,10 @@ class ResolvedAttributeSetBuilder {
             let localContinue = null;
             while (localContinue = this.ras.mergeTraitAttributes(rts, localContinue)) {
                 this.takeReference(localContinue.rasResult);
+                if (localContinue.rasResult) {
+                    localContinue.rasResult.release();
+                    localContinue.rasResult = null;
+                }
                 if (!localContinue.continuations)
                     break;
             }
@@ -1431,11 +1451,11 @@ class ResolvedEntityReferenceSide {
         }
         //return p.measure(bodyCode);
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
             to.spewLine(`${indent} ent=${this.entity.getName()}`);
-            this.rasb.ras.spew(wrtDoc, to, indent + '  atts:');
+            this.rasb.ras.spew(wrtDoc, to, indent + '  atts:', nameSort);
         }
         //return p.measure(bodyCode);
     }
@@ -1464,12 +1484,15 @@ class ResolvedEntityReference {
         }
         //return p.measure(bodyCode);
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
-            this.referencing.spew(wrtDoc, to, indent + "(referencing)");
+            this.referencing.spew(wrtDoc, to, indent + "(referencing)", nameSort);
+            let list = this.referenced;
+            if (nameSort)
+                list = list.sort((l, r) => l.entity.getName().localeCompare(r.entity.getName()));
             for (let i = 0; i < this.referenced.length; i++) {
-                this.referenced[i].spew(wrtDoc, to, indent + `(referenced[${i}])`);
+                list[i].spew(wrtDoc, to, indent + `(referenced[${i}])`, nameSort);
             }
         }
         //return p.measure(bodyCode);
@@ -1506,18 +1529,18 @@ class ResolvedEntity {
         this.t2pm.initForResolvedEntity(this.resolvedTraits);
         return this.t2pm;
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
             to.spewLine(indent + "=====ENTITY=====");
             to.spewLine(indent + this.resolvedName);
             to.spewLine(indent + "================");
             to.spewLine(indent + "traits:");
-            this.resolvedTraits.spew(wrtDoc, to, indent + " ");
+            this.resolvedTraits.spew(wrtDoc, to, indent + " ", nameSort);
             to.spewLine("attributes:");
-            this.resolvedAttributes.spew(wrtDoc, to, indent + " ");
+            this.resolvedAttributes.spew(wrtDoc, to, indent + " ", nameSort);
             to.spewLine("relationships:");
-            this.resolvedEntityReferences.spew(wrtDoc, to, indent + " ");
+            this.resolvedEntityReferences.spew(wrtDoc, to, indent + " ", nameSort);
         }
         //return p.measure(bodyCode);
     }
@@ -1572,11 +1595,26 @@ class ResolvedEntityReferenceSet {
         }
         //return p.measure(bodyCode);
     }
-    spew(wrtDoc, to, indent) {
+    spew(wrtDoc, to, indent, nameSort) {
         //let bodyCode = () =>
         {
+            let list = this.set;
+            if (nameSort)
+                list = list.sort((l, r) => {
+                    if (l.referenced && l.referenced.length) {
+                        if (r.referenced && r.referenced.length) {
+                            return l.referenced[0].entity.getName().localeCompare(r.referenced[0].entity.getName());
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+                    else {
+                        return -1;
+                    }
+                });
             for (let i = 0; i < this.set.length; i++) {
-                this.set[i].spew(wrtDoc, to, indent + `(rer[${i}])`);
+                list[i].spew(wrtDoc, to, indent + `(rer[${i}])`, nameSort);
             }
         }
         //return p.measure(bodyCode);
@@ -2179,32 +2217,46 @@ class traitToPropertyMap {
         let trait = this.getTrait("does.haveDefault", false);
         if (trait) {
             let defVal = getTraitRefArgumentValue(trait, "default");
-            if (typeof (defVal) === "string")
-                return defVal;
-            if (defVal.getObjectType() === cdmObjectType.entityRef) {
-                let cEnt = defVal.getObjectDef(null);
-                if (cEnt) {
-                    let esName = cEnt.getEntityShape().getObjectDefName();
-                    let corr = esName === "listLookupCorrelatedValues";
-                    if (esName === "listLookupValues" || corr) {
-                        let result = new Array();
-                        let rawValues = cEnt.getConstantValues();
-                        let l = rawValues.length;
-                        for (let i = 0; i < l; i++) {
-                            let row = {};
-                            let rawRow = rawValues[i];
-                            if ((!corr && rawRow.length == 4) || (corr && rawRow.length == 5)) {
-                                row["languageTag"] = rawRow[0];
-                                row["displayText"] = rawRow[1];
-                                row["attributeValue"] = rawRow[2];
-                                row["displayOrder"] = rawRow[3];
-                                if (corr)
-                                    row["correlatedValue"] = rawRow[4];
+            if (defVal != undefined && defVal != null) {
+                if (typeof (defVal) === "string")
+                    return defVal;
+                if (defVal.getObjectType() === cdmObjectType.entityRef) {
+                    let cEnt = defVal.getObjectDef(null);
+                    if (cEnt) {
+                        let esName = cEnt.getEntityShape().getObjectDefName();
+                        let corr = esName === "listLookupCorrelatedValues";
+                        let lookup = esName === "listLookupValues";
+                        if (esName === "localizedTable" || lookup || corr) {
+                            let result = new Array();
+                            let rawValues = cEnt.getConstantValues();
+                            let l = rawValues.length;
+                            for (let i = 0; i < l; i++) {
+                                let row = {};
+                                let rawRow = rawValues[i];
+                                if (rawRow.length == 2 || (lookup && rawRow.length == 4) || (corr && rawRow.length == 5)) {
+                                    row["languageTag"] = rawRow[0];
+                                    row["displayText"] = rawRow[1];
+                                    if (lookup || corr) {
+                                        row["attributeValue"] = rawRow[2];
+                                        row["displayOrder"] = rawRow[3];
+                                        if (corr)
+                                            row["correlatedValue"] = rawRow[4];
+                                    }
+                                }
+                                result.push(row);
                             }
-                            result.push(row);
+                            return result;
                         }
-                        return result;
+                        else {
+                            // an unknown entity shape. only thing to do is serialize the object
+                            defVal = defVal.copyData(null);
+                        }
                     }
+                }
+                else {
+                    // is it a cdm object?
+                    if (defVal.getObjectType != undefined)
+                        defVal = defVal.copyData(null);
                 }
             }
             return defVal;
@@ -6920,6 +6972,8 @@ class resolveContext {
     resolveNamedReference(str, expectedType) {
         //let bodyCode = () =>
         {
+            if (!this.currentDoc)
+                return null;
             let found = this.currentDoc.resolveString(this, str, new Set());
             // found something, is it the right type?
             if (found && expectedType != cdmObjectType.error) {
@@ -7859,7 +7913,7 @@ exports.Corpus = Corpus;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//  appliers to support the traits from 'primitives.cmd'
+//  appliers to support the traits from 'primitives.cdm.json'
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
