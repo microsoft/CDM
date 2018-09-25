@@ -594,107 +594,7 @@
                                 "sourceName": "ismaster",
                                 "sourceOrdering": 8
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Connection' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 9
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "relationship": {
                                     "relationshipReference": "referencesA",
@@ -1044,7 +944,60 @@
                                                                         }
                                                                     }
                                                                 ]
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "record2IdObjectTypeCode",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "record2Id Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The name of the entity linked by record2Id"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "record2Id Type",
+                                                                            "description": "The name of the entity linked by record2Id",
+                                                                            "sourceName": "record2idobjecttypecode"
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
+                        
                                                         ],
                                                         "displayName": "Connected To",
                                                         "description": "Unique identifier of the target record.",
@@ -1759,7 +1712,60 @@
                                                                         }
                                                                     }
                                                                 ]
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "record1IdObjectTypeCode",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "record1Id Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The name of the entity linked by record1Id"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "record1Id Type",
+                                                                            "description": "The name of the entity linked by record1Id",
+                                                                            "sourceName": "record1idobjecttypecode"
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
+                        
                                                         ],
                                                         "displayName": "Connected From",
                                                         "description": "Unique identifier of the source record.",

@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "Email",
-            "extendsEntity": "CdsStandard",
+            "extendsEntity": "ActivityCommon",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -68,59 +68,12 @@
                             }
                         ],
                         "members": [
-                            {
-                                "name": "scheduledStart",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Start Date"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Start Date",
-                                "description": "Enter the expected start date and time for the activity to provide details about the tentative time when the email activity must be initiated.",
-                                "isNullable": true,
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 1
-                            },
+                            "activityCategory",
+                            "activityAdditionalParams",
+                            "activityToFrom",
+                            "activityCC",
+                            "activityDelivery",
+                            "activityDirectionCode",
                             {
                                 "name": "statusCode",
                                 "relationship": {
@@ -438,253 +391,6 @@
                                 "maximumLength": 1073741823
                             },
                             {
-                                "name": "to",
-                                "relationship": "hasA",
-                                "dataType": "partylist",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "multi"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "To"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the account, contact, lead, queue, or user recipients for the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "To",
-                                "description": "Enter the account, contact, lead, queue, or user recipients for the email.",
-                                "isNullable": true,
-                                "sourceName": "to",
-                                "sourceOrdering": 5
-                            },
-                            {
-                                "name": "isWorkflowCreated",
-                                "relationship": "hasA",
-                                "dataType": "boolean",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Is Workflow Created"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Indication if the email was created by a workflow rule."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Is Workflow Created",
-                                "description": "Indication if the email was created by a workflow rule.",
-                                "isNullable": true,
-                                "sourceName": "isworkflowcreated",
-                                "sourceOrdering": 6
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Activity' adds the 'activityId' attribute below to the 'Email' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "activityId",
-                                                        "relationship": "identifiedBy",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Email Message"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the email activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Email Message",
-                                                        "description": "Unique identifier of the email activity.",
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 7
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "Activity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Activity/(resolvedAttributes)/activityId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "scheduledEnd",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Due Date"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the expected due date and time for the activity to be completed to provide details about when the email will be sent."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Due Date",
-                                "description": "Enter the expected due date and time for the activity to be completed to provide details about when the email will be sent.",
-                                "isNullable": true,
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 8
-                            },
-                            {
                                 "name": "mimeType",
                                 "relationship": "hasA",
                                 "dataType": "string",
@@ -792,498 +498,6 @@
                                 "sourceOrdering": 12
                             },
                             {
-                                "name": "subcategory",
-                                "relationship": "hasA",
-                                "dataType": "string",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Sub-Category"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type a subcategory to identify the email type and relate the activity to a specific product, sales region, business group, or other function."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Sub-Category",
-                                "description": "Type a subcategory to identify the email type and relate the activity to a specific product, sales region, business group, or other function.",
-                                "isNullable": true,
-                                "sourceName": "subcategory",
-                                "sourceOrdering": 13,
-                                "maximumLength": 250
-                            },
-                            {
-                                "name": "isBilled",
-                                "relationship": "hasA",
-                                "dataType": "boolean",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Is Billed"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Information regarding whether the email activity was billed as part of resolving a case."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Is Billed",
-                                "description": "Information regarding whether the email activity was billed as part of resolving a case.",
-                                "isNullable": true,
-                                "sourceName": "isbilled",
-                                "sourceOrdering": 14
-                            },
-                            {
-                                "name": "actualDurationMinutes",
-                                "relationship": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "integer",
-                                    "appliedTraits": [
-                                        "means.measurement.duration.minutes"
-                                    ]
-                                },
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Duration"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type the number of minutes spent creating and sending the email. The duration is used in reporting."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Duration",
-                                "description": "Type the number of minutes spent creating and sending the email. The duration is used in reporting.",
-                                "isNullable": true,
-                                "sourceName": "actualdurationminutes",
-                                "sourceOrdering": 15,
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0"
-                            },
-                            {
-                                "name": "priorityCode",
-                                "relationship": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Low",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Normal",
-                                                                "1",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "High",
-                                                                "2",
-                                                                "2"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'priorityCode_display' is added to the 'Email' entity to provide the localized display text for the value of the listLookup attribute 'priorityCode'",
-                                                    "name": "priorityCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "appliedTraits": [
-                                                        {
-                                                            "traitReference": "is.readOnly"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Priority"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Select the priority so that preferred customers or critical issues are handled quickly."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Priority",
-                                "description": "Select the priority so that preferred customers or critical issues are handled quickly.",
-                                "isNullable": true,
-                                "sourceName": "prioritycode",
-                                "sourceOrdering": 16
-                            },
-                            {
-                                "name": "actualStart",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Actual Start"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the actual start date and time for the email. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Actual Start",
-                                "description": "Enter the actual start date and time for the email. By default, it displays the date and time when the activity was created, but can be edited to capture the actual time to create and send the email.",
-                                "isNullable": true,
-                                "sourceName": "actualstart",
-                                "sourceOrdering": 18
-                            },
-                            {
-                                "name": "from",
-                                "relationship": "hasA",
-                                "dataType": "partylist",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "From"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the sender of the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "From",
-                                "description": "Enter the sender of the email.",
-                                "isNullable": true,
-                                "sourceName": "from",
-                                "sourceOrdering": 19
-                            },
-                            {
-                                "name": "directionCode",
-                                "relationship": "hasA",
-                                "dataType": "boolean",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Direction"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Select the direction of the email as incoming or outbound."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Direction",
-                                "description": "Select the direction of the email as incoming or outbound.",
-                                "isNullable": true,
-                                "sourceName": "directioncode",
-                                "sourceOrdering": 20
-                            },
-                            {
-                                "name": "actualEnd",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Actual End"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the actual end date and time of the email. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Actual End",
-                                "description": "Enter the actual end date and time of the email. By default, it displays the date and time when the activity was completed or canceled, but can be edited to capture the actual time to create and send the email.",
-                                "isNullable": true,
-                                "sourceName": "actualend",
-                                "sourceOrdering": 21
-                            },
-                            {
                                 "name": "trackingToken",
                                 "relationship": "hasA",
                                 "dataType": "string",
@@ -1338,244 +552,6 @@
                                 "maximumLength": 50
                             },
                             {
-                                "name": "scheduledDurationMinutes",
-                                "relationship": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "integer",
-                                    "appliedTraits": [
-                                        "means.measurement.duration.minutes"
-                                    ]
-                                },
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Scheduled Duration"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Scheduled duration of the email activity, specified in minutes."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Scheduled Duration",
-                                "description": "Scheduled duration of the email activity, specified in minutes.",
-                                "isNullable": true,
-                                "sourceName": "scheduleddurationminutes",
-                                "sourceOrdering": 25,
-                                "maximumValue": "2147483647",
-                                "minimumValue": "0"
-                            },
-                            {
-                                "name": "category",
-                                "relationship": "hasA",
-                                "dataType": "string",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Category"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type a category to identify the email type, such as lead outreach, customer follow-up, or service alert, to tie the email to a business group or function."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Category",
-                                "description": "Type a category to identify the email type, such as lead outreach, customer follow-up, or service alert, to tie the email to a business group or function.",
-                                "isNullable": true,
-                                "sourceName": "category",
-                                "sourceOrdering": 26,
-                                "maximumLength": 250
-                            },
-                            {
-                                "name": "BCC",
-                                "relationship": "hasA",
-                                "dataType": "partylist",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "multi"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Bcc"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the recipients that are included on the email distribution, but are not displayed to other recipients."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Bcc",
-                                "description": "Enter the recipients that are included on the email distribution, but are not displayed to other recipients.",
-                                "isNullable": true,
-                                "sourceName": "bcc",
-                                "sourceOrdering": 29
-                            },
-                            {
-                                "name": "CC",
-                                "relationship": "hasA",
-                                "dataType": "partylist",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "multi"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Cc"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter the recipients that should be copied on the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Cc",
-                                "description": "Enter the recipients that should be copied on the email.",
-                                "isNullable": true,
-                                "sourceName": "cc",
-                                "sourceOrdering": 30
-                            },
-                            {
                                 "name": "sender",
                                 "relationship": "hasA",
                                 "dataType": "string",
@@ -1628,60 +604,6 @@
                                 "sourceName": "sender",
                                 "sourceOrdering": 31,
                                 "maximumLength": 250
-                            },
-                            {
-                                "name": "subject",
-                                "relationship": "hasA",
-                                "dataType": "string",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Subject"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type a short description about the objective or primary topic of the email."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Subject",
-                                "description": "Type a short description about the objective or primary topic of the email.",
-                                "isNullable": true,
-                                "sourceName": "subject",
-                                "sourceOrdering": 32,
-                                "maximumLength": 200
                             },
                             {
                                 "name": "toRecipients",
@@ -1798,69 +720,12 @@
                                             "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and KnowledgeBaseRecord and Account and KnowledgeArticle' adds the 'regardingObjectId' attribute below to the 'Email' entity as a key",
                                                     "name": "addedAttribute",
                                                     "value": {
+                                                        "explanation": "Place holder that merges with the better attribute description from the ActivityCommon entity",
                                                         "name": "regardingObjectId",
                                                         "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Regarding"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Choose the record that the email relates to."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Regarding",
-                                                        "description": "Choose the record that the email relates to.",
-                                                        "isNullable": true,
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 36
+                                                        "dataType": "entityId"
                                                     }
                                                 }
                                             ]
@@ -2284,251 +1149,6 @@
                                 "sourceOrdering": 64
                             },
                             {
-                                "name": "activityTypeCode",
-                                "relationship": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Fax",
-                                                                "4204",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Phone Call",
-                                                                "4210",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Email",
-                                                                "4202",
-                                                                "2"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Letter",
-                                                                "4207",
-                                                                "3"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Appointment",
-                                                                "4201",
-                                                                "4"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Task",
-                                                                "4212",
-                                                                "5"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Recurring Appointment",
-                                                                "4251",
-                                                                "6"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Quick Campaign",
-                                                                "4406",
-                                                                "7"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Campaign Activity",
-                                                                "4402",
-                                                                "8"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Campaign Response",
-                                                                "4401",
-                                                                "9"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Case Resolution",
-                                                                "4206",
-                                                                "10"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Service Activity",
-                                                                "4214",
-                                                                "11"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Opportunity Close",
-                                                                "4208",
-                                                                "12"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Order Close",
-                                                                "4209",
-                                                                "13"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Quote Close",
-                                                                "4211",
-                                                                "14"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Alert Subscription",
-                                                                "10030",
-                                                                "15"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Invite Redemption",
-                                                                "10033",
-                                                                "16"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Portal Comment",
-                                                                "10093",
-                                                                "17"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'activityTypeCode_display' is added to the 'Email' entity to provide the localized display text for the value of the listLookup attribute 'activityTypeCode'",
-                                                    "name": "activityTypeCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "appliedTraits": [
-                                                        {
-                                                            "traitReference": "is.readOnly"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Activity Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the type of activity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Activity Type",
-                                "description": "Shows the type of activity.",
-                                "sourceName": "activitytypecode",
-                                "sourceOrdering": 82
-                            },
-                            {
-                                "name": "isRegularActivity",
-                                "relationship": "hasA",
-                                "dataType": "boolean",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Is Regular Activity"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Information regarding whether the activity is a regular activity type or event type."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Is Regular Activity",
-                                "description": "Information regarding whether the activity is a regular activity type or event type.",
-                                "sourceName": "isregularactivity",
-                                "sourceOrdering": 84
-                            },
-                            {
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2736,7 +1356,60 @@
                                                                         }
                                                                     }
                                                                 ]
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "emailSenderObjectTypeCode",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "emailSender Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The name of the entity linked by emailSender"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "emailSender Type",
+                                                                            "description": "The name of the entity linked by emailSender",
+                                                                            "sourceName": "emailsenderobjecttypecode"
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
+                        
                                                         ],
                                                         "displayName": "Sender",
                                                         "description": "Shows the sender of the email.",
@@ -2860,7 +1533,60 @@
                                                                         }
                                                                     }
                                                                 ]
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "sendersAccountObjectTypeCode",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "sendersAccount Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The name of the entity linked by sendersAccount"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "sendersAccount Type",
+                                                                            "description": "The name of the entity linked by sendersAccount",
+                                                                            "sourceName": "sendersaccountobjecttypecode"
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
+                        
                                                         ],
                                                         "displayName": "Senders Account",
                                                         "description": "Shows the parent account of the sender of the email.",
@@ -2938,172 +1664,6 @@
                                 "sourceOrdering": 96,
                                 "maximumValue": "2147483647",
                                 "minimumValue": "0"
-                            },
-                            {
-                                "name": "senderMailboxId",
-                                "relationship": "hasA",
-                                "dataType": "entityId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Sender's Mailbox"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Select the mailbox associated with the sender of the email message."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Sender's Mailbox",
-                                "description": "Select the mailbox associated with the sender of the email message.",
-                                "isNullable": true,
-                                "sourceName": "sendermailboxid",
-                                "sourceOrdering": 97
-                            },
-                            {
-                                "name": "deliveryPriorityCode",
-                                "relationship": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Low",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Normal",
-                                                                "1",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "High",
-                                                                "2",
-                                                                "2"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'deliveryPriorityCode_display' is added to the 'Email' entity to provide the localized display text for the value of the listLookup attribute 'deliveryPriorityCode'",
-                                                    "name": "deliveryPriorityCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "appliedTraits": [
-                                                        {
-                                                            "traitReference": "is.readOnly"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Delivery Priority"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Select the priority of delivery of the email to the email server."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Delivery Priority",
-                                "description": "Select the priority of delivery of the email to the email server.",
-                                "isNullable": true,
-                                "sourceName": "deliveryprioritycode",
-                                "sourceOrdering": 100
                             },
                             {
                                 "relationship": {
@@ -3492,59 +2052,6 @@
                                 "sourceOrdering": 107
                             },
                             {
-                                "name": "sentOn",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date Sent"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time that the email was sent."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Date Sent",
-                                "description": "Shows the date and time that the email was sent.",
-                                "isNullable": true,
-                                "sourceName": "senton",
-                                "sourceOrdering": 108
-                            },
-                            {
                                 "name": "postponeEmailProcessingUntil",
                                 "relationship": "hasA",
                                 "dataType": "dateTime",
@@ -3702,60 +2209,6 @@
                                 "isNullable": true,
                                 "sourceName": "stageid",
                                 "sourceOrdering": 112
-                            },
-                            {
-                                "name": "activityAdditionalParams",
-                                "relationship": "hasA",
-                                "dataType": "string",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Additional Parameters"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Additional Parameters",
-                                "description": "For internal use only.",
-                                "isNullable": true,
-                                "sourceName": "activityadditionalparams",
-                                "sourceOrdering": 113,
-                                "maximumLength": 8192
                             },
                             {
                                 "name": "isUnsafe",
@@ -5125,59 +3578,6 @@
                                 "isNullable": true,
                                 "sourceName": "reminderactioncardid",
                                 "sourceOrdering": 147
-                            },
-                            {
-                                "name": "sortDate",
-                                "relationship": "hasA",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Sort Date"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time by which the activities are sorted."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Sort Date",
-                                "description": "Shows the date and time by which the activities are sorted.",
-                                "isNullable": true,
-                                "sourceName": "sortdate",
-                                "sourceOrdering": 149
                             },
                             {
                                 "name": "isEmailReminderSet",

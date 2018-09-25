@@ -506,7 +506,7 @@ function loadDocuments(messageType) {
             if (messageType == "filesLoadRequest") {
                 let reader = new FileReader();
                 reader.onloadend = function (event) {
-                    controller.mainContainer.messageHandlePing("loadSuccess", entState, JSON.parse(reader.result));
+                    controller.mainContainer.messageHandlePing("loadSuccess", entState, JSON.parse(reader.result.toString()));
                     controller.mainContainer.messageHandlePing("loadModeResult", messageType, null);
                 };
                 reader.onerror = function (event) {
@@ -1161,24 +1161,28 @@ function messageHandleDetailTraits(messageType, data1, data2) {
         return;
     }
     let cdmObject;
+    let rts;
     if (messageType == "navigateEntitySelect") {
         if (data2) {
             cdmObject = data2.entity;
+            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         }
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
             cdmObject = data1.attribute;
+            // use the resolved traits from the resolved attribute. these will include traits merged in from attributes with the same names from base entities
+            rts = data1.resolvedTraits;
         }
         else {
             // assume entity
             cdmObject = data1.entity;
+            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         }
     }
     if (cdmObject) {
         while (this.childNodes.length > 0)
             this.removeChild(this.lastChild);
-        var rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         if (rts) {
             var traitTable = controller.document.createElement("table");
             traitTable.className = "trait_table";

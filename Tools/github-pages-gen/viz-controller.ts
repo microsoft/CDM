@@ -409,7 +409,7 @@ function fileListToNavData(fileList : FileList) : navigatorData {
             let entName = file.name.slice(0, file.name.indexOf("."));
             let makeUX = !noUX.has(entName);
             let f : folder;
-            let path = (file.webkitRelativePath && file.webkitRelativePath.length) ? file.webkitRelativePath : "";
+            let path = ((file as any).webkitRelativePath && (file as any).webkitRelativePath.length) ? (file as any).webkitRelativePath : "";
             // the first dir name is this and path ends with file. so cleanup
             let startAt = path.indexOf("/") + 1;
             if (startAt) {
@@ -627,7 +627,7 @@ function loadDocuments(messageType : string) {
             if (messageType == "filesLoadRequest") {
                 let reader = new FileReader();
                 reader.onloadend = function(event) {
-                    controller.mainContainer.messageHandlePing("loadSuccess", entState, JSON.parse(reader.result));
+                    controller.mainContainer.messageHandlePing("loadSuccess", entState, JSON.parse(reader.result.toString()));
                     controller.mainContainer.messageHandlePing("loadModeResult", messageType, null);
                 }
                 reader.onerror = function (event) {
@@ -1328,18 +1328,23 @@ function messageHandleDetailTraits(messageType, data1, data2) {
     }
 
     let cdmObject: cdm.ICdmObject;
+    let rts: cdm.ResolvedTraitSet;
 
     if (messageType == "navigateEntitySelect") {
         if (data2) {
             cdmObject = data2.entity;
+            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         }
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
             cdmObject = data1.attribute;
+            // use the resolved traits from the resolved attribute. these will include traits merged in from attributes with the same names from base entities
+            rts = data1.resolvedTraits;
         } else {
             // assume entity
             cdmObject = data1.entity;
+            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         }
     }
 
@@ -1348,7 +1353,6 @@ function messageHandleDetailTraits(messageType, data1, data2) {
         while (this.childNodes.length > 0)
             this.removeChild(this.lastChild);
 
-        var rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
         if (rts) {
             var traitTable = controller.document.createElement("table"); traitTable.className = "trait_table";
             var l = rts.size;

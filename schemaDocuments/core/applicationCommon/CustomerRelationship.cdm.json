@@ -396,107 +396,7 @@
                                     ]
                                 }
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'CustomerRelationship' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user.",
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 8
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "relationship": {
                                     "relationshipReference": "referencesCustomer",
@@ -561,7 +461,59 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            }
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the partner type entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "partnerIdType",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "Partner Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The type of partner, either Account or Contact."
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "Partner Type",
+                                                                            "description": "The type of partner, either Account or Contact.",
+                                                                            "sourceName": "partneridtype"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }                                                            
                                                         ],
                                                         "displayName": "Party 2",
                                                         "description": "Select the secondary account or contact involved in the customer relationship.",
@@ -892,107 +844,7 @@
                                 "sourceOrdering": 13,
                                 "maximumLength": 2000
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesCustomer",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and Account' adds the 'customerId' attribute below to the 'CustomerRelationship' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "customerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Party 1"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Select the primary account or contact involved in the customer relationship."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Party 1",
-                                                        "description": "Select the primary account or contact involved in the customer relationship.",
-                                                        "sourceName": "customerid",
-                                                        "sourceOrdering": 14
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "customerIdAttribute",
                             {
                                 "relationship": {
                                     "relationshipReference": "referencesA",

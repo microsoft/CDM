@@ -7,7 +7,7 @@ class Startup {
     public static main(): number {
 
         let cdmCorpus : cdm.Corpus;
-        let pathToDocRoot = "../../schemaDocuments";
+        let pathToDocRoot = "../../schemaDocumentsTest";
         //let pathToDocRoot = "../../test";
         //pathToDocRoot = "/cdsa schemas/credandcollect";
 
@@ -38,19 +38,18 @@ class Startup {
             if (folder.getName() != "" && folder.getDocuments() && folder.getDocuments().length)
             {
                 spew.spewLine(folder.getRelativePath());
-                if (folder.getDocuments())
-                    folder.getDocuments().forEach(doc => {
-                        if (doc.getDefinitions() && doc.getDefinitions().length)
-                            doc.getDefinitions().forEach(def => {
-                                if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
-                                    let ent = (def as cdm.ICdmEntityDef).getResolvedEntity(doc);
-                                    ent.spew(doc, spew, " ");
-                                }
-                            });
-                    });
+                folder.getDocuments().sort((l, r) => l.getName().localeCompare(r.getName())).forEach(doc => {
+                    if (doc.getDefinitions() && doc.getDefinitions().length)
+                        doc.getDefinitions().forEach(def => {
+                            if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
+                                let ent = (def as cdm.ICdmEntityDef).getResolvedEntity(doc);
+                                ent.spew(doc, spew, " ", true);
+                            }
+                        });
+                });
             }
             if (folder.getSubFolders()) {
-                folder.getSubFolders().forEach(f => {
+                folder.getSubFolders().sort((l, r) => l.getName().localeCompare(r.getName())).forEach(f => {
                     seekEntities(f);
                 });
             }

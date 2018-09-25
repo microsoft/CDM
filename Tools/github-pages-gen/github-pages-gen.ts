@@ -32,7 +32,6 @@ class Startup {
                 docLocationRoot : "https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/",
                 ghSourceRoot : "https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments",
                 ghRawRoot : "https://raw.githubusercontent.com/Microsoft/CDM/experimental/schemaDocuments"
-                //ghRawRoot : "http://jeffbern-dev.redmond.corp.microsoft.com:1400/schemaDocuments"
             };
 
             let hier = ghc.collectGithubFolderData(cdmCorpus);

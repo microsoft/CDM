@@ -1,0 +1,88 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        },
+        {
+            "uri": "Address.cdm.json"
+        },
+        {
+            "uri": "Photo.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Customers",
+            "extendsEntity": "CdmObject",
+            "hasAttributes": [
+                {
+                    "name": "custFullName",
+                    "relationship": "namedBy",
+                    "dataType": "fullName"
+                },
+                {
+                    "name": "custId",
+                    "relationship": "identifiedBy",
+                    "dataType": "string"
+                },
+                {
+                    "relationship": "livesAt",
+                    "entity":"Address",
+                    "appliedTraits": [
+                        {
+                          "traitReference" : "does.renameWithFormat",
+                          "arguments": [
+                            "home_{n}"
+                          ]
+                        }
+                    ]
+                },
+                {
+                    "relationship": "hasA",
+                    "entity":"Address",
+                    "appliedTraits": [
+                        {
+                          "traitReference" : "does.renameWithFormat",
+                          "arguments": [
+                            "work_{n}"
+                          ]
+                        }
+                    ]
+                },
+                {
+                    "relationship": {
+                        "relationshipReference": "referencesA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "arguments": [
+                                    {
+                                        "name": "addedAttribute",
+                                        "value": {
+                                            "name": "mainPhotoId",
+                                            "relationship": "hasA",
+                                            "dataType": "entityId"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": "Photo",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Photo/(resolvedAttributes)/photoId"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

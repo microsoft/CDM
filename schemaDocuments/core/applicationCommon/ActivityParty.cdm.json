@@ -362,6 +362,58 @@
                                                                         }
                                                                     }
                                                                 ]
+                                                            },
+                                                            {
+                                                                "traitReference": "does.addSupportingAttribute",
+                                                                "arguments": [
+                                                                    {
+                                                                        "explanation": "Holds the name of the entity that is linked",
+                                                                        "name": "addedAttribute",
+                                                                        "value": {
+                                                                            "name": "partyObjectTypeCode",
+                                                                            "relationship": "hasA",
+                                                                            "dataType": "entityName",
+                                                                            "appliedTraits": [
+                                                                                "is.readOnly",
+                                                                                {
+                                                                                    "traitReference": "is.localized.displayedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "partyId Type"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "traitReference": "is.localized.describedAs",
+                                                                                    "arguments": [
+                                                                                        {
+                                                                                            "entityReference": {
+                                                                                                "entityShape": "localizedTable",
+                                                                                                "constantValues": [
+                                                                                                    [
+                                                                                                        "en",
+                                                                                                        "The name of the entity linked by partyId"
+                                                                                                    ]
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ],
+                                                                            "displayName": "partyId Type",
+                                                                            "description": "The name of the entity linked by partyId",
+                                                                            "sourceName": "partyobjecttypecode"
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
                                                         ],
                                                         "displayName": "Party",
@@ -1084,108 +1136,7 @@
                                 "sourceName": "donotphone",
                                 "sourceOrdering": 27
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'ActivityParty' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user or team who owns the activity_party."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Owner",
-                                                        "description": "Unique identifier of the user or team who owns the activity_party.",
-                                                        "isNullable": true,
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 30
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "name": "instanceTypeCode",
                                 "relationship": "hasA",
