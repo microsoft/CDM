@@ -1580,7 +1580,7 @@ export class ResolvedAttributeSet extends refCounted
                     if (this.refCnt > 1)
                         rasResult = rasResult.copy(); // copy on write
                     rasResult.resolvedName2resolvedAttribute.set(toMerge.resolvedName, toMerge);
-                    toMerge.insertOrder = rasResult.set.length;
+                    //toMerge.insertOrder = rasResult.set.length;
                     rasResult.set.push(toMerge);
                 }
                 this.baseTrait2Attributes = null;
@@ -1701,7 +1701,7 @@ export class ResolvedAttributeSet extends refCounted
             // collect a set of appliers for all traits
             let appliers = new Array<[ResolvedTrait, traitApplier]>();
             let iApplier = 0;
-            if (traits) {
+            if (traits && traits.modifiesAttributes) {
                 let l = traits.size;
                 for (let i = 0; i < l; i++) {
                     const rt = traits.set[i];
@@ -1743,6 +1743,9 @@ export class ResolvedAttributeSet extends refCounted
     {
         //let bodyCode = () =>
         {
+            if (appliers.length == 0)
+                return false;
+                
             // for every attribute in the set, detect if a merge of traits will alter the traits. if so, need to copy the attribute set to avoid overwrite 
             let l = this.set.length;
             for (let i = 0; i < l; i++) {
@@ -1763,6 +1766,10 @@ export class ResolvedAttributeSet extends refCounted
     {
         //let bodyCode = () =>
         {
+            if (!traits && appliers.length == 0) {
+                // nothing can change
+                return this;
+            }
             // for every attribute in the set run any attribute appliers
             let appliedAttSet: ResolvedAttributeSet = new ResolvedAttributeSet(this.wrtDoc);
             let l = this.set.length;
@@ -1798,11 +1805,11 @@ export class ResolvedAttributeSet extends refCounted
             let newMarker = oldMarker;
 
             // for every attribute in the set run any attribute removers on the traits they have
-            let appliedAttSet: ResolvedAttributeSet = new ResolvedAttributeSet(this.wrtDoc);
+            let appliedAttSet: ResolvedAttributeSet;
             let l = this.set.length;
             for (let iAtt = 0; iAtt < l; iAtt++) {
                 let resAtt = this.set[iAtt];
-                if (resAtt.resolvedTraits) {
+                if (resAtt.resolvedTraits && resAtt.resolvedTraits.modifiesAttributes) {
                     let l = resAtt.resolvedTraits.size;
                     for (let i = 0; resAtt && i < l; i++) {
                         const rt = resAtt.resolvedTraits.set[i];
@@ -1815,6 +1822,13 @@ export class ResolvedAttributeSet extends refCounted
                                     if (resAtt && apl.attributeRemove) {
                                         let result = apl.attributeRemove(this.wrtDoc, resAtt, rt);
                                         if (result.shouldDelete) {
+                                            // if this is the first removed attribute, then make a copy of the set now
+                                            // after this point, the rest of the loop logic keeps the copy going as needed
+                                            if (!appliedAttSet) {
+                                                appliedAttSet = new ResolvedAttributeSet(this.wrtDoc);
+                                                for (let iCopy = 0; iCopy < iAtt; iCopy++)
+                                                    appliedAttSet.merge(this.set[iCopy]);
+                                            }
                                             resAtt = null;
                                             if (iAtt < oldMarker)
                                                 newMarker --;
@@ -1825,7 +1839,7 @@ export class ResolvedAttributeSet extends refCounted
                         }
                     }
                 }
-                if (resAtt)
+                if (resAtt && appliedAttSet)
                     appliedAttSet.merge(resAtt);
             }
 
@@ -1835,13 +1849,11 @@ export class ResolvedAttributeSet extends refCounted
 
             // now we are that (or a copy)
             let rasResult: ResolvedAttributeSet = this;
-            if (this.refCnt > 1 && appliedAttSet.size != rasResult.size) {
+            if (appliedAttSet && appliedAttSet.size != rasResult.size) {
                 rasResult = appliedAttSet;
+                rasResult.baseTrait2Attributes = null;
             }
 
-            rasResult.resolvedName2resolvedAttribute = appliedAttSet.resolvedName2resolvedAttribute;
-            rasResult.baseTrait2Attributes = null;
-            rasResult.set = appliedAttSet.set;
             return rasResult;
         }
         //return p.measure(bodyCode);
@@ -2105,6 +2117,17 @@ class ResolvedAttributeSetBuilder
                 this.inheritedMark = this.ras.set.length;
             else
                 this.inheritedMark = 0;
+        }
+        //return p.measure(bodyCode);
+    }
+    public markOrder()
+    {
+        //let bodyCode = () =>
+        {
+            if (this.ras && this.ras.set) {
+                for (let i=this.inheritedMark; i< this.ras.set.length; i++)
+                    this.ras.set[i].insertOrder = i;
+            }
         }
         //return p.measure(bodyCode);
     }
@@ -7789,6 +7812,8 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
                     this.rasb.mergeAttributes(this.hasAttributes[i].getResolvedAttributes(wrtDoc));
                 }
             }
+
+            this.rasb.markOrder();
 
             // things that need to go away
             this.rasb.removeRequestedAtts();

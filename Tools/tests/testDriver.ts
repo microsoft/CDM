@@ -7,7 +7,7 @@ class Startup {
     public static main(): number {
 
         let cdmCorpus : cdm.Corpus;
-        let pathToDocRoot = "../../schemaDocumentsTest";
+        let pathToDocRoot = "../../schemaDocuments";
         //let pathToDocRoot = "../../test";
         //pathToDocRoot = "/cdsa schemas/credandcollect";
 
