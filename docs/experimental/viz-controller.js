@@ -47,15 +47,16 @@ function init() {
     controller.traitsPane.messageHandle = messageHandleDetailTraits;
     controller.propertiesPane.messageHandlePing = messageHandlePingParent;
     controller.propertiesPane.messageHandle = messageHandleDetailProperties;
-    controller.JsonPane.messageHandlePing = messageHandlePingParent;
-    controller.JsonPane.messageHandle = messageHandleDetailJson;
-    controller.DplxPane.messageHandlePing = messageHandlePingParent;
-    controller.DplxPane.messageHandle = messageHandleDetailDPLX;
+    controller.DefinitionPane.messageHandlePing = messageHandlePingParent;
+    controller.DefinitionPane.messageHandle = messageHandleDetailDefinition;
+    controller.ResolvedPane.messageHandlePing = messageHandlePingParent;
+    controller.ResolvedPane.messageHandle = messageHandleDetailResolved;
     controller.paneListTitle.messageHandle = messageHandleListTitle;
     controller.paneWait.messageHandlePing = null;
     ;
     controller.paneWait.messageHandle = messageHandleWaitBox;
-    controller.JsonStack = new Array();
+    controller.DefinitionStack = new Array();
+    controller.ResolvedStack = new Array();
 }
 // appstate
 // ------------------
@@ -925,45 +926,68 @@ function applySearchTerm(html) {
     }
     return html;
 }
-function messageHandleDetailDPLX(messageType, data1, data2) {
+function messageHandleDetailResolved(messageType, data1, data2) {
+    let cdmObject;
     if (messageType == "detailTabSelect") {
-        this.style.display = (data1 != "dplx_tab") ? "none" : "block";
-        changeDPLX();
+        this.style.display = (data1 != "resolved_tab") ? "none" : "block";
     }
     if (messageType == "navigateEntitySelect") {
-        changeDPLX();
+        if (data2)
+            cdmObject = data2.entity;
+    }
+    if (messageType == "listItemSelect") {
+        if (data1.resolvedName) {
+            clearResolvedPane();
+        }
+        else {
+            // assume entity
+            cdmObject = data1.entity;
+        }
     }
     if (messageType == "applySearchTerm") {
-        changeDPLX();
+        drawResolvedStack();
+    }
+    if (cdmObject) {
+        clearResolvedPane();
+        cdmObject = cdmObject.createResolvedEntity(controller.cdmDocSelected, cdmObject.getName() + "_");
+        controller.cdmDocResolved = cdmObject.declaredInDocument;
+        pushResolvedPane(cdmObject);
     }
 }
-function changeDPLX() {
-    if (controller.DplxPane.style.display == "block") {
-        var jsonText = "";
-        if (controller.multiSelectEntityList && controller.multiSelectEntityList.size) {
-            let converter = new cdm2dplx.Converter();
-            converter.bindingType = "none";
-            converter.relationshipsType = "all";
-            converter.schemaUriBase = "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments";
-            converter.schemaVersion = "0.7";
-            // converter.bindingType="byol"
-            // converter.relationshipsType="inclusive";
-            // converter.schemaUriBase = "";
-            // converter.partitionPattern = "https://[your storage account name].blob.core.windows.net/[your blob path]/$1.csv?test=1";
-            let set = new Array();
-            controller.multiSelectEntityList.forEach(entState => { if (entState.entity)
-                set.push(entState.entity); });
-            let dplx = converter.convertEntities(controller.corpus, set, "exampleDataFlowForBYOD");
-            jsonText = JSON.stringify(dplx, null, 2);
-            jsonText = applySearchTerm(jsonText);
-        }
-        controller.DplxPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+function clearResolvedPane() {
+    controller.ResolvedStack = new Array();
+}
+function pushResolvedPane(cdmObject) {
+    controller.ResolvedStack.push(cdmObject);
+    drawResolvedStack();
+}
+function popResolvedPane() {
+    controller.ResolvedStack.pop();
+    drawResolvedStack();
+}
+function detailResolvedJump(path) {
+    var detailObject = controller.corpus.getObjectFromCorpusPath(path);
+    pushResolvedPane(detailObject);
+}
+function drawResolvedStack() {
+    if (controller.ResolvedStack && controller.ResolvedStack.length) {
+        let cdmObject = controller.ResolvedStack[controller.ResolvedStack.length - 1];
+        let json = cdmObject.copyData(controller.cdmDocResolved, { stringRefs: true, removeSingleRowLocalizedTableTraits: true });
+        let jsonText = JSON.stringify(json, null, 2);
+        // string refs got exploded. turn them back into strings with links
+        jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailResolvedJump('$1')\" title=\"$1\">\"$2\"</a>");
+        if (controller.ResolvedStack.length > 1)
+            controller.backResolvedButton.style.display = "inline-block";
+        else
+            controller.backResolvedButton.style.display = "none";
+        jsonText = applySearchTerm(jsonText);
+        controller.ResolvedPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
 }
-function messageHandleDetailJson(messageType, data1, data2) {
+function messageHandleDetailDefinition(messageType, data1, data2) {
     var cdmObject;
     if (messageType == "detailTabSelect") {
-        this.style.display = (data1 != "json_tab") ? "none" : "block";
+        this.style.display = (data1 != "definition_tab") ? "none" : "block";
     }
     if (messageType == "navigateEntitySelect") {
         if (data2)
@@ -979,41 +1003,42 @@ function messageHandleDetailJson(messageType, data1, data2) {
         }
     }
     if (messageType == "applySearchTerm") {
-        drawJsonStack();
+        drawDefinitionStack();
     }
     if (cdmObject) {
-        clearJsonPane();
-        pushJsonPane(cdmObject);
+        clearDefinitionPane();
+        pushDefinitionPane(cdmObject);
+        controller.cdmDocDefinition = controller.cdmDocSelected;
     }
 }
-function clearJsonPane() {
-    controller.JsonStack = new Array();
+function clearDefinitionPane() {
+    controller.DefinitionStack = new Array();
 }
-function pushJsonPane(cdmObject) {
-    controller.JsonStack.push(cdmObject);
-    drawJsonStack();
+function pushDefinitionPane(cdmObject) {
+    controller.DefinitionStack.push(cdmObject);
+    drawDefinitionStack();
 }
-function popJsonPane() {
-    controller.JsonStack.pop();
-    drawJsonStack();
+function popDefinitionPane() {
+    controller.DefinitionStack.pop();
+    drawDefinitionStack();
 }
-function detailJsonJump(path) {
+function detailDefinitionJump(path) {
     var detailObject = controller.corpus.getObjectFromCorpusPath(path);
-    pushJsonPane(detailObject);
+    pushDefinitionPane(detailObject);
 }
-function drawJsonStack() {
-    if (controller.JsonStack && controller.JsonStack.length) {
-        let cdmObject = controller.JsonStack[controller.JsonStack.length - 1];
-        let json = cdmObject.copyData(controller.cdmDocSelected, true);
+function drawDefinitionStack() {
+    if (controller.DefinitionStack && controller.DefinitionStack.length) {
+        let cdmObject = controller.DefinitionStack[controller.DefinitionStack.length - 1];
+        let json = cdmObject.copyData(controller.cdmDocDefinition, { stringRefs: true });
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
-        jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailJsonJump('$1')\" title=\"$1\">\"$2\"</a>");
-        if (controller.JsonStack.length > 1)
-            controller.backButton.style.display = "inline-block";
+        jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailDefinitionJump('$1')\" title=\"$1\">\"$2\"</a>");
+        if (controller.DefinitionStack.length > 1)
+            controller.backDefinitionButton.style.display = "inline-block";
         else
-            controller.backButton.style.display = "none";
+            controller.backDefinitionButton.style.display = "none";
         jsonText = applySearchTerm(jsonText);
-        controller.JsonPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+        controller.DefinitionPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
 }
 function makeParamValue(param, value) {
@@ -1068,7 +1093,7 @@ function makeParamValue(param, value) {
         var code = controller.document.createElement("code");
         var json = JSON.stringify(value.copyData(controller.cdmDocSelected), null, 2);
         if (json.length > 67)
-            json = json.slice(0, 50) + "...(see JSON tab)";
+            json = json.slice(0, 50) + "...(see Definition tab)";
         code.appendChild(controller.document.createTextNode(json));
         return code;
     }
@@ -1294,10 +1319,10 @@ function copyActivePane() {
         activePane = controller.propertiesPane;
     else if (controller.traitsPane.style.display != "none")
         activePane = controller.traitsPane;
-    else if (controller.JsonPane.style.display != "none")
-        activePane = controller.JsonPane;
-    else if (controller.DplxPane.style.display != "none")
-        activePane = controller.DplxPane;
+    else if (controller.DefinitionPane.style.display != "none")
+        activePane = controller.DefinitionPane;
+    else if (controller.ResolvedPane.style.display != "none")
+        activePane = controller.ResolvedPane;
     if (activePane) {
         var range = controller.document.createRange();
         range.setStart(activePane.firstChild, 0);
