@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -429,6 +429,7 @@
                                 "maximumLength": 100
                             },
                             {
+                                "name": "Campaign_campaignId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -500,6 +501,7 @@
                                 }
                             },
                             {
+                                "name": "MarketingList_entityId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -549,41 +551,55 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "MarketingList",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "MarketingList/(resolvedAttributes)/listId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Campaign",
-                                        "appliedTraits": [
+                                                "name": "marketingListOption",
+                                                "entity": {
+                                                    "entityReference": "MarketingList",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "MarketingList/(resolvedAttributes)/listId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Campaign/(resolvedAttributes)/campaignId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Product",
-                                        "appliedTraits": [
+                                                "name": "campaignOption",
+                                                "entity": {
+                                                    "entityReference": "Campaign",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Campaign/(resolvedAttributes)/campaignId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Product/(resolvedAttributes)/productId"
-                                                ]
+                                                "name": "productOption",
+                                                "entity": {
+                                                    "entityReference": "Product",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Product/(resolvedAttributes)/productId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "entityType",

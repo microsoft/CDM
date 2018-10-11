@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -417,6 +417,7 @@
                                 "maximumLength": 100
                             },
                             {
+                                "name": "EmrAppointment_emrAppointment",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -542,6 +543,7 @@
                                 "sourceOrdering": 35
                             },
                             {
+                                "name": "ReferralRequest_basedOnReferral",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -820,6 +822,7 @@
                                 "maximumLength": 100
                             },
                             {
+                                "name": "Encounter_initiatingEncounter",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -892,6 +895,7 @@
                                 }
                             },
                             {
+                                "name": "EpisodeOfCare_initiatingEpisodeofCare",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1325,6 +1329,7 @@
                                 "sourceOrdering": 48
                             },
                             {
+                                "name": "CodeableConcept_practitionerSpecialty",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1694,6 +1699,7 @@
                                 "sourceOrdering": 54
                             },
                             {
+                                "name": "Device_requesterAgentDevice",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1783,6 +1789,7 @@
                                 }
                             },
                             {
+                                "name": "Account_requesterAgentOrganization",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1872,6 +1879,7 @@
                                 }
                             },
                             {
+                                "name": "Contact_requesterAgentPatient",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1961,6 +1969,7 @@
                                 }
                             },
                             {
+                                "name": "Contact_requesterAgentPractitioner",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2050,6 +2059,7 @@
                                 }
                             },
                             {
+                                "name": "Contact_requesterAgentRelatedPerson",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2139,6 +2149,7 @@
                                 }
                             },
                             {
+                                "name": "Account_requesterOnBehalfOf",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2228,6 +2239,7 @@
                                 }
                             },
                             {
+                                "name": "AccountOrContact_requestor",
                                 "relationship": {
                                     "relationshipReference": "referencesCustomer",
                                     "appliedTraits": [
@@ -2339,30 +2351,41 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Customer",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "status",
@@ -2591,6 +2614,7 @@
                                 "sourceOrdering": 65
                             },
                             {
+                                "name": "Encounter_subjectContextEncounter",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2680,6 +2704,7 @@
                                 }
                             },
                             {
+                                "name": "EpisodeOfCare_subjectContextEpisodeOfCare",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2769,6 +2794,7 @@
                                 }
                             },
                             {
+                                "name": "CodeableConcept_subjectGroup",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2858,6 +2884,7 @@
                                 }
                             },
                             {
+                                "name": "Contact_subjectPatient",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2947,6 +2974,7 @@
                                 }
                             },
                             {
+                                "name": "CodeableConcept_type",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [

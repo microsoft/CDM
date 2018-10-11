@@ -1,0 +1,85 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        },
+        {
+            "uri": "BusinessDocument.cdm.json"
+        },
+        {
+            "uri": "Email.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "HumanResources",
+            "extendsEntity": {
+                "entityReference": "BusinessDocument",
+                "appliedTraits": [
+                    {
+                        "traitReference": "is.classified",
+                        "arguments": [
+                            "HBI"
+                        ]
+                    }
+                ]
+            },
+            "hasAttributes": [
+                {
+                    "name": "regardingPerson",
+                    "relationship": "hasA",
+                    "dataType": "email"
+                },
+                {
+                    "name": "openingEmail",
+                    "relationship": "hasA",
+                    "entity": {
+                        "entityReference": "Email",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "does.renameWithFormat",
+                                "arguments": [
+                                    "opening_{n}"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "inResponseTo",
+                    "relationship": {
+                        "relationshipReference": "referencesA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "arguments": [
+                                    {
+                                        "name": "addedAttribute",
+                                        "value": {
+                                            "name": "inRsponceToCommId",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": "Email",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Email/(resolvedAttributes)/commId"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -381,6 +381,7 @@
                                 "sourceOrdering": 10031
                             },
                             {
+                                "name": "ContactOrAccount_billingCustomerId",
                                 "relationship": {
                                     "relationshipReference": "referencesCustomer",
                                     "appliedTraits": [
@@ -509,30 +510,41 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Customer",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "billingEndOn",
@@ -753,6 +765,7 @@
                                 "sourceOrdering": 10037
                             },
                             {
+                                "name": "Address_billToAddress",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1434,6 +1447,7 @@
                                 "minimumValue": "0"
                             },
                             {
+                                "name": "Currency_transactionCurrencyId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1642,6 +1656,7 @@
                                 "minimumValue": "-922337203685477"
                             },
                             {
+                                "name": "Contract_originatingContract",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1731,6 +1746,7 @@
                                 }
                             },
                             {
+                                "name": "Address_serviceAddress",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [

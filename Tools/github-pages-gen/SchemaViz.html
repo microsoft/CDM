@@ -35,7 +35,6 @@
 
 <body style="height:100%" onresize="onresizeMain()">
     <script src="cdm-bundle.js"></script>
-    <script src="cdm2dplx-bundle.js"></script>
     <script src="simpledrag.js"></script>
     <script src="viz-controller.js"></script>
     <script>
@@ -112,9 +111,10 @@
             controller.statusPane = document.getElementsByClassName("status_pane")[0];
             controller.traitsPane = document.getElementsByClassName("traits_pane")[0];
             controller.propertiesPane = document.getElementsByClassName("properties_pane")[0];
-            controller.JsonPane = document.getElementsByClassName("json_pane")[0];
-            controller.DplxPane = document.getElementsByClassName("dplx_pane")[0];
-            controller.backButton = document.getElementById("back_tool_button");
+            controller.DefinitionPane = document.getElementsByClassName("definition_pane")[0];
+            controller.ResolvedPane = document.getElementsByClassName("resolved_pane")[0];
+            controller.backDefinitionButton = document.getElementById("back_definition_tool_button");
+            controller.backResolvedButton = document.getElementById("back_resolved_tool_button");
 
             controller.onclickFolderItem = onclickFolderItem;
             controller.onclickDetailItem = onclickDetailItem;
@@ -248,15 +248,16 @@
             <span class="detail_container" style="background-color: var(--back-alternate1);">
                 <span class="tab" id="property_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('property_tab')">Properties</span>
                 <span class="tab" id="trait_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('trait_tab')">Traits</span>
-                <span class="tab" id="json_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('json_tab')">JSON</span>
+                <span class="tab" id="definition_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('definition_tab')">Definition</span>
+                <span class="tab" id="resolved_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('resolved_tab')">Resolved</span>
                 <span class="tab" id="status_tab" style="background-color: var(--back-alternate2)" onclick="onclickDetailTab('status_tab')">Status</span>
-                <span class="tab" id="dplx_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('dplx_tab')">DataFlow</span>
             </span>
         </span>
         <span class="fixed_container" id="detail_tool_pane" style="border-style:inset">
             <span class="detail_container">
                 <button id="copy_tool_button" class="button" onclick=copyActivePane()>Copy</button>
-                <button id="back_tool_button" class="button" style="display: none" onclick=popJsonPane()>Go Back</button>
+                <button id="back_definition_tool_button" class="button" style="display: none" onclick=popDefinitionPane()>Go Back</button>
+                <button id="back_resolved_tool_button" class="button" style="display: none" onclick=popResolvedPane()>Go Back</button>
             </span>
         </span>
 
@@ -267,9 +268,9 @@
             </span>
             <span class="properties_pane">
             </span>
-            <span class="json_pane">
+            <span class="definition_pane">
             </span>
-            <span class="dplx_pane">
+            <span class="resolved_pane">
             </span>
         </span>
         <span class="fixed_container" id="wait_pane" style="display:none">

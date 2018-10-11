@@ -29,6 +29,8 @@ var cdmObjectType;
     cdmObjectType[cdmObjectType["entityRef"] = 17] = "entityRef";
     cdmObjectType[cdmObjectType["documentDef"] = 18] = "documentDef";
     cdmObjectType[cdmObjectType["folderDef"] = 19] = "folderDef";
+    cdmObjectType[cdmObjectType["attributeContextDef"] = 20] = "attributeContextDef";
+    cdmObjectType[cdmObjectType["attributeContextRef"] = 21] = "attributeContextRef";
 })(cdmObjectType = exports.cdmObjectType || (exports.cdmObjectType = {}));
 var cdmTraitSet;
 (function (cdmTraitSet) {
@@ -51,6 +53,15 @@ var cdmValidationStep;
     cdmValidationStep[cdmValidationStep["finished"] = 9] = "finished";
     cdmValidationStep[cdmValidationStep["error"] = 10] = "error";
 })(cdmValidationStep = exports.cdmValidationStep || (exports.cdmValidationStep = {}));
+var cdmAttributeContextType;
+(function (cdmAttributeContextType) {
+    cdmAttributeContextType[cdmAttributeContextType["entity"] = 0] = "entity";
+    cdmAttributeContextType[cdmAttributeContextType["entityReferenceExtends"] = 1] = "entityReferenceExtends";
+    cdmAttributeContextType[cdmAttributeContextType["entityReferenceAsAttribute"] = 2] = "entityReferenceAsAttribute";
+    cdmAttributeContextType[cdmAttributeContextType["attributeGroup"] = 3] = "attributeGroup";
+    cdmAttributeContextType[cdmAttributeContextType["addedAttributeSupporting"] = 4] = "addedAttributeSupporting";
+    cdmAttributeContextType[cdmAttributeContextType["addedAttributeIdentity"] = 5] = "addedAttributeIdentity";
+})(cdmAttributeContextType = exports.cdmAttributeContextType || (exports.cdmAttributeContextType = {}));
 var cdmStatusLevel;
 (function (cdmStatusLevel) {
     cdmStatusLevel[cdmStatusLevel["info"] = 0] = "info";
@@ -247,7 +258,7 @@ class ParameterValue {
                     return JSON.stringify(rows);
                 }
                 // should be a reference to an object
-                let data = value.copyData(wrtDoc, false);
+                let data = value.copyData(wrtDoc, { stringRefs: false });
                 if (typeof (data) === "string")
                     return data;
                 return JSON.stringify(data);
@@ -447,7 +458,7 @@ class ResolvedTrait {
     get traitName() {
         //let bodyCode = () =>
         {
-            return this.trait.getName();
+            return this.trait.declaredPath;
         }
         //return p.measure(bodyCode);
     }
@@ -517,6 +528,7 @@ class ResolvedTraitSet extends refCounted {
             this.set = new Array();
             this.lookupByTrait = new Map();
             this.modifiesAttributes = false;
+            this.hasElevated = false;
         }
         //return p.measure(bodyCode);
     }
@@ -529,6 +541,8 @@ class ResolvedTraitSet extends refCounted {
             let wasSet = toMerge.parameterValues.wasSet;
             if (!this.modifiesAttributes)
                 this.modifiesAttributes = trait.modifiesAttributes;
+            if (!this.hasElevated)
+                this.hasElevated = trait.elevated;
             if (traitSetResult.lookupByTrait.has(trait)) {
                 let rtOld = traitSetResult.lookupByTrait.get(trait);
                 let avOld = rtOld.parameterValues.values;
@@ -619,6 +633,8 @@ class ResolvedTraitSet extends refCounted {
                 newSet.push(rt);
                 copy.lookupByTrait.set(rt.trait, rt);
             }
+            copy.modifiesAttributes = this.modifiesAttributes;
+            copy.hasElevated = this.hasElevated;
             return copy;
         }
         //return p.measure(bodyCode);
@@ -636,6 +652,8 @@ class ResolvedTraitSet extends refCounted {
                 newSet.push(rt);
                 copy.lookupByTrait.set(rt.trait, rt);
             }
+            copy.modifiesAttributes = this.modifiesAttributes;
+            copy.hasElevated = this.hasElevated;
             return copy;
         }
         //return p.measure(bodyCode);
@@ -653,6 +671,8 @@ class ResolvedTraitSet extends refCounted {
                     copy.lookupByTrait.set(rt.trait, rt);
                 }
             }
+            copy.modifiesAttributes = this.modifiesAttributes;
+            copy.hasElevated = this.hasElevated;
             return copy;
         }
         //return p.measure(bodyCode);
@@ -678,6 +698,8 @@ class ResolvedTraitSet extends refCounted {
             let elevatedSet;
             let elevatedLookup;
             let result;
+            let modifiesAttribute = false;
+            let hasElevated = false;
             if (this.refCnt > 1) {
                 result = new ResolvedTraitSet(this.wrtDoc);
                 elevatedSet = result.set;
@@ -688,16 +710,60 @@ class ResolvedTraitSet extends refCounted {
                 elevatedSet = new Array();
                 elevatedLookup = new Map();
             }
-            let l = this.set.length;
-            for (let i = 0; i < l; i++) {
-                const rt = this.set[i];
-                if (rt.trait.elevated) {
-                    elevatedSet.push(rt);
-                    elevatedLookup.set(rt.trait, rt);
+            if (this.hasElevated) {
+                let l = this.set.length;
+                for (let i = 0; i < l; i++) {
+                    const rt = this.set[i];
+                    if (rt.trait.elevated) {
+                        hasElevated = true;
+                        elevatedSet.push(rt);
+                        elevatedLookup.set(rt.trait, rt);
+                        if (rt.trait.modifiesAttributes)
+                            modifiesAttribute = true;
+                    }
                 }
             }
             result.set = elevatedSet;
             result.lookupByTrait = elevatedLookup;
+            result.modifiesAttributes = modifiesAttribute;
+            result.hasElevated = hasElevated;
+            return result;
+        }
+        //return p.measure(bodyCode);
+    }
+    removeElevated() {
+        //let bodyCode = () =>
+        {
+            if (!this.hasElevated)
+                return this;
+            let nonElevatedSet;
+            let nonElevatedLookup;
+            let result;
+            let modifiesAttribute = false;
+            if (this.refCnt > 1) {
+                result = new ResolvedTraitSet(this.wrtDoc);
+                nonElevatedSet = result.set;
+                nonElevatedLookup = result.lookupByTrait;
+            }
+            else {
+                result = this;
+                nonElevatedSet = new Array();
+                nonElevatedLookup = new Map();
+            }
+            let l = this.set.length;
+            for (let i = 0; i < l; i++) {
+                const rt = this.set[i];
+                if (!rt.trait.elevated) {
+                    nonElevatedSet.push(rt);
+                    nonElevatedLookup.set(rt.trait, rt);
+                    if (rt.trait.modifiesAttributes)
+                        modifiesAttribute = true;
+                }
+            }
+            result.set = nonElevatedSet;
+            result.lookupByTrait = nonElevatedLookup;
+            result.modifiesAttributes = modifiesAttribute;
+            result.hasElevated = false;
             return result;
         }
         //return p.measure(bodyCode);
@@ -845,20 +911,21 @@ class ResolvedTraitSetBuilder {
 //  resolved attributes
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class ResolvedAttribute {
-    constructor(wrtDoc, attribute) {
+    constructor(wrtDoc, attribute, createdContext) {
         //let bodyCode = () =>
         {
             this.attribute = attribute;
             this.resolvedTraits = new ResolvedTraitSet(wrtDoc);
             this.resolvedTraits.addRef();
             this.resolvedName = attribute.getName();
+            this.createdContext = createdContext;
         }
         //return p.measure(bodyCode);
     }
     copy(wrtDoc) {
         //let bodyCode = () =>
         {
-            let copy = new ResolvedAttribute(wrtDoc, this.attribute);
+            let copy = new ResolvedAttribute(wrtDoc, this.attribute, this.createdContext);
             copy.resolvedName = this.resolvedName;
             copy.resolvedTraits = this.resolvedTraits.shallowCopy();
             copy.resolvedTraits.addRef();
@@ -933,6 +1000,7 @@ class ResolvedAttributeSet extends refCounted {
         {
             this.wrtDoc = wrtDoc;
             this.resolvedName2resolvedAttribute = new Map();
+            this.sourceAttribute2resolvedAttribute = new Map();
             this.set = new Array();
         }
         //return p.measure(bodyCode);
@@ -962,6 +1030,7 @@ class ResolvedAttributeSet extends refCounted {
                     if (this.refCnt > 1)
                         rasResult = rasResult.copy(); // copy on write
                     rasResult.resolvedName2resolvedAttribute.set(toMerge.resolvedName, toMerge);
+                    rasResult.sourceAttribute2resolvedAttribute.set(toMerge.attribute, toMerge);
                     //toMerge.insertOrder = rasResult.set.length;
                     rasResult.set.push(toMerge);
                 }
@@ -988,7 +1057,7 @@ class ResolvedAttributeSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
-    mergeTraitAttributes(traits, continuationsIn) {
+    mergeTraitAttributes(traits, continuationsIn, attCtx) {
         //let bodyCode = () =>
         {
             // if there was no continuation set provided, build one 
@@ -1034,6 +1103,7 @@ class ResolvedAttributeSet extends refCounted {
             }
             // for every attribute in the set run any attribute adders and collect results in a new set
             let addedAttSet = new ResolvedAttributeSetBuilder(this.wrtDoc);
+            addedAttSet.setAttributeContext(attCtx);
             let continuationsOut = new ApplierContinuationSet();
             for (const continueWith of continuationsIn.continuations) {
                 if (continueWith.applier.willAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, continueWith.continuationState)) {
@@ -1041,7 +1111,12 @@ class ResolvedAttributeSet extends refCounted {
                     // create a new resolved attribute and apply the traits that it has
                     let rtsNew = result.addedAttribute.getResolvedTraits(this.wrtDoc);
                     let newRasb = new ResolvedAttributeSetBuilder(this.wrtDoc);
-                    newRasb.ownOne(new ResolvedAttribute(this.wrtDoc, result.addedAttribute).copy(this.wrtDoc));
+                    // applier may want to make a new context
+                    let under = attCtx;
+                    if (continueWith.applier.createContext)
+                        under = continueWith.applier.createContext(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, under, continueWith.continuationState).attCtx;
+                    newRasb.setAttributeContext(under);
+                    newRasb.ownOne(new ResolvedAttribute(this.wrtDoc, result.addedAttribute, under).copy(this.wrtDoc));
                     newRasb.applyTraits(rtsNew);
                     // recursion. the new attribute might have traits that add attriutes. Do that 
                     newRasb.mergeTraitAttributes(rtsNew);
@@ -1096,6 +1171,7 @@ class ResolvedAttributeSet extends refCounted {
             rasApplied = rasResult.apply(traits, appliers);
             // now we are that
             rasResult.resolvedName2resolvedAttribute = rasApplied.resolvedName2resolvedAttribute;
+            rasResult.sourceAttribute2resolvedAttribute = rasApplied.sourceAttribute2resolvedAttribute;
             rasResult.baseTrait2Attributes = null;
             rasResult.set = rasApplied.set;
             return rasResult;
@@ -1314,6 +1390,13 @@ class ResolvedAttributeSet extends refCounted {
         }
         //return p.measure(bodyCode);
     }
+    getBySource(source) {
+        //let bodyCode = () =>
+        {
+            return this.sourceAttribute2resolvedAttribute.get(source);
+        }
+        //return p.measure(bodyCode);
+    }
     get size() {
         return this.resolvedName2resolvedAttribute.size;
     }
@@ -1349,6 +1432,19 @@ exports.ResolvedAttributeSet = ResolvedAttributeSet;
 class ResolvedAttributeSetBuilder {
     constructor(wrtDoc) {
         this.wrtDoc = wrtDoc;
+    }
+    setAttributeContext(under) {
+        this.attributeContext = under;
+    }
+    createAttributeContext(under, type, name, regarding, includeTraits) {
+        //let bodyCode = () =>
+        {
+            if (!under)
+                return undefined;
+            this.attributeContext = AttributeContextImpl.createChildUnder(this.wrtDoc, under, type, name, regarding, includeTraits);
+            return this.attributeContext;
+        }
+        //return p.measure(bodyCode);
     }
     mergeAttributes(rasNew) {
         //let bodyCode = () =>
@@ -1406,7 +1502,7 @@ class ResolvedAttributeSetBuilder {
             if (!this.ras)
                 this.takeReference(new ResolvedAttributeSet(this.wrtDoc));
             let localContinue = null;
-            while (localContinue = this.ras.mergeTraitAttributes(rts, localContinue)) {
+            while (localContinue = this.ras.mergeTraitAttributes(rts, localContinue, this.attributeContext)) {
                 this.takeReference(localContinue.rasResult);
                 if (localContinue.rasResult) {
                     localContinue.rasResult.release();
@@ -1476,7 +1572,8 @@ class ResolvedEntityReferenceSide {
         //let bodyCode = () =>
         {
             to.spewLine(`${indent} ent=${this.entity.getName()}`);
-            this.rasb.ras.spew(wrtDoc, to, indent + '  atts:', nameSort);
+            if (this.rasb && this.rasb.ras)
+                this.rasb.ras.spew(wrtDoc, to, indent + '  atts:', nameSort);
         }
         //return p.measure(bodyCode);
     }
@@ -1733,7 +1830,7 @@ class traitToPropertyMap {
         this.hostRtsAtt = rtsAtt;
         this.traits = rtsAtt.set;
     }
-    persistForEntityDef(persistedObject) {
+    persistForEntityDef(persistedObject, options) {
         //let bodyCode = () =>
         {
             let removedIndexes = new Array();
@@ -1748,9 +1845,19 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.describedAs":
                             persistedObject.description = this.getLocalizedTraitTable("is.localized.describedAs");
+                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
+                                let cEnt = this.getTraitTable("is.localized.describedAs", "localizedDisplayText");
+                                if (cEnt.getConstantValues().length == 1)
+                                    removedIndexes.push(i);
+                            }
                             break;
                         case "is.localized.displayedAs":
                             persistedObject.displayName = this.getLocalizedTraitTable("is.localized.displayedAs");
+                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
+                                let cEnt = this.getTraitTable("is.localized.displayedAs", "localizedDisplayText");
+                                if (cEnt.getConstantValues().length == 1)
+                                    removedIndexes.push(i);
+                            }
                             break;
                         case "is.CDM.entityVersion":
                             persistedObject.version = getTraitRefArgumentValue(this.traits[i], "versionNumber");
@@ -1773,11 +1880,11 @@ class traitToPropertyMap {
         }
         //return p.measure(bodyCode);
     }
-    persistForTypeAttributeDef(persistedObject) {
+    persistForTypeAttributeDef(persistedObject, options) {
         //let bodyCode = () =>
         {
-            this.traitsToDataFormat(persistedObject.appliedTraits);
             let removedIndexes = new Array();
+            persistedObject.dataFormat = this.traitsToDataFormat(persistedObject.appliedTraits, removedIndexes);
             if (this.traits) {
                 let l = this.traits.length;
                 for (let i = 0; i < l; i++) {
@@ -1813,9 +1920,19 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.describedAs":
                             persistedObject.description = this.getLocalizedTraitTable("is.localized.describedAs");
+                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
+                                let cEnt = this.getTraitTable("is.localized.describedAs", "localizedDisplayText");
+                                if (cEnt.getConstantValues().length == 1)
+                                    removedIndexes.push(i);
+                            }
                             break;
                         case "is.localized.displayedAs":
                             persistedObject.displayName = this.getLocalizedTraitTable("is.localized.displayedAs");
+                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
+                                let cEnt = this.getTraitTable("is.localized.displayedAs", "localizedDisplayText");
+                                if (cEnt.getConstantValues().length == 1)
+                                    removedIndexes.push(i);
+                            }
                             break;
                         case "is.identifiedBy":
                             persistedObject.isPrimaryKey = true;
@@ -2019,75 +2136,68 @@ class traitToPropertyMap {
         }
         //return p.measure(bodyCode);
     }
-    traitsToDataFormat(removeFrom = undefined) {
+    traitsToDataFormat(removeFrom = undefined, removedIndexes = undefined) {
         //let bodyCode = () =>
         {
             let isArray = false;
             let isBig = false;
             let isSmall = false;
             let baseType = "Unknown";
-            let removedIndexes = new Array();
+            let startingRemoved = removedIndexes ? removedIndexes.length : 0;
             if (this.traits) {
                 let l = this.traits.length;
                 for (let i = 0; i < l; i++) {
                     let traitName = getTraitRefName(this.traits[i]);
+                    let removedPosition = i;
                     switch (traitName) {
                         case "is.dataFormat.array":
                             isArray = true;
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.big":
                             isBig = true;
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.small":
                             isSmall = true;
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.integer":
                             baseType = "Int";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.floatingPoint":
                             baseType = "Float";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.character":
                             if (baseType != "Guid")
                                 baseType = "Char";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.byte":
                             baseType = "Byte";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.date":
                             if (baseType == "Time")
                                 baseType = "DateTimeOffset";
                             else
                                 baseType = "Date";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.time":
                             if (baseType == "Date")
                                 baseType = "DateTimeOffset";
                             else
                                 baseType = "Time";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.boolean":
                             baseType = "Boolean";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.numeric.shaped":
                             baseType = "Decimal";
-                            removedIndexes.push(i);
                             break;
                         case "is.dataFormat.guid":
                             baseType = "Guid";
-                            removedIndexes.push(i);
                             break;
+                        default:
+                            removedPosition = -1;
                     }
+                    if (removedPosition != -1 && removedIndexes)
+                        removedIndexes.push(removedPosition);
                 }
                 if (isArray) {
                     if (baseType == "Char")
@@ -2105,13 +2215,13 @@ class traitToPropertyMap {
                     baseType = "Int16";
                 if (baseType == "Int")
                     baseType = "Int32";
-                // remove applied traits from the persisted object back to front
-                if (removeFrom) {
-                    for (let iRem = removedIndexes.length - 1; iRem >= 0; iRem--) {
-                        removeFrom.splice(removedIndexes[iRem], 1);
-                    }
+                if (baseType === "Unknown") {
+                    // couldn't figure it out. undo the changes
+                    removedIndexes.splice(startingRemoved);
                 }
             }
+            if (baseType === "Unknown")
+                return undefined;
             return baseType;
         }
         //return p.measure(bodyCode);
@@ -2519,7 +2629,7 @@ class cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -2571,19 +2681,24 @@ class cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    getResolvedAttributes(wrtDoc) {
+    getResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
-            let rasbCache = this.ctx.getCache(this, wrtDoc, "rasb");
+            let rasbCache;
+            // use a cached version unless we are building an attributeContext.
+            if (!under)
+                rasbCache = this.ctx.getCache(this, wrtDoc, "rasb");
             if (!rasbCache) {
                 if (this.resolvingAttributes) {
                     // re-entered this attribute through some kind of self or looping reference.
                     return new ResolvedAttributeSet(wrtDoc);
                 }
                 this.resolvingAttributes = true;
-                rasbCache = this.constructResolvedAttributes(wrtDoc);
+                rasbCache = this.constructResolvedAttributes(wrtDoc, under);
                 this.resolvingAttributes = false;
-                this.ctx.setCache(this, wrtDoc, "rasb", rasbCache);
+                // save this as the cached version (unless building a context)
+                if (!under)
+                    this.ctx.setCache(this, wrtDoc, "rasb", rasbCache);
             }
             return rasbCache.ras;
         }
@@ -2603,8 +2718,8 @@ class cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    static copyIdentifierRef(identifier, resolved, stringRefs) {
-        if (!stringRefs)
+    static copyIdentifierRef(identifier, resolved, options) {
+        if (!options || !options.stringRefs)
             return identifier;
         if (!resolved)
             return identifier;
@@ -2621,7 +2736,7 @@ class cdmObject {
     //     }
     //     //return p.measure(bodyCode);
     // }
-    static arraycopyData(wrtDoc, source, stringRefs) {
+    static arraycopyData(wrtDoc, source, options) {
         //let bodyCode = () =>
         {
             if (!source)
@@ -2630,7 +2745,7 @@ class cdmObject {
             let l = source.length;
             for (let i = 0; i < l; i++) {
                 const element = source[i];
-                casted.push(element ? element.copyData(wrtDoc, stringRefs) : undefined);
+                casted.push(element ? element.copyData(wrtDoc, options) : undefined);
             }
             return casted;
         }
@@ -2718,11 +2833,47 @@ class cdmObject {
         }
         //return p.measure(bodyCode);
     }
+    static createAttributeContext(object) {
+        //let bodyCode = () =>
+        {
+            if (object)
+                return AttributeContextImpl.instanceFromData(object);
+            return undefined;
+        }
+        //return p.measure(bodyCode);
+    }
+    static createAttributeContextReference(object) {
+        //let bodyCode = () =>
+        {
+            if (object)
+                return AttributeContextReferenceImpl.instanceFromData(object);
+            return undefined;
+        }
+        //return p.measure(bodyCode);
+    }
     static createEntityReference(object) {
         //let bodyCode = () =>
         {
             if (object)
                 return EntityReferenceImpl.instanceFromData(object);
+            return undefined;
+        }
+        //return p.measure(bodyCode);
+    }
+    static createAttributeGroupReference(object) {
+        //let bodyCode = () =>
+        {
+            if (object)
+                return AttributeGroupReferenceImpl.instanceFromData(object);
+            return undefined;
+        }
+        //return p.measure(bodyCode);
+    }
+    static createAttributeReference(object) {
+        //let bodyCode = () =>
+        {
+            if (object)
+                return AttributeReferenceImpl.instanceFromData(object);
             return undefined;
         }
         //return p.measure(bodyCode);
@@ -2737,10 +2888,10 @@ class cdmObject {
             else {
                 if (object.attributeGroupReference)
                     return AttributeGroupReferenceImpl.instanceFromData(object);
-                else if (object.name)
-                    return TypeAttributeImpl.instanceFromData(object);
                 else if (object.entity)
                     return EntityAttributeImpl.instanceFromData(object);
+                else if (object.name)
+                    return TypeAttributeImpl.instanceFromData(object);
             }
         }
         //return p.measure(bodyCode);
@@ -2797,6 +2948,33 @@ class cdmObject {
         }
         //return p.measure(bodyCode);
     }
+    static resolvedTraitToTraitRef(rt) {
+        if (rt.parameterValues && rt.parameterValues.length) {
+            let traitRef;
+            traitRef = Corpus.MakeObject(cdmObjectType.traitRef, rt.traitName, false);
+            let l = rt.parameterValues.length;
+            if (l == 1) {
+                // just one argument, use the shortcut syntax
+                let val = rt.parameterValues.values[0];
+                if (val != undefined && val != null) {
+                    traitRef.addArgument(undefined, val);
+                }
+            }
+            else {
+                for (let i = 0; i < l; i++) {
+                    let param = rt.parameterValues.getParameter(i);
+                    let val = rt.parameterValues.values[i];
+                    if (val != undefined && val != null) {
+                        traitRef.addArgument(param.getName(), val);
+                    }
+                }
+            }
+            return traitRef;
+        }
+        else {
+            return rt.traitName;
+        }
+    }
 }
 // some objects are just to structure other obje
 class cdmObjectSimple extends cdmObject {
@@ -2804,6 +2982,9 @@ class cdmObjectSimple extends cdmObject {
         return undefined;
     }
     getObjectDef(wrtDoc) {
+        return undefined;
+    }
+    createSimpleReference(wrtDoc) {
         return undefined;
     }
 }
@@ -2832,7 +3013,7 @@ class ImportImpl extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = { moniker: this.moniker, uri: this.uri };
@@ -2918,7 +3099,7 @@ class ArgumentImpl extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let val;
@@ -2926,7 +3107,7 @@ class ArgumentImpl extends cdmObjectSimple {
                 if (typeof (this.value) === "string")
                     val = this.value;
                 else
-                    val = this.value.copyData(wrtDoc, stringRefs);
+                    val = this.value.copyData(wrtDoc, options);
             }
             // skip the argument if just a value
             if (!this.name)
@@ -3084,7 +3265,7 @@ class ParameterImpl extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let defVal;
@@ -3092,7 +3273,7 @@ class ParameterImpl extends cdmObjectSimple {
                 if (typeof (this.defaultValue) === "string")
                     defVal = this.defaultValue;
                 else
-                    defVal = this.defaultValue.copyData(wrtDoc, stringRefs);
+                    defVal = this.defaultValue.copyData(wrtDoc, options);
             }
             let castedToInterface = {
                 explanation: this.explanation,
@@ -3100,7 +3281,7 @@ class ParameterImpl extends cdmObjectSimple {
                 defaultValue: defVal,
                 required: this.required,
                 direction: this.direction,
-                dataType: this.dataType ? this.dataType.copyData(wrtDoc, stringRefs) : undefined
+                dataType: this.dataType ? this.dataType.copyData(wrtDoc, options) : undefined
             };
             return castedToInterface;
         }
@@ -3463,6 +3644,26 @@ class cdmObjectDef extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
+    createSimpleReference(wrtDoc) {
+        let name;
+        if (this.declaredPath)
+            name = this.declaredPath;
+        else
+            name = this.getName();
+        let ref = Corpus.MakeObject(Corpus.GetReferenceType(this.getObjectType()), name, true);
+        // push into cache if there is one
+        if (wrtDoc && this.ctx) {
+            let res = {
+                toObjectDef: this,
+                underCtx: this.ctx,
+                usingDoc: wrtDoc,
+                viaMoniker: false
+            };
+            ref.ctx = this.ctx;
+            this.ctx.setCache(this, wrtDoc, "nameResolve", res);
+        }
+        return ref;
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  {ObjectRef}
@@ -3473,8 +3674,9 @@ class cdmObjectRef extends cdmObject {
         //let bodyCode = () =>
         {
             if (referenceTo) {
-                if (typeof (referenceTo) === "string")
+                if (typeof (referenceTo) === "string") {
                     this.namedReference = referenceTo;
+                }
                 else
                     this.explicitReference = referenceTo;
             }
@@ -3550,26 +3752,31 @@ class cdmObjectRef extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    createSimpleReference(wrtDoc) {
+        if (this.namedReference)
+            return this.copyRefObject(wrtDoc, this.namedReference, true);
+        return this.copyRefObject(wrtDoc, this.declaredPath + this.explicitReference.getName(), true);
+    }
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let copy = {};
             if (this.namedReference) {
-                let identifier = cdmObject.copyIdentifierRef(this.namedReference, this.getResolvedReference(wrtDoc), stringRefs);
+                let identifier = cdmObject.copyIdentifierRef(this.namedReference, this.getResolvedReference(wrtDoc), options);
                 if (this.simpleNamedReference)
                     return identifier;
-                let replace = this.copyRefData(wrtDoc, copy, identifier, stringRefs);
+                let replace = this.copyRefData(wrtDoc, copy, identifier, options);
                 if (replace)
                     copy = replace;
             }
             else if (this.explicitReference) {
-                let erCopy = this.explicitReference.copyData(wrtDoc, stringRefs);
-                let replace = this.copyRefData(wrtDoc, copy, erCopy, stringRefs);
+                let erCopy = this.explicitReference.copyData(wrtDoc, options);
+                let replace = this.copyRefData(wrtDoc, copy, erCopy, options);
                 if (replace)
                     copy = replace;
             }
             if (this.appliedTraits)
-                copy.appliedTraits = cdmObject.arraycopyData(wrtDoc, this.appliedTraits, stringRefs);
+                copy.appliedTraits = cdmObject.arraycopyData(wrtDoc, this.appliedTraits, options);
             return copy;
         }
         //return p.measure(bodyCode);
@@ -3703,14 +3910,15 @@ class cdmObjectRef extends cdmObject {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             // find and cache the complete set of attributes
             let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            rasb.setAttributeContext(under);
             let def = this.getObjectDef(wrtDoc);
             if (def) {
-                rasb.takeReference(def.getResolvedAttributes(wrtDoc));
+                rasb.takeReference(def.getResolvedAttributes(wrtDoc, under));
                 rasb.applyTraits(this.getResolvedTraits(wrtDoc, cdmTraitSet.appliedOnly));
                 rasb.removeRequestedAtts();
             }
@@ -3782,20 +3990,21 @@ class TraitReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             copy.traitReference = refTo;
-            copy.arguments = cdmObject.arraycopyData(wrtDoc, this.arguments, stringRefs);
+            copy.arguments = cdmObject.arraycopyData(wrtDoc, this.arguments, options);
         }
         //return p.measure(bodyCode);
     }
     copyRefObject(wrtDoc, refTo, simpleReference) {
         //let bodyCode = () =>
         {
-            let copy = new TraitReferenceImpl(refTo, this.simpleNamedReference, (this.arguments && this.arguments.length > 0));
+            let copy = new TraitReferenceImpl(refTo, simpleReference, (this.arguments && this.arguments.length > 0));
             copy.ctx = this.ctx;
-            copy.arguments = cdmObject.arrayCopy(wrtDoc, this.arguments);
+            if (!simpleReference)
+                copy.arguments = cdmObject.arrayCopy(wrtDoc, this.arguments);
             return copy;
         }
         //return p.measure(bodyCode);
@@ -3912,7 +4121,7 @@ class TraitReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -3972,14 +4181,14 @@ class TraitImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 traitName: this.traitName,
-                extendsTrait: this.extendsTrait ? this.extendsTrait.copyData(wrtDoc, stringRefs) : undefined,
-                hasParameters: cdmObject.arraycopyData(wrtDoc, this.hasParameters, stringRefs),
+                extendsTrait: this.extendsTrait ? this.extendsTrait.copyData(wrtDoc, options) : undefined,
+                hasParameters: cdmObject.arraycopyData(wrtDoc, this.hasParameters, options),
                 elevated: this.elevated,
                 modifiesAttributes: this.modifiesAttributes,
                 ugly: this.ugly,
@@ -4232,7 +4441,7 @@ class TraitImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -4267,7 +4476,7 @@ class RelationshipReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             copy.relationshipReference = refTo;
@@ -4277,7 +4486,7 @@ class RelationshipReferenceImpl extends cdmObjectRef {
     copyRefObject(wrtDoc, refTo, simpleReference) {
         //let bodyCode = () =>
         {
-            let copy = new RelationshipReferenceImpl(refTo, this.simpleNamedReference, (this.appliedTraits && this.appliedTraits.length > 0));
+            let copy = new RelationshipReferenceImpl(refTo, simpleReference, (this.appliedTraits && this.appliedTraits.length > 0));
             copy.ctx = this.ctx;
             return copy;
         }
@@ -4334,14 +4543,14 @@ class RelationshipImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 relationshipName: this.relationshipName,
-                extendsRelationship: this.extendsRelationship ? this.extendsRelationship.copyData(wrtDoc, stringRefs) : undefined,
-                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, stringRefs)
+                extendsRelationship: this.extendsRelationship ? this.extendsRelationship.copyData(wrtDoc, options) : undefined,
+                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, options)
             };
             return castedToInterface;
         }
@@ -4441,7 +4650,7 @@ class RelationshipImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -4476,7 +4685,7 @@ class DataTypeReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             copy.dataTypeReference = refTo;
@@ -4486,7 +4695,7 @@ class DataTypeReferenceImpl extends cdmObjectRef {
     copyRefObject(wrtDoc, refTo, simpleReference) {
         //let bodyCode = () =>
         {
-            let copy = new DataTypeReferenceImpl(refTo, this.simpleNamedReference, (this.appliedTraits && this.appliedTraits.length > 0));
+            let copy = new DataTypeReferenceImpl(refTo, simpleReference, (this.appliedTraits && this.appliedTraits.length > 0));
             copy.ctx = this.ctx;
             return copy;
         }
@@ -4542,14 +4751,14 @@ class DataTypeImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 dataTypeName: this.dataTypeName,
-                extendsDataType: this.extendsDataType ? this.extendsDataType.copyData(wrtDoc, stringRefs) : undefined,
-                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, stringRefs)
+                extendsDataType: this.extendsDataType ? this.extendsDataType.copyData(wrtDoc, options) : undefined,
+                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, options)
             };
             return castedToInterface;
         }
@@ -4653,7 +4862,7 @@ class DataTypeImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -4689,7 +4898,7 @@ class AttributeReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             // there is no persisted object wrapper
@@ -4700,7 +4909,7 @@ class AttributeReferenceImpl extends cdmObjectRef {
     copyRefObject(wrtDoc, refTo, simpleReference) {
         //let bodyCode = () =>
         {
-            let copy = new AttributeReferenceImpl(refTo, this.simpleNamedReference);
+            let copy = new AttributeReferenceImpl(refTo, simpleReference);
             copy.ctx = this.ctx;
             return copy;
         }
@@ -4735,10 +4944,11 @@ exports.AttributeReferenceImpl = AttributeReferenceImpl;
 //  {AttributeDef}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class AttributeImpl extends cdmObjectDef {
-    constructor(appliedTraits = false) {
+    constructor(name, appliedTraits = false) {
         super();
         //let bodyCode = () =>
         {
+            this.name = name;
             if (appliedTraits)
                 this.appliedTraits = new Array();
         }
@@ -4751,6 +4961,13 @@ class AttributeImpl extends cdmObjectDef {
             copy.appliedTraits = cdmObject.arrayCopy(wrtDoc, this.appliedTraits);
             this.copyDef(wrtDoc, copy);
             return copy;
+        }
+        //return p.measure(bodyCode);
+    }
+    getName() {
+        //let bodyCode = () =>
+        {
+            return this.name;
         }
         //return p.measure(bodyCode);
     }
@@ -4866,11 +5083,10 @@ exports.AttributeImpl = AttributeImpl;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class TypeAttributeImpl extends AttributeImpl {
     constructor(name, appliedTraits = false) {
-        super(appliedTraits);
+        super(name, appliedTraits);
         //let bodyCode = () =>
         {
             this.objectType = cdmObjectType.typeAttributeDef;
-            this.name = name;
         }
         //return p.measure(bodyCode);
     }
@@ -4881,17 +5097,18 @@ class TypeAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
+                relationship: this.relationship ? this.relationship.copyData(wrtDoc, options) : undefined,
+                dataType: this.dataType ? this.dataType.copyData(wrtDoc, options) : undefined,
                 name: this.name,
-                relationship: this.relationship ? this.relationship.copyData(wrtDoc, stringRefs) : undefined,
-                dataType: this.dataType ? this.dataType.copyData(wrtDoc, stringRefs) : undefined,
-                appliedTraits: cdmObject.arraycopyData(wrtDoc, this.appliedTraits, stringRefs)
+                appliedTraits: cdmObject.arraycopyData(wrtDoc, this.appliedTraits, options),
+                attributeContext: this.attributeContext ? this.attributeContext.copyData(wrtDoc, options) : undefined
             };
-            this.getTraitToPropertyMap().persistForTypeAttributeDef(castedToInterface);
+            this.getTraitToPropertyMap().persistForTypeAttributeDef(castedToInterface, options);
             return castedToInterface;
         }
         //return p.measure(bodyCode);
@@ -4902,6 +5119,7 @@ class TypeAttributeImpl extends AttributeImpl {
             let copy = new TypeAttributeImpl(this.name, false);
             copy.ctx = this.ctx;
             copy.dataType = this.dataType ? this.dataType.copy(wrtDoc) : undefined;
+            copy.attributeContext = this.attributeContext ? this.attributeContext.copy(wrtDoc) : undefined;
             this.copyAtt(wrtDoc, copy);
             return copy;
         }
@@ -4910,7 +5128,7 @@ class TypeAttributeImpl extends AttributeImpl {
     validate() {
         //let bodyCode = () =>
         {
-            return this.relationship && this.name && this.dataType ? true : false;
+            return this.name ? true : false;
         }
         //return p.measure(bodyCode);
     }
@@ -4944,6 +5162,7 @@ class TypeAttributeImpl extends AttributeImpl {
                 c.explanation = object.explanation;
             c.relationship = cdmObject.createRelationshipReference(object.relationship);
             c.dataType = cdmObject.createDataTypeReference(object.dataType);
+            c.attributeContext = cdmObject.createAttributeContextReference(object.attributeContext);
             c.appliedTraits = cdmObject.createTraitReferenceArray(object.appliedTraits);
             c.t2pm = new traitToPropertyMap();
             c.t2pm.initForTypeAttributeDef(object, c);
@@ -4955,13 +5174,6 @@ class TypeAttributeImpl extends AttributeImpl {
         //let bodyCode = () =>
         {
             return false;
-        }
-        //return p.measure(bodyCode);
-    }
-    getName() {
-        //let bodyCode = () =>
-        {
-            return this.name;
         }
         //return p.measure(bodyCode);
     }
@@ -5079,6 +5291,9 @@ class TypeAttributeImpl extends AttributeImpl {
             if (this.dataType)
                 if (this.dataType.visit(path + "/dataType/", preChildren, postChildren))
                     return true;
+            if (this.attributeContext)
+                if (this.attributeContext.visit(path + "/attributeContext/", preChildren, postChildren))
+                    return true;
             if (this.visitAtt(path, preChildren, postChildren))
                 return true;
             if (postChildren && postChildren(this, path))
@@ -5115,7 +5330,7 @@ class TypeAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             // find and cache the complete set of attributes
@@ -5123,9 +5338,10 @@ class TypeAttributeImpl extends AttributeImpl {
             // the datatype used as an attribute, traits applied to that datatype,
             // the relationship of the attribute, any traits applied to the attribute.
             let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            rasb.setAttributeContext(under);
             // add this attribute to the set
             // make a new one and apply any traits
-            let newAtt = new ResolvedAttribute(wrtDoc, this);
+            let newAtt = new ResolvedAttribute(wrtDoc, this, under);
             rasb.ownOne(newAtt);
             rasb.applyTraits(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
             // from the traits of the datatype, relationship and applied here, see if new attributes get generated
@@ -5147,8 +5363,8 @@ exports.TypeAttributeImpl = TypeAttributeImpl;
 //  {EntityAttributeDef}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class EntityAttributeImpl extends AttributeImpl {
-    constructor(appliedTraits = false) {
-        super(appliedTraits);
+    constructor(name, appliedTraits = false) {
+        super(name, appliedTraits);
         //let bodyCode = () =>
         {
             this.objectType = cdmObjectType.entityAttributeDef;
@@ -5169,19 +5385,17 @@ class EntityAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let entity;
-            if (this.entity instanceof Array)
-                entity = cdmObject.arraycopyData(wrtDoc, this.entity, stringRefs);
-            else
-                entity = this.entity ? this.entity.copyData(wrtDoc, stringRefs) : undefined;
+            entity = this.entity ? this.entity.copyData(wrtDoc, options) : undefined;
             let castedToInterface = {
                 explanation: this.explanation,
-                relationship: this.relationship ? this.relationship.copyData(wrtDoc, stringRefs) : undefined,
-                entity: entity,
-                appliedTraits: cdmObject.arraycopyData(wrtDoc, this.appliedTraits, stringRefs)
+                name: this.name,
+                entity: this.entity.copyData(wrtDoc, options),
+                relationship: this.relationship ? this.relationship.copyData(wrtDoc, options) : undefined,
+                appliedTraits: cdmObject.arraycopyData(wrtDoc, this.appliedTraits, options)
             };
             return castedToInterface;
         }
@@ -5190,12 +5404,9 @@ class EntityAttributeImpl extends AttributeImpl {
     copy(wrtDoc) {
         //let bodyCode = () =>
         {
-            let copy = new EntityAttributeImpl(false);
+            let copy = new EntityAttributeImpl(this.name, false);
             copy.ctx = this.ctx;
-            if (this.entity instanceof Array)
-                copy.entity = cdmObject.arrayCopy(wrtDoc, this.entity);
-            else
-                copy.entity = this.entity.copy(wrtDoc);
+            copy.entity = this.entity.copy(wrtDoc);
             this.copyAtt(wrtDoc, copy);
             return copy;
         }
@@ -5204,7 +5415,7 @@ class EntityAttributeImpl extends AttributeImpl {
     validate() {
         //let bodyCode = () =>
         {
-            return this.relationship && this.entity ? true : false;
+            return this.name && this.entity ? true : false;
         }
         //return p.measure(bodyCode);
     }
@@ -5216,6 +5427,7 @@ class EntityAttributeImpl extends AttributeImpl {
             ff.lineWrap = true;
             ff.addComment(this.explanation);
             ff.addChild(this.relationship.getFriendlyFormat());
+            ff.addChildString(this.name);
             let ffSub = new friendlyFormatNode();
             ffSub.separator = ", ";
             ffSub.starter = "{";
@@ -5245,35 +5457,13 @@ class EntityAttributeImpl extends AttributeImpl {
     static instanceFromData(object) {
         //let bodyCode = () =>
         {
-            let c = new EntityAttributeImpl(object.appliedTraits);
+            let c = new EntityAttributeImpl(object.name, object.appliedTraits);
             if (object.explanation)
                 c.explanation = object.explanation;
-            if (object.entity instanceof Array) {
-                c.entity = new Array();
-                object.entity.forEach(e => {
-                    c.entity.push(cdmObject.createEntityReference(e));
-                });
-            }
-            else {
-                c.entity = EntityReferenceImpl.instanceFromData(object.entity);
-            }
+            c.entity = EntityReferenceImpl.instanceFromData(object.entity);
             c.relationship = object.relationship ? cdmObject.createRelationshipReference(object.relationship) : undefined;
             c.appliedTraits = cdmObject.createTraitReferenceArray(object.appliedTraits);
             return c;
-        }
-        //return p.measure(bodyCode);
-    }
-    getName() {
-        //let bodyCode = () =>
-        {
-            return "(unspecified)";
-        }
-        //return p.measure(bodyCode);
-    }
-    getEntityRefIsArray() {
-        //let bodyCode = () =>
-        {
-            return this.entity instanceof Array;
         }
         //return p.measure(bodyCode);
     }
@@ -5297,21 +5487,14 @@ class EntityAttributeImpl extends AttributeImpl {
         {
             let path = this.declaredPath;
             if (!path) {
-                path = pathFrom + "(unspecified)";
+                path = pathFrom + this.name;
                 this.declaredPath = path;
             }
             //trackVisits(path);
             if (preChildren && preChildren(this, path))
                 return false;
-            if (this.entity instanceof Array) {
-                if (cdmObject.visitArray(this.entity, path + "/entity/", preChildren, postChildren))
-                    return true;
-            }
-            else {
-                if (this.entity)
-                    if (this.entity.visit(path + "/entity/", preChildren, postChildren))
-                        return true;
-            }
+            if (this.entity.visit(path + "/entity/", preChildren, postChildren))
+                return true;
             if (this.visitAtt(path, preChildren, postChildren))
                 return true;
             if (postChildren && postChildren(this, path))
@@ -5333,12 +5516,24 @@ class EntityAttributeImpl extends AttributeImpl {
             }
             if (set == cdmTraitSet.elevatedOnly) {
                 // get from entities unless this is a ref
-                let relRts = this.getRelationshipRef().getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.all);
-                if (!relRts || !relRts.find(rtsb.wrtDoc, "does.referenceEntity")) {
-                    if (this.getEntityRefIsArray()) {
-                        this.entity.forEach(er => {
-                            rtsb.mergeTraits(er.getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
-                        });
+                let relRts;
+                if (this.relationship)
+                    relRts = this.getRelationshipRef().getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.all);
+                let isRef = relRts && relRts.find(rtsb.wrtDoc, "does.referenceEntity");
+                if (!isRef) {
+                    // for now, a sub for the 'select one' idea
+                    if (this.entity.explicitReference) {
+                        let entPickFrom = this.entity.getObjectDef(rtsb.wrtDoc);
+                        let attsPick;
+                        if (entPickFrom && (attsPick = entPickFrom.getHasAttributeDefs())) {
+                            let l = attsPick.length;
+                            for (let i = 0; i < l; i++) {
+                                if (attsPick[i].getObjectType() == cdmObjectType.entityAttributeDef) {
+                                    let er = attsPick[i].getEntityRef();
+                                    rtsb.mergeTraits(er.getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
+                                }
+                            }
+                        }
                     }
                     else
                         rtsb.mergeTraits(this.entity.getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
@@ -5353,7 +5548,7 @@ class EntityAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             // find and cache the complete set of attributes
@@ -5361,21 +5556,48 @@ class EntityAttributeImpl extends AttributeImpl {
             // the entity used as an attribute, traits applied to that entity,
             // the relationship of the attribute, any traits applied to the attribute.
             let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let ctxEnt = this.entity;
+            let underRef = rasb.createAttributeContext(under, cdmAttributeContextType.entityReferenceAsAttribute, this.name, this, true);
             // complete cheating but is faster. this relationship will remove all of the attributes that get collected here, so dumb and slow to go get them
-            let relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
-            if (!relRts || !relRts.find(wrtDoc, "does.referenceEntity")) {
-                if (this.getEntityRefIsArray()) {
-                    this.entity.forEach(er => {
-                        rasb.mergeAttributes(er.getResolvedAttributes(wrtDoc));
-                    });
-                }
-                else {
-                    rasb.mergeAttributes(this.entity.getResolvedAttributes(wrtDoc));
+            if (under)
+                under = rasb.createAttributeContext(underRef, cdmAttributeContextType.entity, ctxEnt.getObjectDefName(), ctxEnt, true);
+            let relRts;
+            if (this.relationship)
+                relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
+            let isRef = relRts && relRts.find(wrtDoc, "does.referenceEntity");
+            if (isRef) {
+                // for now, a sub for the 'select one' idea
+                if (under && this.entity.explicitReference) {
+                    // the right way to do this is to get a resolved entity from the embedded entity and then 
+                    // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
+                    // that seems like a disaster waiting to happen given endless looping, etc.
+                    // for now, just insist that only the top level entity attributes declared in the ref entity will work
+                    let entPickFrom = this.entity.getObjectDef(wrtDoc);
+                    let attsPick;
+                    if (entPickFrom && (attsPick = entPickFrom.getHasAttributeDefs())) {
+                        let l = attsPick.length;
+                        for (let i = 0; i < l; i++) {
+                            if (attsPick[i].getObjectType() == cdmObjectType.entityAttributeDef) {
+                                let pickUnder = rasb.createAttributeContext(under, cdmAttributeContextType.entityReferenceAsAttribute, attsPick[i].getObjectDefName(), attsPick[i], true);
+                                let pickEnt = attsPick[i].getEntityRef();
+                                rasb.createAttributeContext(pickUnder, cdmAttributeContextType.entity, pickEnt.getObjectDefName(), pickEnt, true);
+                            }
+                        }
+                    }
                 }
             }
-            rasb.applyTraits(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
+            else {
+                rasb.mergeAttributes(this.entity.getResolvedAttributes(wrtDoc, under));
+            }
+            // it would be a mistake to merge any elevated traits that came from the entity
+            // back into the attributes from that entity. elevated traits only propigate 'up'
+            let rtsThisAtt = this.getResolvedTraits(wrtDoc, cdmTraitSet.all);
+            if (rtsThisAtt)
+                rtsThisAtt = rtsThisAtt.removeElevated();
             // from the traits of relationship and applied here, see if new attributes get generated
-            rasb.mergeTraitAttributes(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
+            rasb.setAttributeContext(underRef);
+            rasb.applyTraits(rtsThisAtt);
+            rasb.mergeTraitAttributes(rtsThisAtt);
             return rasb;
         }
         //return p.measure(bodyCode);
@@ -5383,7 +5605,9 @@ class EntityAttributeImpl extends AttributeImpl {
     getResolvedEntityReferences(wrtDoc) {
         //let bodyCode = () =>
         {
-            let relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
+            let relRts;
+            if (this.relationship)
+                relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
             if (relRts && relRts.find(wrtDoc, "does.referenceEntity")) {
                 // only place this is used, so logic here instead of encapsulated. 
                 // make a set and the one ref it will hold
@@ -5419,14 +5643,22 @@ class EntityAttributeImpl extends AttributeImpl {
                     return sideOther;
                 };
                 // either several or one entity
-                if (this.getEntityRefIsArray()) {
-                    this.entity.forEach(er => {
-                        rer.referenced.push(resolveSide(er));
-                    });
+                // for now, a sub for the 'select one' idea
+                if (this.entity.explicitReference) {
+                    let entPickFrom = this.entity.getObjectDef(wrtDoc);
+                    let attsPick;
+                    if (entPickFrom && (attsPick = entPickFrom.getHasAttributeDefs())) {
+                        let l = attsPick.length;
+                        for (let i = 0; i < l; i++) {
+                            if (attsPick[i].getObjectType() == cdmObjectType.entityAttributeDef) {
+                                let er = attsPick[i].getEntityRef();
+                                rer.referenced.push(resolveSide(er));
+                            }
+                        }
+                    }
                 }
-                else {
+                else
                     rer.referenced.push(resolveSide(this.entity));
-                }
                 rers.set.push(rer);
                 return rers;
             }
@@ -5462,7 +5694,7 @@ class AttributeGroupReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             copy.attributeGroupReference = refTo;
@@ -5472,7 +5704,7 @@ class AttributeGroupReferenceImpl extends cdmObjectRef {
     copyRefObject(wrtDoc, refTo, simpleReference) {
         //let bodyCode = () =>
         {
-            let copy = new AttributeGroupReferenceImpl(refTo, this.simpleNamedReference);
+            let copy = new AttributeGroupReferenceImpl(refTo, simpleReference);
             copy.ctx = this.ctx;
             return copy;
         }
@@ -5553,14 +5785,14 @@ class AttributeGroupImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 attributeGroupName: this.attributeGroupName,
-                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, stringRefs),
-                members: cdmObject.arraycopyData(wrtDoc, this.members, stringRefs)
+                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, options),
+                members: cdmObject.arraycopyData(wrtDoc, this.members, options)
             };
             return castedToInterface;
         }
@@ -5664,14 +5896,20 @@ class AttributeGroupImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            rasb.setAttributeContext(under);
             if (this.members) {
                 let l = this.members.length;
                 for (let i = 0; i < l; i++) {
-                    rasb.mergeAttributes(this.members[i].getResolvedAttributes(wrtDoc));
+                    let att = this.members[i];
+                    let attUnder = under;
+                    if (att.getObjectType() == cdmObjectType.attributeGroupRef) {
+                        attUnder = rasb.createAttributeContext(under, cdmAttributeContextType.attributeGroup, att.getObjectDefName(), att, false);
+                    }
+                    rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, attUnder));
                 }
             }
             // things that need to go away
@@ -5744,13 +5982,13 @@ class ConstantEntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 constantEntityName: this.constantEntityName,
-                entityShape: this.entityShape ? this.entityShape.copyData(wrtDoc, stringRefs) : undefined,
+                entityShape: this.entityShape ? this.entityShape.copyData(wrtDoc, options) : undefined,
                 constantValues: this.constantValues
             };
             return castedToInterface;
@@ -5906,12 +6144,13 @@ class ConstantEntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            under = rasb.createAttributeContext(under, cdmAttributeContextType.entity, this.entityShape.getObjectDefName(), this.entityShape, true);
             if (this.entityShape)
-                rasb.mergeAttributes(this.getEntityShape().getResolvedAttributes(wrtDoc));
+                rasb.mergeAttributes(this.getEntityShape().getResolvedAttributes(wrtDoc, under));
             // things that need to go away
             rasb.removeRequestedAtts();
             return rasb;
@@ -5986,6 +6225,298 @@ exports.ConstantEntityImpl = ConstantEntityImpl;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//  {AttributeContextRef}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class AttributeContextReferenceImpl extends cdmObjectRef {
+    constructor(name) {
+        super(name, true, false);
+        this.objectType = cdmObjectType.attributeContextRef;
+    }
+    getObjectType() {
+        return cdmObjectType.attributeContextRef;
+    }
+    copyRefData(wrtDoc, copy, refTo, options) {
+    }
+    copyRefObject(wrtDoc, refTo, simpleReference) {
+        let copy = new AttributeContextReferenceImpl(refTo);
+        copy.ctx = this.ctx;
+        return copy;
+    }
+    static instanceFromData(object) {
+        if (typeof (object) == "string")
+            return new AttributeContextReferenceImpl(object);
+        return null;
+    }
+    getAppliedTraitRefs() {
+        return null;
+    }
+    visitRef(pathFrom, preChildren, postChildren) {
+        return false;
+    }
+}
+exports.AttributeContextReferenceImpl = AttributeContextReferenceImpl;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  {AttributeContext}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class AttributeContextImpl extends cdmObjectDef {
+    constructor(name) {
+        super(false);
+        //let bodyCode = () =>
+        {
+            this.objectType = cdmObjectType.attributeContextDef;
+            this.name = name;
+        }
+        //return p.measure(bodyCode);
+    }
+    getObjectType() {
+        //let bodyCode = () =>
+        {
+            return cdmObjectType.attributeContextDef;
+        }
+        //return p.measure(bodyCode);
+    }
+    static mapTypeNameToEnum(typeName) {
+        //let bodyCode = () =>
+        {
+            switch (typeName) {
+                case "entity":
+                    return cdmAttributeContextType.entity;
+                case "entityReferenceExtends":
+                    return cdmAttributeContextType.entityReferenceExtends;
+                case "attributeGroup":
+                    return cdmAttributeContextType.attributeGroup;
+                case "entityReferenceAsAttribute":
+                    return cdmAttributeContextType.entityReferenceAsAttribute;
+                case "addedAttributeSupporting":
+                    return cdmAttributeContextType.addedAttributeSupporting;
+                case "addedAttributeIdentity":
+                    return cdmAttributeContextType.addedAttributeIdentity;
+                default:
+                    return -1;
+            }
+        }
+    }
+    static mapEnumToTypeName(enumVal) {
+        //let bodyCode = () =>
+        {
+            switch (enumVal) {
+                case cdmAttributeContextType.entity:
+                    return "entity";
+                case cdmAttributeContextType.entityReferenceExtends:
+                    return "entityReferenceExtends";
+                case cdmAttributeContextType.attributeGroup:
+                    return "attributeGroup";
+                case cdmAttributeContextType.entityReferenceAsAttribute:
+                    return "entityReferenceAsAttribute";
+                case cdmAttributeContextType.addedAttributeSupporting:
+                    return "addedAttributeSupporting";
+                case cdmAttributeContextType.addedAttributeIdentity:
+                    return "addedAttributeIdentity";
+                default:
+                    return "unknown";
+            }
+        }
+        //return p.measure(bodyCode);
+    }
+    copyData(wrtDoc, options) {
+        //let bodyCode = () =>
+        {
+            let castedToInterface = {
+                explanation: this.explanation,
+                name: this.name,
+                type: AttributeContextImpl.mapEnumToTypeName(this.type),
+                parent: this.parent ? this.parent.copyData(wrtDoc, options) : undefined,
+                definition: this.definition ? this.definition.copyData(wrtDoc, options) : undefined,
+                // i know the trait collection names look wrong. but I wanted to use the def baseclass
+                appliedTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, options),
+                contents: cdmObject.arraycopyData(wrtDoc, this.contents, options)
+            };
+            return castedToInterface;
+        }
+        //return p.measure(bodyCode);
+    }
+    copy(wrtDoc) {
+        //let bodyCode = () =>
+        {
+            let copy = new AttributeContextImpl(this.name);
+            copy.ctx = this.ctx;
+            copy.type = this.type;
+            if (this.parent)
+                copy.parent = this.parent.copy(wrtDoc);
+            if (this.definition)
+                copy.definition = this.definition.copy(wrtDoc);
+            copy.contents = cdmObject.arrayCopy(wrtDoc, this.contents);
+            this.copyDef(wrtDoc, copy);
+            return copy;
+        }
+        //return p.measure(bodyCode);
+    }
+    validate() {
+        return this.name && this.type != undefined;
+    }
+    getFriendlyFormat() {
+        //let bodyCode = () =>
+        {
+            // todo
+            let ff = new friendlyFormatNode();
+            ff.separator = " ";
+            ff.addChildString("attributeContext");
+            ff.addChildString(this.name);
+            return ff;
+        }
+        //return p.measure(bodyCode);
+    }
+    static instanceFromData(object) {
+        //let bodyCode = () =>
+        {
+            let c = Corpus.MakeObject(cdmObjectType.attributeContextDef, object.name);
+            c.type = AttributeContextImpl.mapTypeNameToEnum(object.type);
+            if (object.parent)
+                c.parent = cdmObject.createAttributeContextReference(object.parent);
+            if (object.explanation)
+                c.explanation = object.explanation;
+            if (object.definition) {
+                switch (c.type) {
+                    case cdmAttributeContextType.entity:
+                    case cdmAttributeContextType.entityReferenceExtends:
+                        c.definition = cdmObject.createEntityReference(object.definition);
+                        break;
+                    case cdmAttributeContextType.attributeGroup:
+                        c.definition = cdmObject.createAttributeGroupReference(object.definition);
+                        break;
+                    case cdmAttributeContextType.addedAttributeSupporting:
+                    case cdmAttributeContextType.addedAttributeIdentity:
+                    case cdmAttributeContextType.entityReferenceAsAttribute:
+                        c.definition = cdmObject.createAttributeReference(object.definition);
+                        break;
+                }
+            }
+            // i know the trait collection names look wrong. but I wanted to use the def baseclass
+            c.exhibitsTraits = cdmObject.createTraitReferenceArray(object.appliedTraits);
+            if (object.contents) {
+                c.contents = new Array();
+                let l = object.contents.length;
+                for (let i = 0; i < l; i++) {
+                    const ct = object.contents[i];
+                    if (typeof (ct) === "string")
+                        c.contents.push(AttributeReferenceImpl.instanceFromData(ct));
+                    else
+                        c.contents.push(AttributeContextImpl.instanceFromData(ct));
+                }
+            }
+            return c;
+        }
+        //return p.measure(bodyCode);
+    }
+    getName() {
+        //let bodyCode = () =>
+        {
+            return this.name;
+        }
+        //return p.measure(bodyCode);
+    }
+    getContentRefs() {
+        //let bodyCode = () =>
+        {
+            if (!this.contents)
+                this.contents = new Array();
+            return this.contents;
+        }
+        //return p.measure(bodyCode);
+    }
+    visit(pathFrom, preChildren, postChildren) {
+        //let bodyCode = () =>
+        {
+            let path = this.declaredPath;
+            if (!path) {
+                path = pathFrom + this.name;
+                this.declaredPath = path;
+            }
+            if (preChildren && preChildren(this, path))
+                return false;
+            if (this.parent)
+                if (this.parent.visit(path + "/parent/", preChildren, postChildren))
+                    return true;
+            if (this.definition)
+                if (this.definition.visit(path + "/definition/", preChildren, postChildren))
+                    return true;
+            if (this.contents)
+                if (cdmObject.visitArray(this.contents, path + "/", preChildren, postChildren))
+                    return true;
+            if (this.visitDef(path, preChildren, postChildren))
+                return true;
+            if (postChildren && postChildren(this, path))
+                return true;
+            return false;
+        }
+        //return p.measure(bodyCode);
+    }
+    getRelativePath() {
+        return this.declaredPath;
+    }
+    setRelativePath(rp) {
+        this.declaredPath = rp;
+    }
+    isDerivedFrom(wrtDoc, base) {
+        //let bodyCode = () =>
+        {
+            return false;
+        }
+        //return p.measure(bodyCode);
+    }
+    constructResolvedTraits(rtsb) {
+        //let bodyCode = () =>
+        {
+        }
+        //return p.measure(bodyCode);
+    }
+    constructResolvedAttributes(wrtDoc, under) {
+        //let bodyCode = () =>
+        {
+            return null;
+        }
+        //return p.measure(bodyCode);
+    }
+    static createChildUnder(wrtDoc, under, type, name, regarding, includeTraits) {
+        //let bodyCode = () =>
+        {
+            if (!under)
+                return undefined;
+            let definition;
+            let rtsApplied;
+            // get a simple reference to definition object to avoid getting the traits that might be part of this ref
+            // included in the link to the definition.
+            if (regarding) {
+                definition = regarding.createSimpleReference(wrtDoc);
+                // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
+                // and make them the traits for this context
+                if (includeTraits)
+                    rtsApplied = regarding.getResolvedTraits(wrtDoc, cdmTraitSet.appliedOnly);
+            }
+            let underChild = Corpus.MakeObject(cdmObjectType.attributeContextDef, name);
+            // need search context to make this a 'live' object
+            underChild.ctx = under.ctx;
+            underChild.type = type;
+            underChild.definition = definition;
+            underChild.setRelativePath(under.getRelativePath() + '/' + name);
+            // add traits if there are any
+            if (rtsApplied && rtsApplied.set) {
+                rtsApplied.set.forEach(rt => {
+                    let traitRef = cdmObject.resolvedTraitToTraitRef(rt);
+                    underChild.addExhibitedTrait(traitRef, typeof (traitRef) === "string");
+                });
+            }
+            // add to parent
+            underChild.parent = under.createSimpleReference(wrtDoc);
+            let parentContents = under.getContentRefs();
+            parentContents.push(underChild);
+            return underChild;
+        }
+        //return p.measure(bodyCode);
+    }
+}
+exports.AttributeContextImpl = AttributeContextImpl;
+////////////////////////////////////////////////////////////////////////////////////////////////////
 //  {EntityRef}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class EntityReferenceImpl extends cdmObjectRef {
@@ -6004,7 +6535,7 @@ class EntityReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    copyRefData(wrtDoc, copy, refTo, stringRefs) {
+    copyRefData(wrtDoc, copy, refTo, options) {
         //let bodyCode = () =>
         {
             copy.entityReference = refTo;
@@ -6075,18 +6606,19 @@ class EntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 explanation: this.explanation,
                 entityName: this.entityName,
-                extendsEntity: this.extendsEntity ? this.extendsEntity.copyData(wrtDoc, stringRefs) : undefined,
-                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, stringRefs),
+                extendsEntity: this.extendsEntity ? this.extendsEntity.copyData(wrtDoc, options) : undefined,
+                exhibitsTraits: cdmObject.arraycopyData(wrtDoc, this.exhibitsTraits, options),
             };
-            this.getTraitToPropertyMap().persistForEntityDef(castedToInterface);
+            this.getTraitToPropertyMap().persistForEntityDef(castedToInterface, options);
             // after the properties so they show up first in doc
-            castedToInterface.hasAttributes = cdmObject.arraycopyData(wrtDoc, this.hasAttributes, stringRefs);
+            castedToInterface.hasAttributes = cdmObject.arraycopyData(wrtDoc, this.hasAttributes, options);
+            castedToInterface.attributeContext = this.attributeContext ? this.attributeContext.copyData(wrtDoc, options) : undefined;
             return castedToInterface;
         }
         //return p.measure(bodyCode);
@@ -6097,6 +6629,7 @@ class EntityImpl extends cdmObjectDef {
             let copy = new EntityImpl(this.entityName, null, false, false);
             copy.ctx = this.ctx;
             copy.extendsEntity = copy.extendsEntity ? this.extendsEntity.copy(wrtDoc) : undefined;
+            copy.attributeContext = copy.attributeContext ? this.attributeContext.copy(wrtDoc) : undefined;
             copy.hasAttributes = cdmObject.arrayCopy(wrtDoc, this.hasAttributes);
             this.copyDef(wrtDoc, copy);
             return copy;
@@ -6123,6 +6656,10 @@ class EntityImpl extends cdmObjectDef {
                 ff.addChild(this.extendsEntity.getFriendlyFormat());
             }
             this.getFriendlyFormatDef(ff);
+            if (this.attributeContext) {
+                ff.addChildString("attributeContext");
+                ff.addChild(this.attributeContext.getFriendlyFormat());
+            }
             let ffSub = new friendlyFormatNode();
             //ffSub.forceWrap = true;
             ffSub.verticalMode = true;
@@ -6146,6 +6683,8 @@ class EntityImpl extends cdmObjectDef {
             if (object.explanation)
                 c.explanation = object.explanation;
             c.exhibitsTraits = cdmObject.createTraitReferenceArray(object.exhibitsTraits);
+            if (object.attributeContext)
+                c.attributeContext = cdmObject.createAttributeContext(object.attributeContext);
             c.hasAttributes = cdmObject.createAttributeArray(object.hasAttributes);
             c.t2pm = new traitToPropertyMap();
             c.t2pm.initForEntityDef(object, c);
@@ -6251,6 +6790,9 @@ class EntityImpl extends cdmObjectDef {
                     return true;
             if (this.visitDef(path, preChildren, postChildren))
                 return true;
+            if (this.attributeContext)
+                if (this.attributeContext.visit(path + "/attributeContext/", preChildren, postChildren))
+                    return true;
             if (this.hasAttributes)
                 if (cdmObject.visitArray(this.hasAttributes, path + "/hasAttributes/", preChildren, postChildren))
                     return true;
@@ -6298,7 +6840,7 @@ class EntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             // find and cache the complete set of attributes
@@ -6306,13 +6848,23 @@ class EntityImpl extends cdmObjectDef {
             // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
             // the relationsip of the attribute, the attribute definition itself and included attribute groups, any traits applied to the attribute.
             this.rasb = new ResolvedAttributeSetBuilder(wrtDoc);
-            if (this.extendsEntity)
-                this.rasb.mergeAttributes(this.getExtendsEntityRef().getResolvedAttributes(wrtDoc));
+            this.rasb.setAttributeContext(under);
+            if (this.extendsEntity) {
+                let extRef = this.getExtendsEntityRef();
+                let extendsRefUnder = this.rasb.createAttributeContext(under, cdmAttributeContextType.entityReferenceExtends, "extends", null, false);
+                let extendsUnder = this.rasb.createAttributeContext(extendsRefUnder, cdmAttributeContextType.entity, extRef.getObjectDefName(), extRef, false);
+                this.rasb.mergeAttributes(this.getExtendsEntityRef().getResolvedAttributes(wrtDoc, extendsUnder));
+            }
             this.rasb.markInherited();
             if (this.hasAttributes) {
                 let l = this.hasAttributes.length;
                 for (let i = 0; i < l; i++) {
-                    this.rasb.mergeAttributes(this.hasAttributes[i].getResolvedAttributes(wrtDoc));
+                    let att = this.hasAttributes[i];
+                    let attUnder = under;
+                    if (att.getObjectType() == cdmObjectType.attributeGroupRef) {
+                        attUnder = this.rasb.createAttributeContext(under, cdmAttributeContextType.attributeGroup, att.getObjectDefName(), att, false);
+                    }
+                    this.rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, attUnder));
                 }
             }
             this.rasb.markOrder();
@@ -6383,6 +6935,213 @@ class EntityImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
+    createResolvedEntity(wrtDoc, newEntName) {
+        //let bodyCode = () =>
+        {
+            // make the top level attribute context for this entity
+            let entName = newEntName;
+            let attCtx = Corpus.MakeObject(cdmObjectType.attributeContextDef, entName, true);
+            attCtx.ctx = this.ctx;
+            attCtx.setExplanation("This OPTIONAL 'AttributeContext' hierarchy is generated by the CDM object model to help explain where each attribute in the entity was defined and discovered.");
+            attCtx.type = cdmAttributeContextType.entity;
+            attCtx.definition = Corpus.MakeObject(cdmObjectType.entityRef, this.getName(), true);
+            // cheating a bit
+            attCtx.setRelativePath(entName + '/attributeContext/' + entName);
+            // resolve attributes with this context. the end result is that each resolved attribute
+            // points to the level of the context where it was created
+            let ras = this.getResolvedAttributes(wrtDoc, attCtx);
+            // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
+            // make each attribute context level point at these final versions of attributes
+            ras.set.forEach(ra => {
+                if (ra.createdContext) {
+                    let refs = ra.createdContext.getContentRefs();
+                    // this won't work when I add the structured attributes to avoid name collisions
+                    let attRefPath = entName + '/hasAttributes/' + ra.resolvedName;
+                    let attRef = Corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
+                    refs.push(attRef);
+                }
+            });
+            // attribute structures may end up with 0 attributes after that. prune them
+            let emptyStructures = new Array();
+            let findEmpty = (under) => {
+                let isEmpty = true;
+                under.getContentRefs().forEach(cr => {
+                    if (cr.getObjectType() == cdmObjectType.attributeContextDef) {
+                        if (findEmpty(cr)) {
+                            if (!cr.getExhibitedTraitRefs()) {
+                                // empty child, remember for later
+                                emptyStructures.push([under, cr]);
+                            }
+                            else {
+                                // need to keep context with traits, even if it has no atts
+                                isEmpty = false;
+                            }
+                        }
+                        else
+                            isEmpty = false;
+                    }
+                    else {
+                        // some attribute here, so not empty
+                        isEmpty = false;
+                    }
+                });
+                return isEmpty;
+            };
+            findEmpty(attCtx);
+            // remove all the empties that were found
+            emptyStructures.forEach(empty => {
+                let content = empty["0"].getContentRefs();
+                content.splice(content.indexOf(empty["1"]), 1);
+            });
+            // create an all-up ordering of attributes at the leaves of this tree based on insert order
+            // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
+            let getOrderNum = (item) => {
+                if (item.getObjectType() == cdmObjectType.attributeContextDef) {
+                    return orderContents(item);
+                }
+                else {
+                    let attName = item.getObjectDefName();
+                    let div = attName.lastIndexOf('/');
+                    if (div != -1)
+                        attName = attName.slice(div + 1);
+                    return ras.get(attName).insertOrder;
+                }
+            };
+            let orderContents = (under) => {
+                if (under.lowestOrder == undefined) {
+                    under.lowestOrder = -1; // used for group with nothing but traits
+                    if (under.contents.length == 1) {
+                        under.lowestOrder = getOrderNum(under.contents[0]);
+                    }
+                    else {
+                        under.contents = under.contents.sort((l, r) => {
+                            let lNum = getOrderNum(l);
+                            let rNum = getOrderNum(r);
+                            if (lNum != -1 && (under.lowestOrder == -1 || lNum < under.lowestOrder))
+                                under.lowestOrder = lNum;
+                            if (rNum != -1 && (under.lowestOrder == -1 || rNum < under.lowestOrder))
+                                under.lowestOrder = rNum;
+                            return lNum - rNum;
+                        });
+                    }
+                }
+                return under.lowestOrder;
+            };
+            orderContents(attCtx);
+            // make a new document in the same folder as the source entity
+            let folder = this.declaredInDocument.getFolder();
+            let fileName = newEntName + ".cdm.json";
+            folder.removeDocument(fileName);
+            let docRes = folder.addDocument(fileName, "");
+            // add a import of the source document
+            docRes.addImport(this.declaredInDocument.getFolder().getRelativePath() + this.declaredInDocument.getName(), "");
+            // make the empty entity
+            let entResolved = docRes.addDefinition(cdmObjectType.entityDef, entName);
+            entResolved.attributeContext = attCtx;
+            // add the traits of the entity
+            let rtsEnt = this.getResolvedTraits(wrtDoc, cdmTraitSet.all);
+            rtsEnt.set.forEach(rt => {
+                let traitRef = cdmObject.resolvedTraitToTraitRef(rt);
+                entResolved.addExhibitedTrait(traitRef, typeof (traitRef) === "string");
+            });
+            // resolved attributes can gain traits that are applied to an entity when referenced
+            // since these traits are described in the context, it is redundant and messy to list them in the attribute
+            // so, remove them. create and cache a set of names to look for per context 
+            // there is actuall a hierarchy to this. all attributes from the base entity should have all traits applied independed of the 
+            // sub-context they come from. Same is true of attribute entities. so do this recursively top down
+            let ctx2traitNames = new Map();
+            let collectContextTraits = (subAttCtx, inheritedTraitNames) => {
+                let traitNamesHere = new Set(inheritedTraitNames);
+                let traitsHere = subAttCtx.getExhibitedTraitRefs();
+                if (traitsHere)
+                    traitsHere.forEach((tat) => { traitNamesHere.add(tat.getObjectDefName()); });
+                ctx2traitNames.set(subAttCtx, traitNamesHere);
+                subAttCtx.getContentRefs().forEach((cr) => {
+                    if (cr.getObjectType() == cdmObjectType.attributeContextDef) {
+                        // do this for all types?
+                        collectContextTraits(cr, traitNamesHere);
+                    }
+                });
+            };
+            collectContextTraits(attCtx, new Set());
+            // add the attributes
+            ras.set.forEach(ra => {
+                let att = Corpus.MakeObject(cdmObjectType.typeAttributeDef, ra.resolvedName);
+                //att.setRelationshipRef(Corpus.MakeObject(cdmObjectType.relationshipRef, "hasA", true));
+                //att.setDataTypeRef(Corpus.MakeObject(cdmObjectType.dataTypeRef, "any", true));
+                att.attributeContext = Corpus.MakeObject(cdmObjectType.attributeContextRef, ra.createdContext.getRelativePath(), true);
+                let avoidSet = ctx2traitNames.get(ra.createdContext);
+                let rtsAtt = ra.resolvedTraits;
+                rtsAtt.set.forEach(rt => {
+                    if (!rt.trait.ugly) {
+                        if (!avoidSet.has(rt.traitName)) {
+                            let traitRef = cdmObject.resolvedTraitToTraitRef(rt);
+                            att.addAppliedTrait(traitRef, typeof (traitRef) === "string");
+                        }
+                    }
+                });
+                entResolved.addAttributeDef(att);
+            });
+            // any resolved traits that hold arguments with attribute refs should get 'fixed' here
+            let replaceTraitAttRef = (tr) => {
+                if (tr.getArgumentDefs()) {
+                    tr.getArgumentDefs().forEach(arg => {
+                        let v = arg.getValue();
+                        // is this an attribute reference?
+                        if (v && v.getObjectType && v.getObjectType() == cdmObjectType.attributeRef) {
+                            // only try this if the reference has no path to it (only happens with intra-entity att refs)
+                            let attRef = v;
+                            if (attRef.namedReference && attRef.namedReference.indexOf('/') == -1) {
+                                // get the original attribute object
+                                let att = v.getObjectDef(wrtDoc);
+                                // is this one of the resolved attributes?
+                                let found = ras.getBySource(att);
+                                //change it
+                                if (found) {
+                                    let attRefPath = entName + '/hasAttributes/' + found.resolvedName;
+                                    arg.setValue(Corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true));
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+            // fix entity traits
+            if (entResolved.getExhibitedTraitRefs())
+                entResolved.getExhibitedTraitRefs().forEach(et => {
+                    replaceTraitAttRef(et);
+                });
+            // fix context traits
+            let fixContextTraits = (subAttCtx) => {
+                let traitsHere = subAttCtx.getExhibitedTraitRefs();
+                if (traitsHere)
+                    traitsHere.forEach((tr) => { replaceTraitAttRef(tr); });
+                subAttCtx.getContentRefs().forEach((cr) => {
+                    if (cr.getObjectType() == cdmObjectType.attributeContextDef) {
+                        // do this for all types?
+                        fixContextTraits(cr);
+                    }
+                });
+            };
+            fixContextTraits(attCtx);
+            // and the attribute traits
+            let entAtts = entResolved.getHasAttributeDefs();
+            if (entAtts) {
+                let l = entAtts.length;
+                for (let i = 0; i < l; i++) {
+                    let attTraits = entAtts[i].getAppliedTraitRefs();
+                    if (attTraits)
+                        attTraits.forEach((tr) => replaceTraitAttRef(tr));
+                }
+            }
+            // trigger the document to refresh current content into the resolved OM
+            docRes.refresh();
+            // get a fresh ref
+            entResolved = docRes.getObjectFromDocumentPath(entName);
+            return entResolved;
+        }
+        //return p.measure(bodyCode);
+    }
 }
 exports.EntityImpl = EntityImpl;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6402,15 +7161,18 @@ class Document extends cdmObjectSimple {
         {
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.schemaVersion = "0.6.0";
+            this.schemaVersion = "0.7.0";
             this.definitions = new Array();
-            this.internalDeclarations = new Map();
             if (hasImports)
                 this.imports = new Array();
-            this.monikeredImports = new Map();
-            this.flatImports = new Array();
+            this.clearCaches();
         }
         //return p.measure(bodyCode);
+    }
+    clearCaches() {
+        this.internalDeclarations = new Map();
+        this.monikeredImports = new Map();
+        this.flatImports = new Array();
     }
     getObjectType() {
         //let bodyCode = () =>
@@ -6422,14 +7184,14 @@ class Document extends cdmObjectSimple {
     getObjectDef() {
         return null;
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             let castedToInterface = {
                 schema: this.schema,
                 schemaVersion: this.schemaVersion,
-                imports: cdmObject.arraycopyData(wrtDoc, this.imports, stringRefs),
-                definitions: cdmObject.arraycopyData(wrtDoc, this.definitions, stringRefs)
+                imports: cdmObject.arraycopyData(wrtDoc, this.imports, options),
+                definitions: cdmObject.arraycopyData(wrtDoc, this.definitions, options)
             };
             return castedToInterface;
         }
@@ -6481,7 +7243,7 @@ class Document extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
-    constructResolvedAttributes(wrtDoc) {
+    constructResolvedAttributes(wrtDoc, under) {
         //let bodyCode = () =>
         {
             return null;
@@ -6554,8 +7316,11 @@ class Document extends cdmObjectSimple {
         //let bodyCode = () =>
         {
             let newObj = Corpus.MakeObject(ofType, name);
-            if (newObj != null)
+            if (newObj != null) {
                 this.definitions.push(newObj);
+                if (ofType == cdmObjectType.entityDef)
+                    newObj.docDeclared = this;
+            }
             return newObj;
         }
         //return p.measure(bodyCode);
@@ -6596,6 +7361,9 @@ class Document extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
+    getFolder() {
+        return this.folder;
+    }
     visit(pathFrom, preChildren, postChildren) {
         //let bodyCode = () =>
         {
@@ -6607,6 +7375,35 @@ class Document extends cdmObjectSimple {
             if (postChildren && postChildren(this, pathFrom))
                 return true;
             return false;
+        }
+        //return p.measure(bodyCode);
+    }
+    // remove any old document content from caches and re-declare and resolve with new content
+    refresh() {
+        //let bodyCode = () =>
+        {
+            // make the corpus internal machinery pay attention to this document for this call
+            let corpus = this.folder.corpus;
+            let oldDoc = corpus.ctx.currentDoc;
+            corpus.ctx.currentDoc = this;
+            // clear old cached things for this doc
+            this.clearCaches();
+            // this is the minimum set of steps needed to get an object to the point where references will resolve to objects in the corpus
+            // index any imports
+            corpus.resolveDocumentImports(this, null);
+            this.indexImports(corpus.directory);
+            // check basic integrity
+            corpus.checkObjectIntegrity();
+            // declare definitions of objects in this doc
+            corpus.declareObjectDefinitions("");
+            // make sure we can find everything that is named by reference
+            corpus.resolveObjectDefinitions();
+            // now resolve any trait arguments that are type object
+            corpus.resolveTraitArguments();
+            // finish up
+            corpus.finishDocumentResolve();
+            // go back to what you had before
+            corpus.ctx.currentDoc = oldDoc;
         }
         //return p.measure(bodyCode);
     }
@@ -6803,6 +7600,7 @@ class Folder extends cdmObjectSimple {
                 doc = Document.instanceFromData(name, this.relativePath, JSON.parse(content));
             else
                 doc = Document.instanceFromData(name, this.relativePath, content);
+            doc.folder = this;
             doc.ctx = this.ctx;
             this.documents.push(doc);
             this.corpus.addDocumentObjects(this, doc);
@@ -6810,6 +7608,13 @@ class Folder extends cdmObjectSimple {
             return doc;
         }
         //return p.measure(bodyCode);
+    }
+    removeDocument(name) {
+        if (this.documentLookup.has(name)) {
+            this.corpus.removeDocumentObjects(this, this.documentLookup.get(name));
+            this.documents.splice(this.documents.findIndex((d) => d.getName() == name), 1);
+            this.documentLookup.delete(name);
+        }
     }
     getSubFolderFromPath(path, makeFolder = true) {
         //let bodyCode = () =>
@@ -6904,7 +7709,7 @@ class Folder extends cdmObjectSimple {
         }
         //return p.measure(bodyCode);
     }
-    copyData(wrtDoc, stringRefs) {
+    copyData(wrtDoc, options) {
         //let bodyCode = () =>
         {
             return null;
@@ -7132,8 +7937,7 @@ class Corpus extends Folder {
                     newObj = new Document(name, false);
                     break;
                 case cdmObjectType.entityAttributeDef:
-                    newObj = new EntityAttributeImpl(false);
-                    newObj.entity = this.MakeRef(cdmObjectType.entityRef, nameOrRef, simmpleNameRef);
+                    newObj = new EntityAttributeImpl(nameOrRef, false);
                     break;
                 case cdmObjectType.entityDef:
                     newObj = new EntityImpl(nameOrRef, null, false, false);
@@ -7162,8 +7966,54 @@ class Corpus extends Folder {
                 case cdmObjectType.typeAttributeDef:
                     newObj = new TypeAttributeImpl(nameOrRef, false);
                     break;
+                case cdmObjectType.attributeContextDef:
+                    newObj = new AttributeContextImpl(nameOrRef);
+                    break;
+                case cdmObjectType.attributeContextRef:
+                    newObj = new AttributeContextReferenceImpl(nameOrRef);
+                    break;
+                case cdmObjectType.attributeRef:
+                    newObj = new AttributeReferenceImpl(nameOrRef, simmpleNameRef);
+                    break;
             }
             return newObj;
+        }
+        //return p.measure(bodyCode);
+    }
+    static GetReferenceType(ofType) {
+        //let bodyCode = () =>
+        {
+            switch (ofType) {
+                case cdmObjectType.argumentDef:
+                case cdmObjectType.documentDef:
+                case cdmObjectType.import:
+                case cdmObjectType.parameterDef:
+                default:
+                    return cdmObjectType.error;
+                case cdmObjectType.attributeGroupRef:
+                case cdmObjectType.attributeGroupDef:
+                    return cdmObjectType.attributeGroupRef;
+                case cdmObjectType.constantEntityDef:
+                case cdmObjectType.entityDef:
+                case cdmObjectType.entityRef:
+                    return cdmObjectType.entityRef;
+                case cdmObjectType.dataTypeDef:
+                case cdmObjectType.dataTypeRef:
+                    return cdmObjectType.dataTypeRef;
+                case cdmObjectType.relationshipDef:
+                case cdmObjectType.relationshipRef:
+                    return cdmObjectType.relationshipRef;
+                case cdmObjectType.traitDef:
+                case cdmObjectType.traitRef:
+                    return cdmObjectType.traitRef;
+                case cdmObjectType.entityAttributeDef:
+                case cdmObjectType.typeAttributeDef:
+                case cdmObjectType.attributeRef:
+                    return cdmObjectType.attributeRef;
+                case cdmObjectType.attributeContextDef:
+                case cdmObjectType.attributeContextRef:
+                    return cdmObjectType.attributeContextRef;
+            }
         }
         //return p.measure(bodyCode);
     }
@@ -7181,6 +8031,16 @@ class Corpus extends Folder {
         }
         //return p.measure(bodyCode);
     }
+    removeDocumentObjects(folder, docDef) {
+        let doc = docDef;
+        let path = doc.path + doc.name;
+        if (this.pathLookup.has(path)) {
+            this.pathLookup.delete(path);
+            this.directory.delete(doc);
+            let index = this.allDocuments.indexOf([folder, doc]);
+            this.allDocuments.splice(index, 1);
+        }
+    }
     addDocumentFromContent(uri, content) {
         //let bodyCode = () =>
         {
@@ -7196,28 +8056,37 @@ class Corpus extends Folder {
         }
         //return p.measure(bodyCode);
     }
+    resolveDocumentImports(doc, missingSet) {
+        //let bodyCode = () =>
+        {
+            if (doc.imports) {
+                doc.imports.forEach(imp => {
+                    if (!imp.doc) {
+                        // no document set for this import, see if it is already loaded into the corpus
+                        let path = imp.uri;
+                        if (path.charAt(0) != '/')
+                            path = doc.folder.getRelativePath() + imp.uri;
+                        let lookup = this.pathLookup.get(path);
+                        if (lookup)
+                            imp.doc = lookup["1"];
+                        else {
+                            if (missingSet)
+                                missingSet.add(path);
+                        }
+                    }
+                });
+            }
+        }
+        //return p.measure(bodyCode);
+    }
     listMissingImports() {
         //let bodyCode = () =>
         {
             let missingSet = new Set();
             let l = this.allDocuments.length;
             for (let i = 0; i < l; i++) {
-                const fd = this.allDocuments[i];
-                if (fd["1"].imports) {
-                    fd["1"].imports.forEach(imp => {
-                        if (!imp.doc) {
-                            // no document set for this import, see if it is already loaded into the corpus
-                            let path = imp.uri;
-                            if (path.charAt(0) != '/')
-                                path = fd["0"].getRelativePath() + imp.uri;
-                            let lookup = this.pathLookup.get(path);
-                            if (lookup)
-                                imp.doc = lookup["1"];
-                            else
-                                missingSet.add(path);
-                        }
-                    });
-                }
+                const fs = this.allDocuments[i];
+                this.resolveDocumentImports(fs["1"], missingSet);
             }
             if (missingSet.size == 0)
                 return undefined;
@@ -7307,10 +8176,27 @@ class Corpus extends Folder {
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    checkObjectIntegrity() {
+        //let bodyCode = () =>
+        {
+            let ctx = this.ctx;
+            ctx.currentDoc.visit("", (iObject, path) => {
+                if (iObject.validate() == false) {
+                    ctx.statusRpt(cdmStatusLevel.error, `integrity check failed for : '${path}'`, ctx.currentDoc.path + path);
+                }
+                else
+                    iObject.ctx = ctx;
+                ctx.statusRpt(cdmStatusLevel.info, `checked '${path}'`, ctx.currentDoc.path + path);
+                return false;
+            }, null);
+        }
+        //return p.measure(bodyCode);
+    }
     declareObjectDefinitions(relativePath) {
         //let bodyCode = () =>
         {
             let ctx = this.ctx;
+            ctx.corpusPathRoot = ctx.currentDoc.path + ctx.currentDoc.name;
             ctx.currentDoc.visit(relativePath, (iObject, path) => {
                 if (path.indexOf("(unspecified)") > 0)
                     return true;
@@ -7321,11 +8207,13 @@ class Corpus extends Folder {
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
+                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:
                     case cdmObjectType.attributeGroupDef:
                     case cdmObjectType.constantEntityDef:
+                    case cdmObjectType.attributeContextDef:
                         ctx.relativePath = relativePath;
                         let corpusPath = ctx.corpusPathRoot + '/' + path;
                         if (ctx.currentDoc.internalDeclarations.has(path)) {
@@ -7421,8 +8309,15 @@ class Corpus extends Folder {
                                 else {
                                     let lu = ctx.resolveNamedReference(pValue, cdmObjectType.error);
                                     if (lu) {
-                                        replacement = lu.toObjectDef;
-                                        foundType = replacement.objectType;
+                                        if (expected === "attribute") {
+                                            replacement = new AttributeReferenceImpl(pValue, true);
+                                            replacement.ctx = ctx;
+                                            foundType = cdmObjectType.attributeRef;
+                                        }
+                                        else {
+                                            replacement = lu.toObjectDef;
+                                            foundType = replacement.objectType;
+                                        }
                                     }
                                 }
                             }
@@ -7446,7 +8341,12 @@ class Corpus extends Folder {
             ctx.currentDoc.visit("", (iObject, path) => {
                 let ot = iObject.objectType;
                 switch (ot) {
+                    case cdmObjectType.attributeRef:
+                        // don't try to look these up now.
+                        if (iObject.namedReference && iObject.namedReference.indexOf("(resolvedAttributes)") != -1)
+                            break;
                     case cdmObjectType.attributeGroupRef:
+                    case cdmObjectType.attributeContextRef:
                     case cdmObjectType.dataTypeRef:
                     case cdmObjectType.entityRef:
                     case cdmObjectType.relationshipRef:
@@ -7488,6 +8388,65 @@ class Corpus extends Folder {
         }
         //return p.measure(bodyCode);
     }
+    resolveTraitArguments() {
+        //let bodyCode = () =>
+        {
+            let ctx = this.ctx;
+            ctx.currentDoc.visit("", (iObject, path) => {
+                let ot = iObject.objectType;
+                switch (ot) {
+                    case cdmObjectType.traitRef:
+                        ctx.pushScope(iObject.getObjectDef(ctx.currentDoc));
+                        break;
+                    case cdmObjectType.argumentDef:
+                        try {
+                            ctx.relativePath = path;
+                            let params = ctx.currentScope.currentTrait.getAllParameters(ctx.currentDoc);
+                            let paramFound;
+                            let aValue;
+                            if (ot == cdmObjectType.argumentDef) {
+                                paramFound = params.resolveParameter(ctx.currentScope.currentParameter, iObject.getName());
+                                iObject.resolvedParameter = paramFound;
+                                aValue = iObject.value;
+                                // if parameter type is entity, then the value should be an entity or ref to one
+                                // same is true of 'dataType' dataType
+                                aValue = this.constTypeCheck(paramFound, aValue);
+                                iObject.setValue(aValue);
+                            }
+                        }
+                        catch (e) {
+                            ctx.statusRpt(cdmStatusLevel.error, e.toString(), path);
+                            ctx.statusRpt(cdmStatusLevel.error, `failed to resolve parameter on trait '${ctx.currentScope.currentTrait.getName()}'`, ctx.currentDoc.path + path);
+                        }
+                        ctx.currentScope.currentParameter++;
+                        break;
+                }
+                return false;
+            }, (iObject, path) => {
+                let ot = iObject.objectType;
+                switch (ot) {
+                    case cdmObjectType.traitRef:
+                        ctx.popScope();
+                        break;
+                }
+                return false;
+            });
+            return;
+        }
+        //return p.measure(bodyCode);
+    }
+    finishDocumentResolve() {
+        //let bodyCode = () =>
+        {
+            this.ctx.currentDoc.visit("", (iObject, path) => {
+                let obj = iObject;
+                obj.skipElevated = false;
+                obj.rtsbAll = null;
+                return false;
+            }, null);
+        }
+        //return p.measure(bodyCode);
+    }
     finishResolve() {
         //let bodyCode = () =>
         {
@@ -7500,13 +8459,9 @@ class Corpus extends Folder {
             let l = this.allDocuments.length;
             for (let i = 0; i < l; i++) {
                 const fd = this.allDocuments[i];
-                let doc = fd["1"];
-                doc.visit("", (iObject, path) => {
-                    let obj = iObject;
-                    obj.skipElevated = false;
-                    obj.rtsbAll = null;
-                    return false;
-                }, null);
+                this.ctx.currentDoc = fd["1"];
+                this.finishDocumentResolve();
+                this.ctx.currentDoc = undefined;
             }
             ;
             p.report();
@@ -7568,15 +8523,7 @@ class Corpus extends Folder {
                     for (let i = 0; i < l; i++) {
                         const fd = this.allDocuments[i];
                         ctx.currentDoc = fd["1"];
-                        ctx.currentDoc.visit("", (iObject, path) => {
-                            if (iObject.validate() == false) {
-                                ctx.statusRpt(cdmStatusLevel.error, `integrity check failed for : '${path}'`, ctx.currentDoc.path + path);
-                            }
-                            else
-                                iObject.ctx = ctx;
-                            ctx.statusRpt(cdmStatusLevel.info, `checked '${path}'`, ctx.currentDoc.path + path);
-                            return false;
-                        }, null);
+                        this.checkObjectIntegrity();
                         ctx.currentDoc = undefined;
                     }
                     if (errors > 0) {
@@ -7603,7 +8550,6 @@ class Corpus extends Folder {
                     for (let i = 0; i < l; i++) {
                         const fd = this.allDocuments[i];
                         ctx.currentDoc = fd["1"];
-                        ctx.corpusPathRoot = ctx.currentDoc.path + ctx.currentDoc.name;
                         this.declareObjectDefinitions("");
                         ctx.currentDoc = undefined;
                     }
@@ -7662,45 +8608,7 @@ class Corpus extends Folder {
                     for (let i = 0; i < l; i++) {
                         const fd = this.allDocuments[i];
                         ctx.currentDoc = fd["1"];
-                        ctx.currentDoc.visit("", (iObject, path) => {
-                            let ot = iObject.objectType;
-                            switch (ot) {
-                                case cdmObjectType.traitRef:
-                                    ctx.pushScope(iObject.getObjectDef(ctx.currentDoc));
-                                    break;
-                                case cdmObjectType.argumentDef:
-                                    try {
-                                        ctx.relativePath = path;
-                                        let params = ctx.currentScope.currentTrait.getAllParameters(ctx.currentDoc);
-                                        let paramFound;
-                                        let aValue;
-                                        if (ot == cdmObjectType.argumentDef) {
-                                            paramFound = params.resolveParameter(ctx.currentScope.currentParameter, iObject.getName());
-                                            iObject.resolvedParameter = paramFound;
-                                            aValue = iObject.value;
-                                            // if parameter type is entity, then the value should be an entity or ref to one
-                                            // same is true of 'dataType' dataType
-                                            aValue = this.constTypeCheck(paramFound, aValue);
-                                            iObject.setValue(aValue);
-                                        }
-                                    }
-                                    catch (e) {
-                                        ctx.statusRpt(cdmStatusLevel.error, e.toString(), path);
-                                        ctx.statusRpt(cdmStatusLevel.error, `failed to resolve parameter on trait '${ctx.currentScope.currentTrait.getName()}'`, ctx.currentDoc.path + path);
-                                    }
-                                    ctx.currentScope.currentParameter++;
-                                    break;
-                            }
-                            return false;
-                        }, (iObject, path) => {
-                            let ot = iObject.objectType;
-                            switch (ot) {
-                                case cdmObjectType.traitRef:
-                                    ctx.popScope();
-                                    break;
-                            }
-                            return false;
-                        });
+                        this.resolveTraitArguments();
                         ctx.currentDoc = undefined;
                     }
                     ;
@@ -7750,16 +8658,21 @@ class Corpus extends Folder {
                     // and for each get a mapping of values (starting with default values) to parameters build from the base declaration up to the final
                     // so that any overrides done along the way take precidence.
                     // for trait definition, consider that when extending a base trait arguments can be applied.
+                    let entityNesting = 0;
                     for (let i = 0; i < l; i++) {
                         const fd = this.allDocuments[i];
                         ctx.currentDoc = fd["1"];
                         ctx.currentDoc.visit("", (iObject, path) => {
                             switch (iObject.objectType) {
+                                case cdmObjectType.entityDef:
+                                case cdmObjectType.attributeGroupDef:
+                                    entityNesting++;
+                                    // don't do this for entities and groups defined within entities since getting traits already does that
+                                    if (entityNesting > 1)
+                                        break;
                                 case cdmObjectType.traitDef:
                                 case cdmObjectType.relationshipDef:
                                 case cdmObjectType.dataTypeDef:
-                                case cdmObjectType.entityDef:
-                                case cdmObjectType.attributeGroupDef:
                                     ctx.relativePath = path;
                                     iObject.getResolvedTraits(ctx.currentDoc);
                                     break;
@@ -7770,7 +8683,11 @@ class Corpus extends Folder {
                                     break;
                             }
                             return false;
-                        }, null);
+                        }, (iObject, path) => {
+                            if (iObject.objectType === cdmObjectType.entityDef || iObject.objectType === cdmObjectType.attributeGroupDef)
+                                entityNesting--;
+                            return false;
+                        });
                         ctx.currentDoc = undefined;
                     }
                     ;
@@ -7857,6 +8774,7 @@ class Corpus extends Folder {
                     // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
                     // the relationsip of the attribute, the attribute definition itself and included attribute groups, any traits applied to the attribute.
                     // make sure there are no duplicates in the final step
+                    let entityNesting = 0;
                     let l = this.allDocuments.length;
                     for (let i = 0; i < l; i++) {
                         const fd = this.allDocuments[i];
@@ -7864,15 +8782,25 @@ class Corpus extends Folder {
                         ctx.currentDoc.visit("", (iObject, path) => {
                             let ot = iObject.objectType;
                             if (ot == cdmObjectType.entityDef) {
-                                ctx.relativePath = path;
-                                iObject.getResolvedAttributes(ctx.currentDoc);
+                                entityNesting++; // get resolved att is already recursive, so don't compound
+                                if (entityNesting == 1) {
+                                    ctx.relativePath = path;
+                                    iObject.getResolvedAttributes(ctx.currentDoc);
+                                }
                             }
                             if (ot == cdmObjectType.attributeGroupDef) {
-                                ctx.relativePath = path;
-                                iObject.getResolvedAttributes(ctx.currentDoc);
+                                entityNesting++;
+                                if (entityNesting == 1) {
+                                    ctx.relativePath = path;
+                                    iObject.getResolvedAttributes(ctx.currentDoc);
+                                }
                             }
                             return false;
-                        }, null);
+                        }, (iObject, path) => {
+                            if (iObject.objectType === cdmObjectType.entityDef || iObject.objectType === cdmObjectType.attributeGroupDef)
+                                entityNesting--;
+                            return false;
+                        });
                         ctx.currentDoc = undefined;
                     }
                     ;
@@ -7893,6 +8821,7 @@ class Corpus extends Folder {
                     //  entity references
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
                     ctx.statusRpt(cdmStatusLevel.progress, "resolving foreign key references...", null);
+                    let entityNesting = 0;
                     // for each entity, find and cache the complete set of references to other entities made through referencesA relationships
                     let l = this.allDocuments.length;
                     for (let i = 0; i < l; i++) {
@@ -7900,12 +8829,21 @@ class Corpus extends Folder {
                         ctx.currentDoc = fd["1"];
                         ctx.currentDoc.visit("", (iObject, path) => {
                             let ot = iObject.objectType;
+                            if (ot == cdmObjectType.attributeGroupDef)
+                                entityNesting++;
                             if (ot == cdmObjectType.entityDef) {
-                                ctx.relativePath = path;
-                                iObject.getResolvedEntityReferences(ctx.currentDoc);
+                                entityNesting++;
+                                if (entityNesting == 1) {
+                                    ctx.relativePath = path;
+                                    iObject.getResolvedEntityReferences(ctx.currentDoc);
+                                }
                             }
                             return false;
-                        }, null);
+                        }, (iObject, path) => {
+                            if (iObject.objectType === cdmObjectType.entityDef || iObject.objectType === cdmObjectType.attributeGroupDef)
+                                entityNesting--;
+                            return false;
+                        });
                         ctx.currentDoc = undefined;
                     }
                     ;
@@ -7969,7 +8907,7 @@ let PrimitiveAppliers = [
     {
         matchName: "does.referenceEntity",
         priority: 8,
-        overridesBase: false,
+        overridesBase: true,
         attributeRemove: (wrtDoc, resAtt, resTrait) => {
             let visible = true;
             if (resAtt) {
@@ -7979,6 +8917,24 @@ let PrimitiveAppliers = [
                     visible = true;
             }
             return { "shouldDelete": !visible };
+        },
+        willAdd: (wrtDoc, resAtt, resTrait) => {
+            return true;
+        },
+        attributeAdd: (wrtDoc, resAtt, resTrait, continuationState) => {
+            // get the added attribute and applied trait
+            let sub = resTrait.parameterValues.getParameterValue("addedAttribute").value;
+            //sub = sub.copy();
+            let appliedTrait = resTrait.parameterValues.getParameterValue("appliedTrait").value;
+            if (appliedTrait) {
+                sub.addAppliedTrait(appliedTrait, false); // could be a def or ref or string handed in. this handles it
+            }
+            return { "addedAttribute": sub };
+        },
+        createContext: (wrtDoc, resAtt, resTrait, attCtx, continuationState) => {
+            // make a new attributeContext to differentiate this supporting att
+            attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeIdentity, "_foreignKey", null, false);
+            return { attCtx: attCtx };
         }
     },
     {
@@ -8003,6 +8959,11 @@ let PrimitiveAppliers = [
                 sub.setTraitParameterValue(wrtDoc, appliedTrait, "inSupportOf", supporting);
                 return { "addedAttribute": sub };
             }
+        },
+        createContext: (wrtDoc, resAtt, resTrait, attCtx, continuationState) => {
+            // make a new attributeContext to differentiate this supporting att
+            attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeSupporting, "supporting_" + resAtt.resolvedName, resAtt.attribute, false);
+            return { attCtx: attCtx };
         }
     },
     {

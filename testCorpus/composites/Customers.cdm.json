@@ -1,6 +1,6 @@
 {
     "$schema": "../schema.cdm.json",
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "/foundations.cdm.json"
@@ -28,30 +28,35 @@
                     "dataType": "string"
                 },
                 {
+                    "name": "homeAddress",
                     "relationship": "livesAt",
-                    "entity":"Address",
-                    "appliedTraits": [
-                        {
-                          "traitReference" : "does.renameWithFormat",
-                          "arguments": [
-                            "home_{n}"
-                          ]
-                        }
-                    ]
+                    "entity": {
+                        "entityReference": "Address",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "does.renameWithFormat",
+                                "arguments": [
+                                    "home_{n}"
+                                ]
+                            }
+                        ]
+                    }
                 },
                 {
+                    "name": "workAddress",
                     "relationship": "hasA",
-                    "entity":"Address",
+                    "entity": "Address",
                     "appliedTraits": [
                         {
-                          "traitReference" : "does.renameWithFormat",
-                          "arguments": [
-                            "work_{n}"
-                          ]
+                            "traitReference": "does.renameWithFormat",
+                            "arguments": [
+                                "work_{n}"
+                            ]
                         }
                     ]
                 },
                 {
+                    "name": "facePicture",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [

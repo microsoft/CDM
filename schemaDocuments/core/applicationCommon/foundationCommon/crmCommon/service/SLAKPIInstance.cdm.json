@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -32,6 +32,7 @@
                         ],
                         "members": [
                             {
+                                "name": "Activity_regarding",                                
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -148,7 +149,6 @@
                                                                     }
                                                                 ]
                                                             }
-                        
                                                         ],
                                                         "displayName": "Regarding",
                                                         "description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with.",
@@ -161,30 +161,41 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "ServiceActivity",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "ServiceActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Case",
-                                        "appliedTraits": [
+                                                "name": "serviceActivityOption",
+                                                "entity": {
+                                                    "entityReference": "ServiceActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "ServiceActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Case/(resolvedAttributes)/incidentId"
-                                                ]
+                                                "name": "caseOption",
+                                                "entity": {
+                                                    "entityReference": "Case",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Case/(resolvedAttributes)/incidentId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             }
                         ]
                     }

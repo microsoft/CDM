@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -218,6 +218,7 @@
                                 "sourceOrdering": 30
                             },
                             {
+                                "name": "Sender_emailSender",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -294,32 +295,44 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "FacilityEquipment",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Sender",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "FacilityEquipment/(resolvedAttributes)/equipmentId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Lead",
-                                        "appliedTraits": [
+                                                "name": "facilityEquipmentOption",
+                                                "entity": {
+                                                    "entityReference": "FacilityEquipment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "FacilityEquipment/(resolvedAttributes)/equipmentId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Lead/(resolvedAttributes)/leadId"
-                                                ]
+                                                "name": "leadOption",
+                                                "entity": {
+                                                    "entityReference": "Lead",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Lead/(resolvedAttributes)/leadId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
+                                "name": "Service_serviceId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [

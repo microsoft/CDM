@@ -1,7 +1,7 @@
 {
     "$id": "http://microsoft.com/cdm/schema.cdm.json",
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$version": "0.6.0",
+    "$version": "0.7.0",
     "type": "object",
     "definitions": {
         "import": {
@@ -362,6 +362,9 @@
                         ]
                     }
                 },
+                "attributeContext" : {
+                    "type": "string"
+                },
                 "dataFormat": {
                     "type": "string"
                 },
@@ -422,6 +425,9 @@
                     "type": "string",
                     "description": "Used to document the usage or meaning of the 'entity attribute' within the context of this entity definition system."
                 },
+                "name": {
+                    "type": "string"
+                },
                 "relationship": {
                     "oneOf": [
                         {
@@ -472,7 +478,8 @@
             },
             "additionalProperties": false,
             "required": [
-                "entity"
+                "entity",
+                "name"
             ]
         },
         "attributeGroup": {
@@ -627,6 +634,65 @@
                 "traitName"
             ]
         },
+        "attributeContext" : {
+            "type" : "object",
+            "description": "A container representing shared lineage, ownership and context in a hierachy describing the relatioships among an entities attributes.",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'entity' within the context of this entity definition system."
+                },
+                "type": {
+                    "enum": [
+                        "entity",
+                        "extendedEntity",
+                        "attributeGroup",
+                        "entityAsAttribute"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "definition": {
+                    "type": "string"
+                },
+                "appliedTraits": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "contents": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/attributeContext"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "name"
+            ]
+
+        },
         "entity": {
             "type": "object",
             "description": "",
@@ -660,6 +726,9 @@
                             }
                         ]
                     }
+                },
+                "attributeContext" : {
+                    "$ref": "#/definitions/attributeContext"
                 },
                 "hasAttributes": {
                     "type": "array",

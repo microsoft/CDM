@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -32,6 +32,7 @@
                         ],
                         "members": [
                             {
+                                "name": "Product_regardingObjectId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -108,52 +109,69 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "InvoiceProduct",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "InvoiceProduct/(resolvedAttributes)/invoiceDetailId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "OrderProduct",
-                                        "appliedTraits": [
+                                                "name": "invoiceProductOption",
+                                                "entity": {
+                                                    "entityReference": "InvoiceProduct",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "InvoiceProduct/(resolvedAttributes)/invoiceDetailId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "OrderProduct/(resolvedAttributes)/salesOrderDetailId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "QuoteProduct",
-                                        "appliedTraits": [
+                                                "name": "orderProductOption",
+                                                "entity": {
+                                                    "entityReference": "OrderProduct",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "OrderProduct/(resolvedAttributes)/salesOrderDetailId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "QuoteProduct/(resolvedAttributes)/quoteDetailId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "OpportunityProduct",
-                                        "appliedTraits": [
+                                                "name": "quoteProductOption",
+                                                "entity": {
+                                                    "entityReference": "QuoteProduct",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "QuoteProduct/(resolvedAttributes)/quoteDetailId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "OpportunityProduct/(resolvedAttributes)/opportunityProductId"
-                                                ]
+                                                "name": "opportunityProductOption",
+                                                "entity": {
+                                                    "entityReference": "OpportunityProduct",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "OpportunityProduct/(resolvedAttributes)/opportunityProductId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             }
                         ]
                     }

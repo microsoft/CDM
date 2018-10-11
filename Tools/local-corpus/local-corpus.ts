@@ -96,27 +96,33 @@ export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef
 }
 
 
-export function persistCorpus(cdmCorpus : cdm.Corpus) {
+export function persistCorpus(cdmCorpus : cdm.Corpus, options?: cdm.copyOptions) {
     if (cdmCorpus && cdmCorpus.getSubFolders() && cdmCorpus.getSubFolders().length == 1) 
-        persistCorpusFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0]);
+        persistCorpusFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0], options);
 }
 
-export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolderDef): void {
+export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolderDef, options?: cdm.copyOptions): void {
     if (cdmFolder) {
         let folderPath = rootPath + cdmFolder.getRelativePath();
         if (!existsSync(folderPath))
             mkdirSync(folderPath);
         if (cdmFolder.getDocuments())
             cdmFolder.getDocuments().forEach(doc => {
-                let data = doc.copyData(doc);
-                let content = JSON.stringify(data, null, 4);
-                writeFileSync(folderPath + doc.getName(), content);
+                persistDocument(rootPath, doc, options);
             });
         if (cdmFolder.getSubFolders()) {
             cdmFolder.getSubFolders().forEach(f => {
-                persistCorpusFolder(rootPath, f);
+                persistCorpusFolder(rootPath, f, options);
             });
         }
     }
 }
+
+export function persistDocument(rootPath : string, cdmDoc : cdm.ICdmDocumentDef, options?: cdm.copyOptions) {
+    let docPath = rootPath + cdmDoc.getFolder().getRelativePath() + cdmDoc.getName();
+    let data = cdmDoc.copyData(cdmDoc, options);
+    let content = JSON.stringify(data, null, 4);
+    writeFileSync(docPath, content);
+}
+
 

@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -122,6 +122,7 @@
                                 "sourceOrdering": 2
                             },
                             {
+                                "name": "Activity_activityId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -939,6 +940,7 @@
                                 "sourceOrdering": 18
                             },
                             {
+                                "name": "Object_regardingObjectId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1015,338 +1017,433 @@
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Quote",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Quote/(resolvedAttributes)/quoteId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Case",
-                                        "appliedTraits": [
+                                                "name": "quoteOption",
+                                                "entity": {
+                                                    "entityReference": "Quote",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Quote/(resolvedAttributes)/quoteId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Case/(resolvedAttributes)/incidentId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "WebPage",
-                                        "appliedTraits": [
+                                                "name": "caseOption",
+                                                "entity": {
+                                                    "entityReference": "Case",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Case/(resolvedAttributes)/incidentId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "WebPage/(resolvedAttributes)/webpageId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "KnowledgeBaseRecord",
-                                        "appliedTraits": [
+                                                "name": "webPageOption",
+                                                "entity": {
+                                                    "entityReference": "WebPage",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "WebPage/(resolvedAttributes)/webpageId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Lead",
-                                        "appliedTraits": [
+                                                "name": "knowledgeBaseRecordOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeBaseRecord",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Lead/(resolvedAttributes)/leadId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "KnowledgeArticle",
-                                        "appliedTraits": [
+                                                "name": "leadOption",
+                                                "entity": {
+                                                    "entityReference": "Lead",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Lead/(resolvedAttributes)/leadId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Poll",
-                                        "appliedTraits": [
+                                                "name": "knowledgeArticleOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeArticle",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Poll/(resolvedAttributes)/pollId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PollSubmission",
-                                        "appliedTraits": [
+                                                "name": "pollOption",
+                                                "entity": {
+                                                    "entityReference": "Poll",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Poll/(resolvedAttributes)/pollId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PollSubmission/(resolvedAttributes)/pollSubmissionId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "CaseDeflection",
-                                        "appliedTraits": [
+                                                "name": "pollSubmissionOption",
+                                                "entity": {
+                                                    "entityReference": "PollSubmission",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "PollSubmission/(resolvedAttributes)/pollSubmissionId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "CaseDeflection/(resolvedAttributes)/caseDeflectionId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Blog",
-                                        "appliedTraits": [
+                                                "name": "caseDeflectionOption",
+                                                "entity": {
+                                                    "entityReference": "CaseDeflection",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "CaseDeflection/(resolvedAttributes)/caseDeflectionId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Blog/(resolvedAttributes)/blogId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PollPlacement",
-                                        "appliedTraits": [
+                                                "name": "blogOption",
+                                                "entity": {
+                                                    "entityReference": "Blog",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Blog/(resolvedAttributes)/blogId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PollPlacement/(resolvedAttributes)/pollPlacementId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PollOption",
-                                        "appliedTraits": [
+                                                "name": "pollPlacementOption",
+                                                "entity": {
+                                                    "entityReference": "PollPlacement",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "PollPlacement/(resolvedAttributes)/pollPlacementId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PollOption/(resolvedAttributes)/pollOptionId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Opportunity",
-                                        "appliedTraits": [
+                                                "name": "pollOptionOption",
+                                                "entity": {
+                                                    "entityReference": "PollOption",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "PollOption/(resolvedAttributes)/pollOptionId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Opportunity/(resolvedAttributes)/opportunityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Website",
-                                        "appliedTraits": [
+                                                "name": "opportunityOption",
+                                                "entity": {
+                                                    "entityReference": "Opportunity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Opportunity/(resolvedAttributes)/opportunityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Website/(resolvedAttributes)/websiteId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Invitation",
-                                        "appliedTraits": [
+                                                "name": "websiteOption",
+                                                "entity": {
+                                                    "entityReference": "Website",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Website/(resolvedAttributes)/websiteId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Invitation/(resolvedAttributes)/invitationId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                                "name": "invitationOption",
+                                                "entity": {
+                                                    "entityReference": "Invitation",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Invitation/(resolvedAttributes)/invitationId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Order",
-                                        "appliedTraits": [
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Order/(resolvedAttributes)/salesOrderId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "BlogPost",
-                                        "appliedTraits": [
+                                                "name": "orderOption",
+                                                "entity": {
+                                                    "entityReference": "Order",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Order/(resolvedAttributes)/salesOrderId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "BlogPost/(resolvedAttributes)/blogPostId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                                "name": "blogPostOption",
+                                                "entity": {
+                                                    "entityReference": "BlogPost",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "BlogPost/(resolvedAttributes)/blogPostId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "BookableResourceBookingHeader",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "BookableResourceBookingHeader/(resolvedAttributes)/bookableResourceBookingHeaderId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contract",
-                                        "appliedTraits": [
+                                                "name": "bookableResourceBookingHeaderOption",
+                                                "entity": {
+                                                    "entityReference": "BookableResourceBookingHeader",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "BookableResourceBookingHeader/(resolvedAttributes)/bookableResourceBookingHeaderId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contract/(resolvedAttributes)/contractId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Site",
-                                        "appliedTraits": [
+                                                "name": "contractOption",
+                                                "entity": {
+                                                    "entityReference": "Contract",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contract/(resolvedAttributes)/contractId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Site/(resolvedAttributes)/siteId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "AdPlacement",
-                                        "appliedTraits": [
+                                                "name": "siteOption",
+                                                "entity": {
+                                                    "entityReference": "Site",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Site/(resolvedAttributes)/siteId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "AdPlacement/(resolvedAttributes)/adPlacementId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "QuickCampaign",
-                                        "appliedTraits": [
+                                                "name": "adPlacementOption",
+                                                "entity": {
+                                                    "entityReference": "AdPlacement",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "AdPlacement/(resolvedAttributes)/adPlacementId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "QuickCampaign/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "BookableResourceBooking",
-                                        "appliedTraits": [
+                                                "name": "quickCampaignOption",
+                                                "entity": {
+                                                    "entityReference": "QuickCampaign",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "QuickCampaign/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "BookableResourceBooking/(resolvedAttributes)/bookableResourceBookingId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "CampaignActivity",
-                                        "appliedTraits": [
+                                                "name": "bookableResourceBookingOption",
+                                                "entity": {
+                                                    "entityReference": "BookableResourceBooking",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "BookableResourceBooking/(resolvedAttributes)/bookableResourceBookingId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "CampaignActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Invoice",
-                                        "appliedTraits": [
+                                                "name": "campaignActivityOption",
+                                                "entity": {
+                                                    "entityReference": "CampaignActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "CampaignActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Invoice/(resolvedAttributes)/invoiceId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Entitlement",
-                                        "appliedTraits": [
+                                                "name": "invoiceOption",
+                                                "entity": {
+                                                    "entityReference": "Invoice",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Invoice/(resolvedAttributes)/invoiceId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Entitlement/(resolvedAttributes)/entitlementId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Ad",
-                                        "appliedTraits": [
+                                                "name": "entitlementOption",
+                                                "entity": {
+                                                    "entityReference": "Entitlement",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Entitlement/(resolvedAttributes)/entitlementId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Ad/(resolvedAttributes)/adId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Campaign",
-                                        "appliedTraits": [
+                                                "name": "adOption",
+                                                "entity": {
+                                                    "entityReference": "Ad",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Ad/(resolvedAttributes)/adId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Campaign/(resolvedAttributes)/campaignId"
-                                                ]
+                                                "name": "campaignOption",
+                                                "entity": {
+                                                    "entityReference": "Campaign",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Campaign/(resolvedAttributes)/campaignId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "subject",
@@ -1725,6 +1822,7 @@
                                 "sourceOrdering": 29
                             },
                             {
+                                "name": "Currency_transactionCurrencyId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2680,6 +2778,7 @@
                                 "maximumLength": 8192
                             },
                             {
+                                "name": "SLA_SLAId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2769,6 +2868,7 @@
                                 }
                             },
                             {
+                                "name": "SLA_SLAInvokedId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -3019,6 +3119,7 @@
                                 "sourceOrdering": 53
                             },
                             {
+                                "name": "Service_serviceId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [

@@ -1,0 +1,137 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        },
+        {
+            "uri": "HumanResources.cdm.json"
+        },
+        {
+            "uri": "Email.cdm.json"
+        },
+        {
+            "uri": "Letter.cdm.json"
+        },
+        {
+            "uri": "Meeting.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "EmploymentOffer",
+            "extendsEntity": "HumanResources",
+            "hasAttributes": [
+                {
+                    "name": "jobTitle",
+                    "relationship": "hasA",
+                    "dataType": "string"
+                },
+                {
+                    "name": "notificationVia",
+                    "relationship": "hasA",
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "allComms",
+                            "extendsEntity": "Communication",
+                            "hasAttributes": [
+                                {
+                                    "name": "emailOption",
+                                    "entity": "Email"
+                                },
+                                {
+                                    "name": "letterOption",
+                                    "entity": "Letter"
+                                },
+                                {
+                                    "name": "meetingOption",
+                                    "entity": "Meeting"
+                                }
+                            ]
+                        }
+                    },
+                    "appliedTraits": [
+                        {
+                            "traitReference": "does.renameWithFormat",
+                            "arguments": [
+                                "notify_{n}"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "responseVia",
+                    "relationship": {
+                        "relationshipReference": "referencesA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "arguments": [
+                                    {
+                                        "name": "addedAttribute",
+                                        "value": {
+                                            "name": "responseViaCommId",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "allComms",
+                            "extendsEntity": "Communication",
+                            "hasAttributes": [
+                                {
+                                    "name": "emailOption",
+                                    "entity": {
+                                        "entityReference": "Email",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Email/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "letterOption",
+                                    "entity": {
+                                        "entityReference": "Letter",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Letter/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "meetingOption",
+                                    "entity": {
+                                        "entityReference": "Meeting",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Meeting/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

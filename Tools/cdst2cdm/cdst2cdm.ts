@@ -368,7 +368,7 @@ class Startup {
                 if (attInfo.dataType == "customer" || attInfo.dataType == "lookup" || attInfo.dataType == "owner" || (attInfo.relationshipInfo && attInfo.relationshipInfo.length)) {
                     // this is an entity type attribute by ref
                     let referencedEntity : string = "";
-                    cdmAtt = cdm.Corpus.MakeObject(cdm.cdmObjectType.entityAttributeDef, null);
+                    cdmAtt = cdm.Corpus.MakeObject(cdm.cdmObjectType.entityAttributeDef, "comeupwithaname");
                     // make a list of all referenced entities
                     let makeRefEntity = (relInfo : any) : cdm.ICdmEntityRef =>{
                         if (referencedEntity.length)

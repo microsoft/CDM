@@ -1,6 +1,6 @@
 {
     "$schema": "../schema.cdm.json",
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "cdsConcepts.cdm.json"
@@ -33,6 +33,7 @@
             "attributeGroupName": "ownerIdAttribute",
             "members" : [
                 {
+                    "name": "UserOrTeam_ownerId",
                     "relationship": {
                         "relationshipReference": "referencesOwner",
                         "appliedTraits": [
@@ -170,30 +171,41 @@
                             }
                         ]
                     },
-                    "entity": [
-                        {
-                            "entityReference": "User",
-                            "appliedTraits": [
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "Owner",
+                            "hasAttributes": [
                                 {
-                                    "traitReference": "is.identifiedBy",
-                                    "arguments": [
-                                        "User/(resolvedAttributes)/systemUserId"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "entityReference": "Team",
-                            "appliedTraits": [
+                                    "name": "userOption",
+                                    "entity": {
+                                        "entityReference": "User",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "User/(resolvedAttributes)/systemUserId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
                                 {
-                                    "traitReference": "is.identifiedBy",
-                                    "arguments": [
-                                        "Team/(resolvedAttributes)/teamId"
-                                    ]
+                                    "name": "teamOption",
+                                    "entity": {
+                                        "entityReference": "Team",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Team/(resolvedAttributes)/teamId"
+                                                ]
+                                            }
+                                        ]
+                                    }
                                 }
                             ]
                         }
-                    ]
+                    }
                 }
             ]
         },
@@ -201,6 +213,7 @@
             "attributeGroupName": "regardingObjectIdAttribute",
             "members" : [
                 {
+                    "name": "Object_regardingObjectId",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -329,8 +342,13 @@
                             }
                         ]
                     },
-                    "entity": [
-                    ]
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "Regarding",
+                            "hasAttributes": [
+                            ]
+                        }
+                    }
                 }
             ]
         },                             
@@ -408,6 +426,7 @@
                     "sourceName": "createdon"
                 },
                 {
+                    "name": "User_createdBy",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -550,6 +569,7 @@
                     "sourceName": "modifiedon"
                 },
                 {
+                    "name": "User_modifiedBy",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -639,6 +659,7 @@
                     }
                 },
                 {
+                    "name": "User_createdOnBehalfBy",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -728,6 +749,7 @@
                     }
                 },
                 {
+                    "name": "User_modifiedOnBehalfBy",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -947,6 +969,7 @@
             "members": [
                 "ownerIdAttribute",
                 {
+                    "name": "BusinessUnit_owningBusinessUnit",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -1036,6 +1059,7 @@
                     }
                 },
                 {
+                    "name": "User_owningUser",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -1125,6 +1149,7 @@
                     }
                 },
                 {
+                    "name": "Team_owningTeam",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -1497,6 +1522,7 @@
             ],
             "members" : [
                 {
+                    "name": "Activity_activityId",
                     "relationship": {
                         "relationshipReference": "referencesA",
                         "appliedTraits": [
@@ -4162,6 +4188,7 @@
             "attributeGroupName": "customerIdAttribute",
             "members" : [
                 {
+                    "name": "AccountOrContact_customerId",
                     "relationship": {
                         "relationshipReference": "referencesCustomer",
                         "appliedTraits": [
@@ -4289,30 +4316,41 @@
                             }
                         ]
                     },
-                    "entity": [
-                        {
-                            "entityReference": "Contact",
-                            "appliedTraits": [
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "Customer",
+                            "hasAttributes": [
                                 {
-                                    "traitReference": "is.identifiedBy",
-                                    "arguments": [
-                                        "Contact/(resolvedAttributes)/contactId"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "entityReference": "Account",
-                            "appliedTraits": [
+                                    "name": "contactOption",
+                                    "entity": {
+                                        "entityReference": "Contact",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Contact/(resolvedAttributes)/contactId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
                                 {
-                                    "traitReference": "is.identifiedBy",
-                                    "arguments": [
-                                        "Account/(resolvedAttributes)/accountId"
-                                    ]
+                                    "name": "accountOption",
+                                    "entity": {
+                                        "entityReference": "Account",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Account/(resolvedAttributes)/accountId"
+                                                ]
+                                            }
+                                        ]
+                                    }
                                 }
                             ]
                         }
-                    ]
+                    }
                 }
             ]
         }
