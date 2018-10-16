@@ -20,6 +20,8 @@
             "dataTypeName": "any",
             "explanation": "the root dataType"
         },
+
+
         {
             "traitName": "is.dataFormat",
             "extendsTrait": "is",
@@ -179,6 +181,26 @@
                 "is.dataFormat.guid"
             ]
         },
+
+        {
+            "traitName": "means.identity",
+            "extendsTrait": "means"
+        },
+        {
+            "traitName": "means.identity.entityId",
+            "extendsTrait": "means.identity"
+        },
+        {
+            "dataTypeName": "entityId",
+            "extendsDataType": "guid",
+            "explanation": "a unique identier for entity instances",
+            "exhibitsTraits": [
+                "means.identity.entityId"
+            ]
+        },
+
+
+
         {
             "dataTypeName": "cdmObject",
             "extendsDataType": "any",
@@ -240,6 +262,72 @@
                 }
             ]
         },
+
+
+
+        {
+            "traitName": "means.content",
+            "extendsTrait": "means"
+        },
+        {
+            "traitName": "means.content.text",
+            "extendsTrait": "means.content"
+        },
+        {
+            "traitName": "means.content.text.HTML",
+            "extendsTrait": "means.content.text"
+        },
+        {
+            "traitName": "means.content.text.JSON",
+            "extendsTrait": "means.content.text"
+        },
+        {
+            "traitName": "means.content.text.XML",
+            "extendsTrait": "means.content.text"
+        },
+        {
+            "traitName": "means.content.text.CSV",
+            "extendsTrait": "means.content.text"
+        },
+        {
+            "traitName": "means.content.binary",
+            "extendsTrait": "means.content"
+        },
+        {
+            "traitName": "means.content.binary.image",
+            "extendsTrait": "means.content.binary"
+        },
+        {
+            "traitName": "means.content.binary.image.BMP",
+            "extendsTrait": "means.content.binary.image"
+        },
+        {
+            "traitName": "means.content.binary.image.GIF",
+            "extendsTrait": "means.content.binary.image"
+        },
+        {
+            "traitName": "means.content.binary.image.JPG",
+            "extendsTrait": "means.content.binary.image"
+        },
+        {
+            "traitName": "means.content.binary.image.PNG",
+            "extendsTrait": "means.content.binary.image"
+        },
+        {
+            "traitName": "means.content.binary.image.TIFF",
+            "extendsTrait": "means.content.binary.image"
+        },
+        {
+            "dataTypeName": "list",
+            "extendsDataType": "string",
+            "explanation": "a CSV contained within one string value",
+            "exhibitsTraits": [
+                "means.content.text.CSV"
+            ]
+        },
+
+
+
         {
             "entityName": "object",
             "explanation": "a root entity for things"
@@ -251,12 +339,6 @@
         {
             "relationshipName": "hasA",
             "explanation": "The root relationship for associating attributes with entities."
-        },
-        {
-            "traitName": "is.removed",
-            "extendsTrait": "is",
-            "modifiesAttributes": true,
-            "explanation": "All attributes with this trait will be removed from the final resolved attribute list of an entity."
         },
         {
             "traitName": "is.hidden",
@@ -274,6 +356,8 @@
             "traitName": "is.sensitive",
             "extendsTrait": "is"
         },
+
+
         {
             "traitName": "does.elevateAttribute",
             "explanation": "elevates (up to a entity) a trait that describes a specific attribute",
@@ -342,6 +426,14 @@
                 "is.locatable"
             ]
         },
+
+
+        {
+            "traitName": "is.removed",
+            "extendsTrait": "is",
+            "modifiesAttributes": true,
+            "explanation": "All attributes with this trait will be removed from the final resolved attribute list of an entity."
+        },
         {
             "traitName": "does.addAttribute",
             "extendsTrait": "is",
@@ -390,6 +482,7 @@
             },
             "ugly": true
         },
+        
         {
             "relationshipName": "referencesA",
             "extendsRelationship": "hasA",
@@ -404,10 +497,45 @@
                 }
             ]
         },
+
+
+
         {
-            "traitName": "does.renameWithFormat",
+            "traitName": "is.for.attributeResolution",
+            "explanation": "Base trait for traits that modify the names, inclusion, structure of the resolved attributes for an entity",
             "extendsTrait": "is",
             "modifiesAttributes": true,
+            "ugly": true
+        },
+        {
+            "traitName": "does.imposeDirectives",
+            "explanation": "injects directives that control trait behavior.",
+            "extendsTrait": "is.for.attributeResolution",
+            "hasParameters": [
+                {
+                    "name": "directives",
+                    "dataType": "list",
+                    "explanation": "a comma separated list of directive tags to add"
+                }
+            ]
+        },
+        {
+            "traitName": "does.removeDirectives",
+            "explanation": "removes directives that control trait behavior.",
+            "extendsTrait": "is.for.attributeResolution",
+            "hasParameters": [
+                {
+                    "name": "directives",
+                    "dataType": "list",
+                    "explanation": "a comma separated list of directive tags to remove"
+                }
+            ]
+        },
+        {
+            "traitName": "does.renameWithFormat",
+            "explanation": "When applied, changes the name of an attribute by using a format specifier and optionally an ordinal",
+            "extendsTrait": "is.for.attributeResolution",
+            "ugly": false,
             "hasParameters": [
                 {
                     "name": "renameFormat",
@@ -425,22 +553,89 @@
             ]
         },
         {
-            "traitName": "is.array",
-            "extendsTrait": "is",
-            "modifiesAttributes": true,
+            "traitName": "does.disambiguateNames",
+            "explanation": "renames nested entity attributes when a format is supplied and when 'structured' directive is not given",
+            "extendsTrait": "does.renameWithFormat",
+            "ugly": true
+        },
+        {
+            "traitName": "does.explainArray",
+            "explanation": "Used to describe the existence of and behavior for resolving an entity that is the prototype for an array of similar attributes",
+            "extendsTrait": "is.for.attributeResolution",
             "hasParameters": [
                 {
-                    "name": "renameTrait",
-                    "dataType": "trait",
-                    "explanation": "a trait that will be used to create generated attribute names.",
+                    "name": "isArray",
+                    "dataType": "boolean",
+                    "explanation": "true if the attribute should be considered the prototype for an array of similar attributes",
+                    "defaultValue": "false",
                     "direction": "in"
                 },
                 {
-                    "name": "fixedSize",
+                    "name": "maximumExpansion",
                     "dataType": "integer",
-                    "explanation": "if an integer value is set here, the renameFormat is applied with the values {x}=1 to {x}=fixedSize.",
+                    "explanation": "the greatest number of time that the attribute pattern should be repeated if inline expansion is needed.",
+                    "defaultValue": "5",
                     "direction": "in"
+                },
+                {
+                    "name": "storeCountInAttribute",
+                    "dataType": "attribute",
+                    "explanation": "If an array count is needed in the entity, specifies the attribute to hold the count",
+                    "defaultValue" : {
+                        "name" : "arrayMemberCount",
+                        "dataType" : "integer"
+                    }
                 }
+            ]
+        },
+        {
+            "traitName": "does.selectAttributes",
+            "explanation": "used to select either 'one' or 'all' of the attributes from an entity when it is being used as an attribute of another entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list",
+            "extendsTrait": "is.for.attributeResolution",
+            "hasParameters": [
+                {
+                    "name": "selects",
+                    "dataType": "string",
+                    "explanation": "used to select either 'one' or 'all' of the attributes",
+                    "defaultValue": "all",
+                    "direction": "in"
+                },
+                {
+                    "name": "storeSelectionInAttribute",
+                    "dataType": "attribute",
+                    "explanation": "If 'one' sub-attribute is selected per record, then the name of the selected attribute is placed in this given attribute",
+                    "defaultValue" : {
+                        "name" : "selectedEntity",
+                        "dataType" : "entityName"
+                    }
+                }
+            ]
+        },
+        {
+            "traitName": "does.referenceEntityVia",
+            "explanation": "If a reference is needed, this trait turns all attributes from an entity into one key valued attribute",
+            "extendsTrait": "is.for.attributeResolution",
+            "hasParameters": [
+                {
+                    "name": "foreignKeyAttribute",
+                    "dataType": "attribute",
+                    "explanation": "The attribute which will be added to hold a foreign key value for the referenced entity.",
+                    "defaultValue" : {
+                        "name" : "foreignKey",
+                        "dataType" : "entityId"
+                    }
+                }
+            ]
+        },
+        {
+            "relationshipName": "hasFlexibleRelationshipWithEntity",
+            "extendsRelationship": "hasA",
+            "explanation": "Indicates that an entity used as an attribute of another entity is being done so in a way that can resolve to different attribute structures based on directives",
+            "exhibitsTraits": [
+                "does.disambiguateNames",
+                "does.explainArray",
+                "does.selectAttributes",
+                "does.referenceEntityVia"
             ]
         }
     ]

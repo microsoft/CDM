@@ -53,8 +53,8 @@
             var innerWidth = window.innerWidth - 0;
             var innerHeight = window.innerHeight - 0;
 
-            if (innerHeight < navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight)
-                innerHeight = navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight;
+            if (innerHeight < navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight)
+                innerHeight = navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight;
             if (innerWidth < navPaneMinWidth + listPaneWidth + detailPaneMinWidth)
                 innerWidth = navPaneMinWidth + listPaneWidth + detailPaneMinWidth;
 
@@ -67,8 +67,9 @@
             let yStop0 = 0;
             let yStop1 = yStop0 + buttonBarHeight;
             let yStop2 = yStop1 + buttonBarHeight;
-            let yStop4 = innerHeight;
-            let yStop3 = yStop4 - colorKeyHeight;
+            let yStop3 = yStop2 + buttonBarHeight;
+            let yStop5 = innerHeight;
+            let yStop4 = yStop5 - colorKeyHeight;
 
             var setShape = function (pane, x1, y1, x2, y2, margin) {
                 pane.style.top = (y1 + margin) + "px";
@@ -78,14 +79,15 @@
             }
 
             setShape(controller.paneButtonHost, xStop0, yStop0, xStop1, yStop1, 0);
-            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop3, 0);
-            setShape(controller.paneColorKey, xStop0, yStop3, xStop1, yStop4, 0);
-            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop4, 0);
-            setShape(controller.paneListTitle, xStop2, yStop0, xStop3, yStop1, 0);
-            setShape(controller.paneListHost, xStop2, yStop1, xStop3, yStop4, 0);
-            setShape(controller.paneTabHost, xStop3, yStop0, xStop4, yStop1, 0);
-            setShape(controller.paneDetailTool, xStop3, yStop1, xStop4, yStop2, 0);
-            setShape(controller.paneDetailHost, xStop3, yStop2, xStop4, yStop4, 0);
+            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop4, 0);
+            setShape(controller.paneColorKey, xStop0, yStop4, xStop1, yStop5, 0);
+            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop5, 0);
+            setShape(controller.paneDirectivesHost, xStop2, yStop0, xStop4, yStop1, 0);
+            setShape(controller.paneListTitle, xStop2, yStop1, xStop3, yStop2, 0);
+            setShape(controller.paneListHost, xStop2, yStop2, xStop3, yStop5, 0);
+            setShape(controller.paneTabHost, xStop3, yStop1, xStop4, yStop2, 0);
+            setShape(controller.paneDetailTool, xStop3, yStop2, xStop4, yStop3, 0);
+            setShape(controller.paneDetailHost, xStop3, yStop3, xStop4, yStop5, 0);
 
         }
 
@@ -103,6 +105,7 @@
             controller.paneColorKey = document.getElementById("color_key_pane");
             controller.paneResize = document.getElementById("resize_pane");
             controller.paneListHost = document.getElementById("list_host_pane");
+            controller.paneDirectivesHost = document.getElementById("directives_host_pane");
             controller.paneDetailHost = document.getElementById("detail_host_pane");
             controller.paneListTitle = document.getElementById("list_title_pane");
             controller.paneTabHost = document.getElementById("tab_host_pane");
@@ -111,10 +114,12 @@
             controller.statusPane = document.getElementsByClassName("status_pane")[0];
             controller.traitsPane = document.getElementsByClassName("traits_pane")[0];
             controller.propertiesPane = document.getElementsByClassName("properties_pane")[0];
-            controller.DefinitionPane = document.getElementsByClassName("definition_pane")[0];
-            controller.ResolvedPane = document.getElementsByClassName("resolved_pane")[0];
+            controller.definitionPane = document.getElementsByClassName("definition_pane")[0];
+            controller.resolvedPane = document.getElementsByClassName("resolved_pane")[0];
             controller.backDefinitionButton = document.getElementById("back_definition_tool_button");
             controller.backResolvedButton = document.getElementById("back_resolved_tool_button");
+            controller.checkboxDirectiveRelational = document.getElementById("relational_checkbox");
+            controller.checkboxDirectiveStructured = document.getElementById("structured_checkbox");
 
             controller.onclickFolderItem = onclickFolderItem;
             controller.onclickDetailItem = onclickDetailItem;
@@ -187,6 +192,10 @@
             this.messageHandlePing("resize", "down", null);
         }
 
+        function onclickDirective() {
+            controller.mainContainer.messageHandlePing("directiveAlter", null, null);
+        }
+
 
         function onkeydownMain(event) {
             if (event.ctrlKey || event.altKey || event.key == "Shift")
@@ -240,6 +249,13 @@
                 Attributes:
             </span>
         </span>
+        <span class="fixed_container" id="directives_host_pane">
+            <span class="detail_container">
+                <label>Default resolution directives:</label>
+                <label><input id="relational_checkbox" checked=true type="checkbox" onclick="onclickDirective()" />Relational</label>
+                <label><input id="structured_checkbox" type="checkbox" name="Structured" onclick="onclickDirective()"/>Structured</label>
+            </span>
+        </span>
         <span class="fixed_container" id="list_host_pane">
             <span class="list_container" id="attributeList">
             </span>
@@ -272,13 +288,12 @@
             </span>
             <span class="resolved_pane">
             </span>
-        </span>
+        </span>            
         <span class="fixed_container" id="wait_pane" style="display:none">
             <span id="message_text">
                 <br/>Loading and resolving entity documents, please wait...
             </span>
         </span>
-
     </span>
 
 </body>

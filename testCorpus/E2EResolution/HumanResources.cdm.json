@@ -34,12 +34,12 @@
                 },
                 {
                     "name": "openingEmail",
-                    "relationship": "hasA",
-                    "entity": {
-                        "entityReference": "Email",
+                    "entity": "Email",
+                    "relationship": {
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
                         "appliedTraits": [
                             {
-                                "traitReference": "does.renameWithFormat",
+                                "traitReference": "does.disambiguateNames",
                                 "arguments": [
                                     "opening_{n}"
                                 ]
@@ -50,13 +50,19 @@
                 {
                     "name": "inResponseTo",
                     "relationship": {
-                        "relationshipReference": "referencesA",
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.imposeDirectives",
+                                "arguments": [
+                                    "referenceOnly"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "inRsponceToCommId",
                                             "relationship": "hasA",
@@ -64,6 +70,7 @@
                                         }
                                     }
                                 ]
+
                             }
                         ]
                     },

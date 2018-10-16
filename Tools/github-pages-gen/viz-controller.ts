@@ -46,10 +46,11 @@ class Controller {
     public statusPane : any;
     public traitsPane : any;
     public propertiesPane : any;
-    public DefinitionPane : any;
-    public ResolvedPane : any;
+    public definitionPane : any;
+    public resolvedPane : any;
     public paneListTitle : any;
     public paneWait : any;
+    public paneDirectivesHost : any;
     public DefinitionStack : Array<cdm.ICdmObject>;
     public ResolvedStack : Array<cdm.ICdmObject>;
     public cdmDocSelected: cdm.ICdmDocumentDef;
@@ -64,6 +65,9 @@ class Controller {
 
     public backDefinitionButton : any;
     public backResolvedButton : any;
+
+    public checkboxDirectiveRelational: any;
+    public checkboxDirectiveStructured: any;
 
     public appState : string;
     public pendingLoads : Set<any>
@@ -131,12 +135,13 @@ function init() {
     controller.traitsPane.messageHandle = messageHandleDetailTraits;
     controller.propertiesPane.messageHandlePing = messageHandlePingParent;
     controller.propertiesPane.messageHandle = messageHandleDetailProperties;
-    controller.DefinitionPane.messageHandlePing = messageHandlePingParent;
-    controller.DefinitionPane.messageHandle = messageHandleDetailDefinition;
-    controller.ResolvedPane.messageHandlePing = messageHandlePingParent;
-    controller.ResolvedPane.messageHandle = messageHandleDetailResolved
+    controller.definitionPane.messageHandlePing = messageHandlePingParent;
+    controller.definitionPane.messageHandle = messageHandleDetailDefinition;
+    controller.resolvedPane.messageHandlePing = messageHandlePingParent;
+    controller.resolvedPane.messageHandle = messageHandleDetailResolved
 
     controller.paneListTitle.messageHandle = messageHandleListTitle;
+    controller.paneDirectivesHost.messageHandle = undefined;
 
     controller.paneWait.messageHandlePing = null;;
     controller.paneWait.messageHandle = messageHandleWaitBox;
@@ -307,6 +312,11 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             if (controller.searchTerm) {
                 controller.searchTerm = undefined;
                 controller.mainContainer.messageHandle("applySearchTerm", controller.searchTerm);
+            }
+        } else if (messageType === "directiveAlter") {
+            if (controller.multiSelectEntityList && controller.multiSelectEntityList.size) {
+                let singleSelected = controller.multiSelectEntityList.size == 1 ? controller.multiSelectEntityList.values().next().value : undefined;
+                controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, singleSelected);
             }
         }
         else {
@@ -755,6 +765,16 @@ function messageHandleParentContainerBroadcast(messageType, data1, data2) {
     }
     this.messageHandleBroadcast(messageType, data1, data2)
 }
+
+function getResolutionDirectives(): Set<string> {
+    let directives = new Set<string>();
+    if (controller.checkboxDirectiveRelational.checked)
+        directives.add("referenceOnly");
+    if (controller.checkboxDirectiveStructured.checked)
+        directives.add("structured");
+    return directives;
+}
+
 function selectBackground(flag1, flag3, color1, color2, color3) {
     if (flag1 && flag3)
         return "linear-gradient(to right, " + color1 + ", " + color2 + ", " + color3 + ")";
@@ -806,13 +826,13 @@ function messageHandleItem(messageType, data1, data2) {
         if (messageType === "navigateEntitySelect" || messageType == "listItemSelect") {
             // handle the attribute select first
             if (messageType == "listItemSelect" && data1.resolvedName) {
-                let cdmAttribute = data1.attribute;
+                let cdmAttribute = data1.target;
                 background = "var(--item-back-normal)";
 
                 // does the attribute pointed at this? yes if 
-                var isReferencing = (entityStateThis.relsIn.some((r) => { return r.referencingAttribute && r.referencingAttribute.attribute === cdmAttribute }));
+                var isReferencing = (entityStateThis.relsIn.some((r) => { return r.referencingAttribute && r.referencingAttribute.target === cdmAttribute }));
                 // does the attribute get pointed at by this?
-                var isReferenced = (entityStateThis.relsOut.some((r) => { return r.referencedAttribute && r.referencedAttribute.attribute === cdmAttribute }));
+                var isReferenced = (entityStateThis.relsOut.some((r) => { return r.referencedAttribute && r.referencedAttribute.target === cdmAttribute }));
 
                 this.style.background = selectBackground(isReferencing, isReferenced, "var(--item-back-referenced)", background, "var(--item-back-referencing)");
             }
@@ -927,27 +947,54 @@ function messageHandleList(messageType, data1, data2) {
             // use the resolved attributes from the entity
             let entity = data2.entity as cdm.ICdmEntityDef;
             if (data1 && entity) {
-                let atts = entity.getResolvedAttributes(entity.declaredInDocument);
-                let inherited = entity.countInheritedAttributes(entity.declaredInDocument);
+                let atts = entity.getResolvedAttributes(entity.declaredInDocument, getResolutionDirectives());
+                let inherited = entity.countInheritedAttributes(entity.declaredInDocument, getResolutionDirectives());
                 if (atts) {
-                    atts.set = atts.set.sort(function (l, r) {
-                        if ((l.insertOrder < inherited) == (r.insertOrder < inherited))
-                            return l.resolvedName.localeCompare(r.resolvedName);
-                        return (l.insertOrder < inherited) == true ? 1 : -1
-                    });
-                    let l = atts.set.length;
-                    for (var i = 0; i < l; i++) {
-                        var aSpan = controller.document.createElement("span");
-                        var att = atts.set[i];
-                        aSpan.className = "list_item";
-                        aSpan.textContent = att.resolvedName;
-                        aSpan.cdmObject = att;
-                        aSpan.cdmSource = entity;
-                        aSpan.onclick = controller.onclickListItem;
-                        aSpan.messageHandle = messageHandleListItem;
-                        aSpan.inherited = att.insertOrder < inherited;
-                        this.appendChild(aSpan);
+                    // atts.set = atts.set.sort(function (l, r) {
+                    //     if ((l.insertOrder < inherited) == (r.insertOrder < inherited))
+                    //         return l.resolvedName.localeCompare(r.resolvedName);
+                    //     return (l.insertOrder < inherited) == true ? 1 : -1
+                    // });
+                    let addAtts = (rasSub:cdm.ResolvedAttributeSet, depth:number)=> {
+                        let l = rasSub.set.length;
+                        for (var i = 0; i < l; i++) {
+                            var att = rasSub.set[i];
+                            if ((att.target as cdm.ResolvedAttributeSet).set) {
+                                addAtts(att.target as cdm.ResolvedAttributeSet, depth + 1);
+                            }
+                            else {
+                                // that's right, old school graphics, just like 1987
+                                let indent = "";
+                                let indentCount = depth;
+                                while(indentCount > 1) {
+                                    indentCount --;
+                                    indent += '│';
+                                }
+                                if (indentCount == 1) {
+                                    if (l == 1)
+                                        indent+='─';
+                                    else if (i==0)
+                                        indent+='┌';
+                                    else if (i==l-1)
+                                        indent+='└';
+                                    else
+                                        indent+='│';
+                                }
+
+                                var aSpan = controller.document.createElement("span");
+                                aSpan.className = "list_item";
+                                aSpan.textContent = indent + att.resolvedName;
+                                aSpan.cdmObject = att;
+                                aSpan.cdmSource = entity;
+                                aSpan.onclick = controller.onclickListItem;
+                                aSpan.messageHandle = messageHandleListItem;
+                                aSpan.inherited = att.insertOrder < inherited;
+
+                                this.appendChild(aSpan);
+                            }
+                        }
                     }
+                    addAtts(atts, 0);
                 }
             }
 
@@ -983,9 +1030,9 @@ function messageHandleListItem(messageType, data1, data2) {
 
             // use relationships from entity
             // does this attribute point out?
-            var isReferencing = (entityState.relsOut.some((r) => { return r.referencingAttribute && r.referencingAttribute.attribute === this.cdmObject.attribute }));
+            var isReferencing = (entityState.relsOut.some((r) => { return r.referencingAttribute && r.referencingAttribute.target === this.cdmObject.target }));
             // does the attribute get pointed at?
-            var isReferenced = (entityState.relsIn.some((r) => { return r.referencedAttribute && r.referencedAttribute.attribute === this.cdmObject.attribute }));
+            var isReferenced = (entityState.relsIn.some((r) => { return r.referencedAttribute && r.referencedAttribute.target === this.cdmObject.target }));
 
             this.style.background = selectBackground(isReferenced, isReferencing, "var(--item-back-referencing)", background, "var(--item-back-referenced)");
         }
@@ -1118,7 +1165,7 @@ function messageHandleDetailResolved(messageType, data1, data2) {
 
     if (cdmObject) {
         clearResolvedPane();
-        cdmObject = cdmObject.createResolvedEntity(controller.cdmDocSelected, cdmObject.getName() + "_");
+        cdmObject = cdmObject.createResolvedEntity(controller.cdmDocSelected, cdmObject.getName() + "_", getResolutionDirectives());
         controller.cdmDocResolved = cdmObject.declaredInDocument;
         pushResolvedPane(cdmObject);
     }
@@ -1156,7 +1203,7 @@ function drawResolvedStack() {
 
         jsonText = applySearchTerm(jsonText);
 
-        controller.ResolvedPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+        controller.resolvedPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
 }
 
@@ -1171,7 +1218,7 @@ function messageHandleDetailDefinition(messageType, data1, data2) {
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
-            cdmObject = data1.attribute;
+            cdmObject = data1.target;
         } else {
             // assume entity
             cdmObject = data1.entity;
@@ -1222,7 +1269,7 @@ function drawDefinitionStack() {
 
         jsonText = applySearchTerm(jsonText);
 
-        controller.DefinitionPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
+        controller.definitionPane.innerHTML = "<pre><code>" + jsonText + "</code></pre>";
     }
 }
 
@@ -1372,7 +1419,7 @@ function messageHandleDetailTraits(messageType, data1, data2) {
     }
     if (messageType == "listItemSelect") {
         if (data1.resolvedName) {
-            cdmObject = data1.attribute;
+            cdmObject = data1.target;
             // use the resolved traits from the resolved attribute. these will include traits merged in from attributes with the same names from base entities
             rts = data1.resolvedTraits;
         } else {
@@ -1410,7 +1457,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
 
     if (messageType == "navigateEntitySelect") {
         if (data2) {
-            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected);
+            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected, getResolutionDirectives());
         }
     }
     if (messageType == "listItemSelect") {
@@ -1419,7 +1466,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
             isAtt = true;
         } else {
             // assume entity
-            resolvedObject = data1.entity.getResolvedEntity(controller.cdmDocSelected);
+            resolvedObject = data1.entity.getResolvedEntity(controller.cdmDocSelected, getResolutionDirectives());
         }
     }
 
@@ -1499,10 +1546,10 @@ function copyActivePane() {
         activePane = controller.propertiesPane;
     else if (controller.traitsPane.style.display != "none")
         activePane = controller.traitsPane;
-    else if (controller.DefinitionPane.style.display != "none")
-        activePane = controller.DefinitionPane;
-    else if (controller.ResolvedPane.style.display != "none")
-        activePane = controller.ResolvedPane;
+    else if (controller.definitionPane.style.display != "none")
+        activePane = controller.definitionPane;
+    else if (controller.resolvedPane.style.display != "none")
+        activePane = controller.resolvedPane;
     
     if (activePane) {
         var range = controller.document.createRange();

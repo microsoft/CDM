@@ -120,6 +120,7 @@ export interface AttributeGroup
 {
     explanation?: string;
     attributeGroupName: string;
+    attributeContext?: string;
     members: (string | AttributeGroupReference | TypeAttribute | EntityAttribute)[];
     exhibitsTraits?: (string | TraitReference)[];
 }
@@ -266,7 +267,7 @@ export interface ICdmObject
     copyData(wrtDoc : ICdmDocumentDef, options?: copyOptions): any;
     getResolvedTraits(wrtDoc : ICdmDocumentDef, set?: cdmTraitSet): ResolvedTraitSet
     setTraitParameterValue(wrtDoc : ICdmDocumentDef, toTrait: ICdmTraitDef, paramName: string, value: ArgumentValue);
-    getResolvedAttributes(wrtDoc : ICdmDocumentDef, under? : ICdmAttributeContext): ResolvedAttributeSet
+    getResolvedAttributes(wrtDoc : ICdmDocumentDef, directives?: Set<string>, under? : ICdmAttributeContext): ResolvedAttributeSet
     copy(wrtDoc : ICdmDocumentDef);
     getFriendlyFormat(): friendlyFormatNode;
     createSimpleReference(wrtDoc : ICdmDocumentDef) : ICdmObjectRef;
@@ -394,7 +395,8 @@ export interface ICdmAttributeGroupRef extends ICdmObjectRef, ICdmReferencesEnti
 export interface ICdmAttributeGroupDef extends ICdmObjectDef, ICdmReferencesEntities
 {
     getMembersAttributeDefs(): (ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef)[];
-    addMemberAttributeDef(attDef: ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef): ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef;
+    addAttributeDef(attDef: ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef): ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef;
+    attributeContext?: ICdmObjectRef;
 }
 
 export interface ICdmEntityAttributeDef extends ICdmAttributeDef
@@ -423,10 +425,10 @@ export interface ICdmEntityDef extends ICdmObjectDef, ICdmReferencesEntities
     setExtendsEntityRef(ref: ICdmObjectRef): ICdmObjectRef;
     getHasAttributeDefs(): (ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef)[];
     addAttributeDef(attDef: ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef): ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef;
-    countInheritedAttributes(wrtDoc : ICdmDocumentDef): number;
+    countInheritedAttributes(wrtDoc : ICdmDocumentDef, directives?: Set<string>): number;
     getAttributesWithTraits(wrtDoc : ICdmDocumentDef, queryFor: TraitSpec | TraitSpec[]): ResolvedAttributeSet;
-    getResolvedEntity(wrtDoc : ICdmDocumentDef) : ResolvedEntity;
-    createResolvedEntity(wrtDoc : ICdmDocumentDef, newDocName: string) : ICdmEntityDef;
+    getResolvedEntity(wrtDoc : ICdmDocumentDef, directives? :Set<string>) : ResolvedEntity;
+    createResolvedEntity(wrtDoc : ICdmDocumentDef, newDocName: string, directives?: Set<string>) : ICdmEntityDef;
     attributeContext?: ICdmAttributeContext;
     sourceName: string;
     displayName: string;
@@ -511,41 +513,29 @@ type CdmCreator<T> = (o: any) => T;
 export interface ApplierResult
 {
     shouldDelete?: boolean;             // for attributeRemove, set to true to request that attribute be removed
-    continuationState?: any;            // set to any value to request another call to the same method. values will be passed back in 
+    continueApplying?: boolean;         // if true, request another call to the same method.
     addedAttribute?: ICdmAttributeDef;  // result of adding. 
     attCtx?: ICdmAttributeContext;      // the context passed in or a new one for the new attribute
+    applierState?: any;
 }
 export interface traitApplier
 {
     matchName: string;
     priority: number;
     overridesBase: boolean;
-    willApply?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait) => boolean;
-    attributeApply?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait) => ApplierResult;
-    willAdd?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any) => boolean;
-    attributeAdd?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any) => ApplierResult;
-    createContext?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, continuationState: any) => ApplierResult;
-    attributeRemove?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait) => ApplierResult;
+    willApply?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>) => boolean;
+    attributeApply?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>) => ApplierResult;
+    willAdd?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>) => boolean;
+    attributeAdd?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>) => ApplierResult;
+    createContext?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, directives: Set<string>) => ApplierResult;
+    attributeRemove?: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>) => ApplierResult;
+    alterDirectives?: (wrtDoc: ICdmDocumentDef, resTrait: ResolvedTrait, directives: Set<string>) => Set<string>;
 }
 interface ApplierContinuation
 {
     applier: traitApplier;
     resAtt: ResolvedAttribute;
     resTrait: ResolvedTrait;
-    continuationState: any;
-}
-class ApplierContinuationSet
-{
-    constructor()
-    {
-        //let bodyCode = () =>
-        {
-            this.continuations = new Array<ApplierContinuation>();
-        }
-        //return p.measure(bodyCode);
-    }
-    continuations: ApplierContinuation[];
-    rasResult: ResolvedAttributeSet;
 }
 
 interface callData
@@ -1549,23 +1539,26 @@ class ResolvedTraitSetBuilder
 //  resolved attributes
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+type ResolutionTarget = (ICdmAttributeDef | ResolvedAttributeSet);
+
 export class ResolvedAttribute
 {
     private t2pm: traitToPropertyMap;
-    public attribute: ICdmAttributeDef;
+    public target: ResolutionTarget;
     public resolvedName: string;
     public resolvedTraits: ResolvedTraitSet;
     public insertOrder: number;
     public createdContext : ICdmAttributeContext;
+    public applierState: any;
 
-    constructor(wrtDoc : ICdmDocumentDef, attribute: ICdmAttributeDef, createdContext : ICdmAttributeContext)
+    constructor(wrtDoc : ICdmDocumentDef, target: ResolutionTarget, defaultName: string, createdContext : ICdmAttributeContext)
     {
         //let bodyCode = () =>
         {
-            this.attribute = attribute;
+            this.target = target;
             this.resolvedTraits = new ResolvedTraitSet(wrtDoc);
             this.resolvedTraits.addRef();
-            this.resolvedName = attribute.getName();
+            this.resolvedName = defaultName;
             this.createdContext = createdContext;
         }
         //return p.measure(bodyCode);
@@ -1574,8 +1567,8 @@ export class ResolvedAttribute
     {
         //let bodyCode = () =>
         {
-            let copy = new ResolvedAttribute(wrtDoc, this.attribute, this.createdContext);
-            copy.resolvedName = this.resolvedName;
+            let copy = new ResolvedAttribute(wrtDoc, this.target, this.resolvedName, this.createdContext);
+            copy.applierState = this.applierState;
             copy.resolvedTraits = this.resolvedTraits.shallowCopy();
             copy.resolvedTraits.addRef();
             copy.insertOrder = this.insertOrder;
@@ -1652,7 +1645,8 @@ export class ResolvedAttributeSet extends refCounted
     baseTrait2Attributes: Map<string, Set<ResolvedAttribute>>;
     set: Array<ResolvedAttribute>;
     wrtDoc : ICdmDocumentDef; 
-    sourceAttribute2resolvedAttribute: Map<ICdmAttributeDef, ResolvedAttribute>;
+    sourceAttribute2resolvedAttribute: Map<ResolutionTarget, ResolvedAttribute>;
+    public insertOrder:number;
 
     constructor(wrtDoc : ICdmDocumentDef)
     {
@@ -1674,11 +1668,11 @@ export class ResolvedAttributeSet extends refCounted
             if (toMerge) {
                 if (rasResult.resolvedName2resolvedAttribute.has(toMerge.resolvedName)) {
                     let existing: ResolvedAttribute = rasResult.resolvedName2resolvedAttribute.get(toMerge.resolvedName);
-                    if (this.refCnt > 1 && existing.attribute !== toMerge.attribute) {
+                    if (this.refCnt > 1 && existing.target !== toMerge.target) {
                         rasResult = rasResult.copy(); // copy on write
                         existing = rasResult.resolvedName2resolvedAttribute.get(toMerge.resolvedName);
                     }
-                    existing.attribute = toMerge.attribute; // replace with newest version
+                    existing.target = toMerge.target; // replace with newest version
 
                     let rtsMerge = existing.resolvedTraits.mergeSet(toMerge.resolvedTraits) // newest one may replace
                     if (rtsMerge !== existing.resolvedTraits) {
@@ -1693,7 +1687,7 @@ export class ResolvedAttributeSet extends refCounted
                     if (this.refCnt > 1)
                         rasResult = rasResult.copy(); // copy on write
                     rasResult.resolvedName2resolvedAttribute.set(toMerge.resolvedName, toMerge);
-                    rasResult.sourceAttribute2resolvedAttribute.set(toMerge.attribute, toMerge);
+                    rasResult.sourceAttribute2resolvedAttribute.set(toMerge.target, toMerge);
                     //toMerge.insertOrder = rasResult.set.length;
                     rasResult.set.push(toMerge);
                 }
@@ -1722,133 +1716,21 @@ export class ResolvedAttributeSet extends refCounted
         //return p.measure(bodyCode);
     }
 
-    public mergeTraitAttributes(traits: ResolvedTraitSet, continuationsIn: ApplierContinuationSet, attCtx : ICdmAttributeContext): ApplierContinuationSet
-    {
-        //let bodyCode = () =>
-        {
-            // if there was no continuation set provided, build one 
-            if (!continuationsIn) {
-                if (!traits || !traits.modifiesAttributes)
-                    return null;
-                continuationsIn = new ApplierContinuationSet();
-                // collect a set of appliers for all traits
-                let appliers = new Array<[ResolvedTrait, traitApplier]>();
-                let iApplier = 0;
-                let l = traits.size;
-                for (let i = 0; i < l; i++) {
-                    const rt = traits.set[i];
-                    if (rt.trait.modifiesAttributes) {
-                        let traitAppliers = rt.trait.getTraitAppliers();
-                        if (traitAppliers) {
-                            let l = traitAppliers.length;
-                            for (let ita = 0; ita < l; ita++) {
-                                const apl = traitAppliers[ita];
-                                if (apl.attributeAdd)
-                                    appliers.push([rt, apl]);
-                            }
-                        }
-                    }
-                }
-                if (appliers.length == 0)
-                    return null;
-
-                for (const resTraitApplier of appliers) {
-                    let applier: traitApplier = resTraitApplier["1"];
-                    let rt: ResolvedTrait = resTraitApplier["0"];
-
-                    // if there are no attributes, this is an entity attribute 
-                    if (this.resolvedName2resolvedAttribute.size == 0) {
-                        continuationsIn.continuations.push({ applier: applier, resAtt: null, resTrait: rt, continuationState: null });
-                    }
-                    else {
-                        // one for each attribute and applier combo
-                        let l = this.set.length;
-                        for (let i = 0; i < l; i++) {
-                            continuationsIn.continuations.push({ applier: applier, resAtt: this.set[i], resTrait: rt, continuationState: null });
-                        }
-                    }
-                }
-            }
-
-            // for every attribute in the set run any attribute adders and collect results in a new set
-            let addedAttSet: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder(this.wrtDoc);
-            addedAttSet.setAttributeContext(attCtx);
-            let continuationsOut = new ApplierContinuationSet();
-
-            for (const continueWith of continuationsIn.continuations) {
-                if (continueWith.applier.willAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, continueWith.continuationState)) {
-                    let result = continueWith.applier.attributeAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, continueWith.continuationState);
-                    // create a new resolved attribute and apply the traits that it has
-                    let rtsNew = result.addedAttribute.getResolvedTraits(this.wrtDoc);
-                    let newRasb = new ResolvedAttributeSetBuilder(this.wrtDoc);
-                    // applier may want to make a new context
-                    let under = attCtx;
-                    if (continueWith.applier.createContext)
-                        under = continueWith.applier.createContext(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, under, continueWith.continuationState).attCtx;
-                    newRasb.setAttributeContext(under);
-                    newRasb.ownOne(new ResolvedAttribute(this.wrtDoc, result.addedAttribute, under).copy(this.wrtDoc));
-                    newRasb.applyTraits(rtsNew);
-
-                    // recursion. the new attribute might have traits that add attriutes. Do that 
-                    newRasb.mergeTraitAttributes(rtsNew);
-
-                    // accumulate all added
-                    addedAttSet.mergeAttributes(newRasb.giveReference());
-
-                    // if a continue requested, add to list
-                    if (result.continuationState)
-                        continuationsOut.continuations.push({ applier: continueWith.applier, resAtt: continueWith.resAtt, resTrait: continueWith.resTrait, continuationState: result.continuationState });
-                }
-            }
-
-            continuationsOut.rasResult = this.mergeSet(addedAttSet.giveReference());
-            continuationsOut.rasResult.addRef();
-
-            if (!continuationsOut.continuations.length)
-                continuationsOut.continuations = null;
-            return continuationsOut;
-        }
-        //return p.measure(bodyCode);
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     //  traits that change attributes
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public applyTraits(traits: ResolvedTraitSet): ResolvedAttributeSet
+    public applyTraits(traits: ResolvedTraitSet, appliers: Array<[ResolvedTrait, traitApplier]>, directives: Set<string>): ResolvedAttributeSet
     {
         //let bodyCode = () =>
         {
-            // collect a set of appliers for all traits
-            let appliers = new Array<[ResolvedTrait, traitApplier]>();
-            let iApplier = 0;
-            if (traits && traits.modifiesAttributes) {
-                let l = traits.size;
-                for (let i = 0; i < l; i++) {
-                    const rt = traits.set[i];
-                    if (rt.trait.modifiesAttributes) {
-                        let traitAppliers = rt.trait.getTraitAppliers();
-                        if (traitAppliers) {
-                            let l = traitAppliers.length;
-                            for (let ita = 0; ita < l; ita++) {
-                                const apl = traitAppliers[ita];
-                                if (apl.attributeApply)
-                                    appliers.push([rt, apl]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // sorted by priority
-            appliers = appliers.sort((l: [ResolvedTrait, traitApplier], r: [ResolvedTrait, traitApplier]) => r["1"].priority - l["1"].priority);
-
             let rasResult: ResolvedAttributeSet = this;
             let rasApplied: ResolvedAttributeSet;
 
-            if (this.refCnt > 1 && rasResult.copyNeeded(traits, appliers)) {
+            if (this.refCnt > 1 && rasResult.copyNeeded(traits, appliers, directives)) {
                 rasResult = rasResult.copy();
             }
-            rasApplied = rasResult.apply(traits, appliers);
+            rasApplied = rasResult.apply(traits, appliers, directives);
 
             // now we are that
             rasResult.resolvedName2resolvedAttribute = rasApplied.resolvedName2resolvedAttribute;
@@ -1860,7 +1742,7 @@ export class ResolvedAttributeSet extends refCounted
         //return p.measure(bodyCode);
     }
 
-    copyNeeded(traits: ResolvedTraitSet, appliers: Array<[ResolvedTrait, traitApplier]>): boolean
+    copyNeeded(traits: ResolvedTraitSet, appliers: Array<[ResolvedTrait, traitApplier]>, directives: Set<string>): boolean
     {
         //let bodyCode = () =>
         {
@@ -1874,7 +1756,7 @@ export class ResolvedAttributeSet extends refCounted
                 for (const resTraitApplier of appliers) {
                     let applier: traitApplier = resTraitApplier["1"];
                     let rt: ResolvedTrait = resTraitApplier["0"];
-                    if (applier.willApply(this.wrtDoc, resAtt, rt))
+                    if (applier.willApply && applier.willApply(this.wrtDoc, resAtt, rt, directives))
                         return true;
                 }
             }
@@ -1883,7 +1765,7 @@ export class ResolvedAttributeSet extends refCounted
         //return p.measure(bodyCode);
     }
 
-    apply(traits: ResolvedTraitSet, appliers: Array<[ResolvedTrait, traitApplier]>): ResolvedAttributeSet
+    apply(traits: ResolvedTraitSet, appliers: Array<[ResolvedTrait, traitApplier]>, directives: Set<string>): ResolvedAttributeSet
     {
         //let bodyCode = () =>
         {
@@ -1900,11 +1782,12 @@ export class ResolvedAttributeSet extends refCounted
                 resAtt.resolvedTraits.release();
                 resAtt.resolvedTraits = rtsMerge;
                 resAtt.resolvedTraits.addRef();
+
                 for (const resTraitApplier of appliers) {
                     let applier: traitApplier = resTraitApplier["1"];
                     let rt: ResolvedTrait = resTraitApplier["0"];
-                    if (applier.willApply(this.wrtDoc, resAtt, rt)) {
-                        applier.attributeApply(this.wrtDoc, resAtt, rt);
+                    if (applier.willApply && applier.willApply(this.wrtDoc, resAtt, rt, directives)) {
+                        applier.attributeApply(this.wrtDoc, resAtt, rt, directives);
                     }
                 }
                 appliedAttSet.merge(resAtt);
@@ -1914,7 +1797,7 @@ export class ResolvedAttributeSet extends refCounted
         //return p.measure(bodyCode);
     }
 
-    public removeRequestedAtts(marker : [number, number]): ResolvedAttributeSet
+    public removeRequestedAtts(directives: Set<string>, marker : [number, number]): ResolvedAttributeSet
     {
         //let bodyCode = () =>
         {
@@ -1932,6 +1815,23 @@ export class ResolvedAttributeSet extends refCounted
                 let resAtt = this.set[iAtt];
                 if (resAtt.resolvedTraits && resAtt.resolvedTraits.modifiesAttributes) {
                     let l = resAtt.resolvedTraits.size;
+                    // let the appliers change the directives
+                    let newDirectives = directives;
+                    for (let i = 0; resAtt && i < l; i++) {
+                        const rt = resAtt.resolvedTraits.set[i];
+                        if (resAtt && rt.trait.modifiesAttributes) {
+                            let traitAppliers = rt.trait.getTraitAppliers();
+                            if (traitAppliers) {
+                                let l = traitAppliers.length;
+                                for (let ita = 0; ita < l; ita++) {
+                                    const apl = traitAppliers[ita];
+                                    if (apl.alterDirectives)
+                                        newDirectives = apl.alterDirectives(this.wrtDoc, rt, newDirectives);
+                                }
+                            }
+                        }
+                    }
+
                     for (let i = 0; resAtt && i < l; i++) {
                         const rt = resAtt.resolvedTraits.set[i];
                         if (resAtt && rt.trait.modifiesAttributes) {
@@ -1941,7 +1841,7 @@ export class ResolvedAttributeSet extends refCounted
                                 for (let ita = 0; ita < l; ita++) {
                                     const apl = traitAppliers[ita];
                                     if (resAtt && apl.attributeRemove) {
-                                        let result = apl.attributeRemove(this.wrtDoc, resAtt, rt);
+                                        let result = apl.attributeRemove(this.wrtDoc, resAtt, rt, newDirectives);
                                         if (result.shouldDelete) {
                                             // if this is the first removed attribute, then make a copy of the set now
                                             // after this point, the rest of the loop logic keeps the copy going as needed
@@ -2144,9 +2044,16 @@ class ResolvedAttributeSetBuilder
     public inheritedMark: number;
     wrtDoc : ICdmDocumentDef;
     attributeContext : ICdmAttributeContext;
+    directives: Set<string>;
 
-    constructor (wrtDoc : ICdmDocumentDef) {
+    appliersAlter: Array<[ResolvedTrait, traitApplier]>;
+    appliersAdd: Array<[ResolvedTrait, traitApplier]>;
+    appliersRemove: Array<[ResolvedTrait, traitApplier]>;
+    traitsToApply: ResolvedTraitSet;
+
+    constructor (wrtDoc : ICdmDocumentDef, directives: Set<string>) {
         this.wrtDoc = wrtDoc;
+        this.directives = new Set<string>(directives);
     }
 
     public setAttributeContext(under : ICdmAttributeContext) {
@@ -2214,36 +2121,218 @@ class ResolvedAttributeSetBuilder
         }
         //return p.measure(bodyCode);
     }
-    public applyTraits(rts: ResolvedTraitSet)
+
+    public prepareForTraitApplication(traits: ResolvedTraitSet)
     {
         //let bodyCode = () =>
         {
-            if (this.ras)
-                this.takeReference(this.ras.applyTraits(rts));
+            this.appliersAlter = new Array<[ResolvedTrait, traitApplier]>();
+            this.appliersAdd = new Array<[ResolvedTrait, traitApplier]>();
+            this.appliersRemove = new Array<[ResolvedTrait, traitApplier]>();
+            this.traitsToApply = traits;
+            // collect a set of appliers for all traits
+            if (traits && traits.modifiesAttributes) {
+                let l = traits.size;
+                for (let i = 0; i < l; i++) {
+                    const rt = traits.set[i];
+                    if (rt.trait.modifiesAttributes) {
+                        let traitAppliers = rt.trait.getTraitAppliers();
+                        if (traitAppliers) {
+                            let l = traitAppliers.length;
+                            for (let ita = 0; ita < l; ita++) {
+                                const apl = traitAppliers[ita];
+                                if (apl.attributeApply)
+                                    this.appliersAlter.push([rt, apl]);
+                                if (apl.attributeAdd)
+                                    this.appliersAdd.push([rt, apl]);
+                                if (apl.attributeRemove)
+                                    this.appliersRemove.push([rt, apl]);
+                                if (apl.alterDirectives)
+                                    this.directives = apl.alterDirectives(this.wrtDoc, rt, this.directives);
+                            }
+                        }
+                    }
+                }
+            }
+            // sorted by priority
+            this.appliersAlter = this.appliersAlter.sort((l: [ResolvedTrait, traitApplier], r: [ResolvedTrait, traitApplier]) => l["1"].priority - r["1"].priority);
+            this.appliersAdd = this.appliersAdd.sort((l: [ResolvedTrait, traitApplier], r: [ResolvedTrait, traitApplier]) => l["1"].priority - r["1"].priority);
+
         }
         //return p.measure(bodyCode);
     }
 
-    public mergeTraitAttributes(rts: ResolvedTraitSet)
+    private getAttributeContinuations(priorityAbove: number, clearState: boolean): ApplierContinuation[][]
+    {
+        //let bodyCode = () =>
+        {
+            if (!this.ras)
+                return null;
+            // one group of continuation requests per priority level
+            let continuationSetOut = new Array<ApplierContinuation[]>();
+            if (!this.traitsToApply || !this.traitsToApply.modifiesAttributes)
+                return continuationSetOut;
+            if (this.appliersAdd.length == 0)
+                return continuationSetOut;
+
+            let lastPri = -1;
+            let continuationsOut :Array<ApplierContinuation>;
+            for (const resTraitApplier of this.appliersAdd) {
+                let applier: traitApplier = resTraitApplier["1"];
+                let rt: ResolvedTrait = resTraitApplier["0"];
+                if (applier.priority > priorityAbove) {
+                    if (applier.priority != lastPri) {
+                        continuationsOut = new Array<ApplierContinuation>();
+                        continuationSetOut.push(continuationsOut);
+                        lastPri = applier.priority;
+                    }
+
+                    // if there are no attributes, this is an entity attribute 
+                    if (this.ras.size == 0) {
+                        continuationsOut.push({ applier: applier, resAtt: null, resTrait: rt});
+                    }
+                    else {
+                        // one for each attribute and applier combo
+                        let l = this.ras.set.length;
+                        for (let i = 0; i < l; i++) {
+                            if (clearState)
+                                this.ras.set[i].applierState = undefined;
+                            continuationsOut.push({ applier: applier, resAtt: this.ras.set[i], resTrait: rt});
+                        }
+                    }
+                }
+            }
+            return continuationSetOut;
+        }
+        //return p.measure(bodyCode);
+    }
+
+    public applyTraits()
+    {
+        //let bodyCode = () =>
+        {
+            if (this.ras)
+                this.takeReference(this.ras.applyTraits(this.traitsToApply, this.appliersAlter, this.directives));
+        }
+        //return p.measure(bodyCode);
+    }
+
+    public generateTraitAttributes(applyTraitsToNew: boolean)
     {
         //let bodyCode = () =>
         {
             if (!this.ras)
                 this.takeReference(new ResolvedAttributeSet(this.wrtDoc));
+            if (this.appliersAdd && this.appliersAdd.length) {
+                // using the attributes in this set, get an initial set of continuation requests
+                let currentContinueSet = this.getAttributeContinuations(-1, true);
 
-            let localContinue: ApplierContinuationSet = null;
-            while (localContinue = this.ras.mergeTraitAttributes(rts, localContinue, this.attributeContext)) {
-                this.takeReference(localContinue.rasResult)
-                if (localContinue.rasResult) {
-                    localContinue.rasResult.release();
-                    localContinue.rasResult = null;
+                // loop through this process until it stops giving back new requests 
+                let rasbSource = this;
+                while (currentContinueSet.length) {
+                    let newContinueSet = new Array<ApplierContinuation[]>();
+                    let addedThisRound = new ResolvedAttributeSetBuilder(this.wrtDoc, this.directives);
+                    addedThisRound.traitsToApply = this.traitsToApply;
+                    addedThisRound.appliersAlter = this.appliersAlter;
+                    addedThisRound.appliersAdd = this.appliersAdd;
+                    // process each priority set independently. this lets the attributes generated by one priority get acted on by the appliers of a later one
+                    let l=currentContinueSet.length;
+                    for (let i=0; i < l; i++) {
+                        const currentContinues = currentContinueSet[i];
+                        let newContinues = new Array<ApplierContinuation>();
+                        let addedThisPriority = this.processContinuations(currentContinues, newContinues, this.directives, this.attributeContext);
+    
+                        if (addedThisPriority && addedThisPriority.ras) {
+                            // the next round needs to get a crack at these atts
+                            if (i + 1 < l) {
+                                // get the new set of appliers above this point in the array using the traits being applied to the whole set
+                                addedThisPriority.traitsToApply = this.traitsToApply;
+                                addedThisPriority.appliersAdd = this.appliersAdd;
+                                let addedThisPriorityContinueSet = addedThisPriority.getAttributeContinuations(currentContinues[0].applier.priority, false);
+                                if (addedThisPriorityContinueSet) {
+                                    // add these new continuations to the next sets
+                                    for(let iAdd = 0; iAdd < addedThisPriorityContinueSet.length; iAdd++) {
+                                        let indexCurrent = iAdd + i + 1;
+                                        if (indexCurrent < l)
+                                            currentContinueSet[indexCurrent] = currentContinueSet[indexCurrent].concat(addedThisPriorityContinueSet[iAdd]);
+                                        else 
+                                            currentContinueSet.push(addedThisPriorityContinueSet[iAdd]);
+                                    }
+                                    l=currentContinueSet.length;
+                                }
+                            }
+                            addedThisRound.mergeAttributes(addedThisPriority.ras);
+                        }
+                        if (newContinues.length)
+                            newContinueSet.push(newContinues);
+                    }
+                    // apply the original traits to the newly added atts if requested.
+                    if(applyTraitsToNew) {
+                        addedThisRound.applyTraits();
+                    }
+                    // merge them in
+                    this.mergeAttributes(addedThisRound.ras);
+
+                    currentContinueSet = newContinueSet;
                 }
-                if (!localContinue.continuations)
-                    break;
             }
         }
         //return p.measure(bodyCode);
     }
+
+    private processContinuations(continuationsIn: ApplierContinuation[], continuationsOut: ApplierContinuation[], directives: Set<string>, attCtx : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    {
+        //let bodyCode = () =>
+        {
+            // for every attribute in the set run any attribute adders and collect results in a new set
+            let addedAttSet: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder(this.wrtDoc, directives);
+            addedAttSet.setAttributeContext(attCtx);
+
+            for (const continueWith of continuationsIn) {
+                // if will add, then add and resolve
+                if (continueWith.applier.willAdd && continueWith.applier.willAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, directives)) {
+                    let result = continueWith.applier.attributeAdd(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, directives);
+                    let newResAtt: ResolvedAttribute;
+                    if (result && result.addedAttribute) {
+                        // create a new resolved attribute and apply the traits that it has
+                        let rtsNew = result.addedAttribute.getResolvedTraits(this.wrtDoc);
+                        let newRasb = new ResolvedAttributeSetBuilder(this.wrtDoc, directives);
+                        // applier may want to make a new context
+                        let under = attCtx;
+                        if (continueWith.applier.createContext)
+                            under = continueWith.applier.createContext(this.wrtDoc, continueWith.resAtt, continueWith.resTrait, under, directives).attCtx;
+                        newRasb.setAttributeContext(under);
+                        newResAtt = new ResolvedAttribute(this.wrtDoc, result.addedAttribute, (result.addedAttribute as ICdmAttributeDef).getName(), under);
+                        newResAtt.applierState = result.applierState;
+                        newRasb.ownOne(newResAtt);
+                        // apply the traits that sit on this new attribute                        
+                        newRasb.prepareForTraitApplication(rtsNew);
+                        newRasb.applyTraits();
+                        // possible that the traits from this new attribute want to generate another attribute.
+                        let subContinueSet = newRasb.getAttributeContinuations(-1, true);
+                        if (subContinueSet && subContinueSet.length) {
+                            // put these in the list going back for more work
+                            for(const subContinues of subContinueSet)
+                                for (const subContinue of subContinues)
+                                    continuationsOut.push(subContinue);
+                        }
+
+                        // accumulate all added
+                        addedAttSet.mergeAttributes(newRasb.giveReference());
+                    }
+
+                    // if a continue requested, add to list
+                    if (result && result.continueApplying)
+                        continuationsOut.push({ applier: continueWith.applier, resAtt: newResAtt, resTrait: continueWith.resTrait});
+                }
+            }
+
+            return addedAttSet;
+        }
+        //return p.measure(bodyCode);
+    }
+
+
     public removeRequestedAtts()
     {
         //let bodyCode = () =>
@@ -2251,7 +2340,7 @@ class ResolvedAttributeSetBuilder
             if (this.ras) {
                 let marker : [number, number] = [0,0];
                 marker["0"] = this.inheritedMark;
-                this.takeReference(this.ras.removeRequestedAtts(marker));
+                this.takeReference(this.ras.removeRequestedAtts(this.directives, marker));
                 this.inheritedMark = marker["1"];
             }
         }
@@ -2261,8 +2350,24 @@ class ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
-            if (this.ras && this.ras.set)
+            if (this.ras && this.ras.set) {
                 this.inheritedMark = this.ras.set.length;
+
+                let countSet = (rasSub: ResolvedAttributeSet, offset: number):number => {
+                    let last = offset;
+                    if (rasSub && rasSub.set) {
+                        for (let i=0; i < rasSub.set.length; i++) {
+                            if ((rasSub.set[i].target as ResolvedAttributeSet).set) {
+                                last = countSet((rasSub.set[i].target as ResolvedAttributeSet), last);
+                            }
+                            else
+                                last ++;
+                        }
+                    }
+                    return last;
+                }
+                this.inheritedMark = countSet(this.ras, 0);
+            }
             else
                 this.inheritedMark = 0;
         }
@@ -2272,10 +2377,25 @@ class ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
-            if (this.ras && this.ras.set) {
-                for (let i=this.inheritedMark; i< this.ras.set.length; i++)
-                    this.ras.set[i].insertOrder = i;
+            let markSet = (rasSub: ResolvedAttributeSet, inheritedMark: number, offset: number):number => {
+                let last = offset;
+                if (rasSub && rasSub.set) {
+                    rasSub.insertOrder = last;
+                    for (let i=0; i < rasSub.set.length; i++) {
+                        if ((rasSub.set[i].target as ResolvedAttributeSet).set) {
+                            last = markSet((rasSub.set[i].target as ResolvedAttributeSet), inheritedMark, last);
+                        }
+                        else {
+                            if (last >= inheritedMark)
+                                rasSub.set[i].insertOrder = last;
+                            last ++;
+                        }
+                    }
+                }
+                return last;
             }
+            markSet(this.ras, this.inheritedMark, 0);
+
         }
         //return p.measure(bodyCode);
     }
@@ -2296,7 +2416,7 @@ export class ResolvedEntityReferenceSide
             if (rasb)
                 this.rasb = rasb;
             else
-                this.rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+                this.rasb = new ResolvedAttributeSetBuilder(wrtDoc, null);
         }
         //return p.measure(bodyCode);
     }
@@ -2379,11 +2499,11 @@ export class ResolvedEntity
     public resolvedTraits : ResolvedTraitSet;
     public resolvedAttributes : ResolvedAttributeSet;
     public resolvedEntityReferences : ResolvedEntityReferenceSet;
-    constructor(wrtDoc : ICdmDocumentDef, entDef : ICdmEntityDef) {
+    constructor(wrtDoc : ICdmDocumentDef, entDef : ICdmEntityDef, directives: Set<string>) {
         this.entity = entDef;
         this.resolvedName = this.entity.getName();
         this.resolvedTraits = this.entity.getResolvedTraits(wrtDoc);
-        this.resolvedAttributes = this.entity.getResolvedAttributes(wrtDoc);
+        this.resolvedAttributes = this.entity.getResolvedAttributes(wrtDoc, directives);
         this.resolvedEntityReferences = this.entity.getResolvedEntityReferences(wrtDoc);
     }
     public get sourceName() : string
@@ -3543,7 +3663,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -3604,14 +3724,14 @@ abstract class cdmObject implements ICdmObject
     }
 
     resolvingAttributes: boolean = false;
-    public getResolvedAttributes(wrtDoc : ICdmDocumentDef, under? : ICdmAttributeContext): ResolvedAttributeSet
+    public getResolvedAttributes(wrtDoc : ICdmDocumentDef, directives?: Set<string>, under? : ICdmAttributeContext): ResolvedAttributeSet
     {
         //let bodyCode = () =>
         {
             let rasbCache : ResolvedAttributeSetBuilder;
 
             // use a cached version unless we are building an attributeContext.
-            if (!under)
+            if (!(under || directives))
                 rasbCache = this.ctx.getCache(this, wrtDoc, "rasb") as ResolvedAttributeSetBuilder;
             if (!rasbCache) {
                 if (this.resolvingAttributes) {
@@ -3619,7 +3739,7 @@ abstract class cdmObject implements ICdmObject
                     return new ResolvedAttributeSet(wrtDoc);
                 }
                 this.resolvingAttributes = true;
-                rasbCache = this.constructResolvedAttributes(wrtDoc, under);
+                rasbCache = this.constructResolvedAttributes(wrtDoc, directives, under);
                 this.resolvingAttributes = false;
                 // save this as the cached version (unless building a context)
                 if (!under)
@@ -3732,7 +3852,7 @@ abstract class cdmObject implements ICdmObject
                 return undefined;
             if (typeof object === "string")
                 return object;
-            else if (object.relationship) {
+            else if (object.relationship || object.dataType || object.entity) {
                 if (object.dataType)
                     return TypeAttributeImpl.instanceFromData(object);
                 else if (object.entity)
@@ -4826,7 +4946,7 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
                 // get the resolved attribute
                 let ra = ent.toObjectDef.getResolvedAttributes(wrtDoc).get(attName);
                 if (ra) 
-                    res.toObjectDef = ra.attribute as any;
+                    res.toObjectDef = ra.target as any;
                 else {
                     this.ctx.statusRpt(cdmStatusLevel.warning, `couldn't resolve the attribute promise for '${this.namedReference}'`, "");
                 }
@@ -5023,7 +5143,7 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
 
             if (preChildren && preChildren(this, path))
                 return false;
-            if (this.explicitReference)
+            if (this.explicitReference && !this.namedReference)
                 if (this.explicitReference.visit(path, preChildren, postChildren))
                     return true;
             if (this.visitRef(path, preChildren, postChildren))
@@ -5041,17 +5161,18 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
     }
     public abstract visitRef(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean;
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
             // find and cache the complete set of attributes
-            let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             rasb.setAttributeContext(under);
             let def = this.getObjectDef(wrtDoc);
             if (def) {
-                rasb.takeReference(def.getResolvedAttributes(wrtDoc, under));
-                rasb.applyTraits(this.getResolvedTraits(wrtDoc, cdmTraitSet.appliedOnly));
+                rasb.takeReference(def.getResolvedAttributes(wrtDoc, directives, under));
+                rasb.prepareForTraitApplication(this.getResolvedTraits(wrtDoc, cdmTraitSet.appliedOnly));
+                rasb.applyTraits();
                 rasb.removeRequestedAtts();
             }
             return rasb;
@@ -5282,7 +5403,7 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -5654,7 +5775,7 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
         }
         //return p.measure(bodyCode);
     }
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -5897,7 +6018,7 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -6144,7 +6265,7 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef
         }
         //return p.measure(bodyCode);
     }
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -6708,7 +6829,7 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -6716,17 +6837,18 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
             // attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
             // the datatype used as an attribute, traits applied to that datatype,
             // the relationship of the attribute, any traits applied to the attribute.
-            let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             rasb.setAttributeContext(under);
 
             // add this attribute to the set
             // make a new one and apply any traits
-            let newAtt = new ResolvedAttribute(wrtDoc, this, under);
+            let newAtt = new ResolvedAttribute(wrtDoc, this, this.name, under);
             rasb.ownOne(newAtt);
-            rasb.applyTraits(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
+            rasb.prepareForTraitApplication(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
 
             // from the traits of the datatype, relationship and applied here, see if new attributes get generated
-            rasb.mergeTraitAttributes(this.getResolvedTraits(wrtDoc, cdmTraitSet.all));
+            rasb.applyTraits();
+            rasb.generateTraitAttributes(false); // false = don't apply these traits to added things
 
             return rasb;
         }
@@ -6926,32 +7048,32 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
                     rtsb.takeReference(this.getRelationshipRef().getResolvedTraits(rtsb.wrtDoc, set));
             }
 
-            if (set == cdmTraitSet.elevatedOnly) {
-                // get from entities unless this is a ref
-                let relRts: ResolvedTraitSet;
-                if (this.relationship)
-                    relRts = this.getRelationshipRef().getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.all);
+            // if (set == cdmTraitSet.elevatedOnly) {
+            //     // get from entities unless this is a ref
+            //     let relRts: ResolvedTraitSet;
+            //     if (this.relationship)
+            //         relRts = this.getRelationshipRef().getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.all);
 
-                let isRef = relRts && relRts.find(rtsb.wrtDoc, "does.referenceEntity");
-                if (!isRef) {
-                    // for now, a sub for the 'select one' idea
-                    if ((this.entity as EntityReferenceImpl).explicitReference) {
-                        let entPickFrom = (this.entity as ICdmEntityRef).getObjectDef(rtsb.wrtDoc) as ICdmEntityDef;
-                        let attsPick : ICdmObject[];
-                        if (entPickFrom && (attsPick = entPickFrom.getHasAttributeDefs())) {
-                            let l = attsPick.length;
-                            for (let i=0; i<l; i++) {
-                                if (attsPick[i].getObjectType() == cdmObjectType.entityAttributeDef) {
-                                    let er = (attsPick[i] as ICdmEntityAttributeDef).getEntityRef();
-                                    rtsb.mergeTraits(er.getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
-                                }
-                            }
-                        }
-                    }
-                    else
-                        rtsb.mergeTraits((this.entity as ICdmEntityRef).getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
-                }
-            }
+            //     let isRef = relRts && relRts.find(rtsb.wrtDoc, "does.referenceEntity");
+            //     if (!isRef) {
+            //         // for now, a sub for the 'select one' idea
+            //         if ((this.entity as EntityReferenceImpl).explicitReference) {
+            //             let entPickFrom = (this.entity as ICdmEntityRef).getObjectDef(rtsb.wrtDoc) as ICdmEntityDef;
+            //             let attsPick : ICdmObject[];
+            //             if (entPickFrom && (attsPick = entPickFrom.getHasAttributeDefs())) {
+            //                 let l = attsPick.length;
+            //                 for (let i=0; i<l; i++) {
+            //                     if (attsPick[i].getObjectType() == cdmObjectType.entityAttributeDef) {
+            //                         let er = (attsPick[i] as ICdmEntityAttributeDef).getEntityRef();
+            //                         rtsb.mergeTraits(er.getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //         else
+            //             rtsb.mergeTraits((this.entity as ICdmEntityRef).getResolvedTraits(rtsb.wrtDoc, cdmTraitSet.elevatedOnly));
+            //     }
+            // }
 
             if (set == cdmTraitSet.appliedOnly || set == cdmTraitSet.elevatedOnly) {
                 if (set == cdmTraitSet.appliedOnly)
@@ -6963,7 +7085,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -6971,22 +7093,34 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
             // attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
             // the entity used as an attribute, traits applied to that entity,
             // the relationship of the attribute, any traits applied to the attribute.
-            let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             let ctxEnt : ICdmEntityRef = this.entity as ICdmEntityRef;
             let underRef = rasb.createAttributeContext(under, cdmAttributeContextType.entityReferenceAsAttribute, this.name, this, true);
 
-            // complete cheating but is faster. this relationship will remove all of the attributes that get collected here, so dumb and slow to go get them
             if (under)
                 under = rasb.createAttributeContext(underRef, cdmAttributeContextType.entity, ctxEnt.getObjectDefName(), ctxEnt, true);
+
+            // it would be a mistake to merge any elevated traits that came from the entity
+            // back into the attributes from that entity. elevated traits only propigate 'up'
+            let rtsThisAtt = this.getResolvedTraits(wrtDoc, cdmTraitSet.all);
+            if (rtsThisAtt)
+                rtsThisAtt = rtsThisAtt.removeElevated();
+             rasb.prepareForTraitApplication(rtsThisAtt);
+            
 
             let relRts: ResolvedTraitSet;
             if (this.relationship)
                 relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
 
-            let isRef = relRts && relRts.find(wrtDoc, "does.referenceEntity");
+            let isRef = rasb.directives.has("referenceOnly");
+            // until this trait goes away...
+            if (!isRef && relRts && relRts.find(wrtDoc, "does.referenceEntity"))
+                isRef=true;
+
+            // complete cheating but is faster. this relationship will remove all of the attributes that get collected here, so dumb and slow to go get them
             if (isRef) {
-                // for now, a sub for the 'select one' idea
-                if (under && (this.entity as EntityReferenceImpl).explicitReference) {
+                // if selecting from one of many attributes, then make a context for each one
+                if (under && rasb.directives.has("selectOne")) {
                     // the right way to do this is to get a resolved entity from the embedded entity and then 
                     // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
                     // that seems like a disaster waiting to happen given endless looping, etc.
@@ -7006,19 +7140,27 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
                 }
             }
             else {
-                rasb.mergeAttributes((this.entity as ICdmEntityRef).getResolvedAttributes(wrtDoc, under));
+                // usually it makes sense to union the attributes from an entity.
+                // if deep structure is needed, author should explicitly impose the structured directive on the included entity
+                let structured = directives && directives.has('structured');
+                if (structured)
+                    directives.delete('structured');
+                rasb.mergeAttributes((this.entity as ICdmEntityRef).getResolvedAttributes(wrtDoc, directives, under));
+                if (structured)
+                    directives.add('structured');
             }
-
-            // it would be a mistake to merge any elevated traits that came from the entity
-            // back into the attributes from that entity. elevated traits only propigate 'up'
-            let rtsThisAtt = this.getResolvedTraits(wrtDoc, cdmTraitSet.all);
-            if (rtsThisAtt)
-                rtsThisAtt = rtsThisAtt.removeElevated();
 
             // from the traits of relationship and applied here, see if new attributes get generated
             rasb.setAttributeContext(underRef);
-            rasb.applyTraits(rtsThisAtt);
-            rasb.mergeTraitAttributes(rtsThisAtt);
+            rasb.applyTraits();
+            rasb.generateTraitAttributes(true); // true = apply the prepared traits to new atts
+
+            // a 'structured' directive wants to keep all entity attributes together in a group
+            if (directives && directives.has('structured')) {
+                let raSub = new ResolvedAttribute(wrtDoc, rasb.ras, this.name, rasb.attributeContext);
+                rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
+                rasb.ownOne(raSub);
+            }
 
             return rasb;
         }
@@ -7031,7 +7173,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
             let relRts: ResolvedTraitSet;
             if (this.relationship)
                 relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
-            if (relRts && relRts.find(wrtDoc, "does.referenceEntity")) {
+            if (relRts && relRts.find(wrtDoc, "does.referenceEntity") || relRts.find(wrtDoc, "does.referenceEntityVia")) {
                 // only place this is used, so logic here instead of encapsulated. 
                 // make a set and the one ref it will hold
                 let rers = new ResolvedEntityReferenceSet(wrtDoc);
@@ -7205,6 +7347,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
 {
     attributeGroupName: string;
     members: (AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl)[];
+    public attributeContext?: AttributeContextReferenceImpl;
 
     constructor(attributeGroupName: string)
     {
@@ -7241,6 +7384,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
                 explanation: this.explanation,
                 attributeGroupName: this.attributeGroupName,
                 exhibitsTraits: cdmObject.arraycopyData<string | TraitReference>(wrtDoc, this.exhibitsTraits, options),
+                attributeContext: this.attributeContext ? this.attributeContext.copyData(wrtDoc, options) : undefined,
                 members: cdmObject.arraycopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(wrtDoc, this.members, options)
             };
             return castedToInterface;
@@ -7254,6 +7398,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
             let copy = new AttributeGroupImpl(this.attributeGroupName);
             copy.ctx = this.ctx;
             copy.members = cdmObject.arrayCopy<AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl>(wrtDoc, this.members);
+            copy.attributeContext = this.attributeContext ? <AttributeContextReferenceImpl>this.attributeContext.copy(wrtDoc) : undefined;
             this.copyDef(wrtDoc, copy);
             return copy;
         }
@@ -7298,7 +7443,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
 
             if (object.explanation)
                 c.explanation = object.explanation;
-
+            c.attributeContext = cdmObject.createAttributeContextReference(object.attributeContext);
             c.members = cdmObject.createAttributeArray(object.members);
             c.exhibitsTraits = cdmObject.createTraitReferenceArray(object.exhibitsTraits);
 
@@ -7322,7 +7467,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         }
         //return p.measure(bodyCode);
     }
-    public addMemberAttributeDef(attDef: ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef): ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef
+    public addAttributeDef(attDef: ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef): ICdmAttributeGroupRef | ICdmTypeAttributeDef | ICdmEntityAttributeDef
     {
         //let bodyCode = () =>
         {
@@ -7346,6 +7491,9 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
 
             if (preChildren && preChildren(this, path))
                 return false;
+            if (this.attributeContext)
+                if (this.attributeContext.visit(path + "/attributeContext/", preChildren, postChildren))
+                    return true;
             if (this.members)
                 if (cdmObject.visitArray(this.members, path + "/members/", preChildren, postChildren))
                     return true;
@@ -7358,11 +7506,11 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         }
         //return p.measure(bodyCode);
     }
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
-            let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             rasb.setAttributeContext(under);
 
             if (this.members) {
@@ -7373,7 +7521,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
                     if (att.getObjectType() == cdmObjectType.attributeGroupRef) {
                         attUnder = rasb.createAttributeContext(under, cdmAttributeContextType.attributeGroup, att.getObjectDefName(), att, false);
                     }
-                    rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, attUnder));
+                    rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, directives, attUnder));
                 }
             }
 
@@ -7641,15 +7789,15 @@ export class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEnti
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
-            let rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            let rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             under = rasb.createAttributeContext(under, cdmAttributeContextType.entity, this.entityShape.getObjectDefName(), this.entityShape, true);
 
             if (this.entityShape)
-                rasb.mergeAttributes(this.getEntityShape().getResolvedAttributes(wrtDoc, under));
+                rasb.mergeAttributes(this.getEntityShape().getResolvedAttributes(wrtDoc, directives, under));
 
             // things that need to go away
             rasb.removeRequestedAtts();
@@ -8017,7 +8165,7 @@ export class AttributeContextImpl extends cdmObjectDef implements ICdmAttributeC
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -8041,7 +8189,7 @@ export class AttributeContextImpl extends cdmObjectDef implements ICdmAttributeC
                 // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
                 // and make them the traits for this context
                 if (includeTraits)
-                    rtsApplied = regarding.getResolvedTraits(wrtDoc, cdmTraitSet.appliedOnly);
+                    rtsApplied = regarding.getResolvedTraits(wrtDoc, cdmTraitSet.all);
             }
 
             let underChild = Corpus.MakeObject(cdmObjectType.attributeContextDef, name) as ICdmAttributeContext;
@@ -8456,7 +8604,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -8464,7 +8612,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             // attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
             // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
             // the relationsip of the attribute, the attribute definition itself and included attribute groups, any traits applied to the attribute.
-            this.rasb = new ResolvedAttributeSetBuilder(wrtDoc);
+            this.rasb = new ResolvedAttributeSetBuilder(wrtDoc, directives);
             this.rasb.setAttributeContext(under);
 
 
@@ -8472,7 +8620,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
                 let extRef = this.getExtendsEntityRef();
                 let extendsRefUnder = this.rasb.createAttributeContext(under, cdmAttributeContextType.entityReferenceExtends, "extends", null, false);
                 let extendsUnder = this.rasb.createAttributeContext(extendsRefUnder, cdmAttributeContextType.entity, extRef.getObjectDefName(),  extRef, false);
-                this.rasb.mergeAttributes(this.getExtendsEntityRef().getResolvedAttributes(wrtDoc, extendsUnder));
+                this.rasb.mergeAttributes(this.getExtendsEntityRef().getResolvedAttributes(wrtDoc, directives, extendsUnder));
             }
             this.rasb.markInherited();
 
@@ -8484,7 +8632,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
                     if (att.getObjectType() == cdmObjectType.attributeGroupRef) {
                         attUnder = this.rasb.createAttributeContext(under, cdmAttributeContextType.attributeGroup, att.getObjectDefName(), att, false);
                     }
-                    this.rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, attUnder));
+                    this.rasb.mergeAttributes(att.getResolvedAttributes(wrtDoc, directives, attUnder));
                 }
             }
 
@@ -8498,19 +8646,19 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
         //return p.measure(bodyCode);
     }
 
-    public countInheritedAttributes(wrtDoc: ICdmDocumentDef): number
+    public countInheritedAttributes(wrtDoc: ICdmDocumentDef, directives?: Set<string>): number
     {
         //let bodyCode = () =>
         {
             // ensures that cache exits
-            this.getResolvedAttributes(wrtDoc);
+            this.getResolvedAttributes(wrtDoc, directives);
             return this.rasb.inheritedMark;
         }
         //return p.measure(bodyCode);
     }
 
-    public getResolvedEntity(wrtDoc : ICdmDocumentDef) : ResolvedEntity {
-        return new ResolvedEntity(wrtDoc, this);
+    public getResolvedEntity(wrtDoc : ICdmDocumentDef, directives?: Set<string>) : ResolvedEntity {
+        return new ResolvedEntity(wrtDoc, this, directives);
     }
 
     public getResolvedEntityReferences(wrtDoc : ICdmDocumentDef): ResolvedEntityReferenceSet
@@ -8569,7 +8717,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
         //return p.measure(bodyCode);
     }
 
-    createResolvedEntity(wrtDoc : ICdmDocumentDef, newEntName: string) : ICdmEntityDef
+    createResolvedEntity(wrtDoc : ICdmDocumentDef, newEntName: string, directives?: Set<string>) : ICdmEntityDef
     {
         //let bodyCode = () =>
         {
@@ -8585,18 +8733,31 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             (attCtx as any as AttributeContextImpl).setRelativePath(entName + '/attributeContext/' + entName);
             // resolve attributes with this context. the end result is that each resolved attribute
             // points to the level of the context where it was created
-            let ras = this.getResolvedAttributes(wrtDoc, attCtx);
+            let ras = this.getResolvedAttributes(wrtDoc, directives, attCtx);
+
             // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
             // make each attribute context level point at these final versions of attributes
-            ras.set.forEach(ra => {
-                if (ra.createdContext) {
-                    let refs = ra.createdContext.getContentRefs();
-                    // this won't work when I add the structured attributes to avoid name collisions
-                    let attRefPath = entName + '/hasAttributes/' + ra.resolvedName;
-                    let attRef : ICdmObjectRef = Corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
-                    refs.push(attRef);
-                }
-            });
+            let attPath2Order = new Map<string, number>();
+            let pointContextAtResolvedAtts = (rasSub : ResolvedAttributeSet, path: string) => {
+                rasSub.set.forEach(ra => {
+                    if (ra.createdContext) {
+                        let refs = ra.createdContext.getContentRefs();
+                        // this won't work when I add the structured attributes to avoid name collisions
+                        let attRefPath = path + ra.resolvedName;
+                        if ((ra.target as ICdmAttributeDef).getObjectType) {
+                            let attRef : ICdmObjectRef = Corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
+                            attPath2Order.set(attRef.getObjectDefName(), ra.insertOrder);
+                            refs.push(attRef);
+                        }
+                        else {
+                            attRefPath += '/members/';
+                            pointContextAtResolvedAtts(ra.target as ResolvedAttributeSet, attRefPath);
+                        }
+                    }
+                });
+            }
+
+            pointContextAtResolvedAtts(ras, entName + '/hasAttributes/');
 
             // attribute structures may end up with 0 attributes after that. prune them
             let emptyStructures = new Array<[ICdmAttributeContext, ICdmAttributeContext]>();
@@ -8639,11 +8800,8 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
                 }
                 else {
                     let attName = item.getObjectDefName();
-                    let div = attName.lastIndexOf('/');
-                    if (div != -1)
-                        attName = attName.slice(div + 1);
-
-                    return ras.get(attName).insertOrder;
+                    let o = attPath2Order.get(attName);
+                    return o;
                 }
             };
             let orderContents = (under: AttributeContextImpl) : number => {
@@ -8711,24 +8869,39 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             }
             collectContextTraits(attCtx, new Set<string>());
 
-            // add the attributes
-            ras.set.forEach(ra => {
-                let att = Corpus.MakeObject<ICdmTypeAttributeDef>(cdmObjectType.typeAttributeDef, ra.resolvedName);
-                //att.setRelationshipRef(Corpus.MakeObject(cdmObjectType.relationshipRef, "hasA", true));
-                //att.setDataTypeRef(Corpus.MakeObject(cdmObjectType.dataTypeRef, "any", true));
-                att.attributeContext = Corpus.MakeObject(cdmObjectType.attributeContextRef, ra.createdContext.getRelativePath(), true);
-                let avoidSet = ctx2traitNames.get(ra.createdContext);
-                let rtsAtt = ra.resolvedTraits;
-                rtsAtt.set.forEach(rt => {
-                    if (!rt.trait.ugly) { // don't mention your ugly traits
-                        if (!avoidSet.has(rt.traitName)) { // avoid the ones from the context
-                            let traitRef = cdmObject.resolvedTraitToTraitRef(rt);
-                            att.addAppliedTrait(traitRef, typeof(traitRef) === "string");
-                        }
+            // add the attributes, put them in attribute groups if structure needed
+            let resAtt2RefPath = new Map<ResolvedAttribute, string>();
+            let addAttributes = (rasSub: ResolvedAttributeSet, container: ICdmEntityDef | ICdmAttributeGroupDef, path) => {
+                rasSub.set.forEach(ra => {
+                    let attPath = path + ra.resolvedName;
+                    if ((ra.target as ResolvedAttributeSet).set) {
+                        let attGrp = Corpus.MakeObject<ICdmAttributeGroupDef>(cdmObjectType.attributeGroupDef, ra.resolvedName);
+                        attGrp.attributeContext = Corpus.MakeObject(cdmObjectType.attributeContextRef, ra.createdContext.getRelativePath(), true);
+                        let attGrpRef = Corpus.MakeObject<ICdmAttributeGroupRef>(cdmObjectType.attributeGroupRef, undefined);
+                        attGrpRef.setObjectDef(attGrp);
+                        container.addAttributeDef(attGrpRef);
+
+                        addAttributes(ra.target as ResolvedAttributeSet, attGrp, attPath+'/members/');
+                    }
+                    else {
+                        let att = Corpus.MakeObject<ICdmTypeAttributeDef>(cdmObjectType.typeAttributeDef, ra.resolvedName);
+                        att.attributeContext = Corpus.MakeObject(cdmObjectType.attributeContextRef, ra.createdContext.getRelativePath(), true);
+                        let avoidSet = ctx2traitNames.get(ra.createdContext);
+                        let rtsAtt = ra.resolvedTraits;
+                        rtsAtt.set.forEach(rt => {
+                            if (!rt.trait.ugly) { // don't mention your ugly traits
+                                if (!avoidSet.has(rt.traitName)) { // avoid the ones from the context
+                                    let traitRef = cdmObject.resolvedTraitToTraitRef(rt);
+                                    att.addAppliedTrait(traitRef, typeof(traitRef) === "string");
+                                }
+                            }
+                        });
+                        container.addAttributeDef(att);
+                        resAtt2RefPath.set(ra, attPath);
                     }
                 });
-                entResolved.addAttributeDef(att);
-            });
+            }
+            addAttributes(ras, entResolved, entName + '/hasAttributes/');
 
             // any resolved traits that hold arguments with attribute refs should get 'fixed' here
             let replaceTraitAttRef = (tr:ICdmTraitRef) => {
@@ -8746,8 +8919,12 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
                                 let found = ras.getBySource(att);
                                 //change it
                                 if (found) {
-                                    let attRefPath = entName + '/hasAttributes/' + found.resolvedName;
+                                    let attRefPath = resAtt2RefPath.get(found);
                                     arg.setValue(Corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true));
+                                }
+                                else {
+                                    // declared path is the best way to find it
+                                    arg.setValue(Corpus.MakeObject(cdmObjectType.attributeRef, (att as any as cdmObject).declaredPath, true));
                                 }
                             }
                         }
@@ -8928,7 +9105,7 @@ export class Document extends cdmObjectSimple implements ICdmDocumentDef
         //return p.measure(bodyCode);
     }
 
-    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
+    public constructResolvedAttributes(wrtDoc: ICdmDocumentDef, directives: Set<string>, under : ICdmAttributeContext): ResolvedAttributeSetBuilder
     {
         //let bodyCode = () =>
         {
@@ -10227,7 +10404,7 @@ export class Corpus extends Folder
                         let res = this.ctx.getCache(ref, null, "nameResolve") as namedReferenceResolution;
                         if (!res)
                             res = this.ctx.getCache(ref, ctx.currentDoc, "nameResolve") as namedReferenceResolution;
-                        if (ref.namedReference && !res) {
+                        if (ref.namedReference && !res && !ref.explicitReference) {
                             // no, so look up the thing now
                             let found = ctx.resolveNamedReference(ref.namedReference, ot);
                             if (!found) {
@@ -10802,20 +10979,20 @@ let PrimitiveAppliers: traitApplier[] = [
         matchName: "is.removed",
         priority: 10,
         overridesBase: false,
-        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): ApplierResult =>
+        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             return { "shouldDelete": true };
         }
     },
     {
         matchName: "does.addAttribute",
-        priority: 9,
+        priority: 7,
         overridesBase: false,
-        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): boolean =>
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
         {
             return true;
         },
-        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any): ApplierResult =>
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             // get the added attribute and applied trait
             let sub = resTrait.parameterValues.getParameterValue("addedAttribute").value as ICdmAttributeDef;
@@ -10829,24 +11006,24 @@ let PrimitiveAppliers: traitApplier[] = [
     },
     {
         matchName: "does.referenceEntity",
-        priority: 8,
+        priority: 7,
         overridesBase: true,
-        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): ApplierResult =>
+        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             let visible = true;
             if (resAtt) {
                 // all others go away
                 visible = false;
-                if (resAtt.attribute === resTrait.parameterValues.getParameterValue("addedAttribute").value)
+                if (resAtt.target === resTrait.parameterValues.getParameterValue("addedAttribute").value)
                     visible = true;
             }
-            return { "shouldDelete": !visible };
+            return { "shouldDelete": false };
         },
-        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): boolean =>
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
         {
             return true;
         },
-        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any): ApplierResult =>
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             // get the added attribute and applied trait
             let sub = resTrait.parameterValues.getParameterValue("addedAttribute").value as ICdmAttributeDef;
@@ -10857,7 +11034,7 @@ let PrimitiveAppliers: traitApplier[] = [
             }
             return { "addedAttribute": sub };
         },
-        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, continuationState: any): ApplierResult =>
+        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, directives: Set<string>): ApplierResult =>
         {
             // make a new attributeContext to differentiate this supporting att
             attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeIdentity, "_foreignKey", null, false);
@@ -10866,13 +11043,13 @@ let PrimitiveAppliers: traitApplier[] = [
     },
     {
         matchName: "does.addSupportingAttribute",
-        priority: 8,
+        priority: 7,
         overridesBase: true,
-        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): boolean =>
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
         {
             return true;
         },
-        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any): ApplierResult =>
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             // get the added attribute and applied trait
             let sub = resTrait.parameterValues.getParameterValue("addedAttribute").value as ICdmAttributeDef;
@@ -10890,76 +11067,110 @@ let PrimitiveAppliers: traitApplier[] = [
                 return { "addedAttribute": sub};
             }
         },
-        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, continuationState: any): ApplierResult =>
+        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, directives: Set<string>): ApplierResult =>
         {
             // make a new attributeContext to differentiate this supporting att
-            attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeSupporting, "supporting_" + resAtt.resolvedName, resAtt.attribute, false);
+            attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeSupporting, "supporting_" + resAtt.resolvedName, resAtt.target as ICdmAttributeDef, false);
             return { attCtx: attCtx };
         }
     },
     {
-        matchName: "is.array",
-        priority: 6,
-        overridesBase: false,
-        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): boolean =>
+        matchName: "does.imposeDirectives",
+        priority: 1,
+        overridesBase: true,
+        alterDirectives: (wrtDoc: ICdmDocumentDef, resTrait: ResolvedTrait, directives: Set<string>): Set<string> =>
         {
-            return resAtt ? true : false;
-        },
-        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, continuationState: any): ApplierResult =>
-        {
-            let newAtt: ICdmAttributeDef;
-            let newContinue: { curentOrdinal: number, finalOrdinal: number, renameTrait: ICdmTraitRef };
-            if (resAtt) {
-                if (!continuationState) {
-                    // get the fixed size (not set means no fixed size)
-                    let fixedSizeString = resTrait.parameterValues.getParameterValue("fixedSize").getValueString(wrtDoc);
-                    if (fixedSizeString && fixedSizeString != "undefined") {
-                        let fixedSize = Number.parseInt(fixedSizeString);
-                        let renameTrait = resTrait.parameterValues.getParameterValue("renameTrait").value;
-                        if (renameTrait && typeof(renameTrait) === "object") {
-                            let ordinal = Number.parseInt((renameTrait as ICdmObject).getResolvedTraits(wrtDoc).first.parameterValues.getParameterValue("ordinal").getValueString(wrtDoc));
-                            continuationState = { curentOrdinal: ordinal, finalOrdinal: ordinal + fixedSize - 1, renameTrait: renameTrait };
-                        }
-                    }
-                }
+            let allAdded = resTrait.parameterValues.getParameterValue("directives").getValueString(wrtDoc);
 
-                if (continuationState) {
-                    if (continuationState.curentOrdinal <= continuationState.finalOrdinal) {
-                        newAtt = resAtt.attribute.copy(wrtDoc);
-                        // add the rename trait to the new attribute
-                        let newRenameTraitRef = continuationState.renameTrait.copy();
-                        (newRenameTraitRef as ICdmTraitRef).setArgumentValue("ordinal", continuationState.curentOrdinal.toString());
-                        newAtt.addAppliedTrait(newRenameTraitRef, false);
-                        // and get rid of is.array trait
-                        newAtt.removeTraitDef(wrtDoc, resTrait.trait);
-
-                        continuationState.curentOrdinal++;
-                        if (continuationState.curentOrdinal > continuationState.finalOrdinal)
-                            continuationState = null;
-                    }
-                }
+            if (allAdded) {
+                directives = new Set<string>(directives);
+                allAdded.split(',').forEach(d=> directives.add(d));
             }
-            return { "addedAttribute": newAtt, "continuationState": continuationState };
-        },
-        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): ApplierResult =>
-        {
-            // array attributes get removed after being enumerated
-            return { "shouldDelete": true };
+            return directives;
+           
         }
     },
     {
-        matchName: "does.renameWithFormat",
-        priority: 6,
-        overridesBase: false,
-        willApply: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): boolean =>
+        matchName: "does.removeDirectives",
+        priority: 2,
+        overridesBase: true,
+        alterDirectives: (wrtDoc: ICdmDocumentDef, resTrait: ResolvedTrait, directives: Set<string>): Set<string> =>
         {
-            return (resAtt ? true : false);
+            let allRemoved = resTrait.parameterValues.getParameterValue("directives").getValueString(wrtDoc);
+
+            if (allRemoved) {
+                directives = new Set<string>(directives);
+                allRemoved.split(',').forEach(d=> {
+                    if (directives.has(d))
+                        directives.delete(d);
+                });
+            }
+            return directives;
+           
+        }
+    },
+    {
+        matchName: "does.selectAttributes",
+        priority: 1,
+        overridesBase: false,
+        alterDirectives: (wrtDoc: ICdmDocumentDef, resTrait: ResolvedTrait, directives: Set<string>): Set<string> =>
+        {
+            let selects = resTrait.parameterValues.getParameterValue("selects").getValueString(wrtDoc);
+            
+            if (selects == "one") {
+                directives = new Set<string>(directives);
+                directives.add("selectOne");
+            }
+            return directives;
         },
-        attributeApply: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait): ApplierResult =>
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
+        {
+            let selectsOne = directives.has("selectOne");
+            let referenceOnly = directives.has("referenceOnly");
+            let isArray = directives.has("isArray");
+            if (selectsOne) {
+                // when one class is being pulled from a list of them
+                // add the class attribute if the entity is being referenced and a FK will get added
+                // or if the entity is 
+                //if (!referenceOnly || (referenceOnly && !isArray))
+                    return true;
+            }
+            return false;
+        },
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
+        {
+            // get the added attribute and applied trait
+            let sub = resTrait.parameterValues.getParameterValue("storeSelectionInAttribute").value as ICdmAttributeDef;
+            
+            let newState:any = {};
+            if (resAtt && resAtt.applierState)
+                Object.assign(newState,resAtt.applierState);
+            newState.flex_remove = false;
+
+            return { "addedAttribute": sub, applierState: newState };
+        },
+        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, directives: Set<string>): ApplierResult =>
+        {
+            // make a new attributeContext to differentiate this supporting att
+            attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeSupporting, "_selectedEntityName", null, false);
+            return { attCtx: attCtx };
+        }
+    },
+    {
+        matchName: "does.disambiguateNames",
+        priority: 6,
+        overridesBase: true,
+        willApply: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
+        {
+            if (resAtt && !directives.has("structured"))
+                return true;
+            return false;
+        },
+        attributeApply: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
         {
             if (resAtt) {
                 let format = resTrait.parameterValues.getParameterValue("renameFormat").getValueString(wrtDoc);
-                let ordinal = resTrait.parameterValues.getParameterValue("ordinal").getValueString(wrtDoc);
+                let ordinal = resAtt.applierState && resAtt.applierState.flex_currentOrdinal != undefined ? resAtt.applierState.flex_currentOrdinal.toString() : "";
                 if (!format)
                     return { "shouldDelete": false };
                 let formatLength = format.length;
@@ -10997,7 +11208,121 @@ let PrimitiveAppliers: traitApplier[] = [
                 }
                 resAtt.resolvedName = result;
             }
-            return { "shouldDelete": false };;
+            return { "shouldDelete": false };
         }
+    },
+    {
+        matchName: "does.referenceEntityVia",
+        priority: 8,
+        overridesBase: false,
+        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
+        {
+            let refOnly = directives && directives.has("referenceOnly");
+            let visible = true;
+            if (refOnly && resAtt) {
+                // if in reference only mode, then remove everything that isn't marked to retain
+                visible = false;
+                if (resAtt.applierState && resAtt.applierState.flex_remove === false)
+                    visible = true;
+            }
+            return { "shouldDelete": !visible };
+        },
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
+        {
+            let refOnly = directives && directives.has("referenceOnly");
+            return refOnly;
+        },
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
+        {
+            // get the added attribute and applied trait
+            let sub = resTrait.parameterValues.getParameterValue("foreignKeyAttribute").value as ICdmAttributeDef;
+            let newState:any = {};
+            if (resAtt && resAtt.applierState)
+                Object.assign(newState,resAtt.applierState);
+            newState.flex_remove = false;
+
+            return { "addedAttribute": sub,  applierState: newState  };
+        },
+        createContext: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, attCtx: ICdmAttributeContext, directives: Set<string>): ApplierResult =>
+        {
+            // make a new attributeContext to differentiate this supporting att
+            let refOnly = directives && directives.has("referenceOnly");
+            if (refOnly)
+                attCtx = AttributeContextImpl.createChildUnder(wrtDoc, attCtx, cdmAttributeContextType.addedAttributeIdentity, "_foreignKey", null, false);
+            return { attCtx: attCtx };
+        }
+    },
+    {
+        matchName: "does.explainArray",
+        priority: 9,
+        overridesBase: false,
+        willAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): boolean =>
+        {
+            let isArray = directives.has("isArray") && !directives.has("structured");
+            return isArray && resAtt ? true : false;
+        },
+        attributeAdd: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
+        {
+            let newAtt: ICdmAttributeDef;
+            let newState:any = {};
+            let continueAdding = false;
+            if (resAtt) {
+                if (!resAtt.applierState)
+                    resAtt.applierState = {};
+                Object.assign(newState,resAtt.applierState);
+                if (resAtt.applierState.array_finalOrdinal == undefined) {
+                    // get the fixed size (not set means no fixed size)
+                    let fixedSizeString = resTrait.parameterValues.getParameterValue("maximumExpansion").getValueString(wrtDoc);
+                    if (fixedSizeString && fixedSizeString != "undefined") {
+                        let fixedSize = Number.parseInt(fixedSizeString);
+                        // marks this att as the template for expansion
+                        resAtt.applierState.array_template = resAtt;
+                        resAtt.applierState.flex_remove = true;
+                        // give back the attribute that holds the count first
+                        newState.array_finalOrdinal = fixedSize - 1;
+                        newAtt = resTrait.parameterValues.getParameterValue("storeCountInAttribute").value as ICdmAttributeDef;
+                        continueAdding = true;
+                    }
+                }
+                else {
+                    if (resAtt.applierState.flex_currentOrdinal == undefined) {
+                        // first time 
+                        newState.flex_currentOrdinal = 0;
+                    }
+                    else
+                        newState.flex_currentOrdinal = resAtt.applierState.flex_currentOrdinal + 1;
+                    if (newState.flex_currentOrdinal <= resAtt.applierState.array_finalOrdinal) {
+                        newAtt = (((resAtt.applierState.array_template) as ResolvedAttribute).target as ICdmAttributeDef).copy(wrtDoc);
+                        // and get rid of is.array trait
+                        newAtt.removeTraitDef(wrtDoc, resTrait.trait);
+                        continueAdding = true;
+                    }
+                    newState.array_finalOrdinal = resAtt.applierState.array_finalOrdinal;
+                }
+                newState.array_template = resAtt.applierState.array_template;
+            }
+            return { addedAttribute: newAtt, continueApplying: continueAdding, applierState: newState };
+        },
+        alterDirectives: (wrtDoc: ICdmDocumentDef, resTrait: ResolvedTrait, directives: Set<string>): Set<string> =>
+        {
+            let isArray = resTrait.parameterValues.getParameterValue("isArray").getValueString(wrtDoc);
+            
+            if (isArray == "true") {
+                directives = new Set<string>(directives);
+                directives.add("isArray");
+            }
+            return directives;
+        },
+        attributeRemove: (wrtDoc: ICdmDocumentDef, resAtt: ResolvedAttribute, resTrait: ResolvedTrait, directives: Set<string>): ApplierResult =>
+        {
+            let isArray = directives.has("isArray") && !directives.has("structured");
+            // only remove the template attributes that seeded the array expansion
+            let isTemplate = resAtt.applierState && resAtt.applierState.flex_remove;
+            return { "shouldDelete": isArray && isTemplate};
+        }
+
     }
+
+
+
 ];  

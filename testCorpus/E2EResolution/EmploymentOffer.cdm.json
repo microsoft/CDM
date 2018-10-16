@@ -30,7 +30,37 @@
                 },
                 {
                     "name": "notificationVia",
-                    "relationship": "hasA",
+                    "relationship": {
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "does.disambiguateNames",
+                                "arguments": [
+                                    "notify_{n}"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.referenceEntityVia",
+                                "arguments": [
+                                    {
+                                        "name": "foreignKeyAttribute",
+                                        "value": {
+                                            "name": "notificationViaCommId",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one"
+                                ]
+                            }
+                        ]
+                    },
                     "entity": {
                         "entityReference": {
                             "entityName": "allComms",
@@ -50,26 +80,24 @@
                                 }
                             ]
                         }
-                    },
-                    "appliedTraits": [
-                        {
-                            "traitReference": "does.renameWithFormat",
-                            "arguments": [
-                                "notify_{n}"
-                            ]
-                        }
-                    ]
+                    }
                 },
                 {
                     "name": "responseVia",
                     "relationship": {
-                        "relationshipReference": "referencesA",
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.disambiguateNames",
+                                "arguments": [
+                                    "notify_{n}"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "responseViaCommId",
                                             "relationship": "hasA",
@@ -77,7 +105,21 @@
                                         }
                                     }
                                 ]
+
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.imposeDirectives",
+                                "arguments": [
+                                    "referenceOnly"
+                                ]
                             }
+
                         ]
                     },
                     "entity": {

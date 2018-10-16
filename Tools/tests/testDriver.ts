@@ -7,8 +7,13 @@ class Startup {
     public static main(): number {
 
         let cdmCorpus : cdm.Corpus;
-        let pathToDocRoot = "../../schemaDocuments";
-//        let pathToDocRoot = "../../testCorpus";
+        let testCorpus = true;
+        let resolveEnt = true;
+        let pathToDocRoot : string;
+        if (testCorpus)
+            pathToDocRoot = "../../testCorpus";
+        else
+            pathToDocRoot = "../../schemaDocuments";
 
         let version = "";
         //let version = "0.7"; // explicitly use the explicit version docs to get versioned schema refs too
@@ -16,15 +21,25 @@ class Startup {
         cdmCorpus = new cdm.Corpus(pathToDocRoot);
         cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
-        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
-//        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("E2EResolution"), ["analyticalCommon"], version); 
+        if (testCorpus)
+            loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("E2EResolution"), ["analyticalCommon"], version); 
+        else
+            loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
 
         loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
             
-            let ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
-//            let ent = cdmCorpus.getObjectFromCorpusPath("/E2EResolution/EmploymentOffer.cdm.json/EmploymentOffer") as cdm.ICdmEntityDef;
-//            let x = ent.createResolvedEntity(ent.declaredInDocument, "RESOLVED_KILL");
-//            loc.persistDocument(cdmCorpus.rootPath, x.declaredInDocument, {stringRefs:false, removeSingleRowLocalizedTableTraits:true});
+            if (resolveEnt) {
+                let ent: cdm.ICdmEntityDef;
+                if (testCorpus)
+                    ent = cdmCorpus.getObjectFromCorpusPath("/E2EResolution/AllRels.cdm.json/AllRels") as cdm.ICdmEntityDef;
+                else
+                    ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
+
+                let directives = new Set<string>
+                    (["xstructured","referenceOnly"]);
+                let x = ent.createResolvedEntity(ent.declaredInDocument, "RESOLVED_KILL", directives);
+                loc.persistDocument(cdmCorpus.rootPath, x.declaredInDocument, {stringRefs:false, removeSingleRowLocalizedTableTraits:true});
+            }
 
             console.log('list all resolved');
             this.listAllResolved(cdmCorpus);
