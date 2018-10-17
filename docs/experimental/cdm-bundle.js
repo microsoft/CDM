@@ -1943,7 +1943,7 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.describedAs":
                             persistedObject.description = this.getLocalizedTraitTable("is.localized.describedAs");
-                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
+                            if (options && options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
                                 let cEnt = this.getTraitTable("is.localized.describedAs", "localizedDisplayText");
                                 if (cEnt.getConstantValues().length == 1)
                                     removedIndexes.push(i);
@@ -1951,7 +1951,7 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.displayedAs":
                             persistedObject.displayName = this.getLocalizedTraitTable("is.localized.displayedAs");
-                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
+                            if (options && options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
                                 let cEnt = this.getTraitTable("is.localized.displayedAs", "localizedDisplayText");
                                 if (cEnt.getConstantValues().length == 1)
                                     removedIndexes.push(i);
@@ -2018,7 +2018,7 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.describedAs":
                             persistedObject.description = this.getLocalizedTraitTable("is.localized.describedAs");
-                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
+                            if (options && options.removeSingleRowLocalizedTableTraits && persistedObject.description) {
                                 let cEnt = this.getTraitTable("is.localized.describedAs", "localizedDisplayText");
                                 if (cEnt.getConstantValues().length == 1)
                                     removedIndexes.push(i);
@@ -2026,7 +2026,7 @@ class traitToPropertyMap {
                             break;
                         case "is.localized.displayedAs":
                             persistedObject.displayName = this.getLocalizedTraitTable("is.localized.displayedAs");
-                            if (options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
+                            if (options && options.removeSingleRowLocalizedTableTraits && persistedObject.displayName) {
                                 let cEnt = this.getTraitTable("is.localized.displayedAs", "localizedDisplayText");
                                 if (cEnt.getConstantValues().length == 1)
                                     removedIndexes.push(i);
