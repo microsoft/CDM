@@ -1721,7 +1721,7 @@ class ResolvedEntity {
         this.resolvedName = this.entity.getName();
         this.resolvedTraits = this.entity.getResolvedTraits(wrtDoc);
         this.resolvedAttributes = this.entity.getResolvedAttributes(wrtDoc, directives);
-        this.resolvedEntityReferences = this.entity.getResolvedEntityReferences(wrtDoc);
+        this.resolvedEntityReferences = this.entity.getResolvedEntityReferences(wrtDoc, directives);
     }
     get sourceName() {
         return this.getTraitToPropertyMap().getPropertyValue("sourceName");
@@ -2784,8 +2784,18 @@ class cdmObject {
         {
             let rasbCache;
             // use a cached version unless we are building an attributeContext.
-            if (!(under || directives))
-                rasbCache = this.ctx.getCache(this, wrtDoc, "rasb");
+            let tag = "rasb";
+            if (directives) {
+                let sorted = new Array();
+                directives.forEach(d => sorted.push(d));
+                sorted = sorted.sort();
+                sorted.forEach(d => {
+                    tag += "-" + d;
+                });
+            }
+            if (!under) {
+                rasbCache = this.ctx.getCache(this, wrtDoc, tag);
+            }
             if (!rasbCache) {
                 if (this.resolvingAttributes) {
                     // re-entered this attribute through some kind of self or looping reference.
@@ -2796,7 +2806,7 @@ class cdmObject {
                 this.resolvingAttributes = false;
                 // save this as the cached version (unless building a context)
                 if (!under)
-                    this.ctx.setCache(this, wrtDoc, "rasb", rasbCache);
+                    this.ctx.setCache(this, wrtDoc, tag, rasbCache);
             }
             return rasbCache.ras;
         }
@@ -5450,7 +5460,7 @@ class TypeAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    getResolvedEntityReferences(wrtDoc) {
+    getResolvedEntityReferences(wrtDoc, directives) {
         //let bodyCode = () =>
         {
             return null;
@@ -5719,19 +5729,30 @@ class EntityAttributeImpl extends AttributeImpl {
         }
         //return p.measure(bodyCode);
     }
-    getResolvedEntityReferences(wrtDoc) {
+    getResolvedEntityReferences(wrtDoc, directives) {
         //let bodyCode = () =>
         {
             let relRts;
             if (this.relationship)
                 relRts = this.getRelationshipRef().getResolvedTraits(wrtDoc, cdmTraitSet.all);
-            if (relRts && relRts.find(wrtDoc, "does.referenceEntity") || relRts.find(wrtDoc, "does.referenceEntityVia")) {
+            let legacyRel = false;
+            let flexRel = false;
+            let flexArray = false;
+            if (relRts) {
+                legacyRel = relRts.find(wrtDoc, "does.referenceEntity") ? true : false;
+                flexRel = (relRts.find(wrtDoc, "does.referenceEntityVia") ? true : false) && directives && directives.has('referenceOnly');
+                let arrayTrait = relRts.find(wrtDoc, "does.explainArray");
+                if (arrayTrait) {
+                    flexArray = arrayTrait.parameterValues.getParameterValue("isArray").getValueString(wrtDoc) == "true";
+                }
+            }
+            if (legacyRel || (flexRel && !flexArray)) {
                 // only place this is used, so logic here instead of encapsulated. 
                 // make a set and the one ref it will hold
                 let rers = new ResolvedEntityReferenceSet(wrtDoc);
                 let rer = new ResolvedEntityReference(wrtDoc);
                 // referencing attribute(s) come from this attribute
-                rer.referencing.rasb.mergeAttributes(this.getResolvedAttributes(wrtDoc));
+                rer.referencing.rasb.mergeAttributes(this.getResolvedAttributes(wrtDoc, directives));
                 let resolveSide = (entRef) => {
                     let sideOther = new ResolvedEntityReferenceSide(wrtDoc);
                     if (entRef) {
@@ -5751,7 +5772,7 @@ class EntityAttributeImpl extends AttributeImpl {
                                     if (otherAttribute) {
                                         if (!otherAttribute.getName)
                                             otherAttribute.getName();
-                                        sideOther.rasb.ownOne(sideOther.entity.getResolvedAttributes(wrtEntityDoc).get(otherAttribute.getName()).copy(wrtEntityDoc));
+                                        sideOther.rasb.ownOne(sideOther.entity.getResolvedAttributes(wrtEntityDoc, directives).get(otherAttribute.getName()).copy(wrtEntityDoc));
                                     }
                                 }
                             }
@@ -5860,14 +5881,14 @@ class AttributeGroupReferenceImpl extends cdmObjectRef {
         }
         //return p.measure(bodyCode);
     }
-    getResolvedEntityReferences(wrtDoc) {
+    getResolvedEntityReferences(wrtDoc, directives) {
         //let bodyCode = () =>
         {
             let ref = this.getResolvedReference(wrtDoc);
             if (ref)
-                return ref.getResolvedEntityReferences(wrtDoc);
+                return ref.getResolvedEntityReferences(wrtDoc, directives);
             if (this.explicitReference)
-                return this.explicitReference.getResolvedEntityReferences(wrtDoc);
+                return this.explicitReference.getResolvedEntityReferences(wrtDoc, directives);
             return null;
         }
         //return p.measure(bodyCode);
@@ -6041,14 +6062,14 @@ class AttributeGroupImpl extends cdmObjectDef {
         }
         //return p.measure(bodyCode);
     }
-    getResolvedEntityReferences(wrtDoc) {
+    getResolvedEntityReferences(wrtDoc, directives) {
         //let bodyCode = () =>
         {
             let rers = new ResolvedEntityReferenceSet(wrtDoc);
             if (this.members) {
                 let l = this.members.length;
                 for (let i = 0; i < l; i++) {
-                    rers.add(this.members[i].getResolvedEntityReferences(wrtDoc));
+                    rers.add(this.members[i].getResolvedEntityReferences(wrtDoc, directives));
                 }
             }
             return rers;
@@ -7009,7 +7030,7 @@ class EntityImpl extends cdmObjectDef {
     getResolvedEntity(wrtDoc, directives) {
         return new ResolvedEntity(wrtDoc, this, directives);
     }
-    getResolvedEntityReferences(wrtDoc) {
+    getResolvedEntityReferences(wrtDoc, directives) {
         //let bodyCode = () =>
         {
             let entRefSetCache = this.ctx.getCache(this, wrtDoc, "entRefSet");
@@ -7022,7 +7043,7 @@ class EntityImpl extends cdmObjectDef {
                     if (extDef) {
                         if (extDef === this)
                             extDef = extRef.getObjectDef(wrtDoc);
-                        let inherited = extDef.getResolvedEntityReferences(wrtDoc);
+                        let inherited = extDef.getResolvedEntityReferences(wrtDoc, directives);
                         if (inherited) {
                             inherited.set.forEach((res) => {
                                 res = res.copy();
@@ -7036,7 +7057,7 @@ class EntityImpl extends cdmObjectDef {
                     let l = this.hasAttributes.length;
                     for (let i = 0; i < l; i++) {
                         // if any refs come back from attributes, they don't know who we are, so they don't set the entity
-                        let sub = this.hasAttributes[i].getResolvedEntityReferences(wrtDoc);
+                        let sub = this.hasAttributes[i].getResolvedEntityReferences(wrtDoc, directives);
                         if (sub) {
                             sub.set.forEach((res) => {
                                 res.referencing.entity = this;
@@ -8924,6 +8945,7 @@ class Corpus extends Folder {
                     // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
                     // the relationsip of the attribute, the attribute definition itself and included attribute groups, any traits applied to the attribute.
                     // make sure there are no duplicates in the final step
+                    let directives = new Set(["referenceOnly", "normalized"]);
                     let entityNesting = 0;
                     let l = this.allDocuments.length;
                     for (let i = 0; i < l; i++) {
@@ -8935,14 +8957,14 @@ class Corpus extends Folder {
                                 entityNesting++; // get resolved att is already recursive, so don't compound
                                 if (entityNesting == 1) {
                                     ctx.relativePath = path;
-                                    iObject.getResolvedAttributes(ctx.currentDoc);
+                                    iObject.getResolvedAttributes(ctx.currentDoc, directives);
                                 }
                             }
                             if (ot == cdmObjectType.attributeGroupDef) {
                                 entityNesting++;
                                 if (entityNesting == 1) {
                                     ctx.relativePath = path;
-                                    iObject.getResolvedAttributes(ctx.currentDoc);
+                                    iObject.getResolvedAttributes(ctx.currentDoc, directives);
                                 }
                             }
                             return false;
@@ -8970,6 +8992,7 @@ class Corpus extends Folder {
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
                     //  entity references
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
+                    let directives = new Set(["normalized", "referenceOnly"]);
                     ctx.statusRpt(cdmStatusLevel.progress, "resolving foreign key references...", null);
                     let entityNesting = 0;
                     // for each entity, find and cache the complete set of references to other entities made through referencesA relationships
@@ -8985,7 +9008,7 @@ class Corpus extends Folder {
                                 entityNesting++;
                                 if (entityNesting == 1) {
                                     ctx.relativePath = path;
-                                    iObject.getResolvedEntityReferences(ctx.currentDoc);
+                                    iObject.getResolvedEntityReferences(ctx.currentDoc, directives);
                                 }
                             }
                             return false;
@@ -9158,10 +9181,9 @@ let PrimitiveAppliers = [
             return directives;
         },
         willAdd: (wrtDoc, resAtt, resTrait, directives) => {
-            let selectsOne = directives.has("selectOne");
-            let referenceOnly = directives.has("referenceOnly");
-            let isArray = directives.has("isArray");
-            if (selectsOne) {
+            let selectsOne = directives && directives.has("selectOne");
+            let isNorm = directives && directives.has("referenceOnly") && directives.has("isArray") && directives.has("normalized");
+            if (selectsOne && !isNorm) {
                 // when one class is being pulled from a list of them
                 // add the class attribute if the entity is being referenced and a FK will get added
                 // or if the entity is 
@@ -9255,8 +9277,9 @@ let PrimitiveAppliers = [
             return { "shouldDelete": !visible };
         },
         willAdd: (wrtDoc, resAtt, resTrait, directives) => {
+            let isNorm = directives && directives.has("isArray") && directives.has("normalized");
             let refOnly = directives && directives.has("referenceOnly");
-            return refOnly;
+            return refOnly && !isNorm;
         },
         attributeAdd: (wrtDoc, resAtt, resTrait, directives) => {
             // get the added attribute and applied trait
@@ -9280,8 +9303,9 @@ let PrimitiveAppliers = [
         priority: 9,
         overridesBase: false,
         willAdd: (wrtDoc, resAtt, resTrait, directives) => {
+            let isNorm = directives.has("referenceOnly") && directives.has("normalized");
             let isArray = directives.has("isArray") && !directives.has("structured");
-            return isArray && resAtt ? true : false;
+            return isArray && resAtt && !isNorm ? true : false;
         },
         attributeAdd: (wrtDoc, resAtt, resTrait, directives) => {
             let newAtt;

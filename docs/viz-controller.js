@@ -440,7 +440,8 @@ function indexResolvedEntities() {
     // now confident that lookup should work, cache all the relationship complexity
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState == 1 && entState.entity) {
-            var rels = entState.entity.getResolvedEntityReferences(entState.entity.declaredInDocument);
+            let directives = new Set(["normalized", "referenceOnly"]); // default for relational vis
+            var rels = entState.entity.getResolvedEntityReferences(entState.entity.declaredInDocument, directives);
             if (rels) {
                 rels.set.forEach(resEntRef => {
                     var referencingEntity = resEntRef.referencing.entity;
@@ -631,6 +632,8 @@ function getResolutionDirectives() {
     let directives = new Set();
     if (controller.checkboxDirectiveRelational.checked)
         directives.add("referenceOnly");
+    if (controller.checkboxDirectiveNormalized.checked)
+        directives.add("normalized");
     if (controller.checkboxDirectiveStructured.checked)
         directives.add("structured");
     return directives;
@@ -740,7 +743,8 @@ function messageHandleItem(messageType, data1, data2) {
                             if (entityStateThis.referencedEntityNames.has(entitySelcted.getName())) {
                                 // yes, something with the same name, but to be specific we must resolve this entity's relationships from the POV of the selected document
                                 isReferencing = false;
-                                var rels = entityStateThis.entity.getResolvedEntityReferences(controller.cdmDocSelected);
+                                let directives = new Set(["normalized", "referenceOnly"]);
+                                var rels = entityStateThis.entity.getResolvedEntityReferences(controller.cdmDocSelected, getResolutionDirectives());
                                 if (rels) {
                                     rels.set.some(resEntRef => {
                                         return resEntRef.referenced.some(resEntRefSideReferenced => {
