@@ -8,16 +8,31 @@
             "type": "object",
             "description": "used to bring referenced entity definitions into scope of this document",
             "properties": {
+                "corpusPath": {
+                    "type": "string",
+                    "description": "The relative or absolute (from the root of the corpus folder hierarchy) location of a document file and object"
+                },
                 "uri": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "deprecated, replaced by corpusPath"
                 },
                 "moniker": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A prefix that can be added to disambiguate different imported objects that may share a name. References to object defined in this imported document (or in the documents it further imports) must start with the moniker name such as myMoniker/MyEntity"
                 }
             },
             "additionalProperties": false,
-            "required": [
-                "uri"
+            "oneOf": [
+                {
+                    "required": [
+                        "corpusPath"
+                    ]
+                },
+                {
+                    "required": [
+                        "uri"
+                    ]
+                }
             ]
         },
         "constant": {
@@ -362,7 +377,7 @@
                         ]
                     }
                 },
-                "attributeContext" : {
+                "attributeContext": {
                     "type": "string"
                 },
                 "dataFormat": {
@@ -391,11 +406,18 @@
                 },
                 "defaultValue": {
                     "oneOf": [
-                        {"type": "string"},
-                        {"type": "array", "items": {
-                            "type":"object"
-                        }},
-                        {"type" : "object"}
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        },
+                        {
+                            "type": "object"
+                        }
                     ]
                 },
                 "maximumValue": {
@@ -407,10 +429,9 @@
                 "maximumLength": {
                     "type": "number"
                 },
-                "valueConstrainedToList" : {
-                    "type" : "boolean"
+                "valueConstrainedToList": {
+                    "type": "boolean"
                 }
-
             },
             "additionalProperties": false,
             "required": [
@@ -621,11 +642,11 @@
                     "type": "boolean",
                     "description": "ugly traits are usually internal or structural and shouldn't be shown in a UX aimed at regular people"
                 },
-                "associatedProperties" : {
-                    "type":"array",
+                "associatedProperties": {
+                    "type": "array",
                     "description": "the list of Entity or Attribute properties that this trait informs and reflects.",
                     "items": {
-                        "type" : "string"
+                        "type": "string"
                     }
                 }
             },
@@ -634,8 +655,8 @@
                 "traitName"
             ]
         },
-        "attributeContext" : {
-            "type" : "object",
+        "attributeContext": {
+            "type": "object",
             "description": "A container representing shared lineage, ownership and context in a hierachy describing the relatioships among an entities attributes.",
             "properties": {
                 "explanation": {
@@ -691,7 +712,6 @@
                 "type",
                 "name"
             ]
-
         },
         "entity": {
             "type": "object",
@@ -727,7 +747,7 @@
                         ]
                     }
                 },
-                "attributeContext" : {
+                "attributeContext": {
                     "$ref": "#/definitions/attributeContext"
                 },
                 "hasAttributes": {
@@ -762,12 +782,11 @@
                     "type": "string"
                 },
                 "cdmSchemas": {
-                    "type" : "array",
+                    "type": "array",
                     "items": {
-                        "type":"string"
+                        "type": "string"
                     }
                 }
-
             },
             "additionalProperties": false,
             "required": [

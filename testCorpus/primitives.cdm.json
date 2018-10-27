@@ -585,7 +585,14 @@
                         "name" : "arrayMemberCount",
                         "dataType" : "integer"
                     }
+                },
+                {
+                    "name": "startingIndex",
+                    "dataType": "integer",
+                    "explanation": "The starting point for indexes used to expand the array",
+                    "defaultValue" : "0"
                 }
+
             ]
         },
         {
@@ -624,7 +631,14 @@
                         "name" : "foreignKey",
                         "dataType" : "entityId"
                     }
+                },
+                {
+                    "name": "referencesOnlyAfterDepth",
+                    "dataType": "integer",
+                    "explanation": "After a given depth of non-reference nesting using flexible entity relationships, the 'referenceOnly' directive will be imposed",
+                    "defaultValue" : "2"
                 }
+
             ]
         },
         {
@@ -637,6 +651,29 @@
                 "does.selectAttributes",
                 "does.referenceEntityVia"
             ]
+        },
+        {
+            "traitName": "is.linkedEntity",
+            "explanation": "base for traits that are used to decorate the attributes and artifacts created by the traits on the hasFlexibleRelationshipWithEntity relationship."
+        },
+        {
+            "traitName": "is.linkedEntity.identifier",
+            "extendsTrait": "is.linkedEntity",
+            "explanation": "Marks the attribute(s) that hold foreign key references to a linked (used as an attribute) entity"
+        },
+        {
+            "traitName": "is.linkedEntity.name",
+            "extendsTrait": "is.linkedEntity",
+            "explanation": "Marks an attribute that contains the entity name or 'class' for the situation where one entity links to (uses as an attribute) a set of possible entities."
+        },
+        {
+            "traitName": "is.linkedEntity.array",
+            "explanation": "Identifies the case when one entity links to (uses as an attribute) an array of other entities."
+        },
+        {
+            "traitName": "is.linkedEntity.array.count",
+            "explanation": "Marks an attribute that contains the count of items in the array of linked (used as an attribute) entities"
         }
+
     ]
 }

@@ -1,20 +1,14 @@
 {
-  "$schema": "../../schema.cdm.json",
+  "$schema": "../schema.cdm.json",
   "schemaVersion": "0.7.0",
   "imports": [
     {
-      "uri": "/foundations.cdm.json"
-    },
-    {
-      "uri": "LocalizedName.cdm.json"
-    },
-    {
-      "uri": "LinguisticAlternate.cdm.json"
+      "uri": "_allImports.cdm.json"
     }
   ],
   "definitions": [
     {
-      "entityName": "Taxonomy",
+      "entityName": "WebInfo",
       "extendsEntity": "CdmObject",
       "exhibitsTraits": [
         {
@@ -26,7 +20,7 @@
                 "constantValues": [
                   [
                     "en",
-                    "a taxonomy item."
+                    "Web Info"
                   ]
                 ]
               }
@@ -36,86 +30,80 @@
       ],
       "hasAttributes": [
         {
-          "name": "taxonomyId",
+          "name": "webInfoId",
           "relationship": "identifiedBy",
-          "dataType": "integer"
+          "dataFormat": "string"
         },
         {
-          "name": "code",
-          "dataType": "string",
-          "description": "the code used to identify the taxonomy member."
-        },
-        {
-          "name": "description",
+          "name": "details",
           "relationship": {
             "relationshipReference": "hasFlexibleRelationshipWithEntity",
             "appliedTraits": [
               {
                 "traitReference": "does.disambiguateNames",
                 "arguments": [
-                  "description_{n}{o}"
-                ]
-              },
-              {
-                "traitReference": "does.explainArray",
-                "arguments": [
-                  {
-                    "name": "isArray",
-                    "value": "true"
-                  },
-                  {
-                    "name": "maximumExpansion",
-                    "value": "4"
-                  }
+                  "details_{n}"
                 ]
               }
             ]
           },
           "entity": {
-            "entityReference": "LocalizedName",
+            "entityReference": "WebPageDetails",
             "appliedTraits": [
               {
                 "traitReference": "is.identifiedBy",
                 "arguments": [
-                  "LocalizedName/(resolvedAttributes)/nameId"
+                  "WebPageDetails/(resolvedAttributes)/detailId"
                 ]
               }
             ]
           }
         },
         {
-          "name": "alternate",
+          "name": "interaction",
           "relationship": {
             "relationshipReference": "hasFlexibleRelationshipWithEntity",
             "appliedTraits": [
               {
                 "traitReference": "does.disambiguateNames",
                 "arguments": [
-                  "alternate_{n}{o}"
-                ]
-              },
-              {
-                "traitReference": "does.explainArray",
-                "arguments": [
-                  {
-                    "name": "isArray",
-                    "value": "true"
-                  },
-                  {
-                    "name": "maximumExpansion",
-                    "value": "4"
-                  }
+                  "interaction_{n}"
                 ]
               }
             ]
           },
           "entity": {
-            "entityReference": "LinguisticAlternate",
+            "entityReference": "WebInteraction",
             "appliedTraits": [
               {
                 "traitReference": "is.identifiedBy",
                 "arguments": [
-                  "LinguisticAlternate/(resolvedAttributes)/alternateId"
+                  "WebInteraction/(resolvedAttributes)/interactionId"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "referrer_{n}"
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "WebReferrer",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "WebReferrer/(resolvedAttributes)/URL"
                 ]
               }
             ]

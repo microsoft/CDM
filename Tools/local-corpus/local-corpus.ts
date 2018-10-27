@@ -33,7 +33,7 @@ export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, finishStep : cdm.cdmV
             console.log('validate schema:');
             if (r) {
                 let validateStep = (currentStep:cdm.cdmValidationStep)=> {
-                    return cdmCorpus.resolveReferencesAndValidate(currentStep, finishStep).then((nextStep:cdm.cdmValidationStep) => {
+                    return cdmCorpus.resolveReferencesAndValidate(currentStep, finishStep, undefined).then((nextStep:cdm.cdmValidationStep) => {
                         if (nextStep == cdm.cdmValidationStep.error) {
                             console.log('validation step failed');
                         }
@@ -96,31 +96,32 @@ export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef
 }
 
 
-export function persistCorpus(cdmCorpus : cdm.Corpus, options?: cdm.copyOptions) {
+export function persistCorpus(cdmCorpus : cdm.Corpus, directives: cdm.TraitDirectiveSet, options?: cdm.copyOptions) {
     if (cdmCorpus && cdmCorpus.getSubFolders() && cdmCorpus.getSubFolders().length == 1) 
-        persistCorpusFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0], options);
+        persistCorpusFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0], directives, options);
 }
 
-export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolderDef, options?: cdm.copyOptions): void {
+export function persistCorpusFolder(rootPath : string, cdmFolder : cdm.ICdmFolderDef, directives: cdm.TraitDirectiveSet, options?: cdm.copyOptions): void {
     if (cdmFolder) {
         let folderPath = rootPath + cdmFolder.getRelativePath();
         if (!existsSync(folderPath))
             mkdirSync(folderPath);
         if (cdmFolder.getDocuments())
             cdmFolder.getDocuments().forEach(doc => {
-                persistDocument(rootPath, doc, options);
+                let resOpt: cdm.resolveOptions = {wrtDoc: doc, directives: directives};
+                persistDocument(rootPath, resOpt, options);
             });
         if (cdmFolder.getSubFolders()) {
             cdmFolder.getSubFolders().forEach(f => {
-                persistCorpusFolder(rootPath, f, options);
+                persistCorpusFolder(rootPath, f, directives, options);
             });
         }
     }
 }
 
-export function persistDocument(rootPath : string, cdmDoc : cdm.ICdmDocumentDef, options?: cdm.copyOptions) {
-    let docPath = rootPath + cdmDoc.getFolder().getRelativePath() + cdmDoc.getName();
-    let data = cdmDoc.copyData(cdmDoc, options);
+export function persistDocument(rootPath : string, resOpt : cdm.resolveOptions, options?: cdm.copyOptions) {
+    let docPath = rootPath + resOpt.wrtDoc.getFolder().getRelativePath() + resOpt.wrtDoc.getName();
+    let data = resOpt.wrtDoc.copyData(resOpt, options);
     let content = JSON.stringify(data, null, 4);
     writeFileSync(docPath, content);
 }

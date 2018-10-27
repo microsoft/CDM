@@ -7,8 +7,8 @@ class Startup {
     public static main(): number {
 
         let cdmCorpus : cdm.Corpus;
-        let testCorpus = true;
-        let resolveEnt = true;
+        let testCorpus = false;
+        let resolveEnt = false;
         let pathToDocRoot : string;
         if (testCorpus)
             pathToDocRoot = "../../testCorpus";
@@ -27,22 +27,26 @@ class Startup {
             loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
 
         loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
+
+            let directives = new cdm.TraitDirectiveSet(new Set<string>
+                    (["xnormalized", "structured","referenceOnly"]));
             
             if (resolveEnt) {
                 let ent: cdm.ICdmEntityDef;
                 if (testCorpus)
-                    ent = cdmCorpus.getObjectFromCorpusPath("/E2EResolution/AllRels.cdm.json/AllRels") as cdm.ICdmEntityDef;
+                    ent = cdmCorpus.getObjectFromCorpusPath("/E2EResolution/E2EArrayOne.cdm.json/E2EArrayOne") as cdm.ICdmEntityDef;
                 else
                     ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
 
-                let directives = new Set<string>
-                    (["xstructured","referenceOnly"]);
-                let x = ent.createResolvedEntity(ent.declaredInDocument, "RESOLVED_KILL", directives);
-                loc.persistDocument(cdmCorpus.rootPath, x.declaredInDocument, {stringRefs:false, removeSingleRowLocalizedTableTraits:true});
+                let resOpt: cdm.resolveOptions = {wrtDoc: ent.declaredInDocument, directives: directives};
+                let x = ent.createResolvedEntity(resOpt, "RESOLVED_KILL");
+                resOpt.wrtDoc = x.declaredInDocument;
+                loc.persistDocument(cdmCorpus.rootPath, resOpt, {stringRefs:false, removeSingleRowLocalizedTableTraits:true});
             }
 
             console.log('list all resolved');
-            this.listAllResolved(cdmCorpus);
+            directives = new cdm.TraitDirectiveSet(new Set<string>(["normalized","referenceOnly"])); // the default from before.
+            this.listAllResolved(cdmCorpus, directives);
             console.log('done');
 
         }).catch();
@@ -50,7 +54,7 @@ class Startup {
         return 0;
     }
 
-    public static listAllResolved(cdmCorpus : cdm.Corpus) {
+    public static listAllResolved(cdmCorpus : cdm.Corpus, directives: cdm.TraitDirectiveSet) {
         let seen = new Set<string>();
         let spew = new cdm.stringSpewCatcher();
 
@@ -62,8 +66,9 @@ class Startup {
                     if (doc.getDefinitions() && doc.getDefinitions().length)
                         doc.getDefinitions().forEach(def => {
                             if (def.getObjectType() == cdm.cdmObjectType.entityDef) {
-                                let ent = (def as cdm.ICdmEntityDef).getResolvedEntity(doc);
-                                ent.spew(doc, spew, " ", true);
+                                let resOpt: cdm.resolveOptions = {wrtDoc: doc, directives: directives};
+                                let ent = (def as cdm.ICdmEntityDef).getResolvedEntity(resOpt);
+                                ent.spew(resOpt, spew, " ", true);
                             }
                         });
                 });

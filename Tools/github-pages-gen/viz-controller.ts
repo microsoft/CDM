@@ -65,6 +65,8 @@ class Controller {
 
     public backDefinitionButton : any;
     public backResolvedButton : any;
+    public checkboxUgly: any;
+    public labelUgly: any;
 
     public checkboxDirectiveRelational: any;
     public checkboxDirectiveNormalized: any;
@@ -267,7 +269,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                     let base : cdm.ICdmEntityDef;
                     let baseRef = entity.getExtendsEntityRef();
                     if (baseRef) {
-                        base = baseRef.getObjectDef(entity.declaredInDocument); // turn ref into def
+                        base = baseRef.getObjectDef(getResolutionOptions(entity.declaredInDocument)); // turn ref into def
                         if (entity.getName() == base.getName()) // and the names must match. 
                             toRemove.push(base);
                         else
@@ -565,8 +567,9 @@ function indexResolvedEntities() {
     // now confident that lookup should work, cache all the relationship complexity
     controller.idLookup.forEach((entState, id) => {
         if (entState.loadState == 1 && entState.entity) {
-            let directives = new Set<string>(["normalized","referenceOnly"]); // default for relational vis
-            var rels = entState.entity.getResolvedEntityReferences(entState.entity.declaredInDocument, directives);
+            let directives = new cdm.TraitDirectiveSet(new Set<string>(["referenceOnly", "normalized"])); // default for relational vis
+            let resOpt: cdm.resolveOptions = {wrtDoc: entState.entity.declaredInDocument, directives: directives};
+            var rels = entState.entity.getResolvedEntityReferences(resOpt);
             if (rels) {
                 rels.set.forEach(resEntRef => {
                     var referencingEntity = resEntRef.referencing.entity;
@@ -691,7 +694,7 @@ function resolveCorpus(messageType : string) {
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits, undefined).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -768,15 +771,17 @@ function messageHandleParentContainerBroadcast(messageType, data1, data2) {
     this.messageHandleBroadcast(messageType, data1, data2)
 }
 
-function getResolutionDirectives(): Set<string> {
-    let directives = new Set<string>();
+function getResolutionOptions(doc: cdm.ICdmDocumentDef): cdm.resolveOptions {
+    let directives = new cdm.TraitDirectiveSet();
     if (controller.checkboxDirectiveRelational.checked)
         directives.add("referenceOnly");
     if (controller.checkboxDirectiveNormalized.checked)
         directives.add("normalized");
     if (controller.checkboxDirectiveStructured.checked)
         directives.add("structured");
-    return directives;
+
+    let resOpt: cdm.resolveOptions = {wrtDoc: doc, directives: directives};
+    return resOpt;
 }
 
 function selectBackground(flag1, flag3, color1, color2, color3) {
@@ -869,12 +874,12 @@ function messageHandleItem(messageType, data1, data2) {
                         let baseThis : cdm.ICdmEntityDef;
                         let baseThisRef = entityStateThis.entity.getExtendsEntityRef();
                         if (baseThisRef)
-                            baseThis = baseThisRef.getObjectDef(controller.cdmDocSelected); // turn ref into def
+                            baseThis = baseThisRef.getObjectDef(getResolutionOptions(controller.cdmDocSelected)); // turn ref into def
                         // selected base
                         let baseSelect : cdm.ICdmEntityDef;
                         let baseSelectRef = entitySelcted.getExtendsEntityRef();
                         if (baseSelectRef)
-                            baseSelect = baseSelectRef.getObjectDef(controller.cdmDocSelected);
+                            baseSelect = baseSelectRef.getObjectDef(getResolutionOptions(controller.cdmDocSelected));
 
                         background = "var(--item-back-normal)";
                         if (baseSelect === entityStateThis.entity)
@@ -893,7 +898,7 @@ function messageHandleItem(messageType, data1, data2) {
                                 // yes, something with the same name, but to be specific we must resolve this entity's relationships from the POV of the selected document
                                 isReferencing = false;
                                 let directives = new Set<string>(["normalized","referenceOnly"]);
-                                var rels = entityStateThis.entity.getResolvedEntityReferences(controller.cdmDocSelected, getResolutionDirectives());
+                                var rels = entityStateThis.entity.getResolvedEntityReferences(getResolutionOptions(controller.cdmDocSelected));
                                 if (rels) {
                                     rels.set.some(resEntRef => {
                                         return resEntRef.referenced.some(resEntRefSideReferenced => {
@@ -952,8 +957,8 @@ function messageHandleList(messageType, data1, data2) {
             // use the resolved attributes from the entity
             let entity = data2.entity as cdm.ICdmEntityDef;
             if (data1 && entity) {
-                let atts = entity.getResolvedAttributes(entity.declaredInDocument, getResolutionDirectives());
-                let inherited = entity.countInheritedAttributes(entity.declaredInDocument, getResolutionDirectives());
+                let atts = entity.getResolvedAttributes(getResolutionOptions(entity.declaredInDocument));
+                let inherited = entity.countInheritedAttributes(getResolutionOptions(entity.declaredInDocument));
                 if (atts) {
                     // atts.set = atts.set.sort(function (l, r) {
                     //     if ((l.insertOrder < inherited) == (r.insertOrder < inherited))
@@ -1170,7 +1175,7 @@ function messageHandleDetailResolved(messageType, data1, data2) {
 
     if (cdmObject) {
         clearResolvedPane();
-        cdmObject = cdmObject.createResolvedEntity(controller.cdmDocSelected, cdmObject.getName() + "_", getResolutionDirectives());
+        cdmObject = cdmObject.createResolvedEntity(getResolutionOptions(controller.cdmDocSelected), cdmObject.getName() + "_");
         controller.cdmDocResolved = cdmObject.declaredInDocument;
         pushResolvedPane(cdmObject);
     }
@@ -1196,7 +1201,7 @@ function detailResolvedJump(path) {
 function drawResolvedStack() {
     if (controller.ResolvedStack && controller.ResolvedStack.length) {
         let cdmObject = controller.ResolvedStack[controller.ResolvedStack.length - 1];
-        let json = cdmObject.copyData(controller.cdmDocResolved, {stringRefs:true, removeSingleRowLocalizedTableTraits:true});
+        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocSelected), {stringRefs:true, removeSingleRowLocalizedTableTraits:true});
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
         jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm,
@@ -1236,8 +1241,8 @@ function messageHandleDetailDefinition(messageType, data1, data2) {
 
     if (cdmObject) {
         clearDefinitionPane();
-        pushDefinitionPane(cdmObject);
         controller.cdmDocDefinition = controller.cdmDocSelected;
+        pushDefinitionPane(cdmObject);
     }
 }
 
@@ -1262,7 +1267,7 @@ function detailDefinitionJump(path) {
 function drawDefinitionStack() {
     if (controller.DefinitionStack && controller.DefinitionStack.length) {
         let cdmObject = controller.DefinitionStack[controller.DefinitionStack.length - 1];
-        let json = cdmObject.copyData(controller.cdmDocDefinition, {stringRefs:true});
+        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocDefinition), {stringRefs:true});
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
         jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm,
@@ -1287,15 +1292,16 @@ function makeParamValue(param, value) {
 
     // if this is a constant table, then expand into an html table
     let entDef: cdm.ICdmConstantEntityDef;
-    if (value.getObjectType() == cdm.cdmObjectType.entityRef && (entDef = value.getObjectDef(controller.cdmDocSelected)) && entDef.getObjectType() == cdm.cdmObjectType.constantEntityDef) {
-        let entShape = entDef.getEntityShape().getObjectDef(controller.cdmDocSelected) as cdm.ICdmConstantEntityDef;
+    let valObj = value as cdm.ICdmObject;
+    if (valObj.getObjectType() == cdm.cdmObjectType.entityRef && (entDef = valObj.getObjectDef(getResolutionOptions(controller.cdmDocSelected))) && entDef.getObjectType() == cdm.cdmObjectType.constantEntityDef) {
+        let entShape = entDef.getEntityShape().getObjectDef(getResolutionOptions(controller.cdmDocSelected)) as cdm.ICdmConstantEntityDef;
         var entValues = entDef.getConstantValues();
         if (!entValues && entValues.length == 0)
             return controller.document.createTextNode("empty table");
 
         var valueTable = controller.document.createElement("table"); valueTable.className = "trait_param_value_table";
         var valueRow = controller.document.createElement("tr"); valueRow.className = "trait_param_value_table_header_row";
-        var shapeAtts = entShape.getResolvedAttributes(controller.cdmDocSelected);
+        var shapeAtts = entShape.getResolvedAttributes(getResolutionOptions(controller.cdmDocSelected));
         let l = shapeAtts.set.length;
         for (var i = 0; i < l; i++) {
             var th = controller.document.createElement("th"); th.className = "trait_param_value_table_header_detail";
@@ -1335,7 +1341,7 @@ function makeParamValue(param, value) {
 }
 
 
-function makeParamRow(param, value) {
+function makeParamRow(param: cdm.ICdmParameterDef, value) {
     var paramRow = controller.document.createElement("tr"); paramRow.className = "trait_parameter_table_detail_row";
     var td = controller.document.createElement("td"); td.className = "trait_parameter_table_detail_name";
     td.appendChild(controller.document.createTextNode(param.getName()));
@@ -1345,7 +1351,7 @@ function makeParamRow(param, value) {
     paramRow.appendChild(td);
     var td = controller.document.createElement("td"); td.className = "trait_parameter_table_detail_type";
     if (param.getDataTypeRef())
-        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef(controller.cdmDocSelected).getName()));
+        td.appendChild(controller.document.createTextNode(param.getDataTypeRef().getObjectDef(getResolutionOptions(controller.cdmDocSelected)).getName()));
     paramRow.appendChild(td)
     var td = controller.document.createElement("td"); td.className = "trait_parameter_table_detail_explanation";
     if (param.getExplanation())
@@ -1354,7 +1360,7 @@ function makeParamRow(param, value) {
     return paramRow;
 }
 
-function makeTraitRow(rt, alt) {
+function makeTraitRow(rt: cdm.ResolvedTrait, alt) {
     var traitRow = controller.document.createElement("tr"); traitRow.className = "trait_table_row";
     var innerTable = controller.document.createElement("table"); innerTable.className = "trait_table_row_table";
     if (alt)
@@ -1410,6 +1416,7 @@ function makeTraitRow(rt, alt) {
 function messageHandleDetailTraits(messageType, data1, data2) {
     if (messageType == "detailTabSelect") {
         this.style.display = (data1 != "trait_tab") ? "none" : "block";
+        controller.labelUgly.style.display= (data1 != "trait_tab") ? "none" : "inline-block";
         return;
     }
 
@@ -1419,7 +1426,7 @@ function messageHandleDetailTraits(messageType, data1, data2) {
     if (messageType == "navigateEntitySelect") {
         if (data2) {
             cdmObject = data2.entity;
-            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
+            rts = cdmObject.getResolvedTraits(getResolutionOptions(controller.cdmDocSelected));
         }
     }
     if (messageType == "listItemSelect") {
@@ -1430,7 +1437,7 @@ function messageHandleDetailTraits(messageType, data1, data2) {
         } else {
             // assume entity
             cdmObject = data1.entity;
-            rts = cdmObject.getResolvedTraits(controller.cdmDocSelected);
+            rts = cdmObject.getResolvedTraits(getResolutionOptions(controller.cdmDocSelected));
         }
     }
 
@@ -1440,10 +1447,18 @@ function messageHandleDetailTraits(messageType, data1, data2) {
             this.removeChild(this.lastChild);
 
         if (rts) {
+            let showUgly = controller.checkboxUgly.checked;
             var traitTable = controller.document.createElement("table"); traitTable.className = "trait_table";
             var l = rts.size;
-            for (let i = 0; i < l; i++)
-                traitTable.appendChild(makeTraitRow(rts.set[i], i % 2 != 0));
+            let r=0;
+            for (let i = 0; i < l; i++) {
+                let rt = rts.set[i];
+                // only show the ugly traits to those who think they can withstand it.
+                if (showUgly || !(rt.trait.ugly)) {
+                    traitTable.appendChild(makeTraitRow(rt, r % 2 != 0));
+                    r++;
+                }
+            }
 
             this.appendChild(traitTable);
         }
@@ -1462,7 +1477,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
 
     if (messageType == "navigateEntitySelect") {
         if (data2) {
-            resolvedObject = data2.entity.getResolvedEntity(controller.cdmDocSelected, getResolutionDirectives());
+            resolvedObject = data2.entity.getResolvedEntity(getResolutionOptions(controller.cdmDocSelected));
         }
     }
     if (messageType == "listItemSelect") {
@@ -1471,7 +1486,7 @@ function messageHandleDetailProperties(messageType, data1, data2) {
             isAtt = true;
         } else {
             // assume entity
-            resolvedObject = data1.entity.getResolvedEntity(controller.cdmDocSelected, getResolutionDirectives());
+            resolvedObject = data1.entity.getResolvedEntity(getResolutionOptions(controller.cdmDocSelected));
         }
     }
 
