@@ -8888,6 +8888,11 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
     {
         //let bodyCode = () =>
         {
+            // this whole resolved entity ref goo will go away when resolved documents are done.
+            // for now, it breaks if structured att sets get made.
+            resOpt = cdmObject.copyResolveOptions(resOpt);
+            resOpt.directives = new TraitDirectiveSet(new Set<string> (["normalized", "referenceOnly"]));
+            
             let ctx=this.ctx as resolveContext; // what it actually is
             let entRefSetCache = ctx.getCache(this, resOpt, "entRefSet") as ResolvedEntityReferenceSet;
             if (!entRefSetCache) {
