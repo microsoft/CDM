@@ -26,11 +26,6 @@ export interface Argument
     value: ArgumentValue;
 }
 
-let isArgument = (object) : object is Argument =>
-{
-    return "value" in object;
-}
-
 export interface Parameter
 {
     explanation?: string;
@@ -127,7 +122,7 @@ export interface AttributeGroupReference
     attributeGroupReference: string | AttributeGroup;
 }
 
-let isAttributeGroupReference = (object): object is AttributeGroupReference =>
+let isAttributeGroupReference = (object: object): object is AttributeGroupReference =>
 {
     return "attributeGroupReference" in object;
 }
@@ -150,7 +145,7 @@ export interface EntityAttribute
     appliedTraits?: (string | TraitReference)[];
 }
 
-let isEntityAttribute = (object: any): object is EntityAttribute =>
+let isEntityAttribute = (object: object): object is EntityAttribute =>
 {
     return "entity" in object;
 }
@@ -4477,7 +4472,7 @@ export class ArgumentImpl extends cdmObjectSimple implements ICdmArgumentDef
 
             let c: ArgumentImpl = new ArgumentImpl(ctx);
 
-            if (isArgument(object)) {
+            if (typeof object !== "string" && object.value) {
                 c.value = cdmObject.createConstant(ctx, object.value);
                 if (object.name)
                     c.name = object.name;
@@ -5495,7 +5490,6 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
                     trait = TraitImpl.instanceFromData(ctx, object.traitReference);
             }
 
-            // TODO: check if !! or length > 0
             let c: TraitReferenceImpl = new TraitReferenceImpl(ctx, trait, simpleReference, !!args);
             if (args) {
                 args.forEach(a => {
@@ -5766,7 +5760,6 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
             if (object.extendsTrait)
                 extendsTrait = TraitReferenceImpl.instanceFromData(ctx, object.extendsTrait);
 
-            // TODO: !! or check if length > 0
             let c: TraitImpl = new TraitImpl(ctx, object.traitName, extendsTrait, !!object.hasParameters);
 
             if (object.explanation)
@@ -6045,13 +6038,13 @@ export class RelationshipReferenceImpl extends cdmObjectRef
                 relationship = object;
             else {
                 simpleReference = false;
+                appliedTraits = object.appliedTraits;
                 if (typeof(object.relationshipReference) === "string")
                     relationship = object.relationshipReference;
                 else 
                     relationship = RelationshipImpl.instanceFromData(ctx, object.relationshipReference);
             }
 
-            // TODO: check if !! or length > 0
             let c: RelationshipReferenceImpl = new RelationshipReferenceImpl(ctx, relationship, simpleReference, !!appliedTraits);
             c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
 
@@ -6152,7 +6145,6 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
         {
             let extendsRelationship: RelationshipReferenceImpl;
             extendsRelationship = cdmObject.createRelationshipReference(ctx, object.extendsRelationship);
-            // TODO: should be !! or check if length > 0
             let c: RelationshipImpl = new RelationshipImpl(ctx, object.relationshipName, extendsRelationship, !!object.exhibitsTraits);
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -6296,7 +6288,6 @@ export class DataTypeReferenceImpl extends cdmObjectRef
                     dataType = DataTypeImpl.instanceFromData(ctx, object.dataTypeReference);
             }
 
-            // TODO: check if !! or length > 0
             let c: DataTypeReferenceImpl = new DataTypeReferenceImpl(ctx, dataType, simpleReference, !!appliedTraits);
             c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
 
@@ -6399,7 +6390,6 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef
             let extendsDataType: DataTypeReferenceImpl;
             extendsDataType = cdmObject.createDataTypeReference(ctx, object.extendsDataType);
 
-            // TODO: check if !! or length > 0
             let c: DataTypeImpl = new DataTypeImpl(ctx, object.dataTypeName, extendsDataType, !!object.exhibitsTraits);
 
             if (object.explanation)
@@ -6816,7 +6806,6 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
     {
         //let bodyCode = () =>
         {
-            // TODO: check if !! or length > 0
             let c: TypeAttributeImpl = new TypeAttributeImpl(ctx, object.name, !!object.appliedTraits);
 
             if (object.explanation)
@@ -7192,7 +7181,6 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
         //let bodyCode = () =>
         {
 
-            // TODO: check if !! or length > 0
             let c: EntityAttributeImpl = new EntityAttributeImpl(ctx, object.name, !!object.appliedTraits);
 
             if (object.explanation)
@@ -8535,7 +8523,6 @@ export class EntityReferenceImpl extends cdmObjectRef implements ICdmObjectRef
                     entity = EntityImpl.instanceFromData(ctx, object.entityReference);
                 }
 
-            // TODO: !! or check if length > 0?
             let c: EntityReferenceImpl = new EntityReferenceImpl(ctx, entity, simpleReference, !!appliedTraits);
             c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
             return c;
