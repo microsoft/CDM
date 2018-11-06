@@ -1,7 +1,7 @@
 
-import * as cdm from "../cdm-types/cdm-types";
+import * as cdm from "../../lib/cdm-types";
 import * as ghc from "../github-pages-gen/gh-content-gen";
-import * as loc from "../local-corpus/local-corpus";
+import * as loc from "../../lib/local-corpus";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 
 class Startup {

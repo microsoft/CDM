@@ -1,2 +1,4 @@
-export * from "../Tools/cdm-types/cdm-types"
-export * from "../Tools/local-corpus/local-corpus"
+import * as types from "./cdm-types"
+export { types }
+import * as loc from "./local-corpus"
+export { loc }
