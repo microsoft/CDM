@@ -114,7 +114,7 @@ export interface TypeAttribute
 
 let isTypeAttribute = (object): object is TypeAttribute =>
 {
-    return "name" in object;
+    return !("entity" in object);
 }
 
 export interface AttributeGroupReference
