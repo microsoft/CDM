@@ -1,7 +1,24 @@
 import * as cdm from "../../src/cdm-types";
 import * as loc from "../../src/local-corpus";
 import { readFileSync} from "fs";
+import { WSASERVICE_NOT_FOUND } from "constants";
 
+let cdsStandards : Set<string> = new Set<string>();
+cdsStandards.add("createdBy");
+cdsStandards.add("createdOn");
+cdsStandards.add("createdOnBehalfBy");
+cdsStandards.add("modifiedBy");
+cdsStandards.add("modifiedOn");
+cdsStandards.add("modifiedOnBehalfBy");
+cdsStandards.add("overriddenCreatedOn");
+cdsStandards.add("importSequenceNumber");
+cdsStandards.add("ownerId");
+cdsStandards.add("owningBusinessUnit");
+cdsStandards.add("owningTeam");
+cdsStandards.add("owningUser");
+cdsStandards.add("timeZoneRuleVersionNumber");
+cdsStandards.add("UTCConversionTimeZoneCode");
+cdsStandards.add("versionNumber");
 
 interface dataTypeAndRelationshipPicker {
     scoreAtttribute(type : string, internalName : string, semanticType : string) : number;
@@ -125,8 +142,9 @@ class Startup {
         // is this an extension entity? make the ref
         if (cdstEntityInfo.extends) {
             cdmEntity.setExtendsEntityRef(cdmCorpus.MakeRef(cdm.cdmObjectType.entityRef, cdstEntityInfo.extends, true));
-        }
-        else {
+        } else if (this.isCdsStandard(cdstEntityInfo)) {
+            cdmEntity.setExtendsEntityRef(cdmCorpus.MakeRef(cdm.cdmObjectType.entityRef, "CdsStandard", true));
+        } else {
             cdmEntity.setExtendsEntityRef(cdmCorpus.MakeRef(cdm.cdmObjectType.entityRef, "CdmObject", true));
         }
 
@@ -362,6 +380,9 @@ class Startup {
 
                 let resultInfo : creationResultInfo = {};
 
+                if (cdmEntity.getExtendsEntityRef().getObjectDefName() == "CdsStandard" && cdsStandards.has(attInfo.name))
+                    return;
+
                 if (attInfo.dataType == "customer" || attInfo.dataType == "lookup" || attInfo.dataType == "owner" || (attInfo.relationshipInfo && attInfo.relationshipInfo.length)) {
                     // this is an entity type attribute by ref
                     let referencedEntity : string = "";
@@ -441,6 +462,20 @@ class Startup {
             cdmEntity.addAttributeDef(cdmCorpus.MakeRef(cdm.cdmObjectType.attributeGroupRef, attGroupAll, false) as cdm.ICdmAttributeGroupRef);
         }
 
+    }
+
+    static isCdsStandard(cdstEntityInfo: any) : boolean {
+        let found : Set<string> = new Set<string>();
+        
+
+        for (let i = 0; i < cdstEntityInfo.attributeInfo.length; i++) {
+            let name = cdstEntityInfo.attributeInfo[i].name;
+            if (cdsStandards.has(name)) {
+                found.add(name);
+            }
+        }
+
+        return cdsStandards.size == found.size;
     }
 
     static getPickers() : dataTypeAndRelationshipPicker[] {
