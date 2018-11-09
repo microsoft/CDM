@@ -1,4 +1,4 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 import { readFileSync, writeFileSync, readFile, mkdirSync, existsSync, createReadStream, readdirSync, statSync } from "fs";
 import { relative } from "path";
 

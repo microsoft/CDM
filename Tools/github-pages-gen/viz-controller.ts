@@ -1,4 +1,4 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 
 interface relationship {
     referencingAttribute : cdm.ResolvedAttribute;

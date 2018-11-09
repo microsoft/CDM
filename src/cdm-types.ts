@@ -23,14 +23,14 @@ export interface Argument
 {
     explanation?: string;
     name?: string;
-    value: any;
+    value: ArgumentValue;
 }
 
 export interface Parameter
 {
     explanation?: string;
     name: string;
-    defaultValue?: any;
+    defaultValue?: ArgumentValue;
     required?: boolean;
     direction?: string;
     dataType?: string | DataTypeReference;
@@ -112,9 +112,19 @@ export interface TypeAttribute
     defaultValue?: any;
 }
 
+let isTypeAttribute = (object): object is TypeAttribute =>
+{
+    return !("entity" in object);
+}
+
 export interface AttributeGroupReference
 {
     attributeGroupReference: string | AttributeGroup;
+}
+
+let isAttributeGroupReference = (object: object): object is AttributeGroupReference =>
+{
+    return "attributeGroupReference" in object;
 }
 
 export interface AttributeGroup
@@ -135,12 +145,22 @@ export interface EntityAttribute
     appliedTraits?: (string | TraitReference)[];
 }
 
+let isEntityAttribute = (object: object): object is EntityAttribute =>
+{
+    return "entity" in object;
+}
+
 export interface ConstantEntity
 {
     explanation?: string;
     constantEntityName?: string;
     entityShape: string | EntityReference;
     constantValues: string[][];
+}
+
+let isConstantEntity = (object: Entity | ConstantEntity): object is ConstantEntity =>
+{
+    return "entityShape" in object;
 }
 
 export interface EntityReference
@@ -260,7 +280,7 @@ export interface resolveOptions
 {
     wrtDoc?: ICdmDocumentDef; // the document to use as a point of reference when resolving relative paths and symbol names.
     directives?: TraitDirectiveSet; // a set of string flags that direct how attribute resolving traits behave
-    relationshipDepth?: number; // tracks the number of entity attributes that have been travered when collecting resolved traits or attributes. prevents run away loops
+    relationshipDepth?: number; // tracks the number of entity attributes that have been traversed when collecting resolved traits or attributes. prevents run away loops
 }
 
 export interface ICdmObject
@@ -524,7 +544,6 @@ export type VisitCallback = (iObject: ICdmObject, path: string) => boolean
 
 type CdmCreator<T> = (o: any) => T;
 
-
 export interface ApplierResult
 {
     shouldDelete?: boolean;             // for attributeRemove, set to true to request that attribute be removed
@@ -777,21 +796,20 @@ export class ParameterValue
                 // if this is a constant table, then expand into an html table
                 let def = value.getObjectDef(resOpt);
                 if (value.getObjectType() == cdmObjectType.entityRef && def && def.getObjectType() == cdmObjectType.constantEntityDef) {
-                    var entShape = (def as ICdmConstantEntityDef).getEntityShape();
-                    var entValues = (def as ICdmConstantEntityDef).getConstantValues();
+                    let entShape : ICdmEntityRef = (def as ICdmConstantEntityDef).getEntityShape();
+                    let entValues : string[][] = (def as ICdmConstantEntityDef).getConstantValues();
                     if (!entValues && entValues.length == 0)
                         return "";
 
-                    let rows = new Array<any>();
-                    var shapeAtts = entShape.getResolvedAttributes(resOpt);
-                    let l = shapeAtts.set.length;
+                    let rows = new Array<object>();
+                    let shapeAtts : ResolvedAttributeSet = entShape.getResolvedAttributes(resOpt);
 
-                    for (var r = 0; r < entValues.length; r++) {
-                        var rowData = entValues[r];
+                    for (let r = 0; r < entValues.length; r++) {
+                        let rowData : string[] = entValues[r];
                         if (rowData && rowData.length) {
                             let row = {};
-                            for (var c = 0; c < rowData.length; c++) {
-                                var tvalue = rowData[c];
+                            for (let c = 0; c < rowData.length; c++) {
+                                let tvalue : string = rowData[c];
                                 row[shapeAtts.set[c].resolvedName] = tvalue;
                             }
                             rows.push(row);
@@ -3182,7 +3200,7 @@ class traitToPropertyMap
         //return p.measure(bodyCode);
     }
 
-    traitsToDataFormat(removeFrom : any[] = undefined, removedIndexes: number[] = undefined) : string {
+    traitsToDataFormat(removeFrom?: (string | TraitReference)[], removedIndexes?: number[]) : string {
         //let bodyCode = () =>
         {
             let isArray = false;
@@ -3420,12 +3438,12 @@ class traitToPropertyMap
                         let corr = esName === "listLookupCorrelatedValues";
                         let lookup = esName === "listLookupValues";
                         if (esName === "localizedTable" || lookup || corr) {
-                            let result = new Array<any>();
-                            let rawValues = cEnt.getConstantValues();
+                            let result = new Array<object>();
+                            let rawValues : string[][] = cEnt.getConstantValues();
                             let l = rawValues.length;
                             for(let i=0; i<l; i++) {
-                                let row : any = {};
-                                let rawRow = rawValues[i];
+                                let row : object = {};
+                                let rawRow : string[] = rawValues[i];
                                 if (rawRow.length == 2 || (lookup && rawRow.length == 4) || (corr && rawRow.length == 5)) {
                                     row["languageTag"] = rawRow[0];
                                     row["displayText"] = rawRow[1];
@@ -3933,11 +3951,9 @@ abstract class cdmObject implements ICdmObject
 
 
     public abstract copyData(resOpt: resolveOptions, options: copyOptions): any;
-    public static copyIdentifierRef(identifier : string, resolved : cdmObjectDef, options: copyOptions) : any
+    public static copyIdentifierRef(identifier : string, resolved : cdmObjectDef, options: copyOptions) : string | identifierRef
     {
-        if (!options || !options.stringRefs)
-            return identifier;
-        if (!resolved)
+        if (!options || !options.stringRefs || !resolved)
             return identifier;
         return {
             corpusPath: resolved.getObjectPath(),
@@ -3971,7 +3987,7 @@ abstract class cdmObject implements ICdmObject
         //return p.measure(bodyCode);
     }
 
-    public static arrayCopy<T>(resOpt: resolveOptions, source: cdmObject[]): Array<T>
+    public static arrayCopy<T extends ICdmObject>(resOpt: resolveOptions, source: cdmObject[]): Array<T>
     {
         //let bodyCode = () =>
         {
@@ -3980,8 +3996,8 @@ abstract class cdmObject implements ICdmObject
             let casted = new Array<T>();
             let l = source.length;
             for (let i = 0; i < l; i++) {
-                const element = source[i];
-                casted.push(element ? <any>element.copy(resOpt) : undefined);
+                const element : cdmObject = source[i];
+                casted.push(element ? <T>element.copy(resOpt) : undefined);
             }
             return casted;
         }
@@ -4040,7 +4056,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createDataTypeReference(ctx: CdmCorpusContext, object: any): DataTypeReferenceImpl
+    public static createDataTypeReference(ctx: CdmCorpusContext, object: string | DataTypeReference): DataTypeReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4050,7 +4066,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createRelationshipReference(ctx: CdmCorpusContext, object: any): RelationshipReferenceImpl
+    public static createRelationshipReference(ctx: CdmCorpusContext, object: string | RelationshipReference): RelationshipReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4060,7 +4076,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createAttributeContext(ctx: CdmCorpusContext, object: any): AttributeContextImpl
+    public static createAttributeContext(ctx: CdmCorpusContext, object: AttributeContext): AttributeContextImpl
     {
         //let bodyCode = () =>
         {
@@ -4070,7 +4086,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createAttributeContextReference(ctx: CdmCorpusContext, object: any): AttributeContextReferenceImpl
+    public static createAttributeContextReference(ctx: CdmCorpusContext, object: string): AttributeContextReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4080,7 +4096,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createEntityReference(ctx: CdmCorpusContext, object: any): EntityReferenceImpl
+    public static createEntityReference(ctx: CdmCorpusContext, object: string | EntityReference): EntityReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4090,7 +4106,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createAttributeGroupReference(ctx: CdmCorpusContext, object: any): AttributeGroupReferenceImpl
+    public static createAttributeGroupReference(ctx: CdmCorpusContext, object: string | AttributeGroupReference): AttributeGroupReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4100,7 +4116,7 @@ abstract class cdmObject implements ICdmObject
         }
         //return p.measure(bodyCode);
     }
-    public static createAttributeReference(ctx: CdmCorpusContext, object: any): AttributeReferenceImpl
+    public static createAttributeReference(ctx: CdmCorpusContext, object: string): AttributeReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -4111,27 +4127,23 @@ abstract class cdmObject implements ICdmObject
         //return p.measure(bodyCode);
     }
 
-    public static createAttribute(ctx: CdmCorpusContext, object: any): (AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl)
+    public static createAttribute(ctx: CdmCorpusContext, object: string | AttributeGroupReference | EntityAttribute | TypeAttribute): (AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl)
     {
         //let bodyCode = () =>
         {
             if (!object)
                 return undefined;
 
-            if (typeof object === "string")
+            if (typeof object === "string" || isAttributeGroupReference(object))
                 return AttributeGroupReferenceImpl.instanceFromData(ctx, object);
-            else {
-                if (object.attributeGroupReference)
-                    return AttributeGroupReferenceImpl.instanceFromData(ctx, object);
-                else if (object.entity)
-                    return EntityAttributeImpl.instanceFromData(ctx, object);
-                else if (object.name)
-                    return TypeAttributeImpl.instanceFromData(ctx, object);
-            }
+            else if (isEntityAttribute(object))
+                return EntityAttributeImpl.instanceFromData(ctx, object);
+            else if (isTypeAttribute(object))
+                return TypeAttributeImpl.instanceFromData(ctx, object);
         }
         //return p.measure(bodyCode);
     }
-    public static createAttributeArray(ctx: CdmCorpusContext, object: any): (AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl)[]
+    public static createAttributeArray(ctx: CdmCorpusContext, object: (string | AttributeGroupReference | EntityAttribute | TypeAttribute)[]): (AttributeGroupReferenceImpl | TypeAttributeImpl | EntityAttributeImpl)[]
     {
         //let bodyCode = () =>
         {
@@ -4151,7 +4163,7 @@ abstract class cdmObject implements ICdmObject
         //return p.measure(bodyCode);
     }
 
-    public static createTraitReferenceArray(ctx: CdmCorpusContext, object: any): TraitReferenceImpl[]
+    public static createTraitReferenceArray(ctx: CdmCorpusContext, object: (string | TraitReference)[]): TraitReferenceImpl[]
     {
         //let bodyCode = () =>
         {
@@ -4325,7 +4337,7 @@ export class ImportImpl extends cdmObjectSimple implements ICdmImport
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): ImportImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: Import): ImportImpl
     {
         //let bodyCode = () =>
         {
@@ -4389,7 +4401,7 @@ export class ArgumentImpl extends cdmObjectSimple implements ICdmArgumentDef
         }
         //return p.measure(bodyCode);
     }
-    public copyData(resOpt: resolveOptions, options: copyOptions): Argument
+    public copyData(resOpt: resolveOptions, options: copyOptions): Argument | ArgumentValue
     {
         //let bodyCode = () =>
         {
@@ -4402,7 +4414,7 @@ export class ArgumentImpl extends cdmObjectSimple implements ICdmArgumentDef
             }
             // skip the argument if just a value
             if (!this.name)
-                return val as any;
+                return val as ArgumentValue;
 
             let castedToInterface: Argument = { explanation: this.explanation, name: this.name, value: val };
             return castedToInterface;
@@ -4453,14 +4465,14 @@ export class ArgumentImpl extends cdmObjectSimple implements ICdmArgumentDef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx:CdmCorpusContext, object: any): ArgumentImpl
+    public static instanceFromData(ctx:CdmCorpusContext, object: string | Argument): ArgumentImpl
     {
         //let bodyCode = () =>
         {
 
             let c: ArgumentImpl = new ArgumentImpl(ctx);
 
-            if (object.value) {
+            if (typeof object !== "string" && object.value) {
                 c.value = cdmObject.createConstant(ctx, object.value);
                 if (object.name)
                     c.name = object.name;
@@ -4911,7 +4923,7 @@ abstract class cdmObjectDef extends cdmObject implements ICdmObjectDef
     {
         //let bodyCode = () =>
         {
-            return <any>this;
+            return this as any;
         }
         //return p.measure(bodyCode);
     }
@@ -5038,7 +5050,7 @@ abstract class cdmObjectDef extends cdmObject implements ICdmObjectDef
             let res :  namedReferenceResolution = {
                 toObjectDef: this,
                 underCtx : ctx,
-                usingDoc : resOpt.wrtDoc as any,
+                usingDoc : resOpt.wrtDoc as Document,
                 viaMoniker : false
             }
             ref.ctx = this.ctx;
@@ -5111,13 +5123,13 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
             let resAttToken = "/(resolvedAttributes)/";
             let seekResAtt = this.namedReference.indexOf(resAttToken);
             if (seekResAtt >= 0) {
-                res = {underCtx : ctx, usingDoc : resOpt.wrtDoc as any};
+                res = {underCtx : ctx, usingDoc : resOpt.wrtDoc as Document};
                 let entName = this.namedReference.substring(0, seekResAtt);
                 let attName = this.namedReference.slice(seekResAtt + resAttToken.length);
                 // get the entity
                 // resolveNamedReference expects the current document to be set in the context, so put the wrt doc in there
                 let save = ctx.currentDoc;
-                ctx.currentDoc = resOpt.wrtDoc as any;
+                ctx.currentDoc = resOpt.wrtDoc as Document;
                 let ent = ctx.resolveNamedReference(entName, cdmObjectType.entityDef);
                 ctx.currentDoc = save;
                 if (!ent || ent.toObjectDef.objectType != cdmObjectType.entityDef) {
@@ -5135,7 +5147,7 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
             }
             else {
                 let save = ctx.currentDoc;
-                ctx.currentDoc = resOpt.wrtDoc as any;
+                ctx.currentDoc = resOpt.wrtDoc as Document;
                 res = ctx.resolveNamedReference(this.namedReference, cdmObjectType.error);
                 ctx.currentDoc = save;
             }
@@ -5147,7 +5159,7 @@ export abstract class cdmObjectRef extends cdmObject implements ICdmObjectRef
                 if (res) {
                     // for debugging only
                     let save = ctx.currentDoc;
-                    ctx.currentDoc = resOpt.wrtDoc as any;
+                    ctx.currentDoc = resOpt.wrtDoc as Document;
                     res = ctx.resolveNamedReference(this.namedReference, cdmObjectType.error);
                     ctx.currentDoc = save;
                 }
@@ -5440,7 +5452,7 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
         }
         //return p.measure(bodyCode);
     }
-    public copyRefData(resOpt: resolveOptions, copy : TraitReference, refTo : any, options: copyOptions) 
+    public copyRefData(resOpt: resolveOptions, copy : TraitReference, refTo : string | Trait, options: copyOptions) 
     {
         //let bodyCode = () =>
         {
@@ -5460,25 +5472,27 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): TraitReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string | TraitReference): TraitReferenceImpl
     {
         //let bodyCode = () =>
         {
             let simpleReference : boolean = true;
             let trait : string | TraitImpl;
+            let args : (string | Argument)[] = null;
             if (typeof(object) == "string")
                 trait = object;
             else {
                 simpleReference = false;
+                args = object.arguments;
                 if (typeof(object.traitReference) === "string")
                     trait = object.traitReference;
                 else 
                     trait = TraitImpl.instanceFromData(ctx, object.traitReference);
             }
 
-            let c: TraitReferenceImpl = new TraitReferenceImpl(ctx, trait, simpleReference, object.arguments);
-            if (object.arguments) {
-                object.arguments.forEach(a => {
+            let c: TraitReferenceImpl = new TraitReferenceImpl(ctx, trait, simpleReference, !!args);
+            if (args) {
+                args.forEach(a => {
                     c.arguments.push(ArgumentImpl.instanceFromData(ctx, a));
                 });
             }
@@ -5531,9 +5545,9 @@ export class TraitReferenceImpl extends cdmObjectRef implements ICdmTraitRef
         {
             if (!this.arguments)
                 this.arguments = new Array<ArgumentImpl>();
-            let newArg = this.ctx.corpus.MakeObject<ICdmArgumentDef>(cdmObjectType.argumentDef, name);
+            let newArg : ArgumentImpl = this.ctx.corpus.MakeObject<ArgumentImpl>(cdmObjectType.argumentDef, name);
             newArg.setValue(value);
-            this.arguments.push(newArg as any);
+            this.arguments.push(newArg);
             return newArg;
         }
         //return p.measure(bodyCode);
@@ -5738,7 +5752,7 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): TraitImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: Trait): TraitImpl
     {
         //let bodyCode = () =>
         {
@@ -5746,7 +5760,7 @@ export class TraitImpl extends cdmObjectDef implements ICdmTraitDef
             if (object.extendsTrait)
                 extendsTrait = TraitReferenceImpl.instanceFromData(ctx, object.extendsTrait);
 
-            let c: TraitImpl = new TraitImpl(ctx, object.traitName, extendsTrait, object.hasParameters);
+            let c: TraitImpl = new TraitImpl(ctx, object.traitName, extendsTrait, !!object.hasParameters);
 
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -5995,7 +6009,7 @@ export class RelationshipReferenceImpl extends cdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public copyRefData(resOpt: resolveOptions, copy : RelationshipReference, refTo : any, options: copyOptions) 
+    public copyRefData(resOpt: resolveOptions, copy : RelationshipReference, refTo : string | Relationship, options: copyOptions) 
     {
         //let bodyCode = () =>
         {
@@ -6013,24 +6027,26 @@ export class RelationshipReferenceImpl extends cdmObjectRef
         //return p.measure(bodyCode);
     }
 
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): RelationshipReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string | RelationshipReference): RelationshipReferenceImpl
     {
         //let bodyCode = () =>
         {
             let simpleReference : boolean = true;
+            let appliedTraits : (string | TraitReference)[] = null;
             let relationship : string | RelationshipImpl;
             if (typeof(object) == "string")
                 relationship = object;
             else {
                 simpleReference = false;
+                appliedTraits = object.appliedTraits;
                 if (typeof(object.relationshipReference) === "string")
                     relationship = object.relationshipReference;
                 else 
                     relationship = RelationshipImpl.instanceFromData(ctx, object.relationshipReference);
             }
 
-            let c: RelationshipReferenceImpl = new RelationshipReferenceImpl(ctx, relationship, simpleReference, object.appliedTraits);
-            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, object.appliedTraits);
+            let c: RelationshipReferenceImpl = new RelationshipReferenceImpl(ctx, relationship, simpleReference, !!appliedTraits);
+            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
 
             return c;
         }
@@ -6123,13 +6139,13 @@ export class RelationshipImpl extends cdmObjectDef implements ICdmRelationshipDe
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): RelationshipImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: Relationship): RelationshipImpl
     {
         //let bodyCode = () =>
         {
             let extendsRelationship: RelationshipReferenceImpl;
             extendsRelationship = cdmObject.createRelationshipReference(ctx, object.extendsRelationship);
-            let c: RelationshipImpl = new RelationshipImpl(ctx, object.relationshipName, extendsRelationship, object.exhibitsTraits);
+            let c: RelationshipImpl = new RelationshipImpl(ctx, object.relationshipName, extendsRelationship, !!object.exhibitsTraits);
             if (object.explanation)
                 c.explanation = object.explanation;
             c.exhibitsTraits = cdmObject.createTraitReferenceArray(ctx, object.exhibitsTraits);
@@ -6236,7 +6252,7 @@ export class DataTypeReferenceImpl extends cdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public copyRefData(resOpt: resolveOptions, copy : DataTypeReference, refTo : any, options: copyOptions) 
+    public copyRefData(resOpt: resolveOptions, copy : DataTypeReference, refTo : string | DataType, options: copyOptions) 
     {
         //let bodyCode = () =>
         {
@@ -6254,24 +6270,26 @@ export class DataTypeReferenceImpl extends cdmObjectRef
         //return p.measure(bodyCode);
     }
 
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): DataTypeReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string | DataTypeReference): DataTypeReferenceImpl
     {
         //let bodyCode = () =>
         {
             let simpleReference : boolean = true;
             let dataType : string | DataTypeImpl;
+            let appliedTraits : (string | TraitReference)[] = null;
             if (typeof(object) == "string")
                 dataType = object;
             else {
                 simpleReference = false;
+                appliedTraits = object.appliedTraits;
                 if (typeof(object.dataTypeReference) === "string")
                     dataType = object.dataTypeReference;
                 else 
                     dataType = DataTypeImpl.instanceFromData(ctx, object.dataTypeReference);
             }
 
-            let c: DataTypeReferenceImpl = new DataTypeReferenceImpl(ctx, dataType, simpleReference, object.appliedTraits);
-            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, object.appliedTraits);
+            let c: DataTypeReferenceImpl = new DataTypeReferenceImpl(ctx, dataType, simpleReference, !!appliedTraits);
+            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
 
             return c;
         }
@@ -6365,14 +6383,14 @@ export class DataTypeImpl extends cdmObjectDef implements ICdmDataTypeDef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): DataTypeImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: DataType): DataTypeImpl
     {
         //let bodyCode = () =>
         {
             let extendsDataType: DataTypeReferenceImpl;
             extendsDataType = cdmObject.createDataTypeReference(ctx, object.extendsDataType);
 
-            let c: DataTypeImpl = new DataTypeImpl(ctx, object.dataTypeName, extendsDataType, object.exhibitsTraits);
+            let c: DataTypeImpl = new DataTypeImpl(ctx, object.dataTypeName, extendsDataType, !!object.exhibitsTraits);
 
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -6503,7 +6521,7 @@ export class AttributeReferenceImpl extends cdmObjectRef
         //return p.measure(bodyCode);
     }
 
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): AttributeReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string): AttributeReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -6593,7 +6611,7 @@ export abstract class AttributeImpl extends cdmObjectDef implements ICdmAttribut
     {
         //let bodyCode = () =>
         {
-            this.relationship = relRef as any;
+            this.relationship = relRef as RelationshipReferenceImpl;
             return this.relationship;
         }
         //return p.measure(bodyCode);
@@ -6784,11 +6802,11 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): TypeAttributeImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: TypeAttribute): TypeAttributeImpl
     {
         //let bodyCode = () =>
         {
-            let c: TypeAttributeImpl = new TypeAttributeImpl(ctx, object.name, object.appliedTraits);
+            let c: TypeAttributeImpl = new TypeAttributeImpl(ctx, object.name, !!object.appliedTraits);
 
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -6823,7 +6841,7 @@ export class TypeAttributeImpl extends AttributeImpl implements ICdmTypeAttribut
     {
         //let bodyCode = () =>
         {
-            this.dataType = dataType as any;
+            this.dataType = dataType as DataTypeReferenceImpl;
             return this.dataType;
         }
         //return p.measure(bodyCode);
@@ -7158,12 +7176,12 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
         //return p.measure(bodyCode);
     }
 
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): EntityAttributeImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: EntityAttribute): EntityAttributeImpl
     {
         //let bodyCode = () =>
         {
 
-            let c: EntityAttributeImpl = new EntityAttributeImpl(ctx, object.name, object.appliedTraits);
+            let c: EntityAttributeImpl = new EntityAttributeImpl(ctx, object.name, !!object.appliedTraits);
 
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -7188,7 +7206,7 @@ export class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttr
     {
         //let bodyCode = () =>
         {
-            this.entity = entRef as any;
+            this.entity = entRef as EntityReferenceImpl;
             return this.entity;
         }
         //return p.measure(bodyCode);
@@ -7498,7 +7516,7 @@ export class AttributeGroupReferenceImpl extends cdmObjectRef implements ICdmAtt
         }
         //return p.measure(bodyCode);
     }
-    public copyRefData(resOpt: resolveOptions, copy : AttributeGroupReference, refTo : any, options: copyOptions) 
+    public copyRefData(resOpt: resolveOptions, copy : AttributeGroupReference, refTo : string | AttributeGroup, options: copyOptions) 
     {
         //let bodyCode = () =>
         {
@@ -7516,7 +7534,7 @@ export class AttributeGroupReferenceImpl extends cdmObjectRef implements ICdmAtt
         //return p.measure(bodyCode);
     }
 
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): AttributeGroupReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string | AttributeGroupReference): AttributeGroupReferenceImpl
     {
         //let bodyCode = () =>
         {
@@ -7663,7 +7681,7 @@ export class AttributeGroupImpl extends cdmObjectDef implements ICdmAttributeGro
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): AttributeGroupImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: AttributeGroup): AttributeGroupImpl
     {
         //let bodyCode = () =>
         {
@@ -7926,7 +7944,7 @@ export class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEnti
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): ConstantEntityImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: ConstantEntity): ConstantEntityImpl
     {
 
         //let bodyCode = () =>
@@ -7962,7 +7980,7 @@ export class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEnti
     {
         //let bodyCode = () =>
         {
-            this.entityShape = <any>shape;
+            this.entityShape = shape as EntityReferenceImpl;
             return this.entityShape;
         }
         //return p.measure(bodyCode);
@@ -8130,7 +8148,7 @@ export class AttributeContextReferenceImpl extends cdmObjectRef
         let copy = new AttributeContextReferenceImpl(this.ctx, refTo);
         return copy;
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): AttributeContextReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string): AttributeContextReferenceImpl
     {
         if (typeof(object) == "string")
             return new AttributeContextReferenceImpl(ctx, object);
@@ -8419,10 +8437,10 @@ export class AttributeContextImpl extends cdmObjectDef implements ICdmAttributeC
 
             let underChild = under.ctx.corpus.MakeObject(cdmObjectType.attributeContextDef, name) as ICdmAttributeContext;
             // need search context to make this a 'live' object
-            (underChild as any).ctx = (under as any).ctx;
+            underChild.ctx = under.ctx;
             underChild.type = type;
             underChild.definition = definition;
-            (underChild as any as AttributeContextImpl).setRelativePath(under.getRelativePath() + '/' + name); 
+            (underChild as AttributeContextImpl).setRelativePath(under.getRelativePath() + '/' + name); 
             // add traits if there are any
             if (rtsApplied && rtsApplied.set) {
                 rtsApplied.set.forEach(rt => {
@@ -8467,7 +8485,7 @@ export class EntityReferenceImpl extends cdmObjectRef implements ICdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public copyRefData(resOpt: resolveOptions, copy : EntityReference, refTo : any, options: copyOptions) 
+    public copyRefData(resOpt: resolveOptions, copy : EntityReference, refTo : string | Entity, options: copyOptions) 
     {
         //let bodyCode = () =>
         {
@@ -8484,27 +8502,29 @@ export class EntityReferenceImpl extends cdmObjectRef implements ICdmObjectRef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): EntityReferenceImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: string | EntityReference): EntityReferenceImpl
     {
 
         //let bodyCode = () =>
         {
             let simpleReference : boolean = true;
             let entity : string | EntityImpl | ConstantEntityImpl;
+            let appliedTraits : (string | TraitReference)[] = null;
             if (typeof(object) == "string")
                 entity = object;
             else {
                 simpleReference = false;
+                appliedTraits = object.appliedTraits;
                 if (typeof(object.entityReference) === "string")
                     entity = object.entityReference;
-                else if (object.entityReference.entityShape)
+                else if (isConstantEntity(object.entityReference))
                     entity = ConstantEntityImpl.instanceFromData(ctx, object.entityReference);
                 else
                     entity = EntityImpl.instanceFromData(ctx, object.entityReference);
                 }
 
-            let c: EntityReferenceImpl = new EntityReferenceImpl(ctx, entity, simpleReference, object.appliedTraits);
-            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, object.appliedTraits);
+            let c: EntityReferenceImpl = new EntityReferenceImpl(ctx, entity, simpleReference, !!appliedTraits);
+            c.appliedTraits = cdmObject.createTraitReferenceArray(ctx, appliedTraits);
             return c;
         }
         //return p.measure(bodyCode);
@@ -8627,14 +8647,14 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
         }
         //return p.measure(bodyCode);
     }
-    public static instanceFromData(ctx: CdmCorpusContext, object: any): EntityImpl
+    public static instanceFromData(ctx: CdmCorpusContext, object: Entity): EntityImpl
     {
         //let bodyCode = () =>
         {
 
             let extendsEntity: EntityReferenceImpl;
             extendsEntity = cdmObject.createEntityReference(ctx, object.extendsEntity);
-            let c: EntityImpl = new EntityImpl(ctx, object.entityName, extendsEntity, object.exhibitsTraits, object.hasAttributes);
+            let c: EntityImpl = new EntityImpl(ctx, object.entityName, extendsEntity, !!object.exhibitsTraits, !!object.hasAttributes);
 
             if (object.explanation)
                 c.explanation = object.explanation;
@@ -8953,13 +8973,13 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             // make the top level attribute context for this entity
             let entName = newEntName;
             let attCtx : ICdmAttributeContext = this.ctx.corpus.MakeObject(cdmObjectType.attributeContextDef, entName, true);
-            (attCtx as any).ctx = this.ctx;
+            attCtx.ctx = this.ctx;
 
             attCtx.setExplanation("This OPTIONAL 'AttributeContext' hierarchy is generated by the CDM object model to help explain where each attribute in the entity was defined and discovered.");
             attCtx.type = cdmAttributeContextType.entity;
             attCtx.definition = this.ctx.corpus.MakeObject(cdmObjectType.entityRef, this.getName(), true);
             // cheating a bit
-            (attCtx as any as AttributeContextImpl).setRelativePath(entName + '/attributeContext/' + entName);
+            (attCtx as AttributeContextImpl).setRelativePath(entName + '/attributeContext/' + entName);
             // resolve attributes with this context. the end result is that each resolved attribute
             // points to the level of the context where it was created
             let ras = this.getResolvedAttributes(resOpt, attCtx);
@@ -9066,7 +9086,7 @@ export class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             docRes.addImport(this.declaredInDocument.getFolder().getRelativePath() + this.declaredInDocument.getName(), "");
             
             // make the empty entity
-            let entResolved = docRes.addDefinition<ICdmEntityDef>(cdmObjectType.entityDef,  entName);
+            let entResolved = docRes.addDefinition<ICdmEntityDef>(cdmObjectType.entityDef, entName);
             entResolved.attributeContext = attCtx;
 
             // add the traits of the entity
@@ -9429,11 +9449,11 @@ export class Document extends cdmObjectSimple implements ICdmDocumentDef
         //return p.measure(bodyCode);
     }
 
-    public addDefinition<T>(ofType: cdmObjectType, name: string): T
+    public addDefinition<T>(ofType: cdmObjectType, name: string): T 
     {
         //let bodyCode = () =>
         {
-            let newObj: any = this.ctx.corpus.MakeObject(ofType, name);
+            let newObj: any = this.ctx.corpus.MakeObject<ICdmObject>(ofType, name);
             if (newObj != null) {
                 this.definitions.push(newObj);
                 if (ofType == cdmObjectType.entityDef)
@@ -9518,7 +9538,7 @@ export class Document extends cdmObjectSimple implements ICdmDocumentDef
             // remove all of the cached paths
             this.visit("", null, (iObject: ICdmObject, path: string) =>
             {
-                (iObject as any as cdmObject).declaredPath = undefined;
+                (iObject as cdmObject).declaredPath = undefined;
                 return false;
             });
             // clear old cached things for this doc
@@ -9756,7 +9776,7 @@ export class Folder extends cdmObjectSimple implements ICdmFolderDef
         //return p.measure(bodyCode);
     }
 
-    public addDocument(name: string, content: any): ICdmDocumentDef
+    public addDocument(name: string, content: string): ICdmDocumentDef
     {
         //let bodyCode = () =>
         {
@@ -10149,7 +10169,7 @@ export class Corpus extends Folder
         }
         //return p.measure(bodyCode);
     }
-    public MakeObject<T=ICdmObject>(ofType: cdmObjectType, nameOrRef?: string, simmpleNameRef? : boolean): T
+    public MakeObject<T extends ICdmObject>(ofType: cdmObjectType, nameOrRef?: string, simmpleNameRef? : boolean): T
     {
         //let bodyCode = () =>
         {
@@ -10219,7 +10239,7 @@ export class Corpus extends Folder
                     newObj = new AttributeReferenceImpl(this.ctx, nameOrRef, simmpleNameRef);
                     break;
             }
-            return newObj as any;
+            return newObj as T;
         }
         //return p.measure(bodyCode);
     }

@@ -1,6 +1,6 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 import * as cdm2dplx from "../cdm2dplx/cdm2dplx"
-import * as loc from "../local-corpus/local-corpus";
+import * as loc from "../../lib/local-corpus";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { version } from "punycode";
 

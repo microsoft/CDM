@@ -1,5 +1,5 @@
-import * as cdm from "../cdm-types/cdm-types"
-import * as loc from "../local-corpus/local-corpus";
+import * as cdm from "../../lib/cdm-types"
+import * as loc from "../../lib/local-corpus";
 
 
 class Startup {

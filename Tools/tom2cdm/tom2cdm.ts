@@ -1,4 +1,4 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 
 export class tomModelToCdmCorpus {
     constructor() {
