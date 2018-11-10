@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -115,10 +115,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "annotationid",
-                                "sourceOrdering": 1,
                                 "displayName": "Note",
-                                "description": "Unique identifier of the note."
+                                "description": "Unique identifier of the note.",
+                                "sourceName": "annotationid",
+                                "sourceOrdering": 1
                             },
                             {
                                 "name": "objectTypeCode",
@@ -357,7 +357,11 @@
                                                     "name": "objectTypeCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -406,13 +410,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "objecttypecode",
-                                "sourceOrdering": 4,
-                                "isNullable": true,
                                 "displayName": "Object Type ",
-                                "description": "Type of entity with which the note is associated."
+                                "description": "Type of entity with which the note is associated.",
+                                "isNullable": true,
+                                "sourceName": "objecttypecode",
+                                "sourceOrdering": 4
                             },
                             {
+                                "name": "User_owningUser",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -478,11 +483,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 5,
-                                                        "isNullable": true,
                                                         "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user who owns the note."
+                                                        "description": "Unique identifier of the user who owns the note.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owninguser",
+                                                        "sourceOrdering": 5
                                                     }
                                                 }
                                             ]
@@ -502,15 +507,15 @@
                                 }
                             },
                             {
+                                "name": "Object_regardingObjectId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Task and Contact and SocialActivity and KnowledgeBaseRecord and Goal and Fax and Appointment and SLA and Article and Letter and PhoneCall and KnowledgeArticle and Account and RecurringAppointment and Email' adds the 'objectId' attribute below to the 'Note' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "objectId",
                                                         "relationship": "hasA",
@@ -567,186 +572,290 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "objectid",
-                                                        "sourceOrdering": 6,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Unique identifier of the object with which the note is associated."
+                                                        "description": "Unique identifier of the object with which the note is associated.",
+                                                        "isNullable": true,
+                                                        "sourceName": "objectid",
+                                                        "sourceOrdering": 6
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "objectIdTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "objectId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by objectId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "objectId Type",
+                                                        "description": "The name of the entity linked by objectId",
+                                                        "sourceName": "objectidtypecode"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Task",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Task/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                                "name": "taskOption",
+                                                "entity": {
+                                                    "entityReference": "Task",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Task/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "SocialActivity",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "SocialActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "KnowledgeBaseRecord",
-                                        "appliedTraits": [
+                                                "name": "socialActivityOption",
+                                                "entity": {
+                                                    "entityReference": "SocialActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "SocialActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Goal",
-                                        "appliedTraits": [
+                                                "name": "knowledgeBaseRecordOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeBaseRecord",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Goal/(resolvedAttributes)/goalId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Fax",
-                                        "appliedTraits": [
+                                                "name": "goalOption",
+                                                "entity": {
+                                                    "entityReference": "Goal",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Goal/(resolvedAttributes)/goalId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Fax/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Appointment",
-                                        "appliedTraits": [
+                                                "name": "faxOption",
+                                                "entity": {
+                                                    "entityReference": "Fax",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Fax/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Appointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "SLA",
-                                        "appliedTraits": [
+                                                "name": "appointmentOption",
+                                                "entity": {
+                                                    "entityReference": "Appointment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Appointment/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "SLA/(resolvedAttributes)/SLAId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Article",
-                                        "appliedTraits": [
+                                                "name": "slaOption",
+                                                "entity": {
+                                                    "entityReference": "SLA",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "SLA/(resolvedAttributes)/SLAId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Article/(resolvedAttributes)/kbArticleId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Letter",
-                                        "appliedTraits": [
+                                                "name": "articleOption",
+                                                "entity": {
+                                                    "entityReference": "Article",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Article/(resolvedAttributes)/kbArticleId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Letter/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PhoneCall",
-                                        "appliedTraits": [
+                                                "name": "letterOption",
+                                                "entity": {
+                                                    "entityReference": "Letter",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Letter/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PhoneCall/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "KnowledgeArticle",
-                                        "appliedTraits": [
+                                                "name": "PhoneCallOption",
+                                                "entity": {
+                                                    "entityReference": "PhoneCall",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "PhoneCall/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                                "name": "knowledgeArticleOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeArticle",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "RecurringAppointment",
-                                        "appliedTraits": [
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Email",
-                                        "appliedTraits": [
+                                                "name": "recurringAppointmentOption",
+                                                "entity": {
+                                                    "entityReference": "RecurringAppointment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "RecurringAppointment/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Email/(resolvedAttributes)/activityId"
-                                                ]
+                                                "name": "emailOption",
+                                                "entity": {
+                                                    "entityReference": "Email",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Email/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
+                                "name": "BusinessUnit_owningBusinessUnit",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -812,11 +921,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 7,
-                                                        "isNullable": true,
                                                         "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier of the business unit that owns the note."
+                                                        "description": "Unique identifier of the business unit that owns the note.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 7
                                                     }
                                                 }
                                             ]
@@ -882,12 +991,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "subject",
-                                "maximumLength": 500,
-                                "sourceOrdering": 8,
-                                "isNullable": true,
                                 "displayName": "Title",
-                                "description": "Subject associated with the note."
+                                "description": "Subject associated with the note.",
+                                "isNullable": true,
+                                "sourceName": "subject",
+                                "sourceOrdering": 8,
+                                "maximumLength": 500
                             },
                             {
                                 "name": "isDocument",
@@ -936,10 +1045,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isdocument",
-                                "sourceOrdering": 9,
                                 "displayName": "Is Document",
-                                "description": "Specifies whether the note is an attachment."
+                                "description": "Specifies whether the note is an attachment.",
+                                "sourceName": "isdocument",
+                                "sourceOrdering": 9
                             },
                             {
                                 "name": "noteText",
@@ -988,12 +1097,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "notetext",
-                                "maximumLength": 100000,
-                                "sourceOrdering": 10,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Text of the note."
+                                "description": "Text of the note.",
+                                "isNullable": true,
+                                "sourceName": "notetext",
+                                "sourceOrdering": 10,
+                                "maximumLength": 100000
                             },
                             {
                                 "name": "mimeType",
@@ -1042,12 +1151,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mimetype",
-                                "maximumLength": 256,
-                                "sourceOrdering": 11,
-                                "isNullable": true,
                                 "displayName": "Mime Type",
-                                "description": "MIME type of the note's attachment."
+                                "description": "MIME type of the note's attachment.",
+                                "isNullable": true,
+                                "sourceName": "mimetype",
+                                "sourceOrdering": 11,
+                                "maximumLength": 256
                             },
                             {
                                 "name": "langId",
@@ -1096,12 +1205,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "langid",
-                                "maximumLength": 2,
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Language ID",
-                                "description": "Language identifier for the note."
+                                "description": "Language identifier for the note.",
+                                "isNullable": true,
+                                "sourceName": "langid",
+                                "sourceOrdering": 12,
+                                "maximumLength": 2
                             },
                             {
                                 "name": "documentBody",
@@ -1150,12 +1259,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "documentbody",
-                                "maximumLength": 1073741823,
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Document",
-                                "description": "Contents of the note's attachment."
+                                "description": "Contents of the note's attachment.",
+                                "isNullable": true,
+                                "sourceName": "documentbody",
+                                "sourceOrdering": 13,
+                                "maximumLength": 1073741823
                             },
                             {
                                 "name": "createdOn",
@@ -1204,11 +1313,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Created On",
-                                "description": "Date and time when the note was created."
+                                "description": "Date and time when the note was created.",
+                                "isNullable": true,
+                                "sourceName": "createdon",
+                                "sourceOrdering": 14
                             },
                             {
                                 "name": "fileSize",
@@ -1257,13 +1366,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "filesize",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "File Size (Bytes)",
-                                "description": "File size of the note."
+                                "description": "File size of the note.",
+                                "isNullable": true,
+                                "sourceName": "filesize",
+                                "sourceOrdering": 15,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "fileName",
@@ -1312,14 +1421,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "filename",
-                                "maximumLength": 255,
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "File Name",
-                                "description": "File name of the note."
+                                "description": "File name of the note.",
+                                "isNullable": true,
+                                "sourceName": "filename",
+                                "sourceOrdering": 16,
+                                "maximumLength": 255
                             },
                             {
+                                "name": "User_createdBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1385,11 +1495,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 17,
-                                                        "isNullable": true,
                                                         "displayName": "Created By",
-                                                        "description": "Unique identifier of the user who created the note."
+                                                        "description": "Unique identifier of the user who created the note.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 17
                                                     }
                                                 }
                                             ]
@@ -1409,6 +1519,7 @@
                                 }
                             },
                             {
+                                "name": "User_modifiedBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1474,11 +1585,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 19,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By",
-                                                        "description": "Unique identifier of the user who last modified the note."
+                                                        "description": "Unique identifier of the user who last modified the note.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 19
                                                     }
                                                 }
                                             ]
@@ -1544,11 +1655,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 20,
-                                "isNullable": true,
                                 "displayName": "Modified On",
-                                "description": "Date and time when the note was last modified."
+                                "description": "Date and time when the note was last modified.",
+                                "isNullable": true,
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 20
                             },
                             {
                                 "name": "versionNumber",
@@ -1597,113 +1708,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Version Number",
-                                "description": "Version number of the note."
+                                "description": "Version number of the note.",
+                                "isNullable": true,
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 22
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Note' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user or team who owns the note."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 27,
-                                                        "displayName": "Owner",
-                                                        "description": "Unique identifier of the user or team who owns the note."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "name": "stepId",
                                 "relationship": "hasA",
@@ -1751,12 +1762,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stepid",
-                                "maximumLength": 32,
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Step Id",
-                                "description": "workflow step id associated with the note."
+                                "description": "workflow step id associated with the note.",
+                                "isNullable": true,
+                                "sourceName": "stepid",
+                                "sourceOrdering": 34,
+                                "maximumLength": 32
                             },
                             {
                                 "name": "overriddenCreatedOn",
@@ -1805,11 +1816,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "description": "Date and time that the record was migrated.",
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 35
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -1858,15 +1869,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
+                                "description": "Unique identifier of the data import or data migration that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 36,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
+                                "name": "User_createdOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1932,11 +1944,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 41,
-                                                        "isNullable": true,
                                                         "displayName": "Created By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who created the annotation."
+                                                        "description": "Unique identifier of the delegate user who created the annotation.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 41
                                                     }
                                                 }
                                             ]
@@ -1956,6 +1968,7 @@
                                 }
                             },
                             {
+                                "name": "User_modifiedOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2021,11 +2034,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 45,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who last modified the annotation."
+                                                        "description": "Unique identifier of the delegate user who last modified the annotation.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 45
                                                     }
                                                 }
                                             ]
@@ -2045,6 +2058,7 @@
                                 }
                             },
                             {
+                                "name": "Team_owningTeam",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2110,11 +2124,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 49,
-                                                        "isNullable": true,
                                                         "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team who owns the note."
+                                                        "description": "Unique identifier of the team who owns the note.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owningteam",
+                                                        "sourceOrdering": 49
                                                     }
                                                 }
                                             ]

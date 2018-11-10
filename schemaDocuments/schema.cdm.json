@@ -1,23 +1,38 @@
 {
     "$id": "http://microsoft.com/cdm/schema.cdm.json",
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$version": "0.6.0",
+    "$version": "0.7.0",
     "type": "object",
     "definitions": {
         "import": {
             "type": "object",
             "description": "used to bring referenced entity definitions into scope of this document",
             "properties": {
+                "corpusPath": {
+                    "type": "string",
+                    "description": "The relative or absolute (from the root of the corpus folder hierarchy) location of a document file and object"
+                },
                 "uri": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "deprecated, replaced by corpusPath"
                 },
                 "moniker": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A prefix that can be added to disambiguate different imported objects that may share a name. References to object defined in this imported document (or in the documents it further imports) must start with the moniker name such as myMoniker/MyEntity"
                 }
             },
             "additionalProperties": false,
-            "required": [
-                "uri"
+            "oneOf": [
+                {
+                    "required": [
+                        "corpusPath"
+                    ]
+                },
+                {
+                    "required": [
+                        "uri"
+                    ]
+                }
             ]
         },
         "constant": {
@@ -362,6 +377,9 @@
                         ]
                     }
                 },
+                "attributeContext": {
+                    "type": "string"
+                },
                 "dataFormat": {
                     "type": "string"
                 },
@@ -388,11 +406,18 @@
                 },
                 "defaultValue": {
                     "oneOf": [
-                        {"type": "string"},
-                        {"type": "array", "items": {
-                            "type":"object"
-                        }},
-                        {"type" : "object"}
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        },
+                        {
+                            "type": "object"
+                        }
                     ]
                 },
                 "maximumValue": {
@@ -404,10 +429,9 @@
                 "maximumLength": {
                     "type": "number"
                 },
-                "valueConstrainedToList" : {
-                    "type" : "boolean"
+                "valueConstrainedToList": {
+                    "type": "boolean"
                 }
-
             },
             "additionalProperties": false,
             "required": [
@@ -421,6 +445,9 @@
                 "explanation": {
                     "type": "string",
                     "description": "Used to document the usage or meaning of the 'entity attribute' within the context of this entity definition system."
+                },
+                "name": {
+                    "type": "string"
                 },
                 "relationship": {
                     "oneOf": [
@@ -472,7 +499,8 @@
             },
             "additionalProperties": false,
             "required": [
-                "entity"
+                "entity",
+                "name"
             ]
         },
         "attributeGroup": {
@@ -614,17 +642,75 @@
                     "type": "boolean",
                     "description": "ugly traits are usually internal or structural and shouldn't be shown in a UX aimed at regular people"
                 },
-                "associatedProperties" : {
-                    "type":"array",
+                "associatedProperties": {
+                    "type": "array",
                     "description": "the list of Entity or Attribute properties that this trait informs and reflects.",
                     "items": {
-                        "type" : "string"
+                        "type": "string"
                     }
                 }
             },
             "additionalProperties": false,
             "required": [
                 "traitName"
+            ]
+        },
+        "attributeContext": {
+            "type": "object",
+            "description": "A container representing shared lineage, ownership and context in a hierachy describing the relatioships among an entities attributes.",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'entity' within the context of this entity definition system."
+                },
+                "type": {
+                    "enum": [
+                        "entity",
+                        "extendedEntity",
+                        "attributeGroup",
+                        "entityAsAttribute"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "definition": {
+                    "type": "string"
+                },
+                "appliedTraits": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "contents": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/attributeContext"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "name"
             ]
         },
         "entity": {
@@ -661,6 +747,9 @@
                         ]
                     }
                 },
+                "attributeContext": {
+                    "$ref": "#/definitions/attributeContext"
+                },
                 "hasAttributes": {
                     "type": "array",
                     "items": {
@@ -693,12 +782,11 @@
                     "type": "string"
                 },
                 "cdmSchemas": {
-                    "type" : "array",
+                    "type": "array",
                     "items": {
-                        "type":"string"
+                        "type": "string"
                     }
                 }
-
             },
             "additionalProperties": false,
             "required": [

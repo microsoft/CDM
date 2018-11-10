@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -83,9 +83,9 @@
                                         ]
                                     }
                                 ],
+                                "isNullable": true,
                                 "sourceName": "versionnumber",
-                                "sourceOrdering": 1,
-                                "isNullable": true
+                                "sourceOrdering": 1
                             },
                             {
                                 "name": "createdOn",
@@ -134,11 +134,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 2,
-                                "isNullable": true,
                                 "displayName": "Created On",
-                                "description": "Shows the date and time when the customer relationship was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "description": "Shows the date and time when the customer relationship was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+                                "isNullable": true,
+                                "sourceName": "createdon",
+                                "sourceOrdering": 2
                             },
                             {
                                 "name": "modifiedOn",
@@ -187,11 +187,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 3,
-                                "isNullable": true,
                                 "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+                                "isNullable": true,
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 3
                             },
                             {
                                 "name": "customerRoleId",
@@ -249,11 +249,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "customerroleid",
-                                "sourceOrdering": 4,
-                                "isNullable": true,
                                 "displayName": "Role 1",
-                                "description": "Choose the primary party's role or nature of the relationship the customer has with the second party. The field is read-only until both parties have been selected. Administrators can configure role values under Business Management in the Settings area."
+                                "description": "Choose the primary party's role or nature of the relationship the customer has with the second party. The field is read-only until both parties have been selected. Administrators can configure role values under Business Management in the Settings area.",
+                                "isNullable": true,
+                                "sourceName": "customerroleid",
+                                "sourceOrdering": 4
                             },
                             {
                                 "name": "customerRelationshipId",
@@ -302,12 +302,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "customerrelationshipid",
-                                "sourceOrdering": 5,
                                 "displayName": "Customer Relationship",
-                                "description": "Unique identifier of the customer relationship."
+                                "description": "Unique identifier of the customer relationship.",
+                                "sourceName": "customerrelationshipid",
+                                "sourceOrdering": 5
                             },
                             {
+                                "name": "User_createdBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -373,11 +374,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 7,
-                                                        "isNullable": true,
                                                         "displayName": "Created By",
-                                                        "description": "Shows who created the record."
+                                                        "description": "Shows who created the record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 7
                                                     }
                                                 }
                                             ]
@@ -396,117 +397,17 @@
                                     ]
                                 }
                             },
+                            "ownerIdAttribute",
                             {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'CustomerRelationship' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 8,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
+                                "name": "ContactOrAccount_partnerId",
                                 "relationship": {
                                     "relationshipReference": "referencesCustomer",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and Account' adds the 'partnerId' attribute below to the 'CustomerRelationship' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "partnerId",
                                                         "relationship": "hasA",
@@ -563,42 +464,107 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "partnerid",
-                                                        "sourceOrdering": 9,
                                                         "displayName": "Party 2",
-                                                        "description": "Select the secondary account or contact involved in the customer relationship."
+                                                        "description": "Select the secondary account or contact involved in the customer relationship.",
+                                                        "sourceName": "partnerid",
+                                                        "sourceOrdering": 9
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "partnerIdType",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Partner Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The type of partner, either Account or Contact."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Partner Type",
+                                                        "description": "The type of partner, either Account or Contact.",
+                                                        "sourceName": "partneridtype"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Customer",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
+                                "name": "BusinessUnit_owningBusinessUnit",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -664,11 +630,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 10,
-                                                        "isNullable": true,
                                                         "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier of the business unit that owns the customer relationship."
+                                                        "description": "Unique identifier of the business unit that owns the customer relationship.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owningbusinessunit",
+                                                        "sourceOrdering": 10
                                                     }
                                                 }
                                             ]
@@ -688,6 +654,7 @@
                                 }
                             },
                             {
+                                "name": "CustomerRelationship_converseRelationshipId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -753,11 +720,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "converserelationshipid",
-                                                        "sourceOrdering": 11,
-                                                        "isNullable": true,
                                                         "displayName": "Converse Relationship",
-                                                        "description": "Unique identifier of the converse relationship of the customer relationship."
+                                                        "description": "Unique identifier of the converse relationship of the customer relationship.",
+                                                        "isNullable": true,
+                                                        "sourceName": "converserelationshipid",
+                                                        "sourceOrdering": 11
                                                     }
                                                 }
                                             ]
@@ -832,11 +799,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "partnerroleid",
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Role 2",
-                                "description": "Choose the secondary party's role or nature of the relationship the customer has with the primary party. The field is read-only until both parties have been selected. Administrators can configure role values under Business Management in the Settings area."
+                                "description": "Choose the secondary party's role or nature of the relationship the customer has with the primary party. The field is read-only until both parties have been selected. Administrators can configure role values under Business Management in the Settings area.",
+                                "isNullable": true,
+                                "sourceName": "partnerroleid",
+                                "sourceOrdering": 12
                             },
                             {
                                 "name": "customerRoleDescription",
@@ -885,115 +852,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "customerroledescription",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Description 1",
-                                "description": "Type additional information about the primary party's role in the customer relationship, such as the length or quality of the relationship."
+                                "description": "Type additional information about the primary party's role in the customer relationship, such as the length or quality of the relationship.",
+                                "isNullable": true,
+                                "sourceName": "customerroledescription",
+                                "sourceOrdering": 13,
+                                "maximumLength": 2000
                             },
+                            "customerIdAttribute",
                             {
-                                "relationship": {
-                                    "relationshipReference": "referencesCustomer",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and Account' adds the 'customerId' attribute below to the 'CustomerRelationship' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "customerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Party 1"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Select the primary account or contact involved in the customer relationship."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "customerid",
-                                                        "sourceOrdering": 14,
-                                                        "displayName": "Party 1",
-                                                        "description": "Select the primary account or contact involved in the customer relationship."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
+                                "name": "User_modifiedBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1059,11 +927,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 15,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By",
-                                                        "description": "Shows who last updated the record."
+                                                        "description": "Shows who last updated the record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 15
                                                     }
                                                 }
                                             ]
@@ -1129,14 +997,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "partnerroledescription",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "Description 2",
-                                "description": "Type additional information about the secondary party's role in the customer relationship, such as the length or quality of the relationship."
+                                "description": "Type additional information about the secondary party's role in the customer relationship, such as the length or quality of the relationship.",
+                                "isNullable": true,
+                                "sourceName": "partnerroledescription",
+                                "sourceOrdering": 16,
+                                "maximumLength": 2000
                             },
                             {
+                                "name": "User_owningUser",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1202,11 +1071,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 17,
-                                                        "isNullable": true,
                                                         "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user who owns the customer relationship."
+                                                        "description": "Unique identifier of the user who owns the customer relationship.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owninguser",
+                                                        "sourceOrdering": 17
                                                     }
                                                 }
                                             ]
@@ -1272,11 +1141,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "description": "Date and time that the record was migrated.",
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 35
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -1325,15 +1194,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
+                                "description": "Unique identifier of the data import or data migration that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 36,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
+                                "name": "User_createdOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1399,11 +1269,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 43,
-                                                        "isNullable": true,
                                                         "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
+                                                        "description": "Shows who created the record on behalf of another user.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 43
                                                     }
                                                 }
                                             ]
@@ -1423,6 +1293,7 @@
                                 }
                             },
                             {
+                                "name": "User_modifiedOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1488,11 +1359,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 47,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
+                                                        "description": "Shows who created the record on behalf of another user.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 47
                                                     }
                                                 }
                                             ]
@@ -1512,6 +1383,7 @@
                                 }
                             },
                             {
+                                "name": "Team_owningTeam",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1577,11 +1449,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "owningteam",
-                                                        "sourceOrdering": 51,
-                                                        "isNullable": true,
                                                         "displayName": "Owning Team",
-                                                        "description": "Unique identifier of the team who owns the customer relationship."
+                                                        "description": "Unique identifier of the team who owns the customer relationship.",
+                                                        "isNullable": true,
+                                                        "sourceName": "owningteam",
+                                                        "sourceOrdering": 51
                                                     }
                                                 }
                                             ]

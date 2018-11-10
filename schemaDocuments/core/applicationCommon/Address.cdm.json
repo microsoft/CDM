@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -69,15 +69,15 @@
                         ],
                         "members": [
                             {
+                                "name": "AccountOrContact_parentId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Account and Contact' adds the 'parentId' attribute below to the 'Address' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "parentId",
                                                         "relationship": "hasA",
@@ -134,40 +134,104 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "parentid",
-                                                        "sourceOrdering": 1,
                                                         "displayName": "Parent",
-                                                        "description": "Choose the customer's address."
+                                                        "description": "Choose the customer's address.",
+                                                        "sourceName": "parentid",
+                                                        "sourceOrdering": 1
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "parentIdTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "parentId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by parentId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "parentId Type",
+                                                        "description": "The name of the entity linked by parentId",
+                                                        "sourceName": "parentidtypecode"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Customer",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "customerAddressId",
@@ -216,10 +280,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "customeraddressid",
-                                "sourceOrdering": 2,
                                 "displayName": "Address",
-                                "description": "Unique identifier of the customer address."
+                                "description": "Unique identifier of the customer address.",
+                                "sourceName": "customeraddressid",
+                                "sourceOrdering": 2
                             },
                             {
                                 "name": "addressNumber",
@@ -268,13 +332,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "addressnumber",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 3,
-                                "isNullable": true,
                                 "displayName": "Address Number",
-                                "description": "Shows the number of the address, to indicate whether the address is the primary, secondary, or other address for the customer."
+                                "description": "Shows the number of the address, to indicate whether the address is the primary, secondary, or other address for the customer.",
+                                "isNullable": true,
+                                "sourceName": "addressnumber",
+                                "sourceOrdering": 3,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "objectTypeCode",
@@ -315,7 +379,11 @@
                                                     "name": "objectTypeCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -364,10 +432,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "objecttypecode",
-                                "sourceOrdering": 4,
                                 "displayName": "Object Type ",
-                                "description": "Shows the type code of the customer record to indicate whether the address belongs to a customer account or contact."
+                                "description": "Shows the type code of the customer record to indicate whether the address belongs to a customer account or contact.",
+                                "sourceName": "objecttypecode",
+                                "sourceOrdering": 4
                             },
                             {
                                 "name": "addressTypeCode",
@@ -420,7 +488,11 @@
                                                     "name": "addressTypeCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -469,11 +541,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "addresstypecode",
-                                "sourceOrdering": 5,
-                                "isNullable": true,
                                 "displayName": "Address Type",
-                                "description": "Select the address type, such as primary or billing."
+                                "description": "Select the address type, such as primary or billing.",
+                                "isNullable": true,
+                                "sourceName": "addresstypecode",
+                                "sourceOrdering": 5
                             },
                             {
                                 "name": "name",
@@ -522,12 +594,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "name",
-                                "maximumLength": 200,
-                                "sourceOrdering": 6,
-                                "isNullable": true,
                                 "displayName": "Address Name",
-                                "description": "Type a descriptive name for the customer's address, such as Corporate Headquarters."
+                                "description": "Type a descriptive name for the customer's address, such as Corporate Headquarters.",
+                                "isNullable": true,
+                                "sourceName": "name",
+                                "sourceOrdering": 6,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "primaryContactName",
@@ -576,18 +648,19 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "primarycontactname",
-                                "maximumLength": 150,
-                                "sourceOrdering": 7,
-                                "isNullable": true,
                                 "displayName": "Address Contact",
-                                "description": "Type the name of the primary contact person for the customer's address."
+                                "description": "Type the name of the primary contact person for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "primarycontactname",
+                                "sourceOrdering": 7,
+                                "maximumLength": 150
                             },
                             {
                                 "name": "line1",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line1",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -630,18 +703,19 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "line1",
-                                "maximumLength": 250,
-                                "sourceOrdering": 8,
-                                "isNullable": true,
                                 "displayName": "Street 1",
-                                "description": "Type the first line of the customer's address to help identify the location."
+                                "description": "Type the first line of the customer's address to help identify the location.",
+                                "isNullable": true,
+                                "sourceName": "line1",
+                                "sourceOrdering": 8,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "line2",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line2",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -684,18 +758,19 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "line2",
-                                "maximumLength": 250,
-                                "sourceOrdering": 9,
-                                "isNullable": true,
                                 "displayName": "Street 2",
-                                "description": "Type the second line of the customer's address."
+                                "description": "Type the second line of the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "line2",
+                                "sourceOrdering": 9,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "line3",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line3",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -738,17 +813,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "line3",
-                                "maximumLength": 250,
-                                "sourceOrdering": 10,
-                                "isNullable": true,
                                 "displayName": "Street 3",
-                                "description": "Type the third line of the customer's address."
+                                "description": "Type the third line of the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "line3",
+                                "sourceOrdering": 10,
+                                "maximumLength": 250
                             },
                             {
                                 "name": "city",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "city",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -792,17 +867,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "city",
-                                "maximumLength": 80,
-                                "sourceOrdering": 11,
-                                "isNullable": true,
                                 "displayName": "City",
-                                "description": "Type the city for the customer's address to help identify the location."
+                                "description": "Type the city for the customer's address to help identify the location.",
+                                "isNullable": true,
+                                "sourceName": "city",
+                                "sourceOrdering": 11,
+                                "maximumLength": 80
                             },
                             {
                                 "name": "stateOrProvince",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "stateOrProvince",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -846,17 +921,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stateorprovince",
-                                "maximumLength": 50,
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "State/Province",
-                                "description": "Type the state or province of the customer's address."
+                                "description": "Type the state or province of the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "stateorprovince",
+                                "sourceOrdering": 12,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "county",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "county",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -900,17 +975,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "county",
-                                "maximumLength": 50,
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "County",
-                                "description": "Type the county for the customer's address."
+                                "description": "Type the county for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "county",
+                                "sourceOrdering": 13,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "country",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "country",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -954,12 +1029,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "country",
-                                "maximumLength": 80,
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Country/Region",
-                                "description": "Type the country or region for the customer's address."
+                                "description": "Type the country or region for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "country",
+                                "sourceOrdering": 14,
+                                "maximumLength": 80
                             },
                             {
                                 "name": "postOfficeBox",
@@ -1008,17 +1083,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "postofficebox",
-                                "maximumLength": 20,
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "Post Office Box",
-                                "description": "Type the post office box number of the customer's address."
+                                "description": "Type the post office box number of the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "postofficebox",
+                                "sourceOrdering": 15,
+                                "maximumLength": 20
                             },
                             {
                                 "name": "postalCode",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "postalCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1062,12 +1137,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "postalcode",
-                                "maximumLength": 20,
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "ZIP/Postal Code",
-                                "description": "Type the ZIP Code or postal code for the address."
+                                "description": "Type the ZIP Code or postal code for the address.",
+                                "isNullable": true,
+                                "sourceName": "postalcode",
+                                "sourceOrdering": 16,
+                                "maximumLength": 20
                             },
                             {
                                 "name": "UTCOffset",
@@ -1116,13 +1191,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "utcoffset",
-                                "maximumValue": "1500",
-                                "minimumValue": "-1500",
-                                "sourceOrdering": 17,
-                                "isNullable": true,
                                 "displayName": "UTC Offset",
-                                "description": "Select the time zone for the address."
+                                "description": "Select the time zone for the address.",
+                                "isNullable": true,
+                                "sourceName": "utcoffset",
+                                "sourceOrdering": 17,
+                                "maximumValue": "1500",
+                                "minimumValue": "-1500"
                             },
                             {
                                 "name": "freightTermsCode",
@@ -1163,7 +1238,11 @@
                                                     "name": "freightTermsCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -1212,11 +1291,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "freighttermscode",
-                                "sourceOrdering": 18,
-                                "isNullable": true,
                                 "displayName": "Freight Terms",
-                                "description": "Select the freight terms to make sure shipping charges are processed correctly."
+                                "description": "Select the freight terms to make sure shipping charges are processed correctly.",
+                                "isNullable": true,
+                                "sourceName": "freighttermscode",
+                                "sourceOrdering": 18
                             },
                             {
                                 "name": "UPSZone",
@@ -1265,17 +1344,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "upszone",
-                                "maximumLength": 4,
-                                "sourceOrdering": 19,
-                                "isNullable": true,
                                 "displayName": "UPS Zone",
-                                "description": "Type the UPS zone of the customer's address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS."
+                                "description": "Type the UPS zone of the customer's address to make sure shipping charges are calculated correctly and deliveries are made promptly, if shipped by UPS.",
+                                "isNullable": true,
+                                "sourceName": "upszone",
+                                "sourceOrdering": 19,
+                                "maximumLength": 4
                             },
                             {
                                 "name": "latitude",
                                 "relationship": "hasA",
-                                "dataType": "double",
+                                "dataType": "latitude",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1319,13 +1398,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "latitude",
-                                "maximumValue": "90",
-                                "minimumValue": "-90",
-                                "sourceOrdering": 20,
-                                "isNullable": true,
                                 "displayName": "Latitude",
-                                "description": "Type the latitude value for the customer's address, for use in mapping and other applications."
+                                "description": "Type the latitude value for the customer's address, for use in mapping and other applications.",
+                                "isNullable": true,
+                                "sourceName": "latitude",
+                                "sourceOrdering": 20,
+                                "maximumValue": "90",
+                                "minimumValue": "-90"
                             },
                             {
                                 "name": "telephone1",
@@ -1374,17 +1453,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "telephone1",
-                                "maximumLength": 50,
-                                "sourceOrdering": 21,
-                                "isNullable": true,
                                 "displayName": "Main Phone",
-                                "description": "Type the primary phone number for the customer's address."
+                                "description": "Type the primary phone number for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "telephone1",
+                                "sourceOrdering": 21,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "longitude",
                                 "relationship": "hasA",
-                                "dataType": "double",
+                                "dataType": "longitude",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1428,13 +1507,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "longitude",
-                                "maximumValue": "180",
-                                "minimumValue": "-180",
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Longitude",
-                                "description": "Type the longitude value for the customer's address, for use in mapping and other applications."
+                                "description": "Type the longitude value for the customer's address, for use in mapping and other applications.",
+                                "isNullable": true,
+                                "sourceName": "longitude",
+                                "sourceOrdering": 22,
+                                "maximumValue": "180",
+                                "minimumValue": "-180"
                             },
                             {
                                 "name": "shippingMethodCode",
@@ -1505,7 +1584,11 @@
                                                     "name": "shippingMethodCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -1554,11 +1637,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "shippingmethodcode",
-                                "sourceOrdering": 23,
-                                "isNullable": true,
                                 "displayName": "Shipping Method",
-                                "description": "Select a shipping method for deliveries sent to this address."
+                                "description": "Select a shipping method for deliveries sent to this address.",
+                                "isNullable": true,
+                                "sourceName": "shippingmethodcode",
+                                "sourceOrdering": 23
                             },
                             {
                                 "name": "telephone2",
@@ -1607,12 +1690,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "telephone2",
-                                "maximumLength": 50,
-                                "sourceOrdering": 24,
-                                "isNullable": true,
                                 "displayName": "Phone 2",
-                                "description": "Type a second phone number for the customer's address."
+                                "description": "Type a second phone number for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "telephone2",
+                                "sourceOrdering": 24,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "telephone3",
@@ -1661,17 +1744,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "telephone3",
-                                "maximumLength": 50,
-                                "sourceOrdering": 25,
-                                "isNullable": true,
                                 "displayName": "Telephone 3",
-                                "description": "Type a third phone number for the customer's address."
+                                "description": "Type a third phone number for the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "telephone3",
+                                "sourceOrdering": 25,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "fax",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "phoneFax",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1715,12 +1798,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "fax",
-                                "maximumLength": 50,
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "Fax",
-                                "description": "Type the fax number associated with the customer's address."
+                                "description": "Type the fax number associated with the customer's address.",
+                                "isNullable": true,
+                                "sourceName": "fax",
+                                "sourceOrdering": 26,
+                                "maximumLength": 50
                             },
                             {
                                 "name": "versionNumber",
@@ -1769,13 +1852,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 27,
-                                "isNullable": true,
                                 "displayName": "Version Number",
-                                "description": "Version number of the customer address."
+                                "description": "Version number of the customer address.",
+                                "isNullable": true,
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 27
                             },
                             {
+                                "name": "User_createdBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1841,11 +1925,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 28,
-                                                        "isNullable": true,
                                                         "displayName": "Created By",
-                                                        "description": "Shows who created the record."
+                                                        "description": "Shows who created the record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 28
                                                     }
                                                 }
                                             ]
@@ -1911,13 +1995,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 29,
-                                "isNullable": true,
                                 "displayName": "Created On",
-                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+                                "isNullable": true,
+                                "sourceName": "createdon",
+                                "sourceOrdering": 29
                             },
                             {
+                                "name": "User_modifiedBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1983,11 +2068,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 30,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By",
-                                                        "description": "Shows who last updated the record."
+                                                        "description": "Shows who last updated the record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 30
                                                     }
                                                 }
                                             ]
@@ -2053,11 +2138,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 31,
-                                "isNullable": true,
                                 "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options."
+                                "description": "Shows the date and time when the record was last updated. The date and time are displayed in the time zone selected in Microsoft Dynamics 365 options.",
+                                "isNullable": true,
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 31
                             },
                             {
                                 "name": "owningBusinessUnit",
@@ -2115,11 +2200,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "owningbusinessunit",
-                                "sourceOrdering": 41,
-                                "isNullable": true,
                                 "displayName": "Owning Business Unit",
-                                "description": "Shows the business unit that the record owner belongs to."
+                                "description": "Shows the business unit that the record owner belongs to.",
+                                "isNullable": true,
+                                "sourceName": "owningbusinessunit",
+                                "sourceOrdering": 41
                             },
                             {
                                 "name": "owningUser",
@@ -2177,11 +2262,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "owninguser",
-                                "sourceOrdering": 42,
-                                "isNullable": true,
                                 "displayName": "Owner",
-                                "description": "Unique identifier of the user who owns the customer address."
+                                "description": "Unique identifier of the user who owns the customer address.",
+                                "isNullable": true,
+                                "sourceName": "owninguser",
+                                "sourceOrdering": 42
                             },
                             {
                                 "name": "timeZoneRuleVersionNumber",
@@ -2230,13 +2315,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 43,
-                                "isNullable": true,
                                 "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "timezoneruleversionnumber",
+                                "sourceOrdering": 43,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "overriddenCreatedOn",
@@ -2285,11 +2370,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 44,
-                                "isNullable": true,
                                 "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "description": "Date and time that the record was migrated.",
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 44
                             },
                             {
                                 "name": "UTCConversionTimeZoneCode",
@@ -2338,13 +2423,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 45,
-                                "isNullable": true,
                                 "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
+                                "description": "Time zone code that was in use when the record was created.",
+                                "isNullable": true,
+                                "sourceName": "utcconversiontimezonecode",
+                                "sourceOrdering": 45,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -2393,117 +2478,17 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
+                                "description": "Unique identifier of the data import or data migration that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 46,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
+                            "ownerIdAttribute",
                             {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Address' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 50,
-                                                        "isNullable": true,
-                                                        "displayName": "Owner",
-                                                        "description": "Enter the user or team who is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
+                                "name": "User_createdOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2569,11 +2554,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 52,
-                                                        "isNullable": true,
                                                         "displayName": "Created By (Delegate)",
-                                                        "description": "Shows who created the record on behalf of another user."
+                                                        "description": "Shows who created the record on behalf of another user.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 52
                                                     }
                                                 }
                                             ]
@@ -2593,6 +2578,7 @@
                                 }
                             },
                             {
+                                "name": "User_modifiedOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2658,11 +2644,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 56,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By (Delegate)",
-                                                        "description": "Shows who last updated the record on behalf of another user."
+                                                        "description": "Shows who last updated the record on behalf of another user.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 56
                                                     }
                                                 }
                                             ]
@@ -2682,6 +2668,7 @@
                                 }
                             },
                             {
+                                "name": "Currency_transactionCurrencyId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -2747,11 +2734,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 60,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 60
                                                     }
                                                 }
                                             ]
@@ -2817,19 +2804,20 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 62,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 62,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
                                 "name": "composite",
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2872,15 +2860,162 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "composite",
-                                "maximumLength": 1000,
-                                "sourceOrdering": 63,
-                                "isNullable": true,
                                 "displayName": "Address",
-                                "description": "Shows the complete address."
+                                "description": "Shows the complete address.",
+                                "isNullable": true,
+                                "sourceName": "composite",
+                                "sourceOrdering": 63,
+                                "maximumLength": 1000
                             }
                         ]
                     }
+                }
+            ]
+        },
+        {
+            "entityName": "customerAddressInline",
+            "hasAttributes": [
+                {
+                    "name": "customerAddressAll",
+                    "entity": "Address"
+                },
+                {
+                    "name": "customerAddressId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "parentId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "parentIdTypeCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "addressNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "objectTypeCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "objectTypeCode_display",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "versionNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "owningBusinessUnit",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "owningUser",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "timeZoneRuleVersionNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "overriddenCreatedOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "UTCConversionTimeZoneCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "importSequenceNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "ownerId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "ownerIdType",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdOnBehalfBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedOnBehalfBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "transactionCurrencyId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "exchangeRate",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
                 }
             ]
         }

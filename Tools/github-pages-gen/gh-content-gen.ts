@@ -1,4 +1,4 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 import { readFileSync, writeFileSync, readFile, mkdirSync, existsSync, createReadStream, readdirSync, statSync } from "fs";
 import { relative } from "path";
 
@@ -52,7 +52,7 @@ export interface contentConstants {
     mdToken : string;
 } 
 
-export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
+export function collectGithubFolderData(corpus : cdm.ICdmCorpusDef) : folder {
     let collectFolderHierarchy = (folder : cdm.ICdmFolderDef, hier : folder) => {
         folderId ++;
         let entNumber = 0;
@@ -60,8 +60,10 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
         hier.id = "f" + (folderId * 10000).toString();
         if (folder.getName() != "" && folder.getDocuments() && folder.getDocuments().length)
         {
+            let directives = new cdm.TraitDirectiveSet(new Set<string>(["referenceOnly", "normalized"]));
             hier.entities = new Array<entityState>();
             folder.getDocuments().forEach(doc => {
+                let resOpt: cdm.resolveOptions = {wrtDoc: doc, directives: directives};
                 if (doc.getDefinitions() && doc.getDefinitions().length)
                     // all refs get looked up from the POV of this doc.
                     doc.getDefinitions().forEach(def => {
@@ -75,15 +77,15 @@ export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
                             let locEnt : cdm.ICdmConstantEntityDef;
                             let pVal: cdm.ParameterValue;
                             let rtDesc : cdm.ResolvedTrait;
-                            if ((rtDesc = def.getResolvedTraits(doc).find(doc, "is.localized.describedAs")) && 
+                            if ((rtDesc = def.getResolvedTraits(resOpt).find(resOpt, "is.localized.describedAs")) && 
                                 (pVal=rtDesc.parameterValues.getParameterValue("localizedDisplayText")) &&
                                 (pVal.value) && 
-                                (locEnt = (pVal.value as cdm.ICdmObject).getObjectDef(doc) as cdm.ICdmConstantEntityDef)) {
-                                    description = locEnt.lookupWhere(doc, "displayText", "languageTag", "en");
+                                (locEnt = (pVal.value as cdm.ICdmObject).getObjectDef(resOpt) as cdm.ICdmConstantEntityDef)) {
+                                    description = locEnt.lookupWhere(resOpt, "displayText", "languageTag", "en");
                             }
-                            if ((rtDesc = def.getResolvedTraits(doc).find(doc, "is.CDS.sourceNamed")) &&
+                            if ((rtDesc = def.getResolvedTraits(resOpt).find(resOpt, "is.CDS.sourceNamed")) &&
                                 (pVal = rtDesc.parameterValues.getParameterValue("name")))
-                                UEName = pVal.getValueString(doc);
+                                UEName = pVal.getValueString(resOpt);
                             if (!UEName)
                                 UEName = def.getName();
 

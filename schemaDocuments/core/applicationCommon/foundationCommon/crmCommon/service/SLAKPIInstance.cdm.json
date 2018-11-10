@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -32,15 +32,15 @@
                         ],
                         "members": [
                             {
+                                "name": "Activity_regarding",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'ServiceActivity and Case' adds the 'regarding' attribute below to the 'SLAKPIInstance' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "regarding",
                                                         "relationship": "hasA",
@@ -97,41 +97,105 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "regarding",
-                                                        "sourceOrdering": 13,
-                                                        "isNullable": true,
                                                         "displayName": "Regarding",
-                                                        "description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with."
+                                                        "description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with.",
+                                                        "isNullable": true,
+                                                        "sourceName": "regarding",
+                                                        "sourceOrdering": 13
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "regardingObjectTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Regarding Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by Regarding"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Regarding Type",
+                                                        "description": "The name of the entity linked by Regarding",
+                                                        "sourceName": "regardingobjecttypecode"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "ServiceActivity",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "ServiceActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Case",
-                                        "appliedTraits": [
+                                                "name": "serviceActivityOption",
+                                                "entity": {
+                                                    "entityReference": "ServiceActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "ServiceActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Case/(resolvedAttributes)/incidentId"
-                                                ]
+                                                "name": "caseOption",
+                                                "entity": {
+                                                    "entityReference": "Case",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Case/(resolvedAttributes)/incidentId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             }
                         ]
                     }

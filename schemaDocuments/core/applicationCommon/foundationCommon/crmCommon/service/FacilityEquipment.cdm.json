@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -115,10 +115,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "equipmentid",
-                                "sourceOrdering": 10000,
                                 "displayName": "Facility/Equipment",
-                                "description": "Unique identifier of the facility/equipment."
+                                "description": "Unique identifier of the facility/equipment.",
+                                "sourceName": "equipmentid",
+                                "sourceOrdering": 10000
                             },
                             {
                                 "name": "createdOn",
@@ -167,13 +167,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 10001,
-                                "isNullable": true,
                                 "displayName": "Created On",
-                                "description": "Date and time when the record was created."
+                                "description": "Date and time when the record was created.",
+                                "isNullable": true,
+                                "sourceName": "createdon",
+                                "sourceOrdering": 10001
                             },
                             {
+                                "name": "User_createdBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -239,11 +240,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdby",
-                                                        "sourceOrdering": 10002,
-                                                        "isNullable": true,
                                                         "displayName": "Created By",
-                                                        "description": "Unique identifier of the user who created the facility/equipment entry."
+                                                        "description": "Unique identifier of the user who created the facility/equipment entry.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdby",
+                                                        "sourceOrdering": 10002
                                                     }
                                                 }
                                             ]
@@ -309,13 +310,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 10003,
-                                "isNullable": true,
                                 "displayName": "Modified On",
-                                "description": "Date and time when the record was modified."
+                                "description": "Date and time when the record was modified.",
+                                "isNullable": true,
+                                "sourceName": "modifiedon",
+                                "sourceOrdering": 10003
                             },
                             {
+                                "name": "User_modifiedBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -381,11 +383,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedby",
-                                                        "sourceOrdering": 10004,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By",
-                                                        "description": "Unique identifier of the user who last modified the facility/equipment."
+                                                        "description": "Unique identifier of the user who last modified the facility/equipment.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedby",
+                                                        "sourceOrdering": 10004
                                                     }
                                                 }
                                             ]
@@ -405,6 +407,7 @@
                                 }
                             },
                             {
+                                "name": "User_createdOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -470,11 +473,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 10005,
-                                                        "isNullable": true,
                                                         "displayName": "Created By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who created the equipment."
+                                                        "description": "Unique identifier of the delegate user who created the equipment.",
+                                                        "isNullable": true,
+                                                        "sourceName": "createdonbehalfby",
+                                                        "sourceOrdering": 10005
                                                     }
                                                 }
                                             ]
@@ -494,6 +497,7 @@
                                 }
                             },
                             {
+                                "name": "User_modifiedOnBehalfBy",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -559,11 +563,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 10006,
-                                                        "isNullable": true,
                                                         "displayName": "Modified By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who last modified the equipment."
+                                                        "description": "Unique identifier of the delegate user who last modified the equipment.",
+                                                        "isNullable": true,
+                                                        "sourceName": "modifiedonbehalfby",
+                                                        "sourceOrdering": 10006
                                                     }
                                                 }
                                             ]
@@ -583,6 +587,7 @@
                                 }
                             },
                             {
+                                "name": "User_businessInitId",                                
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -648,40 +653,51 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "businessunitid",
-                                                        "sourceOrdering": 10015,
                                                         "displayName": "Business Unit Id",
-                                                        "description": "Business Unit Id"
+                                                        "description": "Business Unit Id",
+                                                        "sourceName": "businessunitid",
+                                                        "sourceOrdering": 10015
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "BusinessUnit",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "BusinessUnit",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
+                                                "name": "businessUnitOption",
+                                                "entity": {
+                                                    "entityReference": "BusinessUnit",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/businessUnitId"
-                                                ]
+                                                "name": "userOption",
+                                                "entity": {
+                                                    "entityReference": "User",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "User/(resolvedAttributes)/businessUnitId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "versionNumber",
@@ -730,11 +746,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 10017,
-                                "isNullable": true,
                                 "displayName": "Version Number",
-                                "description": "Version Number"
+                                "description": "Version Number",
+                                "isNullable": true,
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 10017
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -783,13 +799,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 10018,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Sequence number of the import that created this record."
+                                "description": "Sequence number of the import that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 10018,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "overriddenCreatedOn",
@@ -838,11 +854,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 10019,
-                                "isNullable": true,
                                 "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "description": "Date and time that the record was migrated.",
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 10019
                             },
                             {
                                 "name": "timeZoneRuleVersionNumber",
@@ -891,13 +907,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 10020,
-                                "isNullable": true,
                                 "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "timezoneruleversionnumber",
+                                "sourceOrdering": 10020,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "UTCConversionTimeZoneCode",
@@ -946,13 +962,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 10021,
-                                "isNullable": true,
                                 "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
+                                "description": "Time zone code that was in use when the record was created.",
+                                "isNullable": true,
+                                "sourceName": "utcconversiontimezonecode",
+                                "sourceOrdering": 10021,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "name",
@@ -1001,11 +1017,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "name",
-                                "maximumLength": 160,
-                                "sourceOrdering": 10022,
                                 "displayName": "Name",
-                                "description": "Name of the facility/equipment."
+                                "description": "Name of the facility/equipment.",
+                                "sourceName": "name",
+                                "sourceOrdering": 10022,
+                                "maximumLength": 160
                             },
                             {
                                 "name": "calendarId",
@@ -1063,10 +1079,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "calendarid",
-                                "sourceOrdering": 10023,
                                 "displayName": "Calendar",
-                                "description": "Fiscal calendar associated with the facility/equipment."
+                                "description": "Fiscal calendar associated with the facility/equipment.",
+                                "sourceName": "calendarid",
+                                "sourceOrdering": 10023
                             },
                             {
                                 "name": "description",
@@ -1115,12 +1131,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "description",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 10024,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Description of the facility/equipment."
+                                "description": "Description of the facility/equipment.",
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 10024,
+                                "maximumLength": 2000
                             },
                             {
                                 "name": "displayInServiceViews",
@@ -1169,11 +1185,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "displayinserviceviews",
-                                "sourceOrdering": 10025,
-                                "isNullable": true,
                                 "displayName": "Display in Service Views",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "displayinserviceviews",
+                                "sourceOrdering": 10025
                             },
                             {
                                 "name": "emailAddress",
@@ -1222,12 +1238,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "emailaddress",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10027,
-                                "isNullable": true,
                                 "displayName": "Primary Email",
-                                "description": "Email address of person to contact about the use of the facility/equipment."
+                                "description": "Email address of person to contact about the use of the facility/equipment.",
+                                "isNullable": true,
+                                "sourceName": "emailaddress",
+                                "sourceOrdering": 10027,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "isDisabled",
@@ -1276,13 +1292,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "isdisabled",
-                                "sourceOrdering": 10028,
-                                "isNullable": true,
                                 "displayName": "Is Disabled",
-                                "description": "Whether the facility/equipment is disabled or operational."
+                                "description": "Whether the facility/equipment is disabled or operational.",
+                                "isNullable": true,
+                                "sourceName": "isdisabled",
+                                "sourceOrdering": 10028
                             },
                             {
+                                "name": "Organization_organizationId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1348,10 +1365,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "organizationid",
-                                                        "sourceOrdering": 10030,
                                                         "displayName": "Organization",
-                                                        "description": "Unique identifier of the parent business unit."
+                                                        "description": "Unique identifier of the parent business unit.",
+                                                        "sourceName": "organizationid",
+                                                        "sourceOrdering": 10030
                                                     }
                                                 }
                                             ]
@@ -1371,6 +1388,7 @@
                                 }
                             },
                             {
+                                "name": "Site_siteId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1436,11 +1454,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "siteid",
-                                                        "sourceOrdering": 10031,
-                                                        "isNullable": true,
                                                         "displayName": "Site",
-                                                        "description": "Site where the facility/equipment is located."
+                                                        "description": "Site where the facility/equipment is located.",
+                                                        "isNullable": true,
+                                                        "sourceName": "siteid",
+                                                        "sourceOrdering": 10031
                                                     }
                                                 }
                                             ]
@@ -1506,12 +1524,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "skills",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10032,
-                                "isNullable": true,
                                 "displayName": "Skills",
-                                "description": "Skills needed to operate the facility/equipment."
+                                "description": "Skills needed to operate the facility/equipment.",
+                                "isNullable": true,
+                                "sourceName": "skills",
+                                "sourceOrdering": 10032,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "timeZoneCode",
@@ -1560,12 +1578,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "timezonecode",
-                                "maximumValue": "1500",
-                                "minimumValue": "-1500",
-                                "sourceOrdering": 10033,
                                 "displayName": "Time Zone",
-                                "description": "Local time zone where the facility/equipment is located."
+                                "description": "Local time zone where the facility/equipment is located.",
+                                "sourceName": "timezonecode",
+                                "sourceOrdering": 10033,
+                                "maximumValue": "1500",
+                                "minimumValue": "-1500"
                             },
                             {
                                 "name": "exchangeRate",
@@ -1614,15 +1632,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 10034,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Exchange rate for the currency associated with the equipment with respect to the base currency."
+                                "description": "Exchange rate for the currency associated with the equipment with respect to the base currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 10034,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             },
                             {
+                                "name": "Currency_transactionCurrencyId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1688,11 +1707,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 10035,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Unique identifier of the currency associated with the equipment."
+                                                        "description": "Unique identifier of the currency associated with the equipment.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 10035
                                                     }
                                                 }
                                             ]

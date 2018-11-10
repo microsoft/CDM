@@ -35,7 +35,6 @@
 
 <body style="height:100%" onresize="onresizeMain()">
     <script src="cdm-bundle.js"></script>
-    <script src="cdm2dplx-bundle.js"></script>
     <script src="simpledrag.js"></script>
     <script src="viz-controller.js"></script>
     <script>
@@ -54,8 +53,8 @@
             var innerWidth = window.innerWidth - 0;
             var innerHeight = window.innerHeight - 0;
 
-            if (innerHeight < navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight)
-                innerHeight = navPaneMinHeight + buttonBarHeight * 2 + colorKeyHeight;
+            if (innerHeight < navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight)
+                innerHeight = navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight;
             if (innerWidth < navPaneMinWidth + listPaneWidth + detailPaneMinWidth)
                 innerWidth = navPaneMinWidth + listPaneWidth + detailPaneMinWidth;
 
@@ -68,8 +67,9 @@
             let yStop0 = 0;
             let yStop1 = yStop0 + buttonBarHeight;
             let yStop2 = yStop1 + buttonBarHeight;
-            let yStop4 = innerHeight;
-            let yStop3 = yStop4 - colorKeyHeight;
+            let yStop3 = yStop2 + buttonBarHeight;
+            let yStop5 = innerHeight;
+            let yStop4 = yStop5 - colorKeyHeight;
 
             var setShape = function (pane, x1, y1, x2, y2, margin) {
                 pane.style.top = (y1 + margin) + "px";
@@ -79,14 +79,15 @@
             }
 
             setShape(controller.paneButtonHost, xStop0, yStop0, xStop1, yStop1, 0);
-            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop3, 0);
-            setShape(controller.paneColorKey, xStop0, yStop3, xStop1, yStop4, 0);
-            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop4, 0);
-            setShape(controller.paneListTitle, xStop2, yStop0, xStop3, yStop1, 0);
-            setShape(controller.paneListHost, xStop2, yStop1, xStop3, yStop4, 0);
-            setShape(controller.paneTabHost, xStop3, yStop0, xStop4, yStop1, 0);
-            setShape(controller.paneDetailTool, xStop3, yStop1, xStop4, yStop2, 0);
-            setShape(controller.paneDetailHost, xStop3, yStop2, xStop4, yStop4, 0);
+            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop4, 0);
+            setShape(controller.paneColorKey, xStop0, yStop4, xStop1, yStop5, 0);
+            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop5, 0);
+            setShape(controller.paneDirectivesHost, xStop2, yStop0, xStop4, yStop1, 0);
+            setShape(controller.paneListTitle, xStop2, yStop1, xStop3, yStop2, 0);
+            setShape(controller.paneListHost, xStop2, yStop2, xStop3, yStop5, 0);
+            setShape(controller.paneTabHost, xStop3, yStop1, xStop4, yStop2, 0);
+            setShape(controller.paneDetailTool, xStop3, yStop2, xStop4, yStop3, 0);
+            setShape(controller.paneDetailHost, xStop3, yStop3, xStop4, yStop5, 0);
 
         }
 
@@ -104,6 +105,7 @@
             controller.paneColorKey = document.getElementById("color_key_pane");
             controller.paneResize = document.getElementById("resize_pane");
             controller.paneListHost = document.getElementById("list_host_pane");
+            controller.paneDirectivesHost = document.getElementById("directives_host_pane");
             controller.paneDetailHost = document.getElementById("detail_host_pane");
             controller.paneListTitle = document.getElementById("list_title_pane");
             controller.paneTabHost = document.getElementById("tab_host_pane");
@@ -112,14 +114,22 @@
             controller.statusPane = document.getElementsByClassName("status_pane")[0];
             controller.traitsPane = document.getElementsByClassName("traits_pane")[0];
             controller.propertiesPane = document.getElementsByClassName("properties_pane")[0];
-            controller.JsonPane = document.getElementsByClassName("json_pane")[0];
-            controller.DplxPane = document.getElementsByClassName("dplx_pane")[0];
-            controller.backButton = document.getElementById("back_tool_button");
+            controller.definitionPane = document.getElementsByClassName("definition_pane")[0];
+            controller.resolvedPane = document.getElementsByClassName("resolved_pane")[0];
+            controller.backDefinitionButton = document.getElementById("back_definition_tool_button");
+            controller.backResolvedButton = document.getElementById("back_resolved_tool_button");
+            controller.checkboxUgly = document.getElementById("ugly_trait_checkbox");
+            controller.labelUgly = document.getElementById("ugly_trait_label");
+            controller.checkboxDirectiveNormalized = document.getElementById("normalized_checkbox");
+            controller.checkboxDirectiveRelational = document.getElementById("relational_checkbox");
+            controller.checkboxDirectiveStructured = document.getElementById("structured_checkbox");
 
             controller.onclickFolderItem = onclickFolderItem;
             controller.onclickDetailItem = onclickDetailItem;
             controller.ondblclickDetailItem = ondblclickDetailItem;
             controller.onclickListItem = onclickListItem;
+            controller.onclickResizeUp = onclickResizeUp;
+            controller.onclickResizeDown = onclickResizeDown;
             document.onkeydown = onkeydownMain;
 
             init();
@@ -178,6 +188,18 @@
             controller.mainContainer.messageHandlePing("detailTabSelect", fromId, null);
         }
 
+        function onclickResizeUp(event) {
+            this.messageHandlePing("resize", "up", null);
+        }
+        function onclickResizeDown(event) {
+            this.messageHandlePing("resize", "down", null);
+        }
+
+        function onclickDirective() {
+            controller.mainContainer.messageHandlePing("directiveAlter", null, null);
+        }
+
+
         function onkeydownMain(event) {
             if (event.ctrlKey || event.altKey || event.key == "Shift")
                 return;
@@ -230,6 +252,14 @@
                 Attributes:
             </span>
         </span>
+        <span class="fixed_container" id="directives_host_pane">
+            <span class="detail_container">
+                <label>Default resolution directives:</label>
+                <label><input id="relational_checkbox" checked=true type="checkbox" onclick="onclickDirective()" />By Reference</label>
+                <label><input id="normalized_checkbox" checked=true type="checkbox" onclick="onclickDirective()" />Normalized</label>
+                <label><input id="structured_checkbox" type="checkbox" name="Structured" onclick="onclickDirective()"/>Structured</label>
+            </span>
+        </span>
         <span class="fixed_container" id="list_host_pane">
             <span class="list_container" id="attributeList">
             </span>
@@ -238,15 +268,17 @@
             <span class="detail_container" style="background-color: var(--back-alternate1);">
                 <span class="tab" id="property_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('property_tab')">Properties</span>
                 <span class="tab" id="trait_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('trait_tab')">Traits</span>
-                <span class="tab" id="json_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('json_tab')">JSON</span>
+                <span class="tab" id="definition_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('definition_tab')">Definition</span>
+                <span class="tab" id="resolved_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('resolved_tab')">Resolved</span>
                 <span class="tab" id="status_tab" style="background-color: var(--back-alternate2)" onclick="onclickDetailTab('status_tab')">Status</span>
-                <span class="tab" id="dplx_tab" style="background-color: var(--back-alternate1)" onclick="onclickDetailTab('dplx_tab')">DataFlow</span>
             </span>
         </span>
         <span class="fixed_container" id="detail_tool_pane" style="border-style:inset">
             <span class="detail_container">
                 <button id="copy_tool_button" class="button" onclick=copyActivePane()>Copy</button>
-                <button id="back_tool_button" class="button" style="display: none" onclick=popJsonPane()>Go Back</button>
+                <button id="back_definition_tool_button" class="button" style="display: none" onclick=popDefinitionPane()>Go Back</button>
+                <button id="back_resolved_tool_button" class="button" style="display: none" onclick=popResolvedPane()>Go Back</button>
+                <label id="ugly_trait_label" style="display: none"><input id="ugly_trait_checkbox" type="checkbox" onclick="onclickDirective()" />Show Ugly Traits</label>
             </span>
         </span>
 
@@ -257,17 +289,16 @@
             </span>
             <span class="properties_pane">
             </span>
-            <span class="json_pane">
+            <span class="definition_pane">
             </span>
-            <span class="dplx_pane">
+            <span class="resolved_pane">
             </span>
-        </span>
+        </span>            
         <span class="fixed_container" id="wait_pane" style="display:none">
             <span id="message_text">
                 <br/>Loading and resolving entity documents, please wait...
             </span>
         </span>
-
     </span>
 
 </body>

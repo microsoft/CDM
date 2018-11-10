@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -8,7 +8,7 @@
     "definitions": [
         {
             "entityName": "SocialProfile",
-            "extendsEntity": "CdmObject",
+            "extendsEntity": "CdsStandard",
             "exhibitsTraits": [
                 {
                     "traitReference": "is.localized.displayedAs",
@@ -115,99 +115,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "socialprofileid",
-                                "sourceOrdering": 1,
                                 "displayName": "Social Profile ID",
-                                "description": "Unique Identifier of the social profile name."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'owningUser' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningUser",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning User"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user who owns the contact."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owninguser",
-                                                        "sourceOrdering": 10,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning User",
-                                                        "description": "Unique identifier of the user who owns the contact."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
+                                "description": "Unique Identifier of the social profile name.",
+                                "sourceName": "socialprofileid",
+                                "sourceOrdering": 1
                             },
                             {
                                 "name": "profileName",
@@ -256,12 +167,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "profilename",
-                                "maximumLength": 100,
-                                "sourceOrdering": 22,
-                                "isNullable": true,
                                 "displayName": "Profile Name",
-                                "description": "Shows the name of the social profile on the corresponding social channel."
+                                "description": "Shows the name of the social profile on the corresponding social channel.",
+                                "isNullable": true,
+                                "sourceName": "profilename",
+                                "sourceOrdering": 22,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "profileFullName",
@@ -310,242 +221,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "profilefullname",
-                                "maximumLength": 160,
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "Full Name",
-                                "description": "Shows the display name of the customer on this social profile."
-                            },
-                            {
-                                "name": "createdOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdon",
-                                "sourceOrdering": 60,
+                                "description": "Shows the display name of the customer on this social profile.",
                                 "isNullable": true,
-                                "displayName": "Created On",
-                                "description": "Date and time when the record was created."
-                            },
-                            {
-                                "name": "createdBy",
-                                "relationship": "hasA",
-                                "dataType": "entityId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created By"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier of the user who created the record."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "createdby",
-                                "sourceOrdering": 62,
-                                "isNullable": true,
-                                "displayName": "Created By",
-                                "description": "Unique identifier of the user who created the record."
-                            },
-                            {
-                                "name": "modifiedOn",
-                                "relationship": "modifiedOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time when the record was modified."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 63,
-                                "isNullable": true,
-                                "displayName": "Modified On",
-                                "description": "Date and time when the record was modified."
-                            },
-                            {
-                                "name": "modifiedBy",
-                                "relationship": "hasA",
-                                "dataType": "entityId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified By"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier of the user who modified the record."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "modifiedby",
-                                "sourceOrdering": 64,
-                                "isNullable": true,
-                                "displayName": "Modified By",
-                                "description": "Unique identifier of the user who modified the record."
+                                "sourceName": "profilefullname",
+                                "sourceOrdering": 26,
+                                "maximumLength": 160
                             },
                             {
                                 "name": "stateCode",
@@ -586,7 +267,11 @@
                                                     "name": "stateCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -635,10 +320,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 76,
                                 "displayName": "Status",
-                                "description": "Status of the Social Profile"
+                                "description": "Status of the Social Profile",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 76
                             },
                             {
                                 "name": "statusCode",
@@ -691,7 +376,11 @@
                                                     "name": "statusCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -740,114 +429,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 78,
-                                "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Social Profile"
+                                "description": "Reason for the status of the Social Profile",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 78
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesCustomer",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Account and Contact' adds the 'customerId' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "customerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Customer"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the customer that this social profile belongs to."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "customerid",
-                                                        "sourceOrdering": 101,
-                                                        "isNullable": true,
-                                                        "displayName": "Customer",
-                                                        "description": "Shows the customer that this social profile belongs to."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "customerIdAttribute",
                             {
                                 "name": "blocked",
                                 "relationship": "hasA",
@@ -895,254 +483,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "blocked",
-                                "sourceOrdering": 112,
-                                "isNullable": true,
                                 "displayName": "Blocked",
-                                "description": "Identifies if the social profile has been blocked."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the user or team that is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 139,
-                                                        "displayName": "Owner",
-                                                        "description": "Shows the user or team that is assigned to manage the record. This field is updated every time the record is assigned to a different user."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'BusinessUnit' adds the 'owningBusinessUnit' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "owningBusinessUnit",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owning Business Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for the business unit that owns the record"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "owningbusinessunit",
-                                                        "sourceOrdering": 184,
-                                                        "isNullable": true,
-                                                        "displayName": "Owning Business Unit",
-                                                        "description": "Unique identifier for the business unit that owns the record"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "BusinessUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "overriddenCreatedOn",
-                                "relationship": "createdOn",
-                                "dataType": "dateTime",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Date and time that the record was migrated."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 189,
+                                "description": "Identifies if the social profile has been blocked.",
                                 "isNullable": true,
-                                "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "sourceName": "blocked",
+                                "sourceOrdering": 112
                             },
                             {
                                 "name": "community",
@@ -1189,7 +534,11 @@
                                                     "name": "community_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -1238,11 +587,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "community",
-                                "sourceOrdering": 191,
-                                "isNullable": true,
                                 "displayName": "Social Channel",
-                                "description": "Identifies where the social profile originated from, such as Twitter, or Facebook."
+                                "description": "Identifies where the social profile originated from, such as Twitter, or Facebook.",
+                                "isNullable": true,
+                                "sourceName": "community",
+                                "sourceOrdering": 191
                             },
                             {
                                 "name": "influenceScore",
@@ -1291,13 +640,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "influencescore",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 192,
-                                "isNullable": true,
                                 "displayName": "Influence Score",
-                                "description": "Shows the score that determines the online social influence of the social profile."
+                                "description": "Shows the score that determines the online social influence of the social profile.",
+                                "isNullable": true,
+                                "sourceName": "influencescore",
+                                "sourceOrdering": 192,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "profileLink",
@@ -1346,12 +695,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "profilelink",
-                                "maximumLength": 100,
-                                "sourceOrdering": 196,
-                                "isNullable": true,
                                 "displayName": "Profile Link",
-                                "description": "Shows the customer that this social profile belongs to."
+                                "description": "Shows the customer that this social profile belongs to.",
+                                "isNullable": true,
+                                "sourceName": "profilelink",
+                                "sourceOrdering": 196,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "uniqueProfileID",
@@ -1400,14 +749,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "uniqueprofileid",
-                                "maximumLength": 100,
-                                "sourceOrdering": 199,
-                                "isNullable": true,
                                 "displayName": "Unique Profile ID",
-                                "description": "Unique ID of the Profile ID"
+                                "description": "Unique ID of the Profile ID",
+                                "isNullable": true,
+                                "sourceName": "uniqueprofileid",
+                                "sourceOrdering": 199,
+                                "maximumLength": 100
                             },
                             {
+                                "name": "Currency_transactionCurrencyId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1473,11 +823,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 200,
-                                                        "isNullable": true,
                                                         "displayName": "Currency",
-                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 200
                                                     }
                                                 }
                                             ]
@@ -1543,471 +893,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangerate",
-                                "maximumValue": "100000000000",
-                                "minimumValue": "1E-10",
-                                "sourceOrdering": 202,
-                                "isNullable": true,
                                 "displayName": "Exchange Rate",
-                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
-                            },
-                            {
-                                "name": "importSequenceNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Import Sequence Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier of the data import or data migration that created this record."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 203,
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
                                 "isNullable": true,
-                                "displayName": "Import Sequence Number",
-                                "description": "Unique identifier of the data import or data migration that created this record."
-                            },
-                            {
-                                "name": "timeZoneRuleVersionNumber",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time Zone Rule Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 204,
-                                "isNullable": true,
-                                "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
-                            },
-                            {
-                                "name": "UTCConversionTimeZoneCode",
-                                "relationship": "hasA",
-                                "dataType": "integer",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 205,
-                                "isNullable": true,
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
-                            },
-                            {
-                                "name": "versionNumber",
-                                "relationship": "hasA",
-                                "dataType": "bigInteger",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version number of the social profile."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 206,
-                                "isNullable": true,
-                                "displayName": "Version Number",
-                                "description": "Version number of the social profile."
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'createdOnBehalfBy' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "createdOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Created By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the delegate user who created the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "createdonbehalfby",
-                                                        "sourceOrdering": 222,
-                                                        "isNullable": true,
-                                                        "displayName": "Created By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who created the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User' adds the 'modifiedOnBehalfBy' attribute below to the 'SocialProfile' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "modifiedOnBehalfBy",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Modified By (Delegate)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the delegate user who modified the record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "modifiedonbehalfby",
-                                                        "sourceOrdering": 226,
-                                                        "isNullable": true,
-                                                        "displayName": "Modified By (Delegate)",
-                                                        "description": "Unique identifier of the delegate user who modified the record."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "owningTeam",
-                                "relationship": "hasA",
-                                "dataType": "entityId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.lookup",
-                                        "arguments": [
-                                            {
-                                                "name": "style",
-                                                "value": "single"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Owning Team"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier of the team who owns the contact."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "owningteam",
-                                "sourceOrdering": 230,
-                                "isNullable": true,
-                                "displayName": "Owning Team",
-                                "description": "Unique identifier of the team who owns the contact."
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 202,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
                             }
                         ]
                     }

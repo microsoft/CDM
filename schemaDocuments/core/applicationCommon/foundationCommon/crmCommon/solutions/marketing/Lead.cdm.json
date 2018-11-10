@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -31,107 +31,7 @@
                             }
                         ],
                         "members": [
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'Lead' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner ID"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 10015,
-                                                        "displayName": "Owner",
-                                                        "description": "Owner ID"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "name": "leadSourceCode",
                                 "relationship": "hasA",
@@ -220,13 +120,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "leadsourcecode",
-                                "sourceOrdering": 10132,
-                                "isNullable": true,
                                 "displayName": "Lead Source",
-                                "description": "Select the primary marketing source that prompted the lead to contact you."
+                                "description": "Select the primary marketing source that prompted the lead to contact you.",
+                                "isNullable": true,
+                                "sourceName": "leadsourcecode",
+                                "sourceOrdering": 10132
                             },
                             {
+                                "name": "Event_originatingEvent",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -292,11 +193,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msevtmgt_originatingeventid",
-                                                        "sourceOrdering": 10214,
-                                                        "isNullable": true,
                                                         "displayName": "Originating Event",
-                                                        "description": "Shows the event the lead was created from, if the lead was created by registering event in Microsoft Dynamics 365. This is used to relate the lead to the data on the originating event."
+                                                        "description": "Shows the event the lead was created from, if the lead was created by registering event in Microsoft Dynamics 365. This is used to relate the lead to the data on the originating event.",
+                                                        "isNullable": true,
+                                                        "sourceName": "msevtmgt_originatingeventid",
+                                                        "sourceOrdering": 10214
                                                     }
                                                 }
                                             ]
@@ -316,6 +217,7 @@
                                 }
                             },
                             {
+                                "name": "CustomerJourney_sourceCustomerJourney",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -365,10 +267,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_customerjourneyid",
-                                                        "sourceOrdering": 10216,
+                                                        "displayName": "Source customer journey",
                                                         "isNullable": true,
-                                                        "displayName": "Source customer journey"
+                                                        "sourceName": "msdyncrm_customerjourneyid",
+                                                        "sourceOrdering": 10216
                                                     }
                                                 }
                                             ]
@@ -418,13 +320,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_code",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10217,
+                                "displayName": "Code",
                                 "isNullable": true,
-                                "displayName": "Code"
+                                "sourceName": "msdyncrm_code",
+                                "sourceOrdering": 10217,
+                                "maximumLength": 100
                             },
                             {
+                                "name": "MarketingEmail_sourceEmail",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -474,10 +377,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_emailid",
-                                                        "sourceOrdering": 10218,
+                                                        "displayName": "Source email",
                                                         "isNullable": true,
-                                                        "displayName": "Source email"
+                                                        "sourceName": "msdyncrm_emailid",
+                                                        "sourceOrdering": 10218
                                                     }
                                                 }
                                             ]
@@ -497,6 +400,7 @@
                                 }
                             },
                             {
+                                "name": "MarketingForm_sourceForm",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -546,10 +450,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_marketingformid",
-                                                        "sourceOrdering": 10219,
+                                                        "displayName": "Source form",
                                                         "isNullable": true,
-                                                        "displayName": "Source form"
+                                                        "sourceName": "msdyncrm_marketingformid",
+                                                        "sourceOrdering": 10219
                                                     }
                                                 }
                                             ]
@@ -569,6 +473,7 @@
                                 }
                             },
                             {
+                                "name": "MarketingPage_sourceLandingPage",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -618,10 +523,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_marketingpageid",
-                                                        "sourceOrdering": 10220,
+                                                        "displayName": "Source landing page",
                                                         "isNullable": true,
-                                                        "displayName": "Source landing page"
+                                                        "sourceName": "msdyncrm_marketingpageid",
+                                                        "sourceOrdering": 10220
                                                     }
                                                 }
                                             ]
@@ -718,10 +623,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_leadsourcetype",
-                                "sourceOrdering": 10221,
+                                "displayName": "Lead source type",
                                 "isNullable": true,
-                                "displayName": "Lead source type"
+                                "sourceName": "msdyncrm_leadsourcetype",
+                                "sourceOrdering": 10221
                             },
                             {
                                 "name": "scores",
@@ -754,12 +659,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_scores",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 10223,
+                                "displayName": "Scores",
                                 "isNullable": true,
-                                "displayName": "Scores"
+                                "sourceName": "msdyncrm_scores",
+                                "sourceOrdering": 10223,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "scoringGrade",
@@ -792,11 +697,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_scoringgrade",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10224,
+                                "displayName": "Scoring grade",
                                 "isNullable": true,
-                                "displayName": "Scoring grade"
+                                "sourceName": "msdyncrm_scoringgrade",
+                                "sourceOrdering": 10224,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "insightsPlaceholder",
@@ -829,11 +734,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_insights_placeholder",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10229,
+                                "displayName": "Insights",
                                 "isNullable": true,
-                                "displayName": "Insights"
+                                "sourceName": "msdyncrm_insights_placeholder",
+                                "sourceOrdering": 10229,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "profileid",
@@ -866,11 +771,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_profileid",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10230,
+                                "displayName": "Profile ID",
                                 "isNullable": true,
-                                "displayName": "Profile ID"
+                                "sourceName": "msdyncrm_profileid",
+                                "sourceOrdering": 10230,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "contactId",
@@ -903,11 +808,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_contactid",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10231,
+                                "displayName": "Contact ID",
                                 "isNullable": true,
-                                "displayName": "Contact ID"
+                                "sourceName": "msdyncrm_contactid",
+                                "sourceOrdering": 10231,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "leadId",
@@ -940,11 +845,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_leadid",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10232,
+                                "displayName": "Lead ID",
                                 "isNullable": true,
-                                "displayName": "Lead ID"
+                                "sourceName": "msdyncrm_leadid",
+                                "sourceOrdering": 10232,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "purchaseNeed",
@@ -977,10 +882,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_purchaseneed",
-                                "sourceOrdering": 10233,
+                                "displayName": "Purchase need",
                                 "isNullable": true,
-                                "displayName": "Purchase need"
+                                "sourceName": "msdyncrm_purchaseneed",
+                                "sourceOrdering": 10233
                             },
                             {
                                 "name": "triggerRecycle",
@@ -1013,10 +918,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_triggerrecycle",
-                                "sourceOrdering": 10235,
+                                "displayName": "Recycle",
                                 "isNullable": true,
-                                "displayName": "Recycle"
+                                "sourceName": "msdyncrm_triggerrecycle",
+                                "sourceOrdering": 10235
                             },
                             {
                                 "name": "recycled",
@@ -1049,10 +954,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_recycled",
-                                "sourceOrdering": 10237,
+                                "displayName": "Recycled",
                                 "isNullable": true,
-                                "displayName": "Recycled"
+                                "sourceName": "msdyncrm_recycled",
+                                "sourceOrdering": 10237
                             },
                             {
                                 "name": "salesAccepted",
@@ -1085,10 +990,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_salesaccepted",
-                                "sourceOrdering": 10239,
+                                "displayName": "Sales accepted",
                                 "isNullable": true,
-                                "displayName": "Sales accepted"
+                                "sourceName": "msdyncrm_salesaccepted",
+                                "sourceOrdering": 10239
                             },
                             {
                                 "name": "salesReady",
@@ -1121,10 +1026,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_salesready",
-                                "sourceOrdering": 10241,
+                                "displayName": "Sales ready",
                                 "isNullable": true,
-                                "displayName": "Sales ready"
+                                "sourceName": "msdyncrm_salesready",
+                                "sourceOrdering": 10241
                             },
                             {
                                 "name": "sasToken",
@@ -1157,11 +1062,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_sastoken",
-                                "maximumLength": 256,
-                                "sourceOrdering": 10243,
+                                "displayName": "SAS token",
                                 "isNullable": true,
-                                "displayName": "SAS token"
+                                "sourceName": "msdyncrm_sastoken",
+                                "sourceOrdering": 10243,
+                                "maximumLength": 256
                             },
                             {
                                 "name": "teleProspectAccepted",
@@ -1194,10 +1099,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_teleprospectaccepted",
-                                "sourceOrdering": 10244,
+                                "displayName": "Teleprospecting accepted",
                                 "isNullable": true,
-                                "displayName": "Teleprospecting accepted"
+                                "sourceName": "msdyncrm_teleprospectaccepted",
+                                "sourceOrdering": 10244
                             },
                             {
                                 "name": "teleProspectReady",
@@ -1230,10 +1135,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_teleprospectready",
-                                "sourceOrdering": 10246,
+                                "displayName": "Teleprospecting ready",
                                 "isNullable": true,
-                                "displayName": "Teleprospecting ready"
+                                "sourceName": "msdyncrm_teleprospectready",
+                                "sourceOrdering": 10246
                             },
                             {
                                 "name": "companySize",
@@ -1282,12 +1187,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_companysize",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10248,
-                                "isNullable": true,
                                 "displayName": "Company size",
-                                "description": "Enter the size of the company the lead belongs to"
+                                "description": "Enter the size of the company the lead belongs to",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_companysize",
+                                "sourceOrdering": 10248,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "degree",
@@ -1336,12 +1241,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_degree",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10249,
-                                "isNullable": true,
                                 "displayName": "Degree",
-                                "description": "Enter the highest education level achieved"
+                                "description": "Enter the highest education level achieved",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_degree",
+                                "sourceOrdering": 10249,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "fieldOfStudy",
@@ -1390,12 +1295,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_fieldofstudy",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10250,
-                                "isNullable": true,
                                 "displayName": "Field of study",
-                                "description": "Enter the lead's field of study"
+                                "description": "Enter the lead's field of study",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_fieldofstudy",
+                                "sourceOrdering": 10250,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "graduationDate",
@@ -1444,12 +1349,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_graduationdate",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10251,
-                                "isNullable": true,
                                 "displayName": "Graduation date",
-                                "description": "Enter the lead's graduation date from the last school or university"
+                                "description": "Enter the lead's graduation date from the last school or university",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_graduationdate",
+                                "sourceOrdering": 10251,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "industry",
@@ -1498,12 +1403,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_industry",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10252,
-                                "isNullable": true,
                                 "displayName": "Industry",
-                                "description": "Enter the industry the lead belongs to"
+                                "description": "Enter the industry the lead belongs to",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_industry",
+                                "sourceOrdering": 10252,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "jobFunction",
@@ -1552,12 +1457,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_jobfunction",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10253,
-                                "isNullable": true,
                                 "displayName": "Job function",
-                                "description": "Enter the lead's job function"
+                                "description": "Enter the lead's job function",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_jobfunction",
+                                "sourceOrdering": 10253,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "latestFormSubmissionDate",
@@ -1590,12 +1495,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_latestsubmissiondate",
-                                "sourceOrdering": 10254,
+                                "displayName": "Latest Form Submission Date",
                                 "isNullable": true,
-                                "displayName": "Latest Form Submission Date"
+                                "sourceName": "msdyncrm_latestsubmissiondate",
+                                "sourceOrdering": 10254
                             },
                             {
+                                "name": "LinkedInCampaign_linkedInCampaign",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1645,10 +1551,10 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_linkedincampaign",
-                                                        "sourceOrdering": 10255,
+                                                        "displayName": "LinkedIn Campaign",
                                                         "isNullable": true,
-                                                        "displayName": "LinkedIn Campaign"
+                                                        "sourceName": "msdyncrm_linkedincampaign",
+                                                        "sourceOrdering": 10255
                                                     }
                                                 }
                                             ]
@@ -1714,12 +1620,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_school",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10256,
-                                "isNullable": true,
                                 "displayName": "School",
-                                "description": "Enter the last school or university attended"
+                                "description": "Enter the last school or university attended",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_school",
+                                "sourceOrdering": 10256,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "seniority",
@@ -1768,14 +1674,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_seniority",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10257,
-                                "isNullable": true,
                                 "displayName": "Seniority",
-                                "description": "Enter the lead's seniority in their organization"
+                                "description": "Enter the lead's seniority in their organization",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_seniority",
+                                "sourceOrdering": 10257,
+                                "maximumLength": 100
                             },
                             {
+                                "name": "LinkedInLeadGenForm_sourceLinkedInForm",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -1841,11 +1748,11 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "msdyncrm_sourceform",
-                                                        "sourceOrdering": 10258,
-                                                        "isNullable": true,
                                                         "displayName": "Source LinkedIn Form",
-                                                        "description": "LinkedIn form this lead came from"
+                                                        "description": "LinkedIn form this lead came from",
+                                                        "isNullable": true,
+                                                        "sourceName": "msdyncrm_sourceform",
+                                                        "sourceOrdering": 10258
                                                     }
                                                 }
                                             ]
@@ -1911,12 +1818,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_startdate",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10259,
-                                "isNullable": true,
                                 "displayName": "Start date",
-                                "description": "Enter the start date for the last school or university"
+                                "description": "Enter the start date for the last school or university",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_startdate",
+                                "sourceOrdering": 10259,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "linkedInFormSubmissions",
@@ -1965,13 +1872,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdyncrm_linkedinsubmissioncount",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 10260,
-                                "isNullable": true,
                                 "displayName": "LinkedIn Form Submissions",
-                                "description": "Number of submissions by this lead"
+                                "description": "Number of submissions by this lead",
+                                "isNullable": true,
+                                "sourceName": "msdyncrm_linkedinsubmissioncount",
+                                "sourceOrdering": 10260,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             }
                         ]
                     }

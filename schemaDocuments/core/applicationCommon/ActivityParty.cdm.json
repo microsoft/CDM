@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -69,6 +69,7 @@
                         ],
                         "members": [
                             {
+                                "name": "Activity_activityId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -134,117 +135,149 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 1,
                                                         "displayName": "Activity",
-                                                        "description": "Unique identifier of the activity associated with the activity party. (A \"party\" is any person who is associated with an activity.)"
+                                                        "description": "Unique identifier of the activity associated with the activity party. (A \"party\" is any person who is associated with an activity.)",
+                                                        "sourceName": "activityid",
+                                                        "sourceOrdering": 1
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Appointment",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Activity",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Appointment/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Activity",
-                                        "appliedTraits": [
+                                                "name": "appointmentOption",
+                                                "entity": {
+                                                    "entityReference": "Appointment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Appointment/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Activity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Fax",
-                                        "appliedTraits": [
+                                                "name": "activityOption",
+                                                "entity": {
+                                                    "entityReference": "Activity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Activity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Fax/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Task",
-                                        "appliedTraits": [
+                                                "name": "faxOption",
+                                                "entity": {
+                                                    "entityReference": "Fax",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Fax/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Task/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "SocialActivity",
-                                        "appliedTraits": [
+                                                "name": "taskOption",
+                                                "entity": {
+                                                    "entityReference": "Task",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Task/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "SocialActivity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Letter",
-                                        "appliedTraits": [
+                                                "name": "socialActivityOption",
+                                                "entity": {
+                                                    "entityReference": "SocialActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "SocialActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Letter/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Email",
-                                        "appliedTraits": [
+                                                "name": "letterOption",
+                                                "entity": {
+                                                    "entityReference": "Letter",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Letter/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Email/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "PhoneCall",
-                                        "appliedTraits": [
+                                                "name": "emailOption",
+                                                "entity": {
+                                                    "entityReference": "Email",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Email/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "PhoneCall/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "RecurringAppointment",
-                                        "appliedTraits": [
+                                                "name": "PhoneCallOption",
+                                                "entity": {
+                                                    "entityReference": "PhoneCall",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "PhoneCall/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "RecurringAppointment/(resolvedAttributes)/activityId"
-                                                ]
+                                                "name": "recurringAppointmentOption",
+                                                "entity": {
+                                                    "entityReference": "RecurringAppointment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "RecurringAppointment/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "activityPartyId",
@@ -293,21 +326,21 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "activitypartyid",
-                                "sourceOrdering": 2,
                                 "displayName": "Activity Party",
-                                "description": "Unique identifier of the activity party."
+                                "description": "Unique identifier of the activity party.",
+                                "sourceName": "activitypartyid",
+                                "sourceOrdering": 2
                             },
                             {
+                                "name": "Party_partyId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and KnowledgeArticle and User and Account and Queue' adds the 'partyId' attribute below to the 'ActivityParty' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "partyId",
                                                         "relationship": "hasA",
@@ -364,74 +397,147 @@
                                                                 ]
                                                             }
                                                         ],
-                                                        "sourceName": "partyid",
-                                                        "sourceOrdering": 3,
-                                                        "isNullable": true,
                                                         "displayName": "Party",
-                                                        "description": "Unique identifier of the party associated with the activity."
+                                                        "description": "Unique identifier of the party associated with the activity.",
+                                                        "isNullable": true,
+                                                        "sourceName": "partyid",
+                                                        "sourceOrdering": 3
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "partyObjectTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "partyId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by partyId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "partyId Type",
+                                                        "description": "The name of the entity linked by partyId",
+                                                        "sourceName": "partyobjecttypecode"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Contact",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "PartyMember",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Contact/(resolvedAttributes)/contactId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "KnowledgeArticle",
-                                        "appliedTraits": [
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
+                                                "name": "knowledgeArticleOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeArticle",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Account",
-                                        "appliedTraits": [
+                                                "name": "userOption",
+                                                "entity": {
+                                                    "entityReference": "User",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "User/(resolvedAttributes)/systemUserId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Account/(resolvedAttributes)/accountId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Queue",
-                                        "appliedTraits": [
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Queue/(resolvedAttributes)/queueId"
-                                                ]
+                                                "name": "queueOption",
+                                                "entity": {
+                                                    "entityReference": "Queue",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Queue/(resolvedAttributes)/queueId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
                                 "name": "participationTypeMask",
@@ -526,7 +632,11 @@
                                                     "name": "participationTypeMask_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -575,10 +685,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "participationtypemask",
-                                "sourceOrdering": 5,
                                 "displayName": "Participation Type",
-                                "description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner."
+                                "description": "Role of the person in the activity, such as sender, to, cc, bcc, required, optional, organizer, regarding, or owner.",
+                                "sourceName": "participationtypemask",
+                                "sourceOrdering": 5
                             },
                             {
                                 "name": "addressUsed",
@@ -627,12 +737,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "addressused",
-                                "maximumLength": 200,
-                                "sourceOrdering": 6,
-                                "isNullable": true,
                                 "displayName": "Address ",
-                                "description": "Email address to which an email is delivered, and which is associated with the target entity."
+                                "description": "Email address to which an email is delivered, and which is associated with the target entity.",
+                                "isNullable": true,
+                                "sourceName": "addressused",
+                                "sourceOrdering": 6,
+                                "maximumLength": 200
                             },
                             {
                                 "name": "doNotFax",
@@ -681,11 +791,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "donotfax",
-                                "sourceOrdering": 12,
-                                "isNullable": true,
                                 "displayName": "Do not allow Faxes",
-                                "description": "Information about whether to allow sending faxes to the activity party."
+                                "description": "Information about whether to allow sending faxes to the activity party.",
+                                "isNullable": true,
+                                "sourceName": "donotfax",
+                                "sourceOrdering": 12
                             },
                             {
                                 "name": "scheduledStart",
@@ -734,11 +844,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledstart",
-                                "sourceOrdering": 13,
-                                "isNullable": true,
                                 "displayName": "Scheduled Start",
-                                "description": "Scheduled start time of the activity."
+                                "description": "Scheduled start time of the activity.",
+                                "isNullable": true,
+                                "sourceName": "scheduledstart",
+                                "sourceOrdering": 13
                             },
                             {
                                 "name": "scheduledEnd",
@@ -787,11 +897,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "scheduledend",
-                                "sourceOrdering": 14,
-                                "isNullable": true,
                                 "displayName": "Scheduled End",
-                                "description": "Scheduled end time of the activity."
+                                "description": "Scheduled end time of the activity.",
+                                "isNullable": true,
+                                "sourceName": "scheduledend",
+                                "sourceOrdering": 14
                             },
                             {
                                 "name": "effort",
@@ -840,13 +950,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "effort",
-                                "maximumValue": "1000000000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 15,
-                                "isNullable": true,
                                 "displayName": "Effort",
-                                "description": "Amount of effort used by the resource in a service appointment activity."
+                                "description": "Amount of effort used by the resource in a service appointment activity.",
+                                "isNullable": true,
+                                "sourceName": "effort",
+                                "sourceOrdering": 15,
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
                             },
                             {
                                 "name": "doNotEMail",
@@ -895,11 +1005,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "donotemail",
-                                "sourceOrdering": 16,
-                                "isNullable": true,
                                 "displayName": "Do not allow Emails",
-                                "description": "Information about whether to allow sending email to the activity party."
+                                "description": "Information about whether to allow sending email to the activity party.",
+                                "isNullable": true,
+                                "sourceName": "donotemail",
+                                "sourceOrdering": 16
                             },
                             {
                                 "name": "exchangeEntryId",
@@ -948,12 +1058,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "exchangeentryid",
-                                "maximumLength": 1024,
-                                "sourceOrdering": 18,
-                                "isNullable": true,
                                 "displayName": "Exchange Entry",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "exchangeentryid",
+                                "sourceOrdering": 18,
+                                "maximumLength": 1024
                             },
                             {
                                 "name": "versionNumber",
@@ -970,9 +1080,9 @@
                                         ]
                                     }
                                 ],
+                                "isNullable": true,
                                 "sourceName": "versionnumber",
-                                "sourceOrdering": 20,
-                                "isNullable": true
+                                "sourceOrdering": 20
                             },
                             {
                                 "name": "doNotPostalMail",
@@ -1021,11 +1131,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "donotpostalmail",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
                                 "displayName": "Do not allow Postal Mails",
-                                "description": "Information about whether to allow sending postal mail to the lead."
+                                "description": "Information about whether to allow sending postal mail to the lead.",
+                                "isNullable": true,
+                                "sourceName": "donotpostalmail",
+                                "sourceOrdering": 26
                             },
                             {
                                 "name": "doNotPhone",
@@ -1074,114 +1184,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "donotphone",
-                                "sourceOrdering": 27,
-                                "isNullable": true,
                                 "displayName": "Do not allow Phone Calls",
-                                "description": "Information about whether to allow phone calls to the lead."
+                                "description": "Information about whether to allow phone calls to the lead.",
+                                "isNullable": true,
+                                "sourceName": "donotphone",
+                                "sourceOrdering": 27
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'ActivityParty' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user or team who owns the activity_party."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 30,
-                                                        "isNullable": true,
-                                                        "displayName": "Owner",
-                                                        "description": "Unique identifier of the user or team who owns the activity_party."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "name": "instanceTypeCode",
                                 "relationship": "hasA",
@@ -1239,7 +1248,11 @@
                                                     "name": "instanceTypeCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -1288,10 +1301,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "instancetypecode",
-                                "sourceOrdering": 32,
                                 "displayName": "Appointment Type",
-                                "description": "Type of instance of a recurring series."
+                                "description": "Type of instance of a recurring series.",
+                                "sourceName": "instancetypecode",
+                                "sourceOrdering": 32
                             },
                             {
                                 "name": "isPartyDeleted",
@@ -1340,10 +1353,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "ispartydeleted",
-                                "sourceOrdering": 34,
                                 "displayName": "Is Party Deleted",
-                                "description": "Information about whether the underlying entity record is deleted."
+                                "description": "Information about whether the underlying entity record is deleted.",
+                                "sourceName": "ispartydeleted",
+                                "sourceOrdering": 34
                             },
                             {
                                 "name": "addressUsedEmailColumnNumber",
@@ -1392,13 +1405,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "addressusedemailcolumnnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "1",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Email column number of party",
-                                "description": "Email address column number from associated party."
+                                "description": "Email address column number from associated party.",
+                                "isNullable": true,
+                                "sourceName": "addressusedemailcolumnnumber",
+                                "sourceOrdering": 36,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "1"
                             }
                         ]
                     }

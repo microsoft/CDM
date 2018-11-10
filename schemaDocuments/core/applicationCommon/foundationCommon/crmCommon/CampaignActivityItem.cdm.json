@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "0.6.0",
+    "schemaVersion": "0.7.0",
     "imports": [
         {
             "uri": "_allImports.cdm.json"
@@ -99,9 +99,9 @@
                                         ]
                                     }
                                 ],
+                                "description": "Unique identifier of the campaign activity item.",
                                 "sourceName": "campaignactivityitemid",
-                                "sourceOrdering": 10000,
-                                "description": "Unique identifier of the campaign activity item."
+                                "sourceOrdering": 10000
                             },
                             {
                                 "name": "versionNumber",
@@ -150,11 +150,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 10001,
-                                "isNullable": true,
                                 "displayName": "Version Number",
-                                "description": "Version Number"
+                                "description": "Version Number",
+                                "isNullable": true,
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 10001
                             },
                             {
                                 "name": "importSequenceNumber",
@@ -203,13 +203,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "importsequencenumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 10002,
-                                "isNullable": true,
                                 "displayName": "Import Sequence Number",
-                                "description": "Sequence number of the import that created this record."
+                                "description": "Sequence number of the import that created this record.",
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 10002,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
                                 "name": "overriddenCreatedOn",
@@ -258,11 +258,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 10003,
-                                "isNullable": true,
                                 "displayName": "Record Created On",
-                                "description": "Date and time that the record was migrated."
+                                "description": "Date and time that the record was migrated.",
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 10003
                             },
                             {
                                 "name": "timeZoneRuleVersionNumber",
@@ -311,13 +311,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "timezoneruleversionnumber",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 10004,
-                                "isNullable": true,
                                 "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only."
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "timezoneruleversionnumber",
+                                "sourceOrdering": 10004,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "UTCConversionTimeZoneCode",
@@ -366,13 +366,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "utcconversiontimezonecode",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1",
-                                "sourceOrdering": 10005,
-                                "isNullable": true,
                                 "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Time zone code that was in use when the record was created."
+                                "description": "Time zone code that was in use when the record was created.",
+                                "isNullable": true,
+                                "sourceName": "utcconversiontimezonecode",
+                                "sourceOrdering": 10005,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
                             },
                             {
                                 "name": "name",
@@ -421,23 +421,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10006,
-                                "isNullable": true,
                                 "displayName": "name",
-                                "description": "name"
+                                "description": "name",
+                                "isNullable": true,
+                                "sourceName": "name",
+                                "sourceOrdering": 10006,
+                                "maximumLength": 100
                             },
                             {
+                                "name": "Activity_campaignActivityId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Activity and CampaignActivity' adds the 'campaignActivityId' attribute below to the 'CampaignActivityItem' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "campaignActivityId",
                                                         "relationship": "hasA",
@@ -478,41 +478,106 @@
                                                                 ]
                                                             }
                                                         ],
+                                                        "description": "Unique identifier of the campaign activity for the item.",
                                                         "sourceName": "campaignactivityid",
-                                                        "sourceOrdering": 10007,
-                                                        "description": "Unique identifier of the campaign activity for the item."
+                                                        "sourceOrdering": 10007
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "campaignActivityIdType",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "campaignActivityId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by campaignActivityId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "campaignActivityId Type",
+                                                        "description": "The name of the entity linked by campaignActivityId",
+                                                        "sourceName": "campaignactivityidtype"
                                                     }
                                                 }
                                             ]
                                         }
                                     ]
                                 },
-                                "entity": [
-                                    {
-                                        "entityReference": "Activity",
-                                        "appliedTraits": [
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Activity/(resolvedAttributes)/activityId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "CampaignActivity",
-                                        "appliedTraits": [
+                                                "name": "activityOption",
+                                                "entity": {
+                                                    "entityReference": "Activity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Activity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
                                             {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "CampaignActivity/(resolvedAttributes)/activityId"
-                                                ]
+                                                "name": "campaignActivityOption",
+                                                "entity": {
+                                                    "entityReference": "CampaignActivity",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "CampaignActivity/(resolvedAttributes)/activityId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
-                                ]
+                                }
                             },
                             {
+                                "name": "MarketingList_itemId",
                                 "relationship": {
                                     "relationshipReference": "referencesA",
                                     "appliedTraits": [
@@ -553,9 +618,9 @@
                                                                 ]
                                                             }
                                                         ],
+                                                        "description": "Unique identifier of the item.",
                                                         "sourceName": "itemid",
-                                                        "sourceOrdering": 10008,
-                                                        "description": "Unique identifier of the item."
+                                                        "sourceOrdering": 10008
                                                     }
                                                 }
                                             ]
@@ -600,7 +665,11 @@
                                                     "name": "itemObjectTypeCode_display",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -633,112 +702,11 @@
                                         ]
                                     }
                                 ],
+                                "description": "Identification of the type of the campaign activity item.",
                                 "sourceName": "itemobjecttypecode",
-                                "sourceOrdering": 10009,
-                                "description": "Identification of the type of the campaign activity item."
+                                "sourceOrdering": 10009
                             },
-                            {
-                                "relationship": {
-                                    "relationshipReference": "referencesOwner",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the 'CampaignActivityItem' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "ownerId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Owner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the user or team who owns the campaign activity item."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "ownerid",
-                                                        "sourceOrdering": 10011,
-                                                        "isNullable": true,
-                                                        "displayName": "Owner",
-                                                        "description": "Unique identifier of the user or team who owns the campaign activity item."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "entity": [
-                                    {
-                                        "entityReference": "User",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "User/(resolvedAttributes)/systemUserId"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "entityReference": "Team",
-                                        "appliedTraits": [
-                                            {
-                                                "traitReference": "is.identifiedBy",
-                                                "arguments": [
-                                                    "Team/(resolvedAttributes)/teamId"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
+                            "ownerIdAttribute",
                             {
                                 "name": "owningBusinessUnit",
                                 "relationship": "hasA",
@@ -770,10 +738,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "owningbusinessunit",
-                                "sourceOrdering": 10012,
+                                "description": "Unique identifier of the business unit that owns the campaign activity item.",
                                 "isNullable": true,
-                                "description": "Unique identifier of the business unit that owns the campaign activity item."
+                                "sourceName": "owningbusinessunit",
+                                "sourceOrdering": 10012
                             },
                             {
                                 "name": "owningUser",
@@ -806,10 +774,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "owninguser",
-                                "sourceOrdering": 10013,
+                                "description": "Unique identifier of the user that owns the campaign activity item.",
                                 "isNullable": true,
-                                "description": "Unique identifier of the user that owns the campaign activity item."
+                                "sourceName": "owninguser",
+                                "sourceOrdering": 10013
                             }
                         ]
                     }

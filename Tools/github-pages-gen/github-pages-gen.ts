@@ -1,6 +1,6 @@
-import * as cdm from "../cdm-types/cdm-types"
+import * as cdm from "../../lib/cdm-types"
 import * as ghc from "../github-pages-gen/gh-content-gen"
-import * as loc from "../local-corpus/local-corpus"
+import * as loc from "../../lib/local-corpus"
 
 // browserify ..\tools\cdm-types\cdm-types.js --o cdm-bundle.js --standalone cdm
 // browserify ..\tools\cdm2dplx\cdm2dplx.js --o cdm2dplx-bundle.js --standalone cdm2dplx
@@ -9,7 +9,7 @@ import * as loc from "../local-corpus/local-corpus"
 class Startup {
     public static main(): number {
 
-        let cdmCorpus : cdm.Corpus;
+        let cdmCorpus : cdm.ICdmCorpusDef;
         let pathToDocRoot = "../../schemaDocuments";
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
@@ -30,9 +30,8 @@ class Startup {
                 mdToken : "INSERT_DIRECTORY_HERE",
                 coreDir : docsRoot + "schemaDocuments/",
                 docLocationRoot : "https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/",
-                ghSourceRoot : "https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments",
-                ghRawRoot : "https://raw.githubusercontent.com/Microsoft/CDM/experimental/schemaDocuments"
-                //ghRawRoot : "http://jeffbern-dev.redmond.corp.microsoft.com:1400/schemaDocuments"
+                ghSourceRoot : "https://github.com/Microsoft/CDM/blob/schemaDocuments",
+                ghRawRoot : "https://raw.githubusercontent.com/Microsoft/CDM/schemaDocuments"
             };
 
             let hier = ghc.collectGithubFolderData(cdmCorpus);
