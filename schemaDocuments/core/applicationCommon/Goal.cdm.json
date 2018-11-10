@@ -1275,14 +1275,13 @@
                             {
                                 "name": "Owner_goalOwnerId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Team and User' adds the 'goalOwnerId' attribute below to the 'Goal' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "goalOwnerId",
                                                         "relationship": "hasA",
@@ -1337,66 +1336,66 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "does.addSupportingAttribute",
-                                                                "arguments": [
-                                                                    {
-                                                                        "explanation": "Holds the name of the entity that is linked",
-                                                                        "name": "addedAttribute",
-                                                                        "value": {
-                                                                            "name": "goalOwnerIdType",
-                                                                            "relationship": "hasA",
-                                                                            "dataType": "entityName",
-                                                                            "appliedTraits": [
-                                                                                "is.readOnly",
-                                                                                {
-                                                                                    "traitReference": "is.localized.displayedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "goalOwnerId Type"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "traitReference": "is.localized.describedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "The name of the entity linked by goalOwnerId"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            ],
-                                                                            "displayName": "goalOwnerId Type",
-                                                                            "description": "The name of the entity linked by goalOwnerId",
-                                                                            "sourceName": "goalowneridtype"
-                                                                        }
-                                                                    }
-                                                                ]
                                                             }
-                        
                                                         ],
                                                         "displayName": "Goal Owner",
                                                         "description": "Choose the user or team responsible for meeting the goal.",
                                                         "isNullable": true,
                                                         "sourceName": "goalownerid",
                                                         "sourceOrdering": 36
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "goalOwnerIdType",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "goalOwnerId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by goalOwnerId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "goalOwnerId Type",
+                                                        "description": "The name of the entity linked by goalOwnerId",
+                                                        "sourceName": "goalowneridtype"
                                                     }
                                                 }
                                             ]

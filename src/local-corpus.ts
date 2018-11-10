@@ -11,7 +11,7 @@ export function consoleStatusReport(level: cdm.cdmStatusLevel, msg : string, pat
         console.log(msg);
 }
 
-export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, finishStep : cdm.cdmValidationStep) : Promise<boolean> {
+export function resolveLocalCorpus(cdmCorpus : cdm.ICdmCorpusDef, finishStep : cdm.cdmValidationStep) : Promise<boolean> {
     return new Promise<boolean>((localCorpusResolve, localCorpusReject) => {
         console.log('resolving imports');
         // first resolve all of the imports to pull other docs into the namespace
@@ -61,7 +61,7 @@ export function resolveLocalCorpus(cdmCorpus : cdm.Corpus, finishStep : cdm.cdmV
 // "analyticalCommon"
 // "applicationCommon"
 
-export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef, ignoreFolders : string[], version : string) {
+export function loadCorpusFolder(corpus : cdm.ICdmCorpusDef, folder : cdm.ICdmFolderDef, ignoreFolders : string[], version : string) {
     let path = corpus.rootPath + folder.getRelativePath();
     if (ignoreFolders && ignoreFolders.find(ig => ig == folder.getName()))
         return;
@@ -96,7 +96,7 @@ export function loadCorpusFolder(corpus : cdm.Corpus, folder : cdm.ICdmFolderDef
 }
 
 
-export function persistCorpus(cdmCorpus : cdm.Corpus, directives: cdm.TraitDirectiveSet, options?: cdm.copyOptions) {
+export function persistCorpus(cdmCorpus : cdm.ICdmCorpusDef, directives: cdm.TraitDirectiveSet, options?: cdm.copyOptions) {
     if (cdmCorpus && cdmCorpus.getSubFolders() && cdmCorpus.getSubFolders().length == 1) 
         persistCorpusFolder(cdmCorpus.rootPath, cdmCorpus.getSubFolders()[0], directives, options);
 }

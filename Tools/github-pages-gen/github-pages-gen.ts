@@ -9,7 +9,7 @@ import * as loc from "../../lib/local-corpus"
 class Startup {
     public static main(): number {
 
-        let cdmCorpus : cdm.Corpus;
+        let cdmCorpus : cdm.ICdmCorpusDef;
         let pathToDocRoot = "../../schemaDocuments";
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs

@@ -386,11 +386,10 @@
                                     "relationshipReference": "referencesCustomer",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and Account' adds the 'billingCustomerId' attribute below to the 'Contract' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "billingCustomerId",
                                                         "relationship": "hasA",
@@ -445,58 +444,6 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "does.addSupportingAttribute",
-                                                                "arguments": [
-                                                                    {
-                                                                        "explanation": "Holds the name of the billing customer type entity that is linked",
-                                                                        "name": "addedAttribute",
-                                                                        "value": {
-                                                                            "name": "billingCustomerIdType",
-                                                                            "relationship": "hasA",
-                                                                            "dataType": "entityName",
-                                                                            "appliedTraits": [
-                                                                                "is.readOnly",
-                                                                                {
-                                                                                    "traitReference": "is.localized.displayedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "Billing Customer Type"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "traitReference": "is.localized.describedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "The type of billing customer, either Account or Contact."
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            ],
-                                                                            "displayName": "Billing Customer Type",
-                                                                            "description": "The type of billing customer, either Account or Contact.",
-                                                                            "sourceName": "billingcustomeridtype"
-                                                                        }
-                                                                    }
-                                                                ]
                                                             }
                                                         ],
                                                         "displayName": "Bill To Customer",
@@ -504,6 +451,59 @@
                                                         "isNullable": true,
                                                         "sourceName": "billingcustomerid",
                                                         "sourceOrdering": 10033
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "billingCustomerIdType",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Billing Customer Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The type of billing customer, either Account or Contact."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Billing Customer Type",
+                                                        "description": "The type of billing customer, either Account or Contact.",
+                                                        "sourceName": "billingcustomeridtype"
                                                     }
                                                 }
                                             ]

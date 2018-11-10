@@ -277,7 +277,7 @@
                                             }
                                         ]
                                     }
-                                }                                
+                                }
                             },
                             {
                                 "name": "activityPartyId",
@@ -334,14 +334,13 @@
                             {
                                 "name": "Party_partyId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact and KnowledgeArticle and User and Account and Queue' adds the 'partyId' attribute below to the 'ActivityParty' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "partyId",
                                                         "relationship": "hasA",
@@ -396,58 +395,6 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "does.addSupportingAttribute",
-                                                                "arguments": [
-                                                                    {
-                                                                        "explanation": "Holds the name of the entity that is linked",
-                                                                        "name": "addedAttribute",
-                                                                        "value": {
-                                                                            "name": "partyObjectTypeCode",
-                                                                            "relationship": "hasA",
-                                                                            "dataType": "entityName",
-                                                                            "appliedTraits": [
-                                                                                "is.readOnly",
-                                                                                {
-                                                                                    "traitReference": "is.localized.displayedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "partyId Type"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "traitReference": "is.localized.describedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "The name of the entity linked by partyId"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            ],
-                                                                            "displayName": "partyId Type",
-                                                                            "description": "The name of the entity linked by partyId",
-                                                                            "sourceName": "partyobjecttypecode"
-                                                                        }
-                                                                    }
-                                                                ]
                                                             }
                                                         ],
                                                         "displayName": "Party",
@@ -455,6 +402,59 @@
                                                         "isNullable": true,
                                                         "sourceName": "partyid",
                                                         "sourceOrdering": 3
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "partyObjectTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "partyId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by partyId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "partyId Type",
+                                                        "description": "The name of the entity linked by partyId",
+                                                        "sourceName": "partyobjecttypecode"
                                                     }
                                                 }
                                             ]
@@ -477,7 +477,7 @@
                                                             ]
                                                         }
                                                     ]
-                                                            }
+                                                }
                                             },
                                             {
                                                 "name": "knowledgeArticleOption",

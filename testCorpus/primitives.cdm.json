@@ -541,7 +541,7 @@
                     "name": "renameFormat",
                     "dataType": "string",
                     "defaultValue": "{n}{o}",
-                    "explanation": "format specifier for generated attribute names. May contain a single occurence of '{n}' and '{o}' for the base name and ordinal. examples: 'address{x}_{n}' could produce 'address2_city', '{n}{x}' gives 'city1'",
+                    "explanation": "format specifier for generated attribute names. May contain a single occurence of '{n}' and '{o}' for the base name and ordinal. examples: 'address{x}_{n}' could produce 'address2_city', '{n}{x}' gives 'city1'. Using '{N}' will uppercase the first letter of the name portion.",
                     "direction": "in"
                 },
                 {
@@ -631,6 +631,12 @@
                         "name" : "foreignKey",
                         "dataType" : "entityId"
                     }
+                },
+                {
+                    "name": "alwaysAddForeignKey",
+                    "dataType": "boolean",
+                    "explanation": "If true, the foreign key attribute will be added to the entity even in the case where the entity is not referenced only by key.",
+                    "defaultValue" : "false"
                 },
                 {
                     "name": "referencesOnlyAfterDepth",

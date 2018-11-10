@@ -82,7 +82,7 @@ class Controller {
     public multiSelectEntityList : Set<entityState>;
     public entity2state : Map<cdm.ICdmEntityDef, entityState>;
     public idLookup : Map<string, entityState>;
-    public corpus : cdm.Corpus;
+    public corpus : cdm.ICdmCorpusDef;
     public searchTerm : string;
 }
 
@@ -352,7 +352,7 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                 if (controller.loadFails == 0) {
                     controller.mainContainer.messageHandle("resolveStarting", null, null);
                     // now create corpus
-                    controller.corpus = new cdm.Corpus(controller.navData.readRoot);
+                    controller.corpus = cdm.NewCorpus(controller.navData.readRoot);
                     buildCorpus(controller.corpus, controller.corpus, controller.hier);
                     // validate whole corpus
                     controller.appState = "resolveMode"

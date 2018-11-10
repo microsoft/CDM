@@ -26,23 +26,21 @@
         {
             "uri": "/core/applicationCommon/KnowledgeArticle.cdm.json"
         }
-
     ],
     "definitions": [
         {
             "attributeGroupName": "ownerIdAttribute",
-            "members" : [
+            "members": [
                 {
                     "name": "UserOrTeam_ownerId",
                     "relationship": {
                         "relationshipReference": "referencesOwner",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "explanation": "This 'referencesA' relationship to the entity 'User and Team' adds the 'ownerId' attribute below to the this entity as a key",
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "ownerId",
                                             "relationship": "hasA",
@@ -98,73 +96,73 @@
                                                             }
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "traitReference": "does.addSupportingAttribute",
-                                                    "arguments": [
-                                                        {
-                                                            "explanation": "Holds the name of the owner type entity that is linked",
-                                                            "name": "addedAttribute",
-                                                            "value": {
-                                                                "name": "ownerIdType",
-                                                                "relationship": "hasA",
-                                                                "dataType": "entityName",
-                                                                "appliedTraits": [
-                                                                    "is.readOnly",
-                                                                    {
-                                                                        "traitReference": "is.requiredAtLevel",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "name": "level",
-                                                                                "value": "systemrequired"
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.displayedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "OwnerId Type"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.describedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "The type of owner, either User or Team."
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ],
-                                                                "displayName": "Owner Type",
-                                                                "description": "The type of owner, either User or Team.",
-                                                                "sourceName": "owneridtype"
-                                                            }
-                                                        }
-                                                    ]
                                                 }
-
                                             ],
                                             "displayName": "Owner",
                                             "description": "Owner Id",
                                             "sourceName": "ownerid"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one",
+                                    {
+                                        "explanation": "Holds the name of the owner type entity that is linked",
+                                        "name": "storeSelectionInAttribute",
+                                        "value": {
+                                            "name": "ownerIdType",
+                                            "relationship": "hasA",
+                                            "dataType": "entityName",
+                                            "appliedTraits": [
+                                                "is.readOnly",
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "OwnerId Type"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The type of owner, either User or Team."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "displayName": "Owner Type",
+                                            "description": "The type of owner, either User or Team.",
+                                            "sourceName": "owneridtype"
                                         }
                                     }
                                 ]
@@ -211,18 +209,17 @@
         },
         {
             "attributeGroupName": "regardingObjectIdAttribute",
-            "members" : [
+            "members": [
                 {
                     "name": "Object_regardingObjectId",
                     "relationship": {
-                        "relationshipReference": "referencesA",
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "explanation": "This 'referencesA' relationship to the entity 'KnowledgeBaseRecord and KnowledgeArticle and Contact and Account' adds the 'regardingObjectId' attribute below to the 'Activity' entity as a key",
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "regardingObjectId",
                                             "relationship": "hasA",
@@ -277,65 +274,65 @@
                                                             }
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "traitReference": "does.addSupportingAttribute",
-                                                    "arguments": [
-                                                        {
-                                                            "explanation": "Holds the name of the entity type entity that is linked",
-                                                            "name": "addedAttribute",
-                                                            "value": {
-                                                                "name": "regardingObjectTypeCode",
-                                                                "relationship": "hasA",
-                                                                "dataType": "entityName",
-                                                                "appliedTraits": [
-                                                                    "is.readOnly",
-                                                                    {
-                                                                        "traitReference": "is.localized.displayedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Regarding Type"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.describedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "The name of the entity linked by regardingObjectId"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ],
-                                                                "displayName": "Regarding Type",
-                                                                "description": "The name of the entity linked by regardingObjectId",
-                                                                "sourceName": "regardingobjecttypecode"
-                                                            }
-                                                        }
-                                                    ]
                                                 }
-
                                             ],
                                             "displayName": "Regarding",
                                             "description": "Unique identifier of the object with which the activity is associated.",
                                             "isNullable": true,
                                             "sourceName": "regardingobjectid"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one",
+                                    {
+                                        "explanation": "Holds the name of the owner type entity that is linked",
+                                        "name": "storeSelectionInAttribute",
+                                        "value": {
+                                            "name": "regardingObjectTypeCode",
+                                            "relationship": "hasA",
+                                            "dataType": "entityName",
+                                            "appliedTraits": [
+                                                "is.readOnly",
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Regarding Type"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The name of the entity linked by regardingObjectId"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "displayName": "Regarding Type",
+                                            "description": "The name of the entity linked by regardingObjectId",
+                                            "sourceName": "regardingobjecttypecode"
                                         }
                                     }
                                 ]
@@ -345,13 +342,12 @@
                     "entity": {
                         "entityReference": {
                             "entityName": "Regarding",
-                            "hasAttributes": [
-                            ]
+                            "hasAttributes": []
                         }
                     }
                 }
             ]
-        },                             
+        },
         {
             "attributeGroupName": "cdsCreationModificationDatesAndIds",
             "exhibitsTraits": [
@@ -1471,22 +1467,22 @@
                 {
                     "name": "stateCode",
                     "relationship": "hasA",
-                    "dataType":"integer"
+                    "dataType": "integer"
                 },
                 {
                     "name": "stateCode_display",
                     "relationship": "hasA",
-                    "dataType":"string"
+                    "dataType": "string"
                 },
                 {
                     "name": "statusCode",
                     "relationship": "hasA",
-                    "dataType":"integer"
+                    "dataType": "integer"
                 },
                 {
                     "name": "statusCode_display",
                     "relationship": "hasA",
-                    "dataType":"string"
+                    "dataType": "string"
                 }
             ]
         },
@@ -1500,7 +1496,6 @@
                 "cdsVersionTracking"
             ]
         },
-
         {
             "attributeGroupName": "activityCommon",
             "exhibitsTraits": [
@@ -1520,18 +1515,17 @@
                     ]
                 }
             ],
-            "members" : [
+            "members": [
                 {
                     "name": "Activity_activityId",
                     "relationship": {
-                        "relationshipReference": "referencesA",
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "explanation": "Every Activity type entitiy has a link to the Activity entity itself. 1:1",
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "activityId",
                                             "relationship": "identifiedBy",
@@ -1577,156 +1571,157 @@
                                                             }
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "traitReference": "does.addSupportingAttribute",
-                                                    "arguments": [
-                                                        {
-                                                            "explanation": "Holds the name of the activity type entity that is linked",
-                                                            "name": "addedAttribute",
-                                                            "value": {
-                                                                "name": "activityTypeCode",
-                                                                "relationship": "hasA",
-                                                                "dataType": "entityName",
-                                                                "appliedTraits": [
-                                                                    "is.readOnly",
-                                                                    {
-                                                                        "traitReference": "does.haveDefault",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Fax"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Phone Call"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Email"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Letter"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Appointment"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Task"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Recurring Appointment"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Quick Campaign"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Campaign Activity"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Campaign Response"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Case Resolution"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Service Activity"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Opportunity Close"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Order Close"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Quote Close"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Alert Subscription"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Invite Redemption"
-                                                                                        ],
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Portal Comment"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.requiredAtLevel",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "name": "level",
-                                                                                "value": "systemrequired"
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.displayedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Activity Type"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.describedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Type of activity."
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ],
-                                                                "displayName": "Activity Type",
-                                                                "description": "Type of activity.",
-                                                                "sourceName": "activitytypecode"
-                                                            }
-                                                        }
-                                                    ]
                                                 }
                                             ],
                                             "displayName": "Activity",
                                             "description": "Unique identifier of the activity.",
                                             "sourceName": "activityid"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one",
+                                    {
+                                        "explanation": "Holds the name of the owner type entity that is linked",
+                                        "name": "storeSelectionInAttribute",
+                                        "value": {
+                                            "name": "activityTypeCode",
+                                            "relationship": "hasA",
+                                            "dataType": "entityName",
+                                            "appliedTraits": [
+                                                "is.readOnly",
+                                                {
+                                                    "traitReference": "does.haveDefault",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Fax"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Phone Call"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Email"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Letter"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Appointment"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Task"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Recurring Appointment"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Quick Campaign"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Campaign Activity"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Campaign Response"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Case Resolution"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Service Activity"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Opportunity Close"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Order Close"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Quote Close"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Alert Subscription"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Invite Redemption"
+                                                                    ],
+                                                                    [
+                                                                        "en",
+                                                                        "Portal Comment"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Activity Type"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Type of activity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "displayName": "Activity Type",
+                                            "description": "Type of activity.",
+                                            "sourceName": "activitytypecode"
                                         }
                                     }
                                 ]
@@ -2002,7 +1997,7 @@
                     "description": "Priority of the activity.",
                     "isNullable": true,
                     "sourceName": "prioritycode"
-                },   
+                },
                 "regardingObjectIdAttribute",
                 {
                     "name": "scheduledEnd",
@@ -2429,7 +2424,7 @@
         },
         {
             "attributeGroupName": "activityCategory",
-            "members" : [
+            "members": [
                 {
                     "name": "category",
                     "relationship": "hasA",
@@ -2483,7 +2478,7 @@
                     "isNullable": true,
                     "sourceName": "category",
                     "maximumLength": 250
-                },                
+                },
                 {
                     "name": "subcategory",
                     "relationship": "hasA",
@@ -2541,7 +2536,7 @@
         },
         {
             "attributeGroupName": "activityAdditionalParams",
-            "members" : [
+            "members": [
                 {
                     "name": "activityAdditionalParams",
                     "relationship": "hasA",
@@ -2599,7 +2594,7 @@
         },
         {
             "attributeGroupName": "activityToFrom",
-            "members" : [
+            "members": [
                 {
                     "name": "to",
                     "relationship": "hasA",
@@ -2721,14 +2716,12 @@
                     "description": "The sender of the activity.",
                     "isNullable": true,
                     "sourceName": "from"
-                }                
-                
+                }
             ]
         },
         {
             "attributeGroupName": "activityIsMAPIPrivate",
-            "members" : [
-
+            "members": [
                 {
                     "name": "isMapiPrivate",
                     "relationship": "hasA",
@@ -2780,12 +2773,12 @@
                     "description": "For internal use only.",
                     "isNullable": true,
                     "sourceName": "ismapiprivate"
-                }                
+                }
             ]
         },
         {
             "attributeGroupName": "activityInstanceTypeCode",
-            "members" : [
+            "members": [
                 {
                     "name": "instanceTypeCode",
                     "relationship": "hasA",
@@ -2904,7 +2897,7 @@
         },
         {
             "attributeGroupName": "activityAttendees",
-            "members" : [
+            "members": [
                 {
                     "name": "organizer",
                     "relationship": "hasA",
@@ -2965,7 +2958,7 @@
                     "description": "The user who is in charge of coordinating or leading the activity.",
                     "isNullable": true,
                     "sourceName": "organizer"
-                },                
+                },
                 {
                     "name": "requiredAttendees",
                     "relationship": "hasA",
@@ -3026,7 +3019,7 @@
                     "description": "Enter the account, contact, lead, user, or other equipment resources that are required to attend the activity.",
                     "isNullable": true,
                     "sourceName": "requiredattendees"
-                },                
+                },
                 {
                     "name": "optionalAttendees",
                     "relationship": "hasA",
@@ -3088,12 +3081,11 @@
                     "isNullable": true,
                     "sourceName": "optionalattendees"
                 }
-                
             ]
         },
         {
             "attributeGroupName": "activitySeriesId",
-            "members" : [
+            "members": [
                 {
                     "name": "seriesId",
                     "relationship": "hasA",
@@ -3150,7 +3142,7 @@
         },
         {
             "attributeGroupName": "activityCC",
-            "members" : [
+            "members": [
                 {
                     "name": "BCC",
                     "relationship": "hasA",
@@ -3277,7 +3269,7 @@
         },
         {
             "attributeGroupName": "activityDelivery",
-            "members" : [
+            "members": [
                 {
                     "name": "sentOn",
                     "relationship": "hasA",
@@ -3493,12 +3485,12 @@
                     "description": "Priority of delivery of the activity to the email server.",
                     "isNullable": true,
                     "sourceName": "deliveryprioritycode"
-                }                
+                }
             ]
         },
         {
             "attributeGroupName": "activityResources",
-            "members" : [
+            "members": [
                 {
                     "name": "resources",
                     "relationship": "hasA",
@@ -3564,7 +3556,7 @@
         },
         {
             "attributeGroupName": "activityCommunity",
-            "members" : [
+            "members": [
                 {
                     "name": "community",
                     "relationship": "hasA",
@@ -3672,7 +3664,7 @@
         },
         {
             "attributeGroupName": "activityLeftVoiceMail",
-            "members" : [
+            "members": [
                 {
                     "name": "leftVoiceMail",
                     "relationship": "hasA",
@@ -3729,7 +3721,7 @@
         },
         {
             "attributeGroupName": "activityExchangeSync",
-            "members" : [
+            "members": [
                 {
                     "name": "deliveryLastAttemptedOn",
                     "relationship": "hasA",
@@ -3834,7 +3826,7 @@
                     "isNullable": true,
                     "sourceName": "exchangeitemid",
                     "maximumLength": 200
-                },                
+                },
                 {
                     "name": "exchangeWebLink",
                     "relationship": "hasA",
@@ -3887,12 +3879,12 @@
                     "isNullable": true,
                     "sourceName": "exchangeweblink",
                     "maximumLength": 1250
-                }                
+                }
             ]
         },
         {
             "attributeGroupName": "activityPostponeProcessingUntil",
-            "members" : [
+            "members": [
                 {
                     "name": "postponeActivityProcessingUntil",
                     "relationship": "hasA",
@@ -3949,7 +3941,7 @@
         },
         {
             "attributeGroupName": "activityCustomersPartners",
-            "members" : [
+            "members": [
                 {
                     "name": "customers",
                     "relationship": "hasA",
@@ -4075,8 +4067,8 @@
             ]
         },
         {
-            "attributeGroupName" : "activityDirectionCode",
-            "members" :[
+            "attributeGroupName": "activityDirectionCode",
+            "members": [
                 {
                     "name": "directionCode",
                     "relationship": "hasA",
@@ -4128,10 +4120,9 @@
                     "description": "Select the direction of the activity as incoming or outbound.",
                     "isNullable": true,
                     "sourceName": "directioncode"
-                }                
+                }
             ]
         },
-
         {
             "entityName": "ActivityCommon",
             "extendsEntity": "CdsStandard",
@@ -4144,60 +4135,59 @@
             "extendsEntity": "ActivityCommon",
             "hasAttributes": [
                 {
-                "attributeGroupReference": {
-                    "attributeGroupName": "activitySystem",
-                    "exhibitsTraits": [
-                        {
-                            "traitReference": "is.CDM.attributeGroup",
-                            "arguments": [
-                                {
-                                    "entityReference": {
-                                        "entityShape": "attributeGroupSet",
-                                        "constantValues": [
-                                            [
-                                                "/core/wellKnownCDSAttributeGroups.cdm.json/activitySystem"
+                    "attributeGroupReference": {
+                        "attributeGroupName": "activitySystem",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/wellKnownCDSAttributeGroups.cdm.json/activitySystem"
+                                                ]
                                             ]
-                                        ]
+                                        }
                                     }
-                                }
-                            ]
-                        }
-                    ],
-                    "members" : [
-                        "activityCategory",
-                        "activityAdditionalParams",
-                        "activityToFrom",
-                        "activityInstanceTypeCode",
-                        "activityIsMAPIPrivate",
-                        "activityAttendees",
-                        "activitySeriesId",
-                        "activityCC",
-                        "activityDelivery",
-                        "activityResources",
-                        "activityCommunity",
-                        "activityLeftVoiceMail",
-                        "activityExchangeSync",
-                        "activityPostponeProcessingUntil",
-                        "activityCustomersPartners"
-                    ]
+                                ]
+                            }
+                        ],
+                        "members": [
+                            "activityCategory",
+                            "activityAdditionalParams",
+                            "activityToFrom",
+                            "activityInstanceTypeCode",
+                            "activityIsMAPIPrivate",
+                            "activityAttendees",
+                            "activitySeriesId",
+                            "activityCC",
+                            "activityDelivery",
+                            "activityResources",
+                            "activityCommunity",
+                            "activityLeftVoiceMail",
+                            "activityExchangeSync",
+                            "activityPostponeProcessingUntil",
+                            "activityCustomersPartners"
+                        ]
+                    }
                 }
-            }
             ]
         },
         {
             "attributeGroupName": "customerIdAttribute",
-            "members" : [
+            "members": [
                 {
                     "name": "AccountOrContact_customerId",
                     "relationship": {
                         "relationshipReference": "referencesCustomer",
                         "appliedTraits": [
                             {
-                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "traitReference": "does.referenceEntityVia",
                                 "arguments": [
                                     {
-                                        "explanation": "This 'referencesA' relationship to the entities 'Account' and 'Contact' adds the 'customerId' attribute below to an entity as a foreign key",
-                                        "name": "addedAttribute",
+                                        "name": "foreignKeyAttribute",
                                         "value": {
                                             "name": "customerId",
                                             "relationship": "hasA",
@@ -4252,64 +4242,65 @@
                                                             }
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "traitReference": "does.addSupportingAttribute",
-                                                    "arguments": [
-                                                        {
-                                                            "explanation": "Holds the name of the customer type entity that is linked",
-                                                            "name": "addedAttribute",
-                                                            "value": {
-                                                                "name": "customerIdType",
-                                                                "relationship": "hasA",
-                                                                "dataType": "entityName",
-                                                                "appliedTraits": [
-                                                                    "is.readOnly",
-                                                                    {
-                                                                        "traitReference": "is.localized.displayedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "Customer Type"
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        "traitReference": "is.localized.describedAs",
-                                                                        "arguments": [
-                                                                            {
-                                                                                "entityReference": {
-                                                                                    "entityShape": "localizedTable",
-                                                                                    "constantValues": [
-                                                                                        [
-                                                                                            "en",
-                                                                                            "The type of customer, either Account or Contact."
-                                                                                        ]
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ],
-                                                                "displayName": "Customer Type",
-                                                                "description": "The type of customer, either Account or Contact.",
-                                                                "sourceName": "customeridtype"
-                                                            }
-                                                        }
-                                                    ]
                                                 }
                                             ],
                                             "displayName": "Customer",
                                             "description": "The customer account or contact to provide a quick link to additional customer details, such as account information, activities, and opportunities.",
                                             "isNullable": true,
                                             "sourceName": "customerid"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "one",
+                                    {
+                                        "explanation": "Holds the name of the owner type entity that is linked",
+                                        "name": "storeSelectionInAttribute",
+                                        "value": {
+                                            "name": "customerIdType",
+                                            "relationship": "hasA",
+                                            "dataType": "entityName",
+                                            "appliedTraits": [
+                                                "is.readOnly",
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Customer Type"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The type of customer, either Account or Contact."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "displayName": "Customer Type",
+                                            "description": "The type of customer, either Account or Contact.",
+                                            "sourceName": "customeridtype"
                                         }
                                     }
                                 ]

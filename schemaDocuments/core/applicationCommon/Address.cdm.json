@@ -71,14 +71,13 @@
                             {
                                 "name": "AccountOrContact_parentId",
                                 "relationship": {
-                                    "relationshipReference": "referencesA",
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
                                     "appliedTraits": [
                                         {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "traitReference": "does.referenceEntityVia",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Account and Contact' adds the 'parentId' attribute below to the 'Address' entity as a key",
-                                                    "name": "addedAttribute",
+                                                    "name": "foreignKeyAttribute",
                                                     "value": {
                                                         "name": "parentId",
                                                         "relationship": "hasA",
@@ -133,65 +132,65 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            },
-                                                            {
-                                                                "traitReference": "does.addSupportingAttribute",
-                                                                "arguments": [
-                                                                    {
-                                                                        "explanation": "Holds the name of the entity that is linked",
-                                                                        "name": "addedAttribute",
-                                                                        "value": {
-                                                                            "name": "parentIdTypeCode",
-                                                                            "relationship": "hasA",
-                                                                            "dataType": "entityName",
-                                                                            "appliedTraits": [
-                                                                                "is.readOnly",
-                                                                                {
-                                                                                    "traitReference": "is.localized.displayedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "parentId Type"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                {
-                                                                                    "traitReference": "is.localized.describedAs",
-                                                                                    "arguments": [
-                                                                                        {
-                                                                                            "entityReference": {
-                                                                                                "entityShape": "localizedTable",
-                                                                                                "constantValues": [
-                                                                                                    [
-                                                                                                        "en",
-                                                                                                        "The name of the entity linked by parentId"
-                                                                                                    ]
-                                                                                                ]
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            ],
-                                                                            "displayName": "parentId Type",
-                                                                            "description": "The name of the entity linked by parentId",
-                                                                            "sourceName": "parentidtypecode"
-                                                                        }
-                                                                    }
-                                                                ]
                                                             }
-                        
                                                         ],
                                                         "displayName": "Parent",
                                                         "description": "Choose the customer's address.",
                                                         "sourceName": "parentid",
                                                         "sourceOrdering": 1
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.selectAttributes",
+                                            "arguments": [
+                                                "one",
+                                                {
+                                                    "explanation": "Holds the name of the owner type entity that is linked",
+                                                    "name": "storeSelectionInAttribute",
+                                                    "value": {
+                                                        "name": "parentIdTypeCode",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityName",
+                                                        "appliedTraits": [
+                                                            "is.readOnly",
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "parentId Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The name of the entity linked by parentId"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "parentId Type",
+                                                        "description": "The name of the entity linked by parentId",
+                                                        "sourceName": "parentidtypecode"
                                                     }
                                                 }
                                             ]
@@ -661,6 +660,7 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line1",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -715,6 +715,7 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line2",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -769,6 +770,7 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address.street.line3",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -821,7 +823,7 @@
                             {
                                 "name": "city",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "city",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -875,7 +877,7 @@
                             {
                                 "name": "stateOrProvince",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "stateOrProvince",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -929,7 +931,7 @@
                             {
                                 "name": "county",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "county",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -983,7 +985,7 @@
                             {
                                 "name": "country",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "country",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1091,7 +1093,7 @@
                             {
                                 "name": "postalCode",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "postalCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1352,7 +1354,7 @@
                             {
                                 "name": "latitude",
                                 "relationship": "hasA",
-                                "dataType": "double",
+                                "dataType": "latitude",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1461,7 +1463,7 @@
                             {
                                 "name": "longitude",
                                 "relationship": "hasA",
-                                "dataType": "double",
+                                "dataType": "longitude",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1752,7 +1754,7 @@
                             {
                                 "name": "fax",
                                 "relationship": "hasA",
-                                "dataType": "string",
+                                "dataType": "phoneFax",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2815,6 +2817,7 @@
                                 "relationship": "hasA",
                                 "dataType": "string",
                                 "appliedTraits": [
+                                    "means.location.address",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -2866,6 +2869,153 @@
                             }
                         ]
                     }
+                }
+            ]
+        },
+        {
+            "entityName": "customerAddressInline",
+            "hasAttributes": [
+                {
+                    "name": "customerAddressAll",
+                    "entity": "Address"
+                },
+                {
+                    "name": "customerAddressId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "parentId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "parentIdTypeCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "addressNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "objectTypeCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "objectTypeCode_display",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "versionNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "owningBusinessUnit",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "owningUser",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "timeZoneRuleVersionNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "overriddenCreatedOn",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "UTCConversionTimeZoneCode",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "importSequenceNumber",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "ownerId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "ownerIdType",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "createdOnBehalfBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "modifiedOnBehalfBy",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "transactionCurrencyId",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
+                },
+                {
+                    "name": "exchangeRate",
+                    "appliedTraits": [
+                        "is.removed"
+                    ]
                 }
             ]
         }

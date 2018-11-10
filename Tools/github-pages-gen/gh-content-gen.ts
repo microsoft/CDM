@@ -52,7 +52,7 @@ export interface contentConstants {
     mdToken : string;
 } 
 
-export function collectGithubFolderData(corpus : cdm.Corpus) : folder {
+export function collectGithubFolderData(corpus : cdm.ICdmCorpusDef) : folder {
     let collectFolderHierarchy = (folder : cdm.ICdmFolderDef, hier : folder) => {
         folderId ++;
         let entNumber = 0;

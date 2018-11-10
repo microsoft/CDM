@@ -67,7 +67,7 @@ export interface IConvertToDplx {
     schemaUriBase : string; // schema URI base
     schemaVersion : string; // explicit version to add to schema references
     getPostFix(): string;
-    convertEntities(corpus: cdm.Corpus, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool;
+    convertEntities(corpus: cdm.ICdmCorpusDef, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ export class Converter implements IConvertToDplx {
         return (this.schemaVersion ? "." + this.schemaVersion : "") + ".cdm.json";
     }
 
-    public convertEntities(corpus: cdm.Corpus, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
+    public convertEntities(corpus: cdm.ICdmCorpusDef, entities : cdm.ICdmEntityDef[], dpName : string) : DataPool {
         let dp = new DataPoolImpl();
         dp.name = dpName;
 
@@ -266,7 +266,7 @@ export class Converter implements IConvertToDplx {
                 if (rt.trait.isDerivedFrom(resOpt, "is.hidden"))
                     isHidden = true;
                 if (rt.traitName === "is.localized.describedAs") {
-                    let localizedTableRef = rt.parameterValues.getParameterValue("localizedDisplayText").value as cdm.cdmObjectRef;
+                    let localizedTableRef = rt.parameterValues.getParameterValue("localizedDisplayText").value as cdm.ICdmObjectRef;
                     if (localizedTableRef) 
                         dpEnt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>(resOpt).lookupWhere(resOpt, "displayText", "languageTag", "en");
                 }
@@ -286,7 +286,7 @@ export class Converter implements IConvertToDplx {
                 dpAtt.name = ra.resolvedName;
                 let descTrait;
                 if (descTrait = ra.resolvedTraits.find(resOpt, "is.localized.describedAs")) {
-                    let localizedTableRef = descTrait.parameterValues.getParameterValue("localizedDisplayText").value as cdm.cdmObjectRef;
+                    let localizedTableRef = descTrait.parameterValues.getParameterValue("localizedDisplayText").value as cdm.ICdmObjectRef;
                     if (localizedTableRef) 
                         dpAtt.description = localizedTableRef.getObjectDef<cdm.ICdmConstantEntityDef>(resOpt).lookupWhere(resOpt, "displayText", "languageTag", "en");
                 }

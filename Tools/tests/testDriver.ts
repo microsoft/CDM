@@ -6,39 +6,44 @@ import { writeFileSync, mkdirSync, existsSync } from "fs";
 class Startup {
     public static main(): number {
 
-        let cdmCorpus : cdm.Corpus;
+        let cdmCorpus : cdm.ICdmCorpusDef;
         let testCorpus = false;
         let resolveEnt = false;
         let pathToDocRoot : string;
-        if (testCorpus)
+        let docGroup: string;
+        let testEnt: string;
+
+        if (testCorpus) {
             pathToDocRoot = "../../testCorpus";
-        else
+            docGroup = "E2EResolution";
+            //docGroup = "core";
+            testEnt = "/E2EResolution/E2EArrayOne.cdm.json/E2EArrayOne";
+            testEnt = "/E2EResolution/E2ESingleAll.cdm.json/E2ESingleAll";
+            //testEnt = "/core/applicationCommon/Account.cdm.json/Account";
+        }
+        else {
             pathToDocRoot = "../../schemaDocuments";
+            docGroup = "core";
+            testEnt = "/core/applicationCommon/foundationCommon/Account.cdm.json/Account";
+        }
 
         let version = "";
-        //let version = "0.7"; // explicitly use the explicit version docs to get versioned schema refs too
+        //let version = "0.8"; // explicitly use the explicit version docs to get versioned schema refs too
 
-        cdmCorpus = new cdm.Corpus(pathToDocRoot);
+        cdmCorpus = cdm.NewCorpus(pathToDocRoot);
         cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
-        if (testCorpus)
-            loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("E2EResolution"), ["analyticalCommon"], version); 
-        else
-            loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
-
+        loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder(docGroup), ["analyticalCommon"], version); 
         loc.resolveLocalCorpus(cdmCorpus, cdm.cdmValidationStep.finished).then((r:boolean) =>{
 
             let directives = new cdm.TraitDirectiveSet(new Set<string>
-                    (["xnormalized", "structured","referenceOnly"]));
+                    (["xnormalized", "xstructured","referenceOnly"]));
             
             if (resolveEnt) {
                 let ent: cdm.ICdmEntityDef;
-                if (testCorpus)
-                    ent = cdmCorpus.getObjectFromCorpusPath("/E2EResolution/E2EArrayOne.cdm.json/E2EArrayOne") as cdm.ICdmEntityDef;
-                else
-                    ent = cdmCorpus.getObjectFromCorpusPath("/core/applicationCommon/foundationCommon/Account.cdm.json/Account") as cdm.ICdmEntityDef;
-
+                ent = cdmCorpus.getObjectFromCorpusPath(testEnt) as cdm.ICdmEntityDef;
                 let resOpt: cdm.resolveOptions = {wrtDoc: ent.declaredInDocument, directives: directives};
+                let ra = ent.getResolvedAttributes(resOpt);
                 let x = ent.createResolvedEntity(resOpt, "RESOLVED_KILL");
                 resOpt.wrtDoc = x.declaredInDocument;
                 loc.persistDocument(cdmCorpus.rootPath, resOpt, {stringRefs:false, removeSingleRowLocalizedTableTraits:true});
@@ -54,7 +59,7 @@ class Startup {
         return 0;
     }
 
-    public static listAllResolved(cdmCorpus : cdm.Corpus, directives: cdm.TraitDirectiveSet) {
+    public static listAllResolved(cdmCorpus : cdm.ICdmCorpusDef, directives: cdm.TraitDirectiveSet) {
         let seen = new Set<string>();
         let spew = new cdm.stringSpewCatcher();
 
