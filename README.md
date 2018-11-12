@@ -1,6 +1,14 @@
 # Common Data Model (CDM) Schema
 
-The Common Data Model is a definition of standard entities that represent commonly used concepts and activities across business and productivity applications, and is being extended to observational and analytical data as well. CDM provides well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as activities and service level agreements. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
+The Common Data Model is a declarative specification, and definition of standard entities that represent commonly used concepts and activities across business and productivity applications, and is being extended to observational and analytical data as well. CDM provides well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as activities and service level agreements. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
+
+### Open Data Initiative
+
+As announced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
+
+CDM is already supported in the Common Data Service, Dynamics 365, PowerApps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
+
+[Get the latest updates about the Open Data Initiative](https://info.microsoft.com/Open-Data-Initiative.html)
 
 # Introduction
 
