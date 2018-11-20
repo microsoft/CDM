@@ -1,6 +1,6 @@
-import * as cdm from "../../lib/cdm-types"
+import * as cdm from "../../src/cdm-types"
 import * as cdm2dplx from "../cdm2dplx/cdm2dplx"
-import * as loc from "../../lib/local-corpus";
+import * as loc from "../../src/local-corpus";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { version } from "punycode";
 
@@ -8,14 +8,14 @@ import { version } from "punycode";
 class Startup {
     public static main(): number {
 
-        let cdmCorpus : cdm.Corpus;
+        let cdmCorpus : cdm.ICdmCorpusDef;
         let pathToDocRoot = "../../schemaDocuments";
         //let pathToDocRoot = "../../test";
         //pathToDocRoot = "/cdsa schemas/credandcollect";
 
         let version = "";
         //let version = "0.6"; // explicitly use the explicit version docs to get versioned schema refs too
-        cdmCorpus = new cdm.Corpus(pathToDocRoot);
+        cdmCorpus = cdm.NewCorpus(pathToDocRoot);
         cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
         loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], version); 
@@ -32,7 +32,7 @@ class Startup {
         return 0;
     }
 
-    public static listAllTraits(cdmCorpus : cdm.Corpus) {
+    public static listAllTraits(cdmCorpus : cdm.ICdmCorpusDef) {
         let seen = new Set<string>();
 
         let seekTraits = (folder : cdm.ICdmFolderDef) => {
@@ -78,7 +78,7 @@ class Startup {
         seekTraits(cdmCorpus);
     }
 
-    public static createTestDplx(cdmCorpus : cdm.Corpus) {
+    public static createTestDplx(cdmCorpus : cdm.ICdmCorpusDef) {
         let converter = new cdm2dplx.Converter() as cdm2dplx.IConvertToDplx;
         converter.bindingType="byol"
         converter.relationshipsType="inclusive";
@@ -101,7 +101,7 @@ class Startup {
         let dplx = converter.convertEntities(cdmCorpus, set, "ExampleDataFlow");
     }
 
-    public static createEachDplx(cdmCorpus : cdm.Corpus, outRoot : string, version : string) {
+    public static createEachDplx(cdmCorpus : cdm.ICdmCorpusDef, outRoot : string, version : string) {
         let converter = new cdm2dplx.Converter() as cdm2dplx.IConvertToDplx;
         converter.bindingType="none"
         converter.relationshipsType="all";

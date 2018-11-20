@@ -1,5 +1,5 @@
-import * as cdm from "../../lib/cdm-types"
-import * as loc from "../../lib/local-corpus";
+import * as cdm from "../../src/cdm-types"
+import * as loc from "../../src/local-corpus";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 
 
@@ -22,7 +22,7 @@ class Startup {
             //testEnt = "/core/applicationCommon/Account.cdm.json/Account";
         }
         else {
-            pathToDocRoot = "../../schemaDocuments";
+            pathToDocRoot = "./schemaDocuments";
             docGroup = "core";
             testEnt = "/core/applicationCommon/foundationCommon/Account.cdm.json/Account";
         }
