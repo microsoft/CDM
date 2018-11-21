@@ -1,7 +1,6 @@
 import * as cdm from "../../src/cdm-types";
 import * as loc from "../../src/local-corpus";
 import { readFileSync} from "fs";
-import { WSASERVICE_NOT_FOUND } from "constants";
 import * as path from "path";
 
 let cdsStandards : Set<string> = new Set<string>();
