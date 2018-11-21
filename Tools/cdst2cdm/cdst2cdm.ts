@@ -2,6 +2,7 @@ import * as cdm from "../../src/cdm-types";
 import * as loc from "../../src/local-corpus";
 import { readFileSync} from "fs";
 import { WSASERVICE_NOT_FOUND } from "constants";
+import * as path from "path";
 
 let cdsStandards : Set<string> = new Set<string>();
 cdsStandards.add("createdBy");
@@ -31,16 +32,16 @@ class Startup {
     public static main(): number {
 
         let now = Date.now();
-        let cdmCorpus : cdm.Corpus;
-        let pathToDocRoot = "../../schemaDocuments";
+        let cdmCorpus : cdm.ICdmCorpusDef;
+        let pathToDocRoot = path.join(__dirname, "../../schemaDocuments");
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
         console.log('reading source file');
-        let cdstCorpus = JSON.parse(readFileSync("entitycorpus.json", "utf8"));
+        let cdstCorpus = JSON.parse(readFileSync("Tools/cdst2cdm/entitycorpus.json", "utf8"));
 
         console.log('creating cdm corpus');
-        if (cdstCorpus && cdstCorpus.folderInfo && cdstCorpus.folderInfo.length ==1) {
-            cdmCorpus = new cdm.Corpus(pathToDocRoot);
+        if (cdstCorpus && cdstCorpus.folderInfo && cdstCorpus.folderInfo.length == 1) {
+            cdmCorpus = cdm.NewCorpus(pathToDocRoot);
             cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
             this.convertCdstFolder(cdmCorpus, cdstCorpus.folderInfo[0], cdmCorpus);
         }
@@ -65,7 +66,7 @@ class Startup {
     }
 
         
-    public static convertCdstFolder(cdmCorpus : cdm.Corpus, cdstFolder : any, cdmFolderParent : cdm.ICdmFolderDef): cdm.ICdmFolderDef {
+    public static convertCdstFolder(cdmCorpus : cdm.ICdmCorpusDef, cdstFolder : any, cdmFolderParent : cdm.ICdmFolderDef): cdm.ICdmFolderDef {
         let cdmFolder : cdm.ICdmFolderDef = null;
         if (cdmFolderParent && cdstFolder.name && cdstFolder.path != null) {
             if (cdmFolder = cdmFolderParent.addFolder(cdstFolder.name)) {
@@ -120,7 +121,7 @@ class Startup {
         }
         return cdmFolder;
     }
-    public static convertCdstEntityToDoc(cdmCorpus: cdm.Corpus, cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, masterImport : string): cdm.ICdmDocumentDef {
+    public static convertCdstEntityToDoc(cdmCorpus: cdm.ICdmCorpusDef, cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, masterImport : string): cdm.ICdmDocumentDef {
         let cdmDocument : cdm.ICdmDocumentDef = null;
         if (cdmFolder && cdstEntityInfo.name) {
             if (cdmDocument = cdmFolder.addDocument(cdstEntityInfo.name + ".cdm.json", "")) {
@@ -137,7 +138,7 @@ class Startup {
         return cdmDocument;
     }
     
-    public static cdstEntityToCdmEntity(cdmCorpus: cdm.Corpus, cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, cdmEntity : cdm.ICdmEntityDef) {
+    public static cdstEntityToCdmEntity(cdmCorpus: cdm.ICdmCorpusDef, cdmFolder : cdm.ICdmFolderDef, cdstEntityInfo : any, cdmEntity : cdm.ICdmEntityDef) {
 
         // is this an extension entity? make the ref
         if (cdstEntityInfo.extends) {
@@ -386,23 +387,35 @@ class Startup {
                 if (attInfo.dataType == "customer" || attInfo.dataType == "lookup" || attInfo.dataType == "owner" || (attInfo.relationshipInfo && attInfo.relationshipInfo.length)) {
                     // this is an entity type attribute by ref
                     let referencedEntity : string = "";
-                    cdmAtt = cdmCorpus.MakeObject(cdm.cdmObjectType.entityAttributeDef, "comeupwithaname");
+                    cdmAtt = cdmCorpus.MakeObject<cdm.ICdmEntityAttributeDef>(cdm.cdmObjectType.entityAttributeDef, "comeupwithaname");
                     // make a list of all referenced entities
-                    let makeRefEntity = (relInfo : any) : cdm.ICdmEntityRef =>{
+                    let makeRefEntity = (relInfo : any) : cdm.ICdmEntityRef => {
                         if (referencedEntity.length)
                             referencedEntity += " and ";
                         referencedEntity += relInfo.referencedEntity;
-                        let er : cdm.ICdmEntityRef = cdmCorpus.MakeObject(cdm.cdmObjectType.entityRef, relInfo.referencedEntity);
+                        let er = cdmCorpus.MakeObject<cdm.ICdmEntityRef>(cdm.cdmObjectType.entityRef, relInfo.referencedEntity);
                         let tRef = er.addAppliedTrait("is.identifiedBy", false);
                         tRef.addArgument(undefined, relInfo.referencedEntity + "/(resolvedAttributes)/" +relInfo.referencedAttribute);
                         return er;
                     }
-                    let entList = new Array<cdm.ICdmEntityRef>();
+                    let makeEntityAtt = (relInfo: any) => {
+                        let entityAtt = cdmCorpus.MakeObject<cdm.ICdmEntityAttributeDef>(cdm.cdmObjectType.entityAttributeDef, `${relInfo.referencedEntity.toLowerCase()}Option`);
+                        entityAtt.setEntityRef(makeRefEntity(relInfo));
+                        return entityAtt;
+                    };
+                    // create a ref to the wrapper entity
+                    let makeRefWrapper = (entityDef : cdm.ICdmEntityDef) : cdm.ICdmEntityRef => {
+                        let entityRefWrapper = cdmCorpus.MakeObject<cdm.ICdmEntityRef>(cdm.cdmObjectType.entityRef);
+                        entityRefWrapper.setObjectDef(entityDef);
+                        return entityRefWrapper;
+                    };
+                    // store list of entities as attributes in a (wrapper) entity
+                    let entList = cdmCorpus.MakeObject<cdm.ICdmEntityDef>(cdm.cdmObjectType.entityDef);
                     if (attInfo.relationshipInfo.length > 1) {
                         attInfo.relationshipInfo.forEach(relInfo => {
-                            entList.push(makeRefEntity(relInfo));
+                            entList.addAttributeDef(makeEntityAtt(relInfo));
                         });
-                        (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(entList);
+                        (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
                     }
                     else {
                         let relInf;
@@ -411,22 +424,22 @@ class Startup {
                         if ((!relInf && attInfo.dataType == "owner") || (relInf && relInf.referencedEntity == "Owner")) {
                             // fake up a list, there is no Owner entity
                             let relInfFake = {referencedEntity: "User", referencedAttribute:"systemUserId"};
-                            entList.push(makeRefEntity(relInfFake));
+                            entList.addAttributeDef(makeEntityAtt(relInfFake));
                             relInfFake = {referencedEntity: "Team", referencedAttribute:"teamId"};
-                            entList.push(makeRefEntity(relInfFake));
-                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(entList);
+                            entList.addAttributeDef(makeEntityAtt(relInfFake));
+                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
                         }
                         else if (!relInf) {
                             // some we can guess at
 
                         }
                         else  {
-                            entList.push(makeRefEntity(attInfo.relationshipInfo[0]));
-                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(entList[0]);
+                            entList.addAttributeDef(makeEntityAtt(attInfo.relationshipInfo[0]));
+                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
                         }
                     }
 
-                    if (entList.length) {
+                    if (entList.getHasAttributeDefs()) {
                         // set up the relationship to add the key
                         let relName = "referencesA";
                         if (attInfo.dataType === "customer")

@@ -7235,13 +7235,10 @@ class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttributeDe
     {
         //let bodyCode = () =>
         {
-            let entity: (string | EntityReference | ((string | EntityReference)[]));
-            entity = this.entity ? this.entity.copyData(resOpt, options) : undefined;
-
             let castedToInterface: EntityAttribute = {
                 explanation: this.explanation,
                 name: this.name,
-                entity: this.entity.copyData(resOpt, options),
+                entity: this.entity ? this.entity.copyData(resOpt, options) : undefined,
                 relationship: this.relationship ? this.relationship.copyData(resOpt, options) : undefined,
                 appliedTraits: cdmObject.arraycopyData<string | TraitReference>(resOpt, this.appliedTraits, options)
             };
@@ -7355,7 +7352,7 @@ class EntityAttributeImpl extends AttributeImpl implements ICdmEntityAttributeDe
 
             if (preChildren && preChildren(this, path))
                 return false;
-            if (this.entity.visit(path + "/entity/", preChildren, postChildren))
+            if (this.entity && this.entity.visit(path + "/entity/", preChildren, postChildren))
                 return true;
             if (this.visitAtt(path, preChildren, postChildren))
                 return true;
