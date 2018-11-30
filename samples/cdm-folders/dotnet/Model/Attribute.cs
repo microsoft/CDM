@@ -1,7 +1,4 @@
-﻿// <copyright file="Attribute.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries
 {
     using Newtonsoft.Json;

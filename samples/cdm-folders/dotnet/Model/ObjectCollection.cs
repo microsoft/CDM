@@ -1,7 +1,4 @@
-﻿// <copyright file="ObjectCollection.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries
 {
     using System.Collections;

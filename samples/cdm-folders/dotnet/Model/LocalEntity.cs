@@ -1,7 +1,4 @@
-﻿// <copyright file="LocalEntity.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries
 {
     using Microsoft.CdmFolders.SampleLibraries.SerializationHelpers;

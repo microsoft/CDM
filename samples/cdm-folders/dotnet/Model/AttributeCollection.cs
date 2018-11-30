@@ -1,7 +1,4 @@
-﻿// <copyright file="AttributeCollection.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries
 {
     using System;

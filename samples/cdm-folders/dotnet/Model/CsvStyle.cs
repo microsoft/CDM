@@ -1,8 +1,4 @@
-﻿// <copyright file="CsvStyle.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
-namespace Microsoft.CdmFolders.SampleLibraries
+﻿namespace Microsoft.CdmFolders.SampleLibraries
 {
     using System.Runtime.Serialization;
     using Newtonsoft.Json;

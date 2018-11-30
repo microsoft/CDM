@@ -1,7 +1,4 @@
-﻿// <copyright file="TypeNameSerializationBinderHelper.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries.SerializationHelpers
 {
     using System;

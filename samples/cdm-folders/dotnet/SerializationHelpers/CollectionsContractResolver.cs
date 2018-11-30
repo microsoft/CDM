@@ -1,7 +1,4 @@
-﻿// <copyright file="CollectionsContractResolver.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
-// </copyright>
-
+﻿
 namespace Microsoft.CdmFolders.SampleLibraries.SerializationHelpers
 {
     using System;
