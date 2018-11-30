@@ -1,3 +1,7 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+# Tested with Python 3.4
 import json
 import re
 from enum import Enum

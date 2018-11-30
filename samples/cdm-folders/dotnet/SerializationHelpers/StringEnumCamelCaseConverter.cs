@@ -1,4 +1,6 @@
-﻿
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 namespace Microsoft.CdmFolders.SampleLibraries.SerializationHelpers
 {
     using Newtonsoft.Json.Converters;

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CdmFolders.SampleLibraries
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.CdmFolders.SampleLibraries
 {
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
