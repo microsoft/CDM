@@ -1,0 +1,390 @@
+{
+    "definitions": {
+        "annotation": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[^\\s](.*[^\\s])?$"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "referenceModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "required": [
+                "id",
+                "location"
+            ]
+        },
+        "entity": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "enum": [
+                        "LocalEntity",
+                        "ReferenceEntity"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[^\\s]([^.\"]*[^\\s])?$"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 4000
+                },
+                "annotations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/annotation"
+                    }
+                },
+                "isHidden": {
+                    "$ref": "#/definitions/isHidden"
+                }
+            },
+            "required": [
+                "$type",
+                "name"
+            ]
+        },
+        "localEntity": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/entity"
+                },
+                {
+                    "properties": {
+                        "$type": {
+                            "type": "string",
+                            "const": "LocalEntity"
+                        },
+                        "attributes": {
+                            "$id": "#/properties/entities/items/properties/attributes",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/attribute"
+                            }
+                        },
+                        "partitions": {
+                            "$id": "#/properties/entities/items/properties/partitions",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/partition"
+                            }
+                        },
+                        "schemas": {
+                            "$id": "#/properties/entities/items/properties/schemas",
+                            "type": "array",
+                            "items": {
+                                "$id": "#/properties/entities/items/properties/schemas/items",
+                                "type": "string",
+                                "pattern": "^https://raw\\.githubusercontent\\.com/Microsoft/CDM/master/schemaDocuments/core/([a-zA-Z]+/?)*[a-zA-Z0-9.]+\\.[0-9.]+\\.cdm\\.json$",
+                                "examples": [
+                                    "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/Product.0.7.cdm.json",
+                                    "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Product.0.7.cdm.json"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "$type",
+                        "attributes"
+                    ]
+                }
+            ]
+        },
+        "referenceEntity": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/entity"
+                },
+                {
+                    "properties": {
+                        "$type": {
+                            "type": "string",
+                            "const": "ReferenceEntity"
+                        },
+                        "source": {
+                            "type": "string"
+                        },
+                        "modelId": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "$type",
+                        "source",
+                        "modelId"
+                    ]
+                }
+            ]
+        },
+        "attribute": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[^\\s](.*[^\\s])?$"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 4000
+                },
+                "dataType": {
+                    "type": "string",
+                    "enum": [
+                        "unclassified",
+                        "string",
+                        "int64",
+                        "double",
+                        "dateTime",
+                        "dateTimeOffset",
+                        "decimal",
+                        "boolean",
+                        "guid",
+                        "json"
+                    ]
+                },
+                "annotations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/annotation"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "dataType"
+            ]
+        },
+        "partition": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[^\\s](.*[^\\s])?$"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 4000
+                },
+                "refreshTime": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "fileFormatSettings": {
+                    "$ref": "#/definitions/fileFormatSettings"
+                },
+                "isHidden": {
+                    "$ref": "#/definitions/isHidden"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "isHidden": {
+            "type": "boolean"
+        },
+        "fileFormatSettings": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/CsvFormatSettings"
+                }
+            ],
+            "required": [
+                "$type"
+            ]
+        },
+        "CsvFormatSettings": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "CsvFormatSettings"
+                },
+                "columnHeaders": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "delimiter": {
+                    "type": "string",
+                    "default": ","
+                },
+                "quoteStyle": {
+                    "type": "string",
+                    "enum": [
+                        "QuoteStyle.Csv",
+                        "QuoteStyle.None"
+                    ],
+                    "default": "QuoteStyle.Csv"
+                },
+                "csvStyle": {
+                    "type": "string",
+                    "enum": [
+                        "CsvStyle.QuoteAlways",
+                        "CsvStyle.QuoteAfterDelimiter"
+                    ],
+                    "default": "CsvStyle.QuoteAlways"
+                }
+            },
+            "required": [
+                "$type"
+            ]
+        },
+        "SingleKeyRelationship": {
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "const": "SingleKeyRelationship"
+                },
+                "fromAttribute": {
+                    "$ref": "#/definitions/referenceAttribute"
+                },
+                "toAttribute": {
+                    "$ref": "#/definitions/referenceAttribute"
+                }
+            },
+            "required": [
+                "$type",
+                "fromAttribute",
+                "toAttribute"
+            ]
+        },
+        "referenceAttribute": {
+            "type": "object",
+            "properties": {
+                "entityName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024,
+                    "pattern": "^[^\\s](.*[^\\s])?$"
+                },
+                "attributeName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "^[^\\s](.*[^\\s])?$"
+                }
+            },
+            "required": [
+                "entityName",
+                "attributeName"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "title": "The Root Schema",
+    "required": [
+        "name",
+        "version",
+        "entities"
+    ],
+    "properties": {
+        "application": {
+            "$id": "#/properties/application",
+            "type": "string"
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[^\\s](.*[^\\s])?$"
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "type": "string",
+            "maxLength": 4000
+        },
+        "version": {
+            "$id": "#/properties/version",
+            "type": "string",
+            "enum": [
+                "1.0"
+            ]
+        },
+        "culture": {
+            "$id": "#/properties/culture",
+            "type": "string"
+        },
+        "modifiedTime": {
+            "$id": "#/properties/modifiedTime",
+            "type": "string"
+        },
+        "isHidden": {
+            "$id": "#/properties/isHidden",
+            "$ref": "#/definitions/isHidden"
+        },
+        "annotations": {
+            "$id": "#/properties/annotations",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/annotation"
+            }
+        },
+        "entities": {
+            "$id": "#/properties/entities",
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/localEntity"
+                    },
+                    {
+                        "$ref": "#/definitions/referenceEntity"
+                    }
+                ]
+            }
+        },
+        "referenceModels": {
+            "$id": "#/properties/referenceModels",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/referenceModel"
+            }
+        },
+        "relationships": {
+            "$id": "#/properties/relationships",
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/SingleKeyRelationship"
+                    }
+                ]
+            }
+        }
+    }
+}

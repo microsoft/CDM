@@ -1,0 +1,398 @@
+{
+    "name": "OrdersProductsV3",
+    "description": "",
+    "version": "1.0",
+    "pbi:mashup": {
+        "fastCombine": true,
+        "allowNativeQueries": false,
+        "queriesMetadata": {
+            "Orders": {
+                "queryId": "fa43f66e-e3c7-4e30-ad38-3eaf410267ae",
+                "queryName": "Orders",
+                "loadEnabled": true
+            },
+            "Products": {
+                "queryId": "51638cb0-67d6-4b52-9aad-07641462e007",
+                "queryName": "Products",
+                "loadEnabled": true
+            }
+        },
+        "document": "section Section1;\r\nshared Orders = let\r\n  Source = OData.Feed(\"https://services.odata.org/Northwind/Northwind.svc/\"),\r\n  #\"Navigation 1\" = Source{[Name = \"Orders\", Signature = \"table\"]}[Data],\r\n  #\"Remove columns\" = Table.RemoveColumns(#\"Navigation 1\", Table.ColumnsOfType(#\"Navigation 1\", {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\nshared Products = let\r\n  Source = OData.Feed(\"https://services.odata.org/Northwind/Northwind.svc/\"),\r\n  #\"Navigation 1\" = Source{[Name = \"Products\", Signature = \"table\"]}[Data],\r\n  #\"Mapped to standard\" = Cdm.MapToEntity(#\"Navigation 1\", {{\"productId\", \"ProductID\", type text}, {\"name\", \"ProductName\", type text}, {\"supplierName\", \"SupplierID\", type text}, {\"CategoryID\", \"CategoryID\"}, {\"size\", \"QuantityPerUnit\", type text}, {\"price\", \"UnitPrice\", type number}, {\"UnitsInStock\", \"UnitsInStock\"}, {\"UnitsOnOrder\", \"UnitsOnOrder\"}, {\"ReorderLevel\", \"ReorderLevel\"}, {\"Discontinued\", \"Discontinued\"}, {\"Category\", \"Category\"}, {\"Order_Details\", \"Order_Details\"}, {\"Supplier\", \"Supplier\"}, {\"createdOn\", null, type datetime}, {\"createdBy\", null, type text}, {\"modifiedOn\", null, type datetime}, {\"modifiedBy\", null, type text}, {\"createdOnBehalfBy\", null, type text}, {\"modifiedOnBehalfBy\", null, type text}, {\"organizationId\", null, type text}, {\"versionNumber\", null, Int64.Type}, {\"importSequenceNumber\", null, Int64.Type}, {\"overriddenCreatedOn\", null, type datetime}, {\"timeZoneRuleVersionNumber\", null, Int64.Type}, {\"UTCConversionTimeZoneCode\", null, Int64.Type}, {\"processId\", null, type text}, {\"stageId\", null, type text}, {\"traversedPath\", null, type text}, {\"vendorID\", null, type text}, {\"validFromDate\", null, type datetime}, {\"validToDate\", null, type datetime}, {\"currentCost\", null, type number}, {\"transactionCurrencyId\", null, type text}, {\"exchangeRate\", null, type number}, {\"currentCostBase\", null, type number}, {\"defaultUoMId\", null, type text}, {\"defaultUoMScheduleId\", null, type text}, {\"description\", null, type text}, {\"isKit\", null, type logical}, {\"isStockItem\", null, type logical}, {\"parentProductId\", null, type text}, {\"priceBase\", null, type number}, {\"productStructure\", null, Int64.Type}, {\"productStructure_display\", null, type text}, {\"productNumber\", null, type text}, {\"productTypeCode\", null, Int64.Type}, {\"productTypeCode_display\", null, type text}, {\"productUrl\", null, type text}, {\"quantityDecimal\", null, Int64.Type}, {\"quantityOnHand\", null, type number}, {\"standardCost\", null, type number}, {\"standardCostBase\", null, type number}, {\"stateCode\", null, Int64.Type}, {\"stateCode_display\", null, type text}, {\"statusCode\", null, Int64.Type}, {\"statusCode_display\", null, type text}, {\"stockVolume\", null, type number}, {\"stockWeight\", null, type number}, {\"vendorName\", null, type text}, {\"vendorPartNumber\", null, type text}, {\"hierarchyPath\", null, type text}, {\"priceLevelId\", null, type text}, {\"subjectId\", null, type text}, {\"entityImageId\", null, type text}, {\"createdByExternalParty\", null, type text}, {\"modifiedByExternalParty\", null, type text}, {\"form\", null, type text}, {\"isBrand\", null, type logical}, {\"isOvertheCounter\", null, type logical}, {\"medicationCode\", null, type text}, {\"packageContainer\", null, type text}}, null, \"Product\"),\r\n  #\"Remove columns\" = Table.RemoveColumns(#\"Mapped to standard\", Table.ColumnsOfType(#\"Mapped to standard\", {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\n"
+    },
+    "entities": [
+        {
+            "$type": "LocalEntity",
+            "name": "Orders",
+            "description": "",
+            "pbi:refreshPolicy": {
+                "$type": "FullRefreshPolicy",
+                "location": "Orders.csv"
+            },
+            "attributes": [
+                {
+                    "name": "OrderID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "CustomerID",
+                    "dataType": "string"
+                },
+                {
+                    "name": "EmployeeID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "OrderDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "RequiredDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "ShippedDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "ShipVia",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Freight",
+                    "dataType": "decimal"
+                },
+                {
+                    "name": "ShipName",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ShipAddress",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ShipCity",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ShipRegion",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ShipPostalCode",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ShipCountry",
+                    "dataType": "string"
+                }
+            ],
+            "partitions": [
+                {
+                    "name": "Part001",
+                    "refreshTime": "2018-11-14T19:37:51.756186+00:00",
+                    "location": "https://dfmsitscuscdsa.blob.core.windows.net/0682aad0-37c2-4eac-a4d3-e243f7e0afc4/Orders.csv?snapshot=2018-11-14T19:37:51.7526830Z"
+                }
+            ]
+        },
+        {
+            "$type": "LocalEntity",
+            "name": "Products",
+            "description": "",
+            "pbi:refreshPolicy": {
+                "$type": "FullRefreshPolicy",
+                "location": "Products.csv"
+            },
+            "annotations": [
+                {
+                    "name": "pbi:MappingDisplayHint",
+                    "value": "Product"
+                }
+            ],
+            "attributes": [
+                {
+                    "name": "productId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "name",
+                    "dataType": "string"
+                },
+                {
+                    "name": "supplierName",
+                    "dataType": "string"
+                },
+                {
+                    "name": "CategoryID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "size",
+                    "dataType": "string"
+                },
+                {
+                    "name": "price",
+                    "dataType": "double"
+                },
+                {
+                    "name": "UnitsInStock",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "UnitsOnOrder",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "ReorderLevel",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Discontinued",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "createdOn",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "createdBy",
+                    "dataType": "string"
+                },
+                {
+                    "name": "modifiedOn",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "modifiedBy",
+                    "dataType": "string"
+                },
+                {
+                    "name": "createdOnBehalfBy",
+                    "dataType": "string"
+                },
+                {
+                    "name": "modifiedOnBehalfBy",
+                    "dataType": "string"
+                },
+                {
+                    "name": "organizationId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "versionNumber",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "importSequenceNumber",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "overriddenCreatedOn",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "timeZoneRuleVersionNumber",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "UTCConversionTimeZoneCode",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "processId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "stageId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "traversedPath",
+                    "dataType": "string"
+                },
+                {
+                    "name": "vendorID",
+                    "dataType": "string"
+                },
+                {
+                    "name": "validFromDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "validToDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "currentCost",
+                    "dataType": "double"
+                },
+                {
+                    "name": "transactionCurrencyId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "exchangeRate",
+                    "dataType": "double"
+                },
+                {
+                    "name": "currentCostBase",
+                    "dataType": "double"
+                },
+                {
+                    "name": "defaultUoMId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "defaultUoMScheduleId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "description",
+                    "dataType": "string"
+                },
+                {
+                    "name": "isKit",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "isStockItem",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "parentProductId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "priceBase",
+                    "dataType": "double"
+                },
+                {
+                    "name": "productStructure",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "productStructure_display",
+                    "dataType": "string"
+                },
+                {
+                    "name": "productNumber",
+                    "dataType": "string"
+                },
+                {
+                    "name": "productTypeCode",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "productTypeCode_display",
+                    "dataType": "string"
+                },
+                {
+                    "name": "productUrl",
+                    "dataType": "string"
+                },
+                {
+                    "name": "quantityDecimal",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "quantityOnHand",
+                    "dataType": "double"
+                },
+                {
+                    "name": "standardCost",
+                    "dataType": "double"
+                },
+                {
+                    "name": "standardCostBase",
+                    "dataType": "double"
+                },
+                {
+                    "name": "stateCode",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "stateCode_display",
+                    "dataType": "string"
+                },
+                {
+                    "name": "statusCode",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "statusCode_display",
+                    "dataType": "string"
+                },
+                {
+                    "name": "stockVolume",
+                    "dataType": "double"
+                },
+                {
+                    "name": "stockWeight",
+                    "dataType": "double"
+                },
+                {
+                    "name": "vendorName",
+                    "dataType": "string"
+                },
+                {
+                    "name": "vendorPartNumber",
+                    "dataType": "string"
+                },
+                {
+                    "name": "hierarchyPath",
+                    "dataType": "string"
+                },
+                {
+                    "name": "priceLevelId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "subjectId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "entityImageId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "createdByExternalParty",
+                    "dataType": "string"
+                },
+                {
+                    "name": "modifiedByExternalParty",
+                    "dataType": "string"
+                },
+                {
+                    "name": "form",
+                    "dataType": "string"
+                },
+                {
+                    "name": "isBrand",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "isOvertheCounter",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "medicationCode",
+                    "dataType": "string"
+                },
+                {
+                    "name": "packageContainer",
+                    "dataType": "string"
+                }
+            ],
+            "partitions": [
+                {
+                    "name": "Part001",
+                    "refreshTime": "2018-11-14T19:37:55.4375154+00:00",
+                    "location": "https://dfmsitscuscdsa.blob.core.windows.net/0682aad0-37c2-4eac-a4d3-e243f7e0afc4/Products.csv?snapshot=2018-11-14T19:37:55.4342726Z"
+                }
+            ],
+            "schemas": [
+                "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/Product.0.7.cdm.json",
+                "https://raw.githubusercontent.com/Microsoft/CDM/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Product.0.7.cdm.json"
+            ]
+        }
+    ]
+}
