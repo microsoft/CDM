@@ -559,7 +559,7 @@ function resolveCorpus(messageType) {
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits, undefined).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.minimumForResolving, undefined).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -1018,7 +1018,7 @@ function detailResolvedJump(path) {
 function drawResolvedStack() {
     if (controller.ResolvedStack && controller.ResolvedStack.length) {
         let cdmObject = controller.ResolvedStack[controller.ResolvedStack.length - 1];
-        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocSelected), { stringRefs: true, removeSingleRowLocalizedTableTraits: true });
+        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocResolved), { stringRefs: true, removeSingleRowLocalizedTableTraits: true });
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
         jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailResolvedJump('$1')\" title=\"$1\">\"$2\"</a>");

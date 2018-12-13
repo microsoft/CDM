@@ -2,8 +2,7 @@ import * as cdm from "../../lib/cdm-types"
 import * as ghc from "../github-pages-gen/gh-content-gen"
 import * as loc from "../../lib/local-corpus"
 
-// browserify ..\tools\cdm-types\cdm-types.js --o cdm-bundle.js --standalone cdm
-// browserify ..\tools\cdm2dplx\cdm2dplx.js --o cdm2dplx-bundle.js --standalone cdm2dplx
+// browserify ..\lib\cdm-types.js --o cdm-bundle.js --standalone cdm
 
 
 class Startup {
@@ -13,7 +12,7 @@ class Startup {
         let pathToDocRoot = "../../schemaDocuments";
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
-        cdmCorpus = new cdm.Corpus(pathToDocRoot);
+        cdmCorpus = cdm.NewCorpus(pathToDocRoot);
         cdmCorpus.setResolutionCallback(loc.consoleStatusReport, cdm.cdmStatusLevel.progress, cdm.cdmStatusLevel.error);
         console.log('reading source files');
         loc.loadCorpusFolder(cdmCorpus, cdmCorpus.addFolder("core"), ["analyticalCommon"], "");
