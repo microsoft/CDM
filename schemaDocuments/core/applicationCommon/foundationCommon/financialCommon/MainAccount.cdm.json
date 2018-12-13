@@ -8,99 +8,119 @@
     "definitions": [
         {
             "entityName": "MainAccount",
+            "extendsEntity": "CdmObject",
             "description": "An account whose balance is displayed in major financial statements",
             "displayName": "Main Account",
-            "exhibitsTraits": [
-                {
-                    "traitReference": "is.CDM"
-                }
-            ],
             "hasAttributes": [
                 {
-                    "name": "mainAccountId",
-                    "relationship": "identifiedBy",
-                    "dataType": "string",
-                    "description": "The surrogate key of the main account record",
-                    "displayName": "MainAccountId"
-                },
-                {
-                    "name": "name",
-                    "relationship": "hasA",
-                    "dataType": "name",
-                    "description": "The user-readable name of the main account",
-                    "displayName": "Name"
-                },
-                {
-                    "name": "number",
-                    "relationship": "hasA",
-                    "dataType": "string",
-                    "description": "The numerical designation of the account according to the chart of accounts, usually designed such that accounts of the same type have similar numbers",
-                    "displayName": "Number"
-                },
-                {
-                    "name": "mainAccountCategoryKey",
-                    "relationship": {
-                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                        "appliedTraits": [
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
                             {
-                                "traitReference": "does.referenceEntityVia",
+                                "traitReference": "is.CDM.attributeGroup",
                                 "arguments": [
                                     {
-                                        "name": "foreignKeyAttribute",
-                                        "value": {
-                                            "name": "mainAccountCategoryKey",
-                                            "relationship": "hasA",
-                                            "dataType": "string",
-                                            "description": "The categorization of the main account, by which accounting aspects such as account type are defined",
-                                            "displayName": "Main Account Category Key"
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/financeCommon/MainAccount.cdm.json/MainAccount/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
                                         }
                                     }
                                 ]
                             }
-                        ]
-                    },
-                    "entity": {
-                        "entityReference": "MainAccountCategory",
-                        "appliedTraits": [
+                        ],
+                        "members": [
                             {
-                                "traitReference": "is.identifiedBy",
-                                "arguments": [
-                                    "MainAccountCategory/(resolvedAttributes)/mainAccountCategoryId"
-                                ]
-                            }
-                        ]
-                    }
-                },
-                {
-                    "name": "currencyKey",
-                    "relationship": {
-                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                        "appliedTraits": [
+                                "name": "mainAccountId",
+                                "relationship": "identifiedBy",
+                                "dataType": "string",
+                                "description": "The surrogate key of the main account record",
+                                "displayName": "MainAccountId"
+                            },
                             {
-                                "traitReference": "does.referenceEntityVia",
-                                "arguments": [
-                                    {
-                                        "name": "foreignKeyAttribute",
-                                        "value": {
-                                            "name": "currencyKey",
-                                            "relationship": "hasA",
-                                            "dataType": "string",
-                                            "description": "The currency in which amounts held by this account are expressed",
-                                            "displayName": "Currency Key"
+                                "name": "name",
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "description": "The user-readable name of the main account",
+                                "displayName": "Name"
+                            },
+                            {
+                                "name": "number",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "description": "The numerical designation of the account according to the chart of accounts, usually designed such that accounts of the same type have similar numbers",
+                                "displayName": "Number"
+                            },
+                            {
+                                "name": "mainAccountCategoryKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "mainAccountCategoryKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The categorization of the main account, by which accounting aspects such as account type are defined",
+                                                        "displayName": "Main Account Category Key"
+                                                    }
+                                                }
+                                            ]
                                         }
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "entity": {
-                        "entityReference": "Currency",
-                        "appliedTraits": [
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "MainAccountCategory",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "MainAccountCategory/(resolvedAttributes)/mainAccountCategoryId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
                             {
-                                "traitReference": "is.identifiedBy",
-                                "arguments": [
-                                    "Currency/(resolvedAttributes)/transactionCurrencyId"
-                                ]
+                                "name": "currencyKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "currencyKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The currency in which amounts held by this account are expressed",
+                                                        "displayName": "Currency Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
                         ]
                     }
