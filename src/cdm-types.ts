@@ -4838,7 +4838,7 @@ let getTraitRefName = (traitRefOrDef: ICdmTraitRef | ICdmTraitDef | string | Res
         // lots of things this could be on an unresolved object model, so try them
         if (typeof traitRefOrDef === "string")
             return traitRefOrDef;
-        if ((traitRefOrDef as ResolvedTrait).parameterValues)
+        if ((traitRefOrDef as ResolvedTrait).trait) // is this a resolved trait?
             return (traitRefOrDef as ResolvedTrait).traitName;
 
         let ot = (traitRefOrDef as ICdmObject).getObjectType();
