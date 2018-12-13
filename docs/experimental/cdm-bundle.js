@@ -3693,7 +3693,7 @@ let getTraitRefName = (traitRefOrDef) => {
         // lots of things this could be on an unresolved object model, so try them
         if (typeof traitRefOrDef === "string")
             return traitRefOrDef;
-        if (traitRefOrDef.parameterValues)
+        if (traitRefOrDef.trait)
             return traitRefOrDef.traitName;
         let ot = traitRefOrDef.getObjectType();
         if (ot == cdmObjectType.traitDef)
