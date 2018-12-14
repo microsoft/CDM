@@ -36,7 +36,7 @@ class Startup {
 
         // run over input folders recursively and process them into a hierarchical corpus of schema docs
         console.log('reading source file');
-        let cdstCorpus = JSON.parse(readFileSync("Tools/cdst2cdm/entitycorpus.json", "utf8"));
+        let cdstCorpus = JSON.parse(readFileSync("../../Tools/cdst2cdm/entitycorpus.json", "utf8"));
 
         console.log('creating cdm corpus');
         if (cdstCorpus && cdstCorpus.folderInfo && cdstCorpus.folderInfo.length == 1) {
@@ -383,15 +383,50 @@ class Startup {
                 if (cdmEntity.getExtendsEntityRef().getObjectDefName() == "CdsStandard" && cdsStandards.has(attInfo.name))
                     return;
 
-                if (attInfo.dataType == "customer" || attInfo.dataType == "lookup" || attInfo.dataType == "owner" || (attInfo.relationshipInfo && attInfo.relationshipInfo.length)) {
-                    // this is an entity type attribute by ref
-                    let referencedEntity : string = "";
-                    cdmAtt = cdmCorpus.MakeObject<cdm.ICdmEntityAttributeDef>(cdm.cdmObjectType.entityAttributeDef, "comeupwithaname");
-                    // make a list of all referenced entities
+                let entAttRelName : string;
+                let makeEntityAttribute = false;
+                let selectOneFromMany = false;
+                if (attInfo.dataType == "customer") {
+                    entAttRelName = "referencesCustomer";
+                    selectOneFromMany = true;
+                    if (attInfo.name === "customerId") {
+                        // lucky day, there is an attribute group that just does all of this work. use it
+                        cdmAtt = cdmCorpus.MakeObject(cdm.cdmObjectType.attributeGroupRef, "customerIdAttribute", true); // not an attributedef, but will work
+                    }
+                    else {
+                        // need to make a customer relationship to account or contact because this thing has an odd name
+                        makeEntityAttribute = true;
+                    }
+                } else if (attInfo.dataType == "owner") {
+                    entAttRelName = "referencesOwner";
+                    selectOneFromMany = true;
+                    if (attInfo.name === "ownerId") {
+                        // lucky day, there is an attribute group that just does all of this work. use it
+                        cdmAtt = cdmCorpus.MakeObject(cdm.cdmObjectType.attributeGroupRef, "ownerIdAttribute", true); // not an attributedef, but will work
+                    }
+                    else {
+                        // need to make a owner relationship to user or team because this thing has an odd name
+                        makeEntityAttribute = true;
+                        if (!attInfo.relationshipInfo || attInfo.relationshipInfo.length == 0) {
+                            // fake up a list, there is no Owner entity
+                            attInfo.relationshipInfo = new Array();
+                            attInfo.relationshipInfo.push({referencedEntity: "User", referencedAttribute:"systemUserId"});
+                            attInfo.relationshipInfo.push({referencedEntity: "Team", referencedAttribute:"teamId"});
+                        }
+
+                    }
+                } else if (attInfo.dataType == "lookup" || (attInfo.relationshipInfo && attInfo.relationshipInfo.length)) {
+                    entAttRelName = "hasFlexibleRelationshipWithEntity";
+                    makeEntityAttribute = true;
+                    if (attInfo.relationshipInfo && attInfo.relationshipInfo.length > 1)
+                        selectOneFromMany = true;
+                }
+
+                if (makeEntityAttribute) {
+                    let entRef: cdm.ICdmEntityRef;
+                    let selectionAttribute: cdm.ICdmTypeAttributeDef;
+
                     let makeRefEntity = (relInfo : any) : cdm.ICdmEntityRef => {
-                        if (referencedEntity.length)
-                            referencedEntity += " and ";
-                        referencedEntity += relInfo.referencedEntity;
                         let er = cdmCorpus.MakeObject<cdm.ICdmEntityRef>(cdm.cdmObjectType.entityRef, relInfo.referencedEntity);
                         let tRef = er.addAppliedTrait("is.identifiedBy", false);
                         tRef.addArgument(undefined, relInfo.referencedEntity + "/(resolvedAttributes)/" +relInfo.referencedAttribute);
@@ -408,63 +443,67 @@ class Startup {
                         entityRefWrapper.setObjectDef(entityDef);
                         return entityRefWrapper;
                     };
-                    // store list of entities as attributes in a (wrapper) entity
-                    let entList = cdmCorpus.MakeObject<cdm.ICdmEntityDef>(cdm.cdmObjectType.entityDef);
-                    if (attInfo.relationshipInfo.length > 1) {
+
+                    // come up with a name for the entity attribute. use the key name if all else fails
+                    let entAttName = attInfo.name;
+                    if (selectOneFromMany) {
+                        // complicated
+                        // there are many relationships from this one key. 
+                        // represent this as a relationship to one entity that has each of these related entities as attributes
+                        // the 'select one' trait indicates that one one of those attributes gets used at a time and the name 
+                        // of the selected attribute gets put into a supporting attribute.
+
+                        // make a list of all referenced entities
+                        // store list of entities as attributes in a (wrapper) entity
+                        let entList = cdmCorpus.MakeObject<cdm.ICdmEntityDef>(cdm.cdmObjectType.entityDef, entAttName); // use the att name as the inline entity name too
                         attInfo.relationshipInfo.forEach(relInfo => {
                             entList.addAttributeDef(makeEntityAtt(relInfo));
                         });
-                        (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
+                        entRef = makeRefWrapper(entList);
+
+                        // make an att to hold the name of the selected ent
+                        selectionAttribute=cdmCorpus.MakeObject<cdm.ICdmTypeAttributeDef>(cdm.cdmObjectType.typeAttributeDef, "fixThisByHandItIsNotPredictable");
+                        selectionAttribute.setRelationshipRef(cdmCorpus.MakeObject<cdm.ICdmRelationshipRef>(cdm.cdmObjectType.relationshipRef, "hasA"));
+                        selectionAttribute.setDataTypeRef(cdmCorpus.MakeObject<cdm.ICdmDataTypeRef>(cdm.cdmObjectType.dataTypeRef, "entityName"));
+                        selectionAttribute.addAppliedTrait("is.readOnly", true);
                     }
                     else {
-                        let relInf;
-                        if (attInfo.relationshipInfo && attInfo.relationshipInfo.length)
-                            relInf = attInfo.relationshipInfo[0];
-                        if ((!relInf && attInfo.dataType == "owner") || (relInf && relInf.referencedEntity == "Owner")) {
-                            // fake up a list, there is no Owner entity
-                            let relInfFake = {referencedEntity: "User", referencedAttribute:"systemUserId"};
-                            entList.addAttributeDef(makeEntityAtt(relInfFake));
-                            relInfFake = {referencedEntity: "Team", referencedAttribute:"teamId"};
-                            entList.addAttributeDef(makeEntityAtt(relInfFake));
-                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
-                        }
-                        else if (!relInf) {
-                            // some we can guess at
-
-                        }
-                        else  {
-                            entList.addAttributeDef(makeEntityAtt(attInfo.relationshipInfo[0]));
-                            (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(makeRefWrapper(entList));
+                        // "simple case" of just having a relationship with one other entity
+                        // sometimes there is no relationship info. odd. just make a type att
+                        if (attInfo.relationshipInfo && attInfo.relationshipInfo.length == 1) {
+                            // try to use the name of the relationship as the att name
+                            if (attInfo.relationshipInfo[0].name)
+                                entAttName = attInfo.relationshipInfo[0].name
+                            entRef = makeRefEntity(attInfo.relationshipInfo[0]);
                         }
                     }
-
-                    if (entList.getHasAttributeDefs()) {
-                        // set up the relationship to add the key
-                        let relName = "referencesA";
-                        if (attInfo.dataType === "customer")
-                            relName = "referencesCustomer"
-                        if (attInfo.dataType === "owner")
-                            relName = "referencesOwner"
-                        let rel = cdmCorpus.MakeObject<cdm.ICdmRelationshipRef>(cdm.cdmObjectType.relationshipRef, relName)
-                        let tRef = rel.addAppliedTrait("referencesA/exhibitsTraits/does.referenceEntity", false);
-                        tRef.addArgument("addedAttribute", createTypeAttribute(attInfo, resultInfo))
-                                .setExplanation(`This 'referencesA' relationship to the entity '${referencedEntity}' adds the '${attInfo.name}' attribute below to the '${cdstEntityInfo.name}' entity as a key`);
+                    // make the entity att 
+                    if (entRef) {
+                        cdmAtt = cdmCorpus.MakeObject<cdm.ICdmEntityAttributeDef>(cdm.cdmObjectType.entityAttributeDef, entAttName);
+                        // set the relationship
+                        let rel = cdmCorpus.MakeObject<cdm.ICdmRelationshipRef>(cdm.cdmObjectType.relationshipRef, entAttRelName);
+                        // on the relationship is a trait that hold the foreign key, describe it here
+                        let tRef = rel.addAppliedTrait("does.referenceEntityVia", false);
+                        tRef.addArgument("foreignKeyAttribute", createTypeAttribute(attInfo, resultInfo));
+                        // may need another trait for the selects one things
+                        if (selectOneFromMany) {
+                            tRef = rel.addAppliedTrait("does.selectAttributes", false);
+                            tRef.addArgument("selects", "one");
+                            tRef.addArgument("storeSelectionInAttribute", selectionAttribute);
+                        }
                         cdmAtt.setRelationshipRef(rel);
-                    }
-                    else {
-                        // give up. make a regular
-                        cdmAtt = createTypeAttribute(attInfo, resultInfo);
+
+                        // set the reference to the entity from above code
+                        (cdmAtt as cdm.ICdmEntityAttributeDef).setEntityRef(entRef);
                     }
                 }
-                else {
+
+                // if no att created yet, make a typed attribute
+                if (!cdmAtt) {
                     cdmAtt = createTypeAttribute(attInfo, resultInfo);
                 }
 
-                let attGroupTarget = attGroupAll;
-                // if (resultInfo.requiredLevel && resultInfo.requiredLevel != "none")
-                //     attGroupTarget = attGroupRequired;
-
-                attGroupTarget.addAttributeDef(cdmAtt as any);
+                attGroupAll.addAttributeDef(cdmAtt as any);
             });
 
             // go back and set this to what was found in the rest of the list
