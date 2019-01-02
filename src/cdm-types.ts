@@ -921,7 +921,7 @@ export class ParameterValue
                 // check that the entities are the same shape
                 if (!newEnt)
                     return ov;
-                if (!oldEnt || (oldEnt.getEntityShape() != oldEnt.getEntityShape()))
+                if (!oldEnt || (oldEnt.getEntityShape() != newEnt.getEntityShape()))
                     return nv;
 
                 let oldCv = oldEnt.getConstantValues();
@@ -4596,7 +4596,7 @@ class ArgumentImpl extends cdmObjectSimple implements ICdmArgumentDef
                 else {
                     let valObj = val as ICdmObject;
                     if (valObj.ID)
-                        tag == val.ID.toString();
+                        tag = val.ID.toString();
                     else
                         tag = val.toString();
                 }
@@ -6080,7 +6080,7 @@ class TraitImpl extends cdmObjectDef implements ICdmTraitDef
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  {RelationshipRef}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class RelationshipReferenceImpl extends cdmObjectRef
+class RelationshipReferenceImpl extends cdmObjectRef implements ICdmRelationshipRef
 {
     constructor(ctx:CdmCorpusContext, relationship: string | RelationshipImpl, simpleReference : boolean, appliedTraits: boolean)
     {
@@ -8136,7 +8136,7 @@ class ConstantEntityImpl extends cdmObjectDef implements ICdmConstantEntityDef
             let rasb = new ResolvedAttributeSetBuilder();
             let acpEnt : AttributeContextParameters;
             if (under) {
-                let acpEnt = {
+                acpEnt = {
                     under:under,
                     type:cdmAttributeContextType.entity,
                     name:  this.entityShape.getObjectDefName(),
@@ -10988,7 +10988,6 @@ class CorpusImpl extends FolderImpl implements ICdmCorpusDef
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
-                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:
@@ -11175,7 +11174,6 @@ class CorpusImpl extends FolderImpl implements ICdmCorpusDef
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
-                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:
@@ -11252,7 +11250,6 @@ class CorpusImpl extends FolderImpl implements ICdmCorpusDef
                         case cdmObjectType.parameterDef:
                         case cdmObjectType.traitDef:
                         case cdmObjectType.relationshipDef:
-                        case cdmObjectType.attributeContextDef:
                         case cdmObjectType.dataTypeDef:
                         case cdmObjectType.typeAttributeDef:
                         case cdmObjectType.entityAttributeDef:
