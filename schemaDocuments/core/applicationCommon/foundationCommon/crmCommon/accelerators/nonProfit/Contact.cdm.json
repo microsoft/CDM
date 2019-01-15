@@ -1,0 +1,651 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Contact",
+            "extendsEntity": "base_Contact/Contact",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/nonProfit/Contact.cdm.json/Contact/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "name": "age",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Age"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Age auto calculated via formula using Birthdate."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_age",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 10069,
+                                "isNullable": true,
+                                "displayName": "Age",
+                                "description": "Age auto calculated via formula using Birthdate."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "DaysOfMonth",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpBirthDay_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'msnfpBirthDay'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "birthDay_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "birthDay",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Birth Day"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manually populated contact birth day."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_birthday",
+                                "sourceOrdering": 10070,
+                                "isNullable": true,
+                                "displayName": "Birth Day",
+                                "description": "Manually populated contact birth day."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "MonthNames",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpBirthMonth_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'msnfpBirthMonth'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "birthMonth_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "birthMonth",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Birth Month"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manually populated Contact birth month."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_birthmonth",
+                                "sourceOrdering": 10072,
+                                "isNullable": true,
+                                "displayName": "Birth Month",
+                                "description": "Manually populated Contact birth month."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "name": "birthYear",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Birth Year"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manually populated Contact birth year."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_birthyear",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 10074,
+                                "isNullable": true,
+                                "displayName": "Birth Year",
+                                "description": "Manually populated Contact birth year."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Ethnicity",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpEthnicity_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'msnfpEthnicity'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "ethnicity_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "ethnicity",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Ethnicity"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manually populated field indicating Ethnicity of a Contact."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_ethnicity",
+                                "sourceOrdering": 10075,
+                                "isNullable": true,
+                                "displayName": "Ethnicity",
+                                "description": "Manually populated field indicating Ethnicity of a Contact."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "name": "maidenName",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Maiden Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manually populated field indicating Contact's Maiden name."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_maidenname",
+                                "maximumLength": 255,
+                                "sourceOrdering": 10077,
+                                "isNullable": true,
+                                "displayName": "Maiden Name",
+                                "description": "Manually populated field indicating Contact's Maiden name."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Volunteer",
+                                                                "844060000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Donor",
+                                                                "100000000",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpPrimaryConstituentType_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'msnfpPrimaryConstituentType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "primaryConstituentType_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "primaryConstituentType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Primary Constituent Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Subcategory of primary Constituency type rolls up to this field."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_primaryconstituenttype",
+                                "sourceOrdering": 10078,
+                                "isNullable": true,
+                                "displayName": "Primary Constituent Type",
+                                "description": "Subcategory of primary Constituency type rolls up to this field."
+                            },
+                            {
+                                "name": "msnfp_contact_reportsTo",
+                                "entity": {
+                                    "entityReference": "Contact",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Contact/(resolvedAttributes)/contactId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "reportsToId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Reports To"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Reports To"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_reportstoid",
+                                                        "sourceOrdering": 10080,
+                                                        "isNullable": true,
+                                                        "displayName": "Reports To",
+                                                        "description": "Reports To"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

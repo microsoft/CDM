@@ -1,0 +1,136 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Ledger",
+            "extendsEntity": "CdmObject",
+            "description": "The collection of all accounts making up the central repository of accounting data for a company.",
+            "displayName": "Ledger",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/financeCommon/Ledger.cdm.json/Ledger/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "name": "ledgerId",
+                                "relationship": "identifiedBy",
+                                "dataType": "string",
+                                "description": "The surrogate key of the ledger record",
+                                "displayName": "LedgerId"
+                            },
+                            {
+                                "name": "name",
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "description": "The user-readable name of the ledger",
+                                "displayName": "Name"
+                            },
+                            {
+                                "name": "description",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "description": "The description of the ledger",
+                                "displayName": "Description",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "means.reference.description"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "companyKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "companyKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The company for which the ledger stores financial information",
+                                                        "displayName": "Company Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Company",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Company/(resolvedAttributes)/companyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "accountingCurrencyKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "accountingCurrencyKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The currency in which all amounts in the ledger are expressed",
+                                                        "displayName": "Accounting Currency Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

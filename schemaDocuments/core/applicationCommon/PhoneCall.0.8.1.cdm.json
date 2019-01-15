@@ -1,0 +1,1179 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.0.8.1.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "PhoneCall",
+            "extendsEntity": "ActivityCommon",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Phone Call"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Activity to track a telephone call."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "displayName": "Phone Call",
+            "description": "Activity to track a telephone call.",
+            "sourceName": "PhoneCall",
+            "version": "0.8.1",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/PhoneCall.cdm.json/PhoneCall/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            "activityCategory",
+                            "activityAdditionalParams",
+                            "activityToFrom",
+                            "activityLeftVoiceMail",
+                            "activityDirectionCode",
+                            {
+                                "relationship": "hasA",
+                                "dataType": "partylist",
+                                "name": "to",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "multi"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Call To"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Enter the account, contact, lead, or user recipients of the phone call."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Call To",
+                                "description": "Enter the account, contact, lead, or user recipients of the phone call.",
+                                "isNullable": true,
+                                "sourceName": "to",
+                                "sourceOrdering": 3
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "phone",
+                                "name": "phoneNumber",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Phone Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type the phone number."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Phone Number",
+                                "description": "Type the phone number.",
+                                "isNullable": true,
+                                "sourceName": "phonenumber",
+                                "sourceOrdering": 8,
+                                "maximumLength": 200
+                            },
+                            {
+                                "name": "Object_regardingObjectId",
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
+                                            {
+                                                "name": "knowledgeArticleOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeArticle",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeArticle/(resolvedAttributes)/knowledgearticleId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "knowledgeBaseRecordOption",
+                                                "entity": {
+                                                    "entityReference": "KnowledgeBaseRecord",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "KnowledgeBaseRecord/(resolvedAttributes)/knowledgeBaseRecordId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "accountOption",
+                                                "entity": {
+                                                    "entityReference": "Account",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Account/(resolvedAttributes)/accountId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "contactOption",
+                                                "entity": {
+                                                    "entityReference": "Contact",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "Contact/(resolvedAttributes)/contactId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "explanation": "Place holder that merges with the better attribute description from the ActivityCommon entity",
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "regardingObjectId"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "description",
+                                "appliedTraits": [
+                                    "means.reference.description",
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Additional information to describe the phone call, such as the primary message or the products and services discussed."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Description",
+                                "description": "Additional information to describe the phone call, such as the primary message or the products and services discussed.",
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 24,
+                                "maximumLength": 2000
+                            },
+                            {
+                                "relationship": "representsStateWith",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Open",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Completed",
+                                                                "1",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Canceled",
+                                                                "2",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'PhoneCall' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "stateCode_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "stateCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Activity Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows whether the phone call is open, completed, or canceled. Completed and canceled phone calls are read-only and can't be edited."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Activity Status",
+                                "description": "Shows whether the phone call is open, completed, or canceled. Completed and canceled phone calls are read-only and can't be edited.",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 25
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Open",
+                                                                "1",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Made",
+                                                                "2",
+                                                                "1",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Canceled",
+                                                                "3",
+                                                                "2",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Received",
+                                                                "4",
+                                                                "3",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Open",
+                                                                "1",
+                                                                "4",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Made",
+                                                                "2",
+                                                                "5",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Canceled",
+                                                                "3",
+                                                                "6",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Received",
+                                                                "4",
+                                                                "7",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'PhoneCall' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "statusCode_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "statusCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Select the phone call's status."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Status Reason",
+                                "description": "Select the phone call's status.",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 28
+                            },
+                            {
+                                "name": "Currency_transactionCurrencyId",
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'Currency' adds the 'transactionCurrencyId' attribute below to the 'PhoneCall' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "transactionCurrencyId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Currency"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Currency",
+                                                        "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 71
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "decimal",
+                                "name": "exchangeRate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Exchange Rate",
+                                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 73,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "guid",
+                                "name": "processId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Process"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the ID of the process."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Process",
+                                "description": "Shows the ID of the process.",
+                                "isNullable": true,
+                                "sourceName": "processid",
+                                "sourceOrdering": 76
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "guid",
+                                "name": "stageId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Process Stage"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows the ID of the stage."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Process Stage",
+                                "description": "Shows the ID of the stage.",
+                                "isNullable": true,
+                                "sourceName": "stageid",
+                                "sourceOrdering": 77
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "traversedPath",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Traversed Path"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Traversed Path",
+                                "description": "For internal use only.",
+                                "isNullable": true,
+                                "sourceName": "traversedpath",
+                                "sourceOrdering": 78,
+                                "maximumLength": 1250
+                            },
+                            {
+                                "name": "SLA_SLAInvokedId",
+                                "entity": {
+                                    "entityReference": "SLA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "SLA/(resolvedAttributes)/SLAId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'SLA' adds the 'SLAInvokedId' attribute below to the 'PhoneCall' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "SLAInvokedId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Last SLA applied"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Last SLA that was applied to this Phone Call. This field is for internal use only."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "Last SLA applied",
+                                                        "description": "Last SLA that was applied to this Phone Call. This field is for internal use only.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slainvokedid",
+                                                        "sourceOrdering": 80
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "name": "onHoldTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "On Hold Time (Minutes)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Shows how long, in minutes, that the record was on hold."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "On Hold Time (Minutes)",
+                                "description": "Shows how long, in minutes, that the record was on hold.",
+                                "isNullable": true,
+                                "sourceName": "onholdtime",
+                                "sourceOrdering": 81,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "lastOnHoldTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Last On Hold Time"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Contains the date and time stamp of the last on hold time."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Last On Hold Time",
+                                "description": "Contains the date and time stamp of the last on hold time.",
+                                "isNullable": true,
+                                "sourceName": "lastonholdtime",
+                                "sourceOrdering": 82
+                            },
+                            {
+                                "name": "SLA_SLAId",
+                                "entity": {
+                                    "entityReference": "SLA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "SLA/(resolvedAttributes)/SLAId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "referencesA",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This 'referencesA' relationship to the entity 'SLA' adds the 'SLAId' attribute below to the 'PhoneCall' entity as a key",
+                                                    "name": "addedAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "SLAId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "SLA"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Choose the service level agreement (SLA) that you want to apply to the Phone Call record."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "displayName": "SLA",
+                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the Phone Call record.",
+                                                        "isNullable": true,
+                                                        "sourceName": "slaid",
+                                                        "sourceOrdering": 83
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

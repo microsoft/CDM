@@ -1,0 +1,281 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "FinancialActivity",
+            "extendsEntity": "CdmObject",
+            "description": "Summarization of financial activity for a ledger, date, account, and dimension combination",
+            "displayName": "Financial Activity",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/financeCommon/FinanceActivity.cdm.json/FinanceActivity/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "name": "financialActivityId",
+                                "relationship": "identifiedBy",
+                                "dataType": "string",
+                                "description": "The surrogate key of the record",
+                                "displayName": "Financial Activity ID"
+                            },
+                            {
+                                "name": "mainAccountCategoryKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "mainAccountCategoryKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The category of the main account for this activity, denormalized for reporting",
+                                                        "displayName": "Main Account Category Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "MainAccountCategory",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "MainAccountCategory/(resolvedAttributes)/mainAccountCategoryId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "mainAccountKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "mainAccountKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The main account containing this financial activity",
+                                                        "displayName": "Main Account Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "MainAccount",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "MainAccount/(resolvedAttributes)/mainAccountId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "companyKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "companyKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The company for which this financial activity occurred",
+                                                        "displayName": "Company Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Company",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Company/(resolvedAttributes)/companyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "transactionCurrencyKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "transactionCurrencyKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The currency in which the source transaction occurred",
+                                                        "displayName": "Transaction Currency Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "fiscalCalendarPeriodKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "fiscalCalendarPeriodKey",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The fiscal period in which the financial activity occurred",
+                                                        "displayName": "Fiscal Calendar Period Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "FiscalCalendarPeriod",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "FiscalCalendarPeriod/(resolvedAttributes)/fiscalCalendarPeriodId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "ledgerDimensionDisplayValue",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "description": "A denormalization of the full string representing the main account plus additional dimension values",
+                                "displayName": "Ledger Dimension Display Value"
+                            },
+                            {
+                                "name": "transactionCurrencyCode",
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "description": "A denormalization of the currency code in which the source transaction occurred",
+                                "displayName": "Transaction Currency Code"
+                            },
+                            {
+                                "name": "accountingCurrencyAmount",
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "description": "The amount of the financial activity expressed in the accounting currency",
+                                "displayName": "AccountingCurrencyAmount"
+                            },
+                            {
+                                "name": "accountingDate",
+                                "relationship": "hasA",
+                                "dataType": "date",
+                                "description": "The date on which the financial activity was recognized",
+                                "displayName": "AccountingDate"
+                            },
+                            {
+                                "name": "ledgerKey",
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "ledgerId",
+                                                        "relationship": "hasA",
+                                                        "dataType": "string",
+                                                        "description": "The ledger containing this financial activity",
+                                                        "displayName": "Ledger"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "entity": {
+                                    "entityReference": "Ledger",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Ledger/(resolvedAttributes)/ledgerId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

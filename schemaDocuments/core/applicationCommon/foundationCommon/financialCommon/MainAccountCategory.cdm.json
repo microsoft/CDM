@@ -1,0 +1,161 @@
+{
+  "jsonSchemaSemanticVersion": "0.7.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MainAccountCategory",
+      "extendsEntity": "CdmObject",
+      "description": "Provides categorization of main accounts",
+      "displayName": "Main Account Category",
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/financeCommon/MainAccountCategory.cdm.json/MainAccountCategory/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "members": [
+              {
+                "name": "mainAccountCategoryId",
+                "relationship": "identifiedBy",
+                "dataType": "string",
+                "description": "The surrogate key of the main account category record",
+                "displayName": "Main Account Category ID"
+              },
+              {
+                "name": "name",
+                "relationship": "hasA",
+                "dataType": "string",
+                "description": "The display name of the main account category",
+                "displayName": "Name"
+              },
+              {
+                "name": "description",
+                "relationship": "hasA",
+                "dataType": "string",
+                "description": "The description of the main account category",
+                "displayName": "Description",
+                "appliedTraits": [
+                  {
+                    "traitReference": "means.reference.description"
+                  }
+                ]
+              },
+              {
+                "name": "isClosed",
+                "relationship": "hasA",
+                "dataType": "boolean",
+                "description": "Determines whether accounts of this category are closed for new transactions",
+                "displayName": "Is Closed"
+              },
+              {
+                "relationship": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Blank",
+                                "50",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "ProfitAndLoss",
+                                "0",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Revenue",
+                                "1",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Expense",
+                                "2",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "BalanceSheet",
+                                "3",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Asset",
+                                "4",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Liability",
+                                "5",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "Equity",
+                                "6",
+                                "7"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "traitReference": "does.addSupportingAttribute",
+                      "arguments": [
+                        {
+                          "explanation": "This attribute 'accountType_display' is added to the 'MainAccountCategory' entity to provide the localized display text for the value of the listLookup attribute 'accountType'",
+                          "relationship": "hasA",
+                          "dataType": "localizedDisplayText",
+                          "name": "accountType_display",
+                          "isReadOnly": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "name": "accountType",
+                "appliedTraits": [],
+                "displayName": "Account Type",
+                "description": "The common account type for accounts in this category, such as revenue or liability",
+                "isNullable": false
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

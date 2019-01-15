@@ -1,0 +1,947 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.0.8.1.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Address",
+            "extendsEntity": "base_Address/Address",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        "0.8.1"
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/nonProfit/Address.cdm.json/Address/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "endDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "End Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Effective end date of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "End Date",
+                                "description": "Effective end date of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_enddate",
+                                "sourceOrdering": 10062
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "name": "isUspsValidated",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "USPS Validated"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "USPS Validated",
+                                "isNullable": true,
+                                "sourceName": "msnfp_isuspsvalidated",
+                                "sourceOrdering": 10063
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "name": "isvalidated",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Validated"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Validated",
+                                "isNullable": true,
+                                "sourceName": "msnfp_isvalidated",
+                                "sourceOrdering": 10065
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Region",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpRegion_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRegion'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "region_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "region",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Region"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates the region of the world that the address is located."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Region",
+                                "description": "Indicates the region of the world that the address is located.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_region",
+                                "sourceOrdering": 10067
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "DaysOfMonth",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpSeasonalEndDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndDay'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "seasonalEndDay_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "seasonalEndDay",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Seasonal End Day"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Annual end day (of month) of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Seasonal End Day",
+                                "description": "Annual end day (of month) of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_seasonalendday",
+                                "sourceOrdering": 10069
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "MonthNames",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpSeasonalEndMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndMonth'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "seasonalEndMonth_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "seasonalEndMonth",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Seasonal End Month"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Annual end month of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Seasonal End Month",
+                                "description": "Annual end month of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_seasonalendmonth",
+                                "sourceOrdering": 10071
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "DaysOfMonth",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpSeasonalStartDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartDay'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "seasonalStartDay_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "seasonalStartDay",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Seasonal Start Day"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Annual start day (of month) of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Seasonal Start Day",
+                                "description": "Annual start day (of month) of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_seasonalstartday",
+                                "sourceOrdering": 10073
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "MonthNames",
+                                                                "100000000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpSeasonalStartMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartMonth'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "seasonalStartMonth_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "seasonalStartMonth",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Seasonal Start Month"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Annual start month of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Seasonal Start Month",
+                                "description": "Annual start month of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_seasonalstartmonth",
+                                "sourceOrdering": 10075
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "startDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Start Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Effective start date of the address and related contact info"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Start Date",
+                                "description": "Effective start date of the address and related contact info",
+                                "isNullable": true,
+                                "sourceName": "msnfp_startdate",
+                                "sourceOrdering": 10077
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Home",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Office",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Mobile",
+                                                                "100000002",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpTelephone1TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone1TypeCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "telephone1TypeCode_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "telephone1TypeCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Telephone 1 Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Telephone 1 Type",
+                                "isNullable": true,
+                                "sourceName": "msnfp_telephone1typecode",
+                                "sourceOrdering": 10078
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Home",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Office",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Mobile",
+                                                                "100000002",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpTelephone2TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone2TypeCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "telephone2TypeCode_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "telephone2TypeCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Telephone 2 Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Telephone 2 Type",
+                                "isNullable": true,
+                                "sourceName": "msnfp_telephone2typecode",
+                                "sourceOrdering": 10080
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Home",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Office",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Mobile",
+                                                                "100000002",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpTelephone3TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone3TypeCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "telephone3TypeCode_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "telephone3TypeCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Telephone 3 Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Telephone 3 Type",
+                                "isNullable": true,
+                                "sourceName": "msnfp_telephone3typecode",
+                                "sourceOrdering": 10082
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

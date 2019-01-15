@@ -559,7 +559,7 @@ function resolveCorpus(messageType) {
         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.progress, "validating schemas...");
         if (r) {
             let validateStep = (currentStep) => {
-                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.traits, undefined).then((nextStep) => {
+                return controller.corpus.resolveReferencesAndValidate(currentStep, cdm.cdmValidationStep.minimumForResolving, undefined).then((nextStep) => {
                     if (nextStep == cdm.cdmValidationStep.error) {
                         controller.mainContainer.messageHandlePing("statusMessage", cdm.cdmStatusLevel.error, "validating step failed.");
                         controller.mainContainer.messageHandlePing("resolveModeResult", false, null);
@@ -904,23 +904,29 @@ function messageHandleDetailTab(messageType, data1, data2) {
     }
 }
 function messageHandleDetailStatus(messageType, data1, data2) {
-    var addLine = function (to, line, errorInfo) {
+    var addLine = function (to, line, errorInfo, warningInfo) {
         if (to.innerHTML && to.innerHTML.length > 256000)
             to.innerHTML = "";
-        if (errorInfo) {
+        if (errorInfo || warningInfo) {
             to = to.appendChild(controller.document.createElement("span"));
-            to.className = "status-text-error";
-            if (typeof (errorInfo) != "boolean") {
-                to.appendChild(controller.document.createTextNode(errorInfo));
-                to.appendChild(controller.document.createElement("br"));
+            if (errorInfo) {
+                to.className = "status-text-error";
+                if (typeof (errorInfo) != "boolean") {
+                    to.appendChild(controller.document.createTextNode(errorInfo));
+                    to.appendChild(controller.document.createElement("br"));
+                }
+            }
+            else {
+                to.className = "status-text-warning";
             }
         }
+
         to.appendChild(controller.document.createTextNode(line));
         to.appendChild(controller.document.createElement("br"));
         controller.paneDetailHost.scrollTop = controller.paneDetailHost.scrollHeight;
     };
     if (messageType == "statusMessage") {
-        addLine(this, data2, data1 === cdm.cdmStatusLevel.error);
+        addLine(this, data2, data1 === cdm.cdmStatusLevel.error, data1 === cdm.cdmStatusLevel.warning);
     }
     else if (messageType == "loadEntity") {
         addLine(this, data1.path + data1.docName, data2);
@@ -1018,7 +1024,7 @@ function detailResolvedJump(path) {
 function drawResolvedStack() {
     if (controller.ResolvedStack && controller.ResolvedStack.length) {
         let cdmObject = controller.ResolvedStack[controller.ResolvedStack.length - 1];
-        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocSelected), { stringRefs: true, removeSingleRowLocalizedTableTraits: true });
+        let json = cdmObject.copyData(getResolutionOptions(controller.cdmDocResolved), { stringRefs: true, removeSingleRowLocalizedTableTraits: true });
         let jsonText = JSON.stringify(json, null, 2);
         // string refs got exploded. turn them back into strings with links
         jsonText = jsonText.replace(/{[\s]+\"corpusPath": \"([^ \"]+)\",\n[\s]+\"identifier\": \"([^\"]+)\"\n[\s]+}/gm, "<a href=\"javascript:detailResolvedJump('$1')\" title=\"$1\">\"$2\"</a>");

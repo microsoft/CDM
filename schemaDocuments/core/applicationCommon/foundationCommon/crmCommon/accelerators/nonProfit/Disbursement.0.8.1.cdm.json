@@ -1,0 +1,1865 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.0.8.1.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Disbursement",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Disbursement"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "A Disbursement represents an Award disbursement to an individual or organizational awardee.  A Disbursement is related to a specific Award and Budget through a Disbursement Distribution."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "displayName": "Disbursement",
+            "description": "A Disbursement represents an Award disbursement to an individual or organizational awardee.  A Disbursement is related to a specific Award and Budget through a Disbursement Distribution.",
+            "sourceName": "msnfp_disbursement",
+            "version": "0.8.1",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/nonProfit/Disbursement.cdm.json/Disbursement/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": "identifiedBy",
+                                "dataType": "entityId",
+                                "name": "disbursementId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Disbursement"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for entity instances"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Disbursement",
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "msnfp_disbursementid",
+                                "sourceOrdering": 1
+                            },
+                            {
+                                "relationship": "representsStateWith",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "stateCode_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "stateCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Disbursement"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Status",
+                                "description": "Status of the Disbursement",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
+                            },
+                            {
+                                "relationship": {
+                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "statusCode_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "statusCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the Disbursement"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the Disbursement",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "name",
+                                "name": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The name of the custom entity."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Name",
+                                "description": "The name of the custom entity.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "adjustmentComment",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Adjustment Comment"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Any notes or details about the adjustment that the user may have optionally entered."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Adjustment Comment",
+                                "description": "Any notes or details about the adjustment that the user may have optionally entered.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_adjustmentcomment",
+                                "sourceOrdering": 34,
+                                "maximumLength": 2000
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Adjustment Reason Option",
+                                                                "844060000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpAdjustmentReason_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'msnfpAdjustmentReason'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "adjustmentReason_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "adjustmentReason",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Adjustment Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Adjustment Reason",
+                                "isNullable": true,
+                                "sourceName": "msnfp_adjustmentreason",
+                                "sourceOrdering": 35
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Adjustment Type Option",
+                                                                "844060000",
+                                                                "0"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpAdjustmentType_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'msnfpAdjustmentType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "adjustmentType_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "adjustmentType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Adjustment Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Adjustment Type",
+                                "isNullable": true,
+                                "sourceName": "msnfp_adjustmenttype",
+                                "sourceOrdering": 37
+                            },
+                            {
+                                "name": "msnfp_disbursementdistribution_disbursement_AdjustsOriginalTransactionId",
+                                "entity": {
+                                    "entityReference": "DisbursementDistribution",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DisbursementDistribution/(resolvedAttributes)/disbursementDistributionId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "adjustsOriginalTransactionId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Adjusts Original Transaction"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Adjusts Original Transaction"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "displayName": "Adjusts Original Transaction",
+                                                        "description": "Adjusts Original Transaction",
+                                                        "isNullable": true,
+                                                        "sourceName": "msnfp_adjustsoriginaltransactionid",
+                                                        "sourceOrdering": 39
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "name": "amouont",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Amount"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The amount of the Disbursement."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Amount",
+                                "description": "The amount of the Disbursement.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_amouont",
+                                "sourceOrdering": 40,
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "name": "TransactionCurrency_msnfp_disbursement",
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "transactionCurrencyId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Currency"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the currency associated with the entity."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "displayName": "Currency",
+                                                        "description": "Unique identifier of the currency associated with the entity.",
+                                                        "isNullable": true,
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "sourceOrdering": 41
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "decimal",
+                                "name": "exchangeRate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange rate for the currency associated with the entity with respect to the base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Exchange Rate",
+                                "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
+                                "isNullable": true,
+                                "sourceName": "exchangerate",
+                                "sourceOrdering": 43,
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "baseCurrency",
+                                "name": "amouontBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.calculationOf",
+                                        "arguments": [
+                                            {
+                                                "name": "sourceAttribute",
+                                                "value": "msnfpAmouont"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Amount (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Amount in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Amount (Base)",
+                                "description": "Value of the Amount in base currency.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_amouont_base",
+                                "sourceOrdering": 44,
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "name": "msnfp_award_disbursement_AwardId",
+                                "entity": {
+                                    "entityReference": "Award",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Award/(resolvedAttributes)/awardId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "awardId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Award"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Award"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "displayName": "Award",
+                                                        "description": "Award",
+                                                        "isNullable": true,
+                                                        "sourceName": "msnfp_awardid",
+                                                        "sourceOrdering": 45
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "bookDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Book Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Book Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Book Date",
+                                "description": "Book Date",
+                                "isNullable": true,
+                                "sourceName": "msnfp_bookdate",
+                                "sourceOrdering": 46
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "comment",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Comment"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Comments about the Disbursement."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Comment",
+                                "description": "Comments about the Disbursement.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_comment",
+                                "sourceOrdering": 47,
+                                "maximumLength": 255
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "description",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description of the Disbursement."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Description",
+                                "description": "Description of the Disbursement.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_description",
+                                "sourceOrdering": 48,
+                                "maximumLength": 2000
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "name": "isAdjusted",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Adjusted"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Adjusted"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Is Adjusted",
+                                "description": "Is Adjusted",
+                                "isNullable": true,
+                                "sourceName": "msnfp_isadjusted",
+                                "sourceOrdering": 49
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "postedDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Posted Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The date the Disbursement was posted to the GL"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Posted Date",
+                                "description": "The date the Disbursement was posted to the GL",
+                                "isNullable": true,
+                                "sourceName": "msnfp_posteddate",
+                                "sourceOrdering": 51
+                            },
+                            {
+                                "name": "msnfp_account_disbursement_RecipientAccount",
+                                "entity": {
+                                    "entityReference": "Account",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Account/(resolvedAttributes)/accountId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "recipientAccountId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Recipient Account"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Recipient Account"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "displayName": "Recipient Account",
+                                                        "description": "Recipient Account",
+                                                        "isNullable": true,
+                                                        "sourceName": "msnfp_recipientaccountid",
+                                                        "sourceOrdering": 52
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "msnfp_contact_disbursement_RecipientContactId",
+                                "entity": {
+                                    "entityReference": "Contact",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Contact/(resolvedAttributes)/contactId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "recipientContactId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Recipient Contact"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Recipient Contact"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "displayName": "Recipient Contact",
+                                                        "description": "Recipient Contact",
+                                                        "isNullable": true,
+                                                        "sourceName": "msnfp_recipientcontactid",
+                                                        "sourceOrdering": 53
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "requestDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Request Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The date the Disbursement was requested."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Request Date",
+                                "description": "The date the Disbursement was requested.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_requestdate",
+                                "sourceOrdering": 54
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "scheduledDisbursementDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Scheduled Disbursement Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The date the Disbursement is scheduled to be sent."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Scheduled Disbursement Date",
+                                "description": "The date the Disbursement is scheduled to be sent.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_scheduleddisbursementdate",
+                                "sourceOrdering": 55
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "sentDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Sent Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The date the Disbursement was sent."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Sent Date",
+                                "description": "The date the Disbursement was sent.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_sentdate",
+                                "sourceOrdering": 56
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Scheduled",
+                                                                "844060000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Check Request",
+                                                                "844060001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Paid",
+                                                                "844060002",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Cancelled",
+                                                                "844060003",
+                                                                "3"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpStatus_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'msnfpStatus'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "status_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "status",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Disbursement."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Status",
+                                "description": "Status of the Disbursement.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_status",
+                                "sourceOrdering": 57
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Check",
+                                                                "844060000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Wire Transfer",
+                                                                "844060001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Credit Card",
+                                                                "844060002",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Other",
+                                                                "844060003",
+                                                                "3"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpType_display' is added to the 'Disbursement' entity to provide the localized display text for the value of the listLookup attribute 'msnfpType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "type_display",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.readOnly"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "type",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The type of Disbursement."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Type",
+                                "description": "The type of Disbursement.",
+                                "isNullable": true,
+                                "sourceName": "msnfp_type",
+                                "sourceOrdering": 59
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1025 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Lead",
+            "extendsEntity": "base_Lead/Lead",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/nonProfit/Lead.cdm.json/Lead/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "applicationDeadline",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Application Deadline"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Deadline to submit application."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_applicationdeadline",
+                                "sourceOrdering": 10280,
+                                "isNullable": true,
+                                "displayName": "Application Deadline",
+                                "description": "Deadline to submit application."
+                            },
+                            {
+                                "name": "msnfp_deliveryframework_lead_deliveryframeworkid",
+                                "entity": {
+                                    "entityReference": "DeliveryFramework",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeliveryFramework/(resolvedAttributes)/deliveryFrameworkId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "deliveryFramework",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Delivery Framework"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_deliveryframeworkid",
+                                                        "sourceOrdering": 10281,
+                                                        "isNullable": true,
+                                                        "displayName": "Delivery Framework"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "name": "expectedAmountRequested",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Amount Requested"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Amount requested by the Grant Seeker."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedamountrequested",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0",
+                                "sourceOrdering": 10282,
+                                "isNullable": true,
+                                "displayName": "Expected Amount Requested",
+                                "description": "Amount requested by the Grant Seeker."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "baseCurrency",
+                                "name": "expectedamountrequestedBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.calculationOf",
+                                        "arguments": [
+                                            {
+                                                "name": "sourceAttribute",
+                                                "value": "msnfpExpectedAmountRequested"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Amount Requested (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Expected Amount Requested in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedamountrequested_base",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "sourceOrdering": 10283,
+                                "isNullable": true,
+                                "displayName": "Expected Amount Requested (Base)",
+                                "description": "Value of the Expected Amount Requested in base currency."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "integer",
+                                "name": "expectedDuration",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Duration (Months)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected duration of the Grant in months."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedduration",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "sourceOrdering": 10284,
+                                "isNullable": true,
+                                "displayName": "Expected Duration (Months)",
+                                "description": "Expected duration of the Grant in months."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "expectedStartDate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Start Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected start date of the Grant."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedstartdate",
+                                "sourceOrdering": 10285,
+                                "isNullable": true,
+                                "displayName": "Expected Start Date",
+                                "description": "Expected start date of the Grant."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "boolean",
+                                "name": "isRenewal",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Renewal"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates if this is a renewal Grant."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_isrenewal",
+                                "sourceOrdering": 10286,
+                                "isNullable": true,
+                                "displayName": "Is Renewal",
+                                "description": "Indicates if this is a renewal Grant."
+                            },
+                            {
+                                "name": "msnfp_lead_docket",
+                                "entity": {
+                                    "entityReference": "Docket",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Docket/(resolvedAttributes)/docketId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "leadDocketId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Docket"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Docket"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_lead_docketid",
+                                                        "sourceOrdering": 10288,
+                                                        "isNullable": true,
+                                                        "displayName": "Docket",
+                                                        "description": "Docket"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "dateTime",
+                                "name": "letterofIntentDeadline",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Letter of Intent Deadline"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Deadline to submit notification to donor that organization will be competing for this grant."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_letterofintentdeadline",
+                                "sourceOrdering": 10289,
+                                "isNullable": true,
+                                "displayName": "Letter of Intent Deadline",
+                                "description": "Deadline to submit notification to donor that organization will be competing for this grant."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "name": "organizationalBudget",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Organization Budget"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Total budget of the Organization."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_organizationalbudget",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0",
+                                "sourceOrdering": 10290,
+                                "isNullable": true,
+                                "displayName": "Organization Budget",
+                                "description": "Total budget of the Organization."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "baseCurrency",
+                                "name": "organizationalbudgetBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.calculationOf",
+                                        "arguments": [
+                                            {
+                                                "name": "sourceAttribute",
+                                                "value": "msnfpOrganizationalBudget"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Organization Budget (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Organization Budget in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_organizationalbudget_base",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "sourceOrdering": 10291,
+                                "isNullable": true,
+                                "displayName": "Organization Budget (Base)",
+                                "description": "Value of the Organization Budget in base currency."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Oil & Gas",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Petroleum",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Fossil Fuels",
+                                                                "100000002",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Heavy Crude",
+                                                                "100000003",
+                                                                "3"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpOrganizationType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpOrganizationType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "organizationType_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "organizationType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Organization Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type of Account."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_organizationtype",
+                                "sourceOrdering": 10292,
+                                "isNullable": true,
+                                "displayName": "Organization Type",
+                                "description": "Type of Account."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "General Support",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Project Support",
+                                                                "100000001",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpRequestType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRequestType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "requestType_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "requestType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Request Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Indicates the type of Inquiry/LOI/Lead."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_requesttype",
+                                "sourceOrdering": 10294,
+                                "isNullable": true,
+                                "displayName": "Request Type",
+                                "description": "Indicates the type of Inquiry/LOI/Lead."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "name": "totalProjectBudget",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Total Project Budget"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Budget defined by the Grant Seeker."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_totalprojectbudget",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0",
+                                "sourceOrdering": 10296,
+                                "isNullable": true,
+                                "displayName": "Total Project Budget",
+                                "description": "Budget defined by the Grant Seeker."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "baseCurrency",
+                                "name": "totalprojectbudgetBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.calculationOf",
+                                        "arguments": [
+                                            {
+                                                "name": "sourceAttribute",
+                                                "value": "msnfpTotalProjectBudget"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Total Project Budget (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Total Project Budget in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_totalprojectbudget_base",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "sourceOrdering": 10297,
+                                "isNullable": true,
+                                "displayName": "Total Project Budget (Base)",
+                                "description": "Value of the Total Project Budget in base currency."
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,668 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Opportunity",
+            "extendsEntity": "base_Opportunity/Opportunity",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/nonProfit/Opportunity.cdm.json/Opportunity/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Low",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Medium",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "High",
+                                                                "100000002",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpAskReadiness_display' is added to the 'Opportunity' entity to provide the localized display text for the value of the listLookup attribute 'msnfpAskReadiness'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "askReadiness_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "askReadiness",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Ask Readiness"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Disposition of constituent toward committing to determined Pledge ask amount."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_askreadiness",
+                                "sourceOrdering": 10208,
+                                "isNullable": true,
+                                "displayName": "Ask Readiness",
+                                "description": "Disposition of constituent toward committing to determined Pledge ask amount."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "currency",
+                                "name": "expectedGivingAmount",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Giving Amount"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Populated by trigger, displays the sum of all Expected Giving Amounts."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedgivingamount",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0",
+                                "sourceOrdering": 10210,
+                                "isNullable": true,
+                                "displayName": "Expected Giving Amount",
+                                "description": "Populated by trigger, displays the sum of all Expected Giving Amounts."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "baseCurrency",
+                                "name": "expectedgivingamountBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.calculationOf",
+                                        "arguments": [
+                                            {
+                                                "name": "sourceAttribute",
+                                                "value": "msnfpExpectedGivingAmount"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Expected Giving Amount (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Expected Giving Amount in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_expectedgivingamount_base",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "sourceOrdering": 10211,
+                                "isNullable": true,
+                                "displayName": "Expected Giving Amount (Base)",
+                                "description": "Value of the Expected Giving Amount in base currency."
+                            },
+                            {
+                                "name": "msnfp_opportunity_defaultDesignation",
+                                "entity": {
+                                    "entityReference": "Designation",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Designation/(resolvedAttributes)/designationId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "opportunityDefaultDesignationId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Default Designation"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Default Designation"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_opportunity_defaultdesignationid",
+                                                        "sourceOrdering": 10212,
+                                                        "isNullable": true,
+                                                        "displayName": "Default Designation",
+                                                        "description": "Default Designation"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "msnfp_opportunity_primaryProposal",
+                                "entity": {
+                                    "entityReference": "DonorCommitment",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DonorCommitment/(resolvedAttributes)/donorCommitmentId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "primaryProposalId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Primary Proposal"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Primary Proposal"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_primaryproposalid",
+                                                        "sourceOrdering": 10213,
+                                                        "isNullable": true,
+                                                        "displayName": "Primary Proposal",
+                                                        "description": "Primary Proposal"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Cash",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Stock",
+                                                                "100000001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "In-kind",
+                                                                "100000002",
+                                                                "2"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpProspectiveGiftType_display' is added to the 'Opportunity' entity to provide the localized display text for the value of the listLookup attribute 'msnfpProspectiveGiftType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "prospectiveGiftType_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "prospectiveGiftType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Prospective Gift Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_prospectivegifttype",
+                                "sourceOrdering": 10214,
+                                "isNullable": true,
+                                "displayName": "Prospective Gift Type"
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Renewal",
+                                                                "100000000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Additional",
+                                                                "100000001",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'msnfpSolicitationType_display' is added to the 'Opportunity' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSolicitationType'",
+                                                    "relationship": "hasA",
+                                                    "dataType": "localizedDisplayText",
+                                                    "name": "solicitationType_display",
+                                                    "isReadOnly": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "solicitationType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Solicitation Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Giving Type being solicited (Renewal, Additional, etc) or communication medium to donor (TV, Radio, Raffle, etc). This value is copied from associated Campaign at gift creation, and can be manually changed if necessary."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_solicitationtype",
+                                "sourceOrdering": 10216,
+                                "isNullable": true,
+                                "displayName": "Solicitation Type",
+                                "description": "Giving Type being solicited (Renewal, Additional, etc) or communication medium to donor (TV, Radio, Raffle, etc). This value is copied from associated Campaign at gift creation, and can be manually changed if necessary."
+                            },
+                            {
+                                "relationship": "hasA",
+                                "dataType": "string",
+                                "name": "sourceCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Source Code"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Organization defined unique code for associated Campaign. This value is copied from associated Campaign at gift creation."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_sourcecode",
+                                "maximumLength": 255,
+                                "sourceOrdering": 10218,
+                                "isNullable": true,
+                                "displayName": "Source Code",
+                                "description": "Organization defined unique code for associated Campaign. This value is copied from associated Campaign at gift creation."
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
