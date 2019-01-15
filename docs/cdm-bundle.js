@@ -313,7 +313,7 @@ class ParameterValue {
                 // check that the entities are the same shape
                 if (!newEnt)
                     return ov;
-                if (!oldEnt || (oldEnt.getEntityShape() != oldEnt.getEntityShape()))
+                if (!oldEnt || (oldEnt.getEntityShape().getObjectDef(resOpt) != newEnt.getEntityShape().getObjectDef(resOpt)))
                     return nv;
                 let oldCv = oldEnt.getConstantValues();
                 let newCv = newEnt.getConstantValues();
@@ -3486,7 +3486,7 @@ class ArgumentImpl extends cdmObjectSimple {
                 else {
                     let valObj = val;
                     if (valObj.ID)
-                        tag == val.ID.toString();
+                        tag = val.ID.toString();
                     else
                         tag = val.toString();
                 }
@@ -6503,7 +6503,7 @@ class ConstantEntityImpl extends cdmObjectDef {
             let rasb = new ResolvedAttributeSetBuilder();
             let acpEnt;
             if (under) {
-                let acpEnt = {
+                acpEnt = {
                     under: under,
                     type: cdmAttributeContextType.entity,
                     name: this.entityShape.getObjectDefName(),
@@ -6744,7 +6744,8 @@ class AttributeContextImpl extends cdmObjectDef {
             }
             if (this.id2ctx && this.id2ctx.size > 0) {
                 // a map has been collected here before (any may even have extra, important mappings added), so just copy it.
-                this.id2ctx.forEach((v, k) => { id2ctx.set(k, v); });
+                if (id2ctx != this.id2ctx)
+                    this.id2ctx.forEach((v, k) => { id2ctx.set(k, v); });
             }
             else {
                 // fresh map, us and children
@@ -7044,8 +7045,10 @@ class EntityImpl extends cdmObjectDef {
             };
             this.getTraitToPropertyMap().persistForEntityDef(castedToInterface, options);
             // after the properties so they show up first in doc
-            castedToInterface.hasAttributes = cdmObject.arraycopyData(resOpt, this.hasAttributes, options);
-            castedToInterface.attributeContext = this.attributeContext ? this.attributeContext.copyData(resOpt, options) : undefined;
+            if (this.hasAttributes) {
+                castedToInterface.hasAttributes = cdmObject.arraycopyData(resOpt, this.hasAttributes, options);
+                castedToInterface.attributeContext = this.attributeContext ? this.attributeContext.copyData(resOpt, options) : undefined;
+            }
             return castedToInterface;
         }
         //return p.measure(bodyCode);
@@ -7683,7 +7686,7 @@ class DocumentImpl extends cdmObjectSimple {
         {
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.schemaVersion = "0.7.0";
+            this.jsonSchemaSemanticVersion = "0.7.0";
             this.definitions = new Array();
             if (hasImports)
                 this.imports = new Array();
@@ -7709,7 +7712,7 @@ class DocumentImpl extends cdmObjectSimple {
         {
             let castedToInterface = {
                 schema: this.schema,
-                schemaVersion: this.schemaVersion,
+                jsonSchemaSemanticVersion: this.jsonSchemaSemanticVersion,
                 imports: cdmObject.arraycopyData(resOpt, this.imports, options),
                 definitions: cdmObject.arraycopyData(resOpt, this.definitions, options)
             };
@@ -7724,7 +7727,7 @@ class DocumentImpl extends cdmObjectSimple {
             c.ctx = this.ctx;
             c.path = this.path;
             c.schema = this.schema;
-            c.schemaVersion = this.schemaVersion;
+            c.jsonSchemaSemanticVersion = this.jsonSchemaSemanticVersion;
             c.definitions = cdmObject.arrayCopy(resOpt, this.definitions);
             c.imports = cdmObject.arrayCopy(resOpt, this.imports);
             return c;
@@ -7786,8 +7789,14 @@ class DocumentImpl extends cdmObjectSimple {
             ctx.currentDoc = doc;
             if (object.$schema)
                 doc.schema = object.$schema;
+            // support old model syntax
+            if (object.schemaVersion)
+                doc.jsonSchemaSemanticVersion = object.schemaVersion;
             if (object.jsonSchemaSemanticVersion)
-                doc.schemaVersion = object.jsonSchemaSemanticVersion;
+                doc.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
+            if (doc.jsonSchemaSemanticVersion != "0.7.0") {
+                // TODO: validate that this is a version we can understand with the OM
+            }
             if (object.imports) {
                 let l = object.imports.length;
                 for (let i = 0; i < l; i++) {
@@ -7872,7 +7881,7 @@ class DocumentImpl extends cdmObjectSimple {
     getSchemaVersion() {
         //let bodyCode = () =>
         {
-            return this.schemaVersion;
+            return this.jsonSchemaSemanticVersion;
         }
         //return p.measure(bodyCode);
     }
@@ -8942,7 +8951,6 @@ class CorpusImpl extends FolderImpl {
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
-                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:
@@ -9116,7 +9124,6 @@ class CorpusImpl extends FolderImpl {
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
-                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:
@@ -9189,7 +9196,6 @@ class CorpusImpl extends FolderImpl {
                     case cdmObjectType.parameterDef:
                     case cdmObjectType.traitDef:
                     case cdmObjectType.relationshipDef:
-                    case cdmObjectType.attributeContextDef:
                     case cdmObjectType.dataTypeDef:
                     case cdmObjectType.typeAttributeDef:
                     case cdmObjectType.entityAttributeDef:

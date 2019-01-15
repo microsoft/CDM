@@ -186,7 +186,7 @@ export interface Entity
 export interface DocumentContent
 {
     schema: string;
-    schemaVersion: string;
+    jsonSchemaSemanticVersion: string;
     imports?: Import[];
     definitions: (Trait | DataType | Relationship | AttributeGroup | Entity | ConstantEntity)[];
 }
@@ -921,7 +921,7 @@ export class ParameterValue
                 // check that the entities are the same shape
                 if (!newEnt)
                     return ov;
-                if (!oldEnt || (oldEnt.getEntityShape() != newEnt.getEntityShape()))
+                if (!oldEnt || (oldEnt.getEntityShape().getObjectDef(resOpt) != newEnt.getEntityShape().getObjectDef(resOpt)))
                     return nv;
 
                 let oldCv = oldEnt.getConstantValues();
@@ -8416,7 +8416,8 @@ class AttributeContextImpl extends cdmObjectDef implements ICdmAttributeContext
             }
             if (this.id2ctx && this.id2ctx.size > 0) {
                 // a map has been collected here before (any may even have extra, important mappings added), so just copy it.
-                this.id2ctx.forEach((v, k)=> {id2ctx.set(k, v);});
+                if (id2ctx != this.id2ctx)
+                    this.id2ctx.forEach((v, k)=> {id2ctx.set(k, v);});
             }
             else {
                 // fresh map, us and children
@@ -8768,8 +8769,10 @@ class EntityImpl extends cdmObjectDef implements ICdmEntityDef
             };
             this.getTraitToPropertyMap().persistForEntityDef(castedToInterface, options);
             // after the properties so they show up first in doc
-            castedToInterface.hasAttributes = cdmObject.arraycopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, this.hasAttributes, options);
-            castedToInterface.attributeContext = this.attributeContext ? this.attributeContext.copyData(resOpt, options) : undefined;
+            if (this.hasAttributes) {
+                castedToInterface.hasAttributes = cdmObject.arraycopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, this.hasAttributes, options);
+                castedToInterface.attributeContext = this.attributeContext ? this.attributeContext.copyData(resOpt, options) : undefined;
+            }
 
             return castedToInterface;
         }
@@ -9492,7 +9495,7 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
     name: string;
     path: string;
     schema: string;
-    schemaVersion: string;
+    jsonSchemaSemanticVersion: string;
     imports: ImportImpl[];
     definitions: (TraitImpl | DataTypeImpl | RelationshipImpl | AttributeGroupImpl | EntityImpl | ConstantEntityImpl)[];
     importSetKey: string;
@@ -9509,7 +9512,7 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
         {
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.schemaVersion = "0.7.0";
+            this.jsonSchemaSemanticVersion = "0.7.0";
 
             this.definitions = new Array<TraitImpl | DataTypeImpl | RelationshipImpl | AttributeGroupImpl | EntityImpl | ConstantEntityImpl>();
             if (hasImports)
@@ -9540,7 +9543,7 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
         {
             let castedToInterface: DocumentContent = {
                 schema: this.schema,
-                schemaVersion: this.schemaVersion,
+                jsonSchemaSemanticVersion: this.jsonSchemaSemanticVersion,
                 imports: cdmObject.arraycopyData<Import>(resOpt, this.imports, options),
                 definitions: cdmObject.arraycopyData<Trait | DataType | Relationship | AttributeGroup | Entity | ConstantEntity>(resOpt, this.definitions, options)
             };
@@ -9556,7 +9559,7 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
             c.ctx = this.ctx;
             c.path = this.path;
             c.schema = this.schema;
-            c.schemaVersion = this.schemaVersion;
+            c.jsonSchemaSemanticVersion = this.jsonSchemaSemanticVersion;
             c.definitions = cdmObject.arrayCopy<TraitImpl | DataTypeImpl | RelationshipImpl | AttributeGroupImpl | EntityImpl | ConstantEntityImpl>(resOpt, this.definitions);
             c.imports = cdmObject.arrayCopy<ImportImpl>(resOpt, this.imports);
             return c;
@@ -9630,8 +9633,15 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
 
             if (object.$schema)
                 doc.schema = object.$schema;
+            // support old model syntax
+            if (object.schemaVersion)
+                doc.jsonSchemaSemanticVersion = object.schemaVersion;
             if (object.jsonSchemaSemanticVersion)
-                doc.schemaVersion = object.jsonSchemaSemanticVersion;
+                doc.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
+            if (doc.jsonSchemaSemanticVersion != "0.7.0") {
+                // TODO: validate that this is a version we can understand with the OM
+            }
+            
             if (object.imports) {
                 let l = object.imports.length;
                 for (let i = 0; i < l; i++) {
@@ -9728,7 +9738,7 @@ class DocumentImpl extends cdmObjectSimple implements ICdmDocumentDef
     {
         //let bodyCode = () =>
         {
-            return this.schemaVersion;
+            return this.jsonSchemaSemanticVersion;
         }
         //return p.measure(bodyCode);
     }
