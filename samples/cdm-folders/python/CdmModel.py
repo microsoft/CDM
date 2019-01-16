@@ -112,7 +112,7 @@ class ObjectCollection(list, Base):
     @classmethod
     def fromJson(cls, value):
         result = cls()
-        ctor = cls.itemType.fromJson
+        ctor = getattr(cls.itemType, "fromJson", cls.itemType)
         for item in value:
             super(ObjectCollection, result).append(ctor(item))
         return result
@@ -120,7 +120,7 @@ class ObjectCollection(list, Base):
     def toJson(self):
         result = []
         for item in self:
-            result.append(item.toJson())
+            result.append(getattr(item, "toJson", lambda: item)())
         return result
         
     def validate(self):
@@ -222,7 +222,7 @@ class MetadataObjectCollection(ObjectCollection):
 
 class DataObject(MetadataObject):
     schema = MetadataObject.schema + (
-        SchemaEnty("isHidden", bool, False),
+        SchemaEntry("isHidden", bool, False),
     )
 
     def validate(self):
