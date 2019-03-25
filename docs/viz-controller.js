@@ -236,6 +236,12 @@ function messageHandlePingMainControl(messageType, data1, data2) {
             controller.mainContainer.messageHandle("loadEntity", entState, null);
         }
         if (messageType === "loadFail") {
+            let waitPanel = document.getElementById("wait_pane");
+            let errorContent = "File load failed for file: '"+data1.docName+"'. This might be caused by Ad Blockers. Please disable AdBlock on this site and reload the page.";
+            waitPanel.children[0].textContent = errorContent;
+            waitPanel.style.background = "#FF6464";
+            waitPanel.style.color = "#ffffff";
+            throw new Error(errorContent);
             let entState = data1;
             controller.loadFails++;
             entState.rawContent = null;
