@@ -1,8 +1,12 @@
-## foundationCommon/financialCommon/
-| Entity Name | Location: | Description | External Link |
-|:--- |:--- |:--- |:--- |
-|[**FinancialActivity**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/FinancialActivity.cdm.json)|[financialCommon/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/)|Summarization of financial activity for a ledger, date, account, and dimension combination|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/FinancialActivity)|
-|[**FiscalCalendarPeriod**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/FiscalCalendarPeriod.cdm.json)|[financialCommon/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/)|Represents the period in which financial activity occurred, as defined by a fiscal calendar.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/FiscalCalendarPeriod)|
-|[**Ledger**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/Ledger.cdm.json)|[financialCommon/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/)|The collection of all accounts making up the central repository of accounting data for a company.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/Ledger)|
-|[**MainAccount**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/MainAccount.cdm.json)|[financialCommon/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/)|An account whose balance is displayed in major financial statements|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/MainAccount)|
-|[**MainAccountCategory**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/MainAccountCategory.cdm.json)|[financialCommon/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/financialCommon/)|Provides categorization of main accounts|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/MainAccountCategory)|
+# financialCommon
+
+
+## Entities
+
+|Name|Description|
+|---|---|
+|[FinancialActivity](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/financialcommon/FinancialActivity)|Summarization of financial activity for a ledger, date, account, and dimension combination  |
+|[FiscalCalendarPeriod](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/financialcommon/FiscalCalendarPeriod)|Represents the period in which financial activity occurred, as defined by a fiscal calendar.  |
+|[Ledger](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/financialcommon/Ledger)|The collection of all accounts making up the central repository of accounting data for a company.  |
+|[MainAccount](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/financialcommon/MainAccount)|An account whose balance is displayed in major financial statements  |
+|[MainAccountCategory](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/financialcommon/MainAccountCategory)|Provides categorization of main accounts  |
