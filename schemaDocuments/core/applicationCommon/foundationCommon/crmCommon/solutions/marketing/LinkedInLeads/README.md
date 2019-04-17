@@ -1,9 +1,24 @@
-## marketing/LinkedInLeads/
-| Entity Name | Location: | Description | External Link |
-|:--- |:--- |:--- |:--- |
-|[**LinkedInAccount**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInAccount.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)|The LinkedIn account where forms are created and published.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedinaccount)|
-|[**LinkedInCampaign**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInCampaign.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)|Campaign used to capture submissions from prospects.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedincampaign)|
-|[**LinkedInFormQuestion**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInFormQuestion.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)||[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedinformquestion)|
-|[**LinkedInFormSubmissionAnswer**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInFormSubmissionAnswer.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)|Answers to individual questions on a form submitted by a LinkedIn member|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedinformanswer)|
-|[**LinkedInLeadGenForm**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInLeadGenForm.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)|Form shown to prospects on LinkedIn|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedinform)|
-|[**LinkedInLeadGenFormSubmission**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/LinkedInLeadGenFormSubmission.cdm.json)|[LinkedInLeads/](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/LinkedInLeads/)|Submissions from prospects on LinkedIn|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/msdyncrm_linkedinformsubmission)|
+---
+title: overview - Common Data Model | Microsoft Docs
+description: LinkedInLeads is a folder that contains standard entities related to the Common Data Model.
+author: nenad1002
+ms.service: common-data-model
+ms.reviewer: anneta
+ms.topic: article
+ms.date: 4/17/2019
+ms.author: nebanfic
+---
+
+# LinkedInLeads
+
+
+## Entities
+
+|Name|Description|
+|---|---|
+|[LinkedInAccount](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInAccount)|The LinkedIn account where forms are created and published.  |
+|[LinkedInCampaign](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInCampaign)|Campaign used to capture submissions from prospects.  |
+|[LinkedInFormQuestion](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInFormQuestion)|  |
+|[LinkedInFormSubmissionAnswer](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInFormSubmissionAnswer)|Answers to individual questions on a form submitted by a LinkedIn member  |
+|[LinkedInLeadGenForm](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInLeadGenForm)|Form shown to prospects on LinkedIn  |
+|[LinkedInLeadGenFormSubmission](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/marketing/linkedinleads/LinkedInLeadGenFormSubmission)|Submissions from prospects on LinkedIn  |

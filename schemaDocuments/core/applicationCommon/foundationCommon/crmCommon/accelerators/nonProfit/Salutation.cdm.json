@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "The way a donor or prospect is commonly addressed via written communication, such as hard-copy letters and email messages.  Nonprofits and foundations typically address major donors by different salutations depending on the scenario.  A medical doctor could be addressed as \"Doctor Smith\" when the organization reaches out regarding in-country field volunteerism that the person performs.  On the other hand, the same individual might be referred to as \"Mrs. Smith\" as part of her household being solicited for a major gift."
+                                        "A Salutation represents the way a constituent wishes to be addressed, depending on the source, purpose and content of a of communication.  Salutations may or may not be auto-created by workflow."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Salutation",
-            "description": "The way a donor or prospect is commonly addressed via written communication, such as hard-copy letters and email messages.  Nonprofits and foundations typically address major donors by different salutations depending on the scenario.  A medical doctor could be addressed as \"Doctor Smith\" when the organization reaches out regarding in-country field volunteerism that the person performs.  On the other hand, the same individual might be referred to as \"Mrs. Smith\" as part of her household being solicited for a major gift.",
+            "description": "A Salutation represents the way a constituent wishes to be addressed, depending on the source, purpose and content of a of communication.  Salutations may or may not be auto-created by workflow.",
             "sourceName": "msnfp_Salutation",
             "hasAttributes": [
                 {
@@ -361,6 +361,7 @@
                                 "dataType": "string",
                                 "name": "addressLabelLine1",
                                 "appliedTraits": [
+                                    "means.location.address.street.line1",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -415,6 +416,7 @@
                                 "dataType": "string",
                                 "name": "addressLabelLine2",
                                 "appliedTraits": [
+                                    "means.location.address.street.line2",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -469,6 +471,7 @@
                                 "dataType": "string",
                                 "name": "addressLabelLine3",
                                 "appliedTraits": [
+                                    "means.location.address",
                                     {
                                         "traitReference": "is.requiredAtLevel",
                                         "arguments": [
@@ -1181,9 +1184,15 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Jr.\nSr.",
+                                                                "Jr.",
                                                                 "100000000",
                                                                 "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Sr.",
+                                                                "844060000",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -1269,9 +1278,33 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Mr.\nMrs.\nDr.\nProf.\nMs.",
+                                                                "Mr.",
                                                                 "100000000",
                                                                 "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Mrs.",
+                                                                "844060000",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Dr.",
+                                                                "844060001",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Prof.",
+                                                                "844060002",
+                                                                "3"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Ms.",
+                                                                "844060003",
+                                                                "4"
                                                             ]
                                                         ]
                                                     }
@@ -1436,7 +1469,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This attribute 'msnfpType_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpType'",
+                                                    "explanation": "This attribute 'type_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'type'",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
                                                     "name": "type_display",

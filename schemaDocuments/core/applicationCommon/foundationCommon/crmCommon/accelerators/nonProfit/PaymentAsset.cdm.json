@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "Specific types of payments (such as in-kind gifts, stock, and securities) that are classified as assets require nonprofits to follow specific reporting rules.  Managing these gifts tends to be very manual work for the development-operations staff of nonprofit organizations.  These gifts come in through a bank and must be manually reviewed and entered into a batch.  Often questions must be answered before a gift entry can be completed with ease."
+                                        "Payment Asset represents the assets associated with specific types of payments including, but not limited to, in-kind gifts, stocks and securities."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Payment Asset",
-            "description": "Specific types of payments (such as in-kind gifts, stock, and securities) that are classified as assets require nonprofits to follow specific reporting rules.  Managing these gifts tends to be very manual work for the development-operations staff of nonprofit organizations.  These gifts come in through a bank and must be manually reviewed and entered into a batch.  Often questions must be answered before a gift entry can be completed with ease.",
+            "description": "Payment Asset represents the assets associated with specific types of payments including, but not limited to, in-kind gifts, stocks and securities.",
             "sourceName": "msnfp_PaymentAsset",
             "hasAttributes": [
                 {
@@ -836,6 +836,95 @@
                                 }
                             },
                             {
+                                "name": "msnfp_msnfp_plannedgiving_msnfp_paymentasset",
+                                "entity": {
+                                    "entityReference": "PlannedGiving",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "PlannedGiving/(resolvedAttributes)/plannedGivingId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "paymentAssetPlannedGivingId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Planned Giving"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier for Planned Giving associated with Payment Asset."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_paymentasset_plannedgivingid",
+                                                        "sourceOrdering": 44,
+                                                        "isNullable": true,
+                                                        "displayName": "Planned Giving",
+                                                        "description": "Unique identifier for Planned Giving associated with Payment Asset."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
                                 "name": "msnfp_pmtAsset_pledgedAsset",
                                 "entity": {
                                     "entityReference": "PaymentAsset",
@@ -913,7 +1002,7 @@
                                                             }
                                                         ],
                                                         "sourceName": "msnfp_paymentasset_pledgedasset",
-                                                        "sourceOrdering": 44,
+                                                        "sourceOrdering": 45,
                                                         "isNullable": true,
                                                         "displayName": "Pledged Asset",
                                                         "description": "Pledged Asset"
@@ -991,7 +1080,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_paymentassetcategory",
-                                "sourceOrdering": 45,
+                                "sourceOrdering": 46,
                                 "isNullable": true,
                                 "displayName": "Payment Asset Category"
                             },
@@ -1062,7 +1151,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_paymentassetsubcategory",
-                                "sourceOrdering": 47,
+                                "sourceOrdering": 48,
                                 "isNullable": true,
                                 "displayName": "Payment Asset Subcategory"
                             },
@@ -1144,7 +1233,7 @@
                                                             }
                                                         ],
                                                         "sourceName": "msnfp_pledgedonpaymentscheduleid",
-                                                        "sourceOrdering": 49,
+                                                        "sourceOrdering": 50,
                                                         "isNullable": true,
                                                         "displayName": "Pledged On Payment Schedule",
                                                         "description": "Pledged On Payment Schedule"
@@ -1189,7 +1278,7 @@
                                 "sourceName": "msnfp_quantity",
                                 "maximumValue": "1000000000",
                                 "minimumValue": "0",
-                                "sourceOrdering": 50,
+                                "sourceOrdering": 51,
                                 "isNullable": true,
                                 "displayName": "Quantity"
                             },
@@ -1226,7 +1315,7 @@
                                 ],
                                 "sourceName": "msnfp_symbol",
                                 "maximumLength": 100,
-                                "sourceOrdering": 51,
+                                "sourceOrdering": 52,
                                 "isNullable": true,
                                 "displayName": "Symbol"
                             },
@@ -1308,7 +1397,7 @@
                                                             }
                                                         ],
                                                         "sourceName": "msnfp_transferredontransactionid",
-                                                        "sourceOrdering": 52,
+                                                        "sourceOrdering": 53,
                                                         "isNullable": true,
                                                         "displayName": "Transferred On Transaction",
                                                         "description": "Transferred On Transaction"
