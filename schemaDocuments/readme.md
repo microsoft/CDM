@@ -1,15 +1,8 @@
----
-title: overview - Common Data Model | Microsoft Docs
-description: docs is a folder that contains standard entities related to the Common Data Model.
-author: nenad1002
-ms.service: common-data-model
-ms.reviewer: anneta
-ms.topic: article
-ms.date: 4/17/2019
-ms.author: nebanfic
+### Click this image to explore the CDM entities using the Entity Navigator:
+[![Click to Launch the Entity Navigator](NavSnip.jpg)](https://microsoft.github.io/CDM/)
 ---
 
-# docs
+# schemaDocuments
 
 
 ## Sub-folders
@@ -19,10 +12,11 @@ ms.author: nebanfic
 |[core](https://docs.microsoft.com/en-us/common-data-model/schema//core/overview)|
 
 
-
-
-## Entities
-
-|Name|Description|
-|---|---|
-|[readme](https://docs.microsoft.com/en-us/common-data-model/schema//readme)||
+---
+### Additional CDM files:
+| File | Description |
+|:--- |:--- |
+|[**schema.cdm.json**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/schema.cdm.json)|A JSON schema that can be used to validate and aid with editing of the other documents in this set.|
+|[**primitives.cdm.json**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/primitives.cdm.json)|The fundamental dataTypes, traits, entities used by the CDM object model.|
+|[**meanings.cdm.json**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/meanings.cdm.json)|A collection of traits that express an ontology of common business ideas along with some convenient dataTypes.|
+|[**foundations.cdm.json**](https://github.com/Microsoft/CDM/blob/master/schemaDocuments/foundations.cdm.json)|Common mechanisms used to express more complex ideas in standard ways thoughout this entity set.|
