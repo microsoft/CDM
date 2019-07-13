@@ -1,0 +1,574 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SegmentMembership",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Segment Membership"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Members participating in a given segment."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "members": [
+                            {
+                                "entity": {
+                                    "entityReference": "CustomerProfile",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "CustomerProfile/(resolvedAttributes)/customerProfileId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "customerProfile",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "customerProfileId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msdynci_CustomerProfileId",
+                                                        "displayName": "Customer Profile Id",
+                                                        "description": "",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "lastEvaluationDate",
+                                "dataType": "dateTime",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msdynci_LastEvaluationDate"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Last Evaluation Date"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Latest date when a segment memberships is evaluated/refreshed."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdynci_LastEvaluationDate",
+                                "displayName": "Last Evaluation Date",
+                                "description": "Latest date when a segment memberships is evaluated/refreshed.",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "name",
+                                "dataType": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msdynci_Name"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Required name field to be used as the primary name for the customer segment membership."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdynci_Name",
+                                "displayName": "Name",
+                                "description": "Required name field to be used as the primary name for the customer segment membership.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "Segment",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Segment/(resolvedAttributes)/segmentId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "segment",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "name": "segmentId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msdynci_SegmentId",
+                                                        "displayName": "Segment Id",
+                                                        "description": "",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "segmentMembershipId",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msdynci_SegmentMembershipId"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Segment Membership"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for entity instances"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdynci_SegmentMembershipId",
+                                "displayName": "Segment Membership",
+                                "description": "Unique identifier for entity instances",
+                                "relationship": "identifiedBy"
+                            },
+                            {
+                                "name": "version",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msdynci_Version"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-2147483648"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Denotes latest version of the customer segment membership for manual tracking."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdynci_Version",
+                                "displayName": "Version",
+                                "description": "Denotes latest version of the customer segment membership for manual tracking.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "stateCode",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "name": "stateCode_display",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true,
+                                                    "relationship": "hasA"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "stateCode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Segment Membership"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "stateCode",
+                                "displayName": "Status",
+                                "description": "Status of the Segment Membership",
+                                "relationship": "representsStateWith"
+                            },
+                            {
+                                "name": "statusCode",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "name": "statusCode_display",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true,
+                                                    "relationship": "hasA"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statusCode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the Segment Membership"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "statusCode",
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the Segment Membership",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "representsCorrelatedStatusWith"
+                                }
+                            }
+                        ],
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/SegmentMembership.cdm.json/SegmentMembership/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "sourceName": "SegmentMembership",
+            "displayName": "Segment Membership",
+            "description": "Members participating in a given segment."
+        }
+    ]
+}
