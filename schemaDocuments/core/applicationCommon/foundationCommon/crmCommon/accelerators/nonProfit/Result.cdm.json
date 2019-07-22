@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "A Result is a container that represents the changes in the context in which an organization operates Delivery Frameworks (i.e. Programs, Projects)."
+                                        "A Result is a container that represents the changes in the context in which an organization operates."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Result",
-            "description": "A Result is a container that represents the changes in the context in which an organization operates Delivery Frameworks (i.e. Programs, Projects).",
+            "description": "A Result is a container that represents the changes in the context in which an organization operates.",
             "sourceName": "msnfp_result",
             "hasAttributes": [
                 {
@@ -450,7 +450,7 @@
                                                     "value": {
                                                         "relationship": "hasA",
                                                         "dataType": "entityId",
-                                                        "name": "deliveryFramework",
+                                                        "name": "deliveryFrameworkId",
                                                         "appliedTraits": [
                                                             {
                                                                 "traitReference": "is.CDS.lookup",
@@ -763,6 +763,95 @@
                                 "isNullable": true,
                                 "displayName": "Start Date",
                                 "description": "Start Date of the result"
+                            },
+                            {
+                                "name": "msiati_nec_result_resulttype",
+                                "entity": {
+                                    "entityReference": "NonEmbeddedCodelist",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "NonEmbeddedCodelist/(resolvedAttributes)/nonEmbeddedCodelistId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "resultTypeId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "required"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Result Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "The type of result being recorded."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msiati_resulttypeid",
+                                                        "sourceOrdering": 43,
+                                                        "isNullable": true,
+                                                        "displayName": "Result Type",
+                                                        "description": "The type of result being recorded."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
                         ]
                     }

@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "This is a parent entity for Payment Method customizations that may be supported by an application.  Possible extensions could be to support credit cards, EFT, cryptocurrency, mobile payments, or rewards points."
+                                        "Payment Method is a placeholder entity for customizations that may be supported by an application."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Payment Method",
-            "description": "This is a parent entity for Payment Method customizations that may be supported by an application.  Possible extensions could be to support credit cards, EFT, cryptocurrency, mobile payments, or rewards points.",
+            "description": "Payment Method is a placeholder entity for customizations that may be supported by an application.",
             "sourceName": "msnfp_PaymentMethod",
             "hasAttributes": [
                 {
@@ -394,6 +394,95 @@
                                 "displayName": "Comments"
                             },
                             {
+                                "name": "contact",
+                                "entity": {
+                                    "entityReference": "Contact",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Contact/(resolvedAttributes)/contactId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "contactId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Contact"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier for Contact associated with Payment Method."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_contactid",
+                                                        "sourceOrdering": 35,
+                                                        "isNullable": true,
+                                                        "displayName": "Contact",
+                                                        "description": "Unique identifier for Contact associated with Payment Method."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "name": "isDefault",
@@ -425,7 +514,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_isdefault",
-                                "sourceOrdering": 35,
+                                "sourceOrdering": 36,
                                 "isNullable": true,
                                 "displayName": "Is Default"
                             },
@@ -496,7 +585,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_lastauthenticationstatus",
-                                "sourceOrdering": 37,
+                                "sourceOrdering": 38,
                                 "isNullable": true,
                                 "displayName": "Last Authentication Status"
                             },
@@ -532,7 +621,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_lastauthenticationstatusdate",
-                                "sourceOrdering": 39,
+                                "sourceOrdering": 40,
                                 "isNullable": true,
                                 "displayName": "Last Authentication Status Date"
                             },
@@ -569,7 +658,7 @@
                                 ],
                                 "sourceName": "msnfp_lastauthenticationstatusdetail",
                                 "maximumLength": 120,
-                                "sourceOrdering": 40,
+                                "sourceOrdering": 41,
                                 "isNullable": true,
                                 "displayName": "Last Authentication Status Detail"
                             },
@@ -606,9 +695,98 @@
                                 ],
                                 "sourceName": "msnfp_lastauthenticationstatustechnicaldetail",
                                 "maximumLength": 500,
-                                "sourceOrdering": 41,
+                                "sourceOrdering": 42,
                                 "isNullable": true,
                                 "displayName": "Last Authentication Status Technical Detail"
+                            },
+                            {
+                                "name": "paymentScheduleId",
+                                "entity": {
+                                    "entityReference": "PaymentSchedule",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "PaymentSchedule/(resolvedAttributes)/paymentScheduleId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "paymentScheduleId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Payment Schedule"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier for Payment Schedule associated with Payment Method."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_paymentscheduleid",
+                                                        "sourceOrdering": 43,
+                                                        "isNullable": true,
+                                                        "displayName": "Payment Schedule",
+                                                        "description": "Unique identifier for Payment Schedule associated with Payment Method."
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
                             },
                             {
                                 "name": "msnfp_pmtMethod_account",
@@ -688,10 +866,99 @@
                                                             }
                                                         ],
                                                         "sourceName": "msnfp_payorid",
-                                                        "sourceOrdering": 42,
+                                                        "sourceOrdering": 44,
                                                         "isNullable": true,
                                                         "displayName": "Payor Account",
                                                         "description": "Payor Account"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "transactionId",
+                                "entity": {
+                                    "entityReference": "Transaction",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Transaction/(resolvedAttributes)/transactionId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "transactionId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Transaction"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier for Transaction associated with Payment Method."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_transactionid",
+                                                        "sourceOrdering": 45,
+                                                        "isNullable": true,
+                                                        "displayName": "Transaction",
+                                                        "description": "Unique identifier for Transaction associated with Payment Method."
                                                     }
                                                 }
                                             ]
@@ -727,7 +994,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
-                                                    "explanation": "This attribute 'msnfpType_display' is added to the 'PaymentMethod' entity to provide the localized display text for the value of the listLookup attribute 'msnfpType'",
+                                                    "explanation": "This attribute 'type_display' is added to the 'PaymentMethod' entity to provide the localized display text for the value of the listLookup attribute 'type'",
                                                     "relationship": "hasA",
                                                     "dataType": "localizedDisplayText",
                                                     "name": "type_display",
@@ -766,7 +1033,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_type",
-                                "sourceOrdering": 43,
+                                "sourceOrdering": 46,
                                 "isNullable": true,
                                 "displayName": "Type"
                             }

@@ -9328,6 +9328,42 @@ class CorpusImpl extends FolderImpl {
     get profiler() {
         return p;
     }
+
+    // Generates warnings into the status report.
+    generateWarnings() {
+        let directives = new TraitDirectiveSet(new Set(["referenceOnly", "normalized"]));
+        let resOpt = { wrtDoc: undefined, directives: directives, relationshipDepth: 0 };
+        let l = this.allDocuments.length;
+        for (let i = 0; i < l; i++) {
+            let fd = this.allDocuments[i];
+            this.generateWarningsForSingleDoc(fd["1"], resOpt);
+        }
+    }
+    // Generates the warnings for a single document.
+    generateWarningsForSingleDoc(doc, resOpt) {
+        if (doc.getDefinitions() == null) {
+            return;
+        }
+        let checkPrimaryKeyAttributes = this.checkPrimaryKeyAttributes;
+        let ctx = this.ctx;
+        resOpt.wrtDoc = doc;
+        doc.getDefinitions().forEach(function (element) {
+            if (element instanceof EntityImpl && element.hasAttributes !== undefined) {
+                var resolvedEntity = element.createResolvedEntity(resOpt, element.entityName + "_");
+                // TODO: Add additional checks here.
+                checkPrimaryKeyAttributes(resolvedEntity, resOpt, ctx);
+            }
+        });
+        resOpt.wrtDoc = null;
+    }
+
+    // Checks whether a resolved entity has an "is.identifiedBy" trait.
+    checkPrimaryKeyAttributes(resolvedEntity, resOpt, ctx) {
+        if (resolvedEntity.getResolvedTraits(resOpt).find(resOpt, "is.identifiedBy") == null) {
+            ctx.statusRpt(cdmStatusLevel.warning, "There is a primary key missing for the entity " + resolvedEntity.getName() + ".", null);
+        }
+    }
+
     resolveReferencesAndValidate(stage, stageThrough, resOpt) {
         //let bodyCode = () =>
         {
@@ -9412,6 +9448,7 @@ class CorpusImpl extends FolderImpl {
                         this.declareObjectDefinitions("");
                         ctx.currentDoc = undefined;
                     }
+                    
                     if (errors > 0) {
                         resolve(cdmValidationStep.error);
                     }
@@ -9515,7 +9552,7 @@ class CorpusImpl extends FolderImpl {
                         }, null);
                         ctx.currentDoc = undefined;
                     }
-                    ;
+
                     if (errors > 0)
                         resolve(cdmValidationStep.error);
                     else {
@@ -9526,6 +9563,7 @@ class CorpusImpl extends FolderImpl {
                         else
                             resolve(cdmValidationStep.traits);
                     }
+
                     return;
                 }
                 else if (stage == cdmValidationStep.traits) {

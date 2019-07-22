@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "Historical and/or current information about where a contact works, volunteers or serves in some capacity at an organization.  For nonprofits, tracking employer information is critical for a few reasons: it is important to understand if the employee is part of a eligible matching gift program, to have visibility into an employee's \"network\" and to visualize the degrees of separation between an employee and other prospective donors that the organization wants to solicit, and more."
+                                        "Employment History represents historical and/or current information about where a contact works, volunteers or serves in some capacity at an organization."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Employment History",
-            "description": "Historical and/or current information about where a contact works, volunteers or serves in some capacity at an organization.  For nonprofits, tracking employer information is critical for a few reasons: it is important to understand if the employee is part of a eligible matching gift program, to have visibility into an employee's \"network\" and to visualize the degrees of separation between an employee and other prospective donors that the organization wants to solicit, and more.",
+            "description": "Employment History represents historical and/or current information about where a contact works, volunteers or serves in some capacity at an organization.",
             "sourceName": "msnfp_EmploymentHistory",
             "hasAttributes": [
                 {
@@ -357,6 +357,78 @@
                                 "displayName": "Name"
                             },
                             {
+                                "name": "msnfp_contact_employmenthistory_ContactId",
+                                "entity": {
+                                    "entityReference": "Contact",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Contact/(resolvedAttributes)/contactId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "relationship": {
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "relationship": "hasA",
+                                                        "dataType": "entityId",
+                                                        "name": "contactId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Contact"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "sourceName": "msnfp_contactid",
+                                                        "sourceOrdering": 34,
+                                                        "isNullable": true,
+                                                        "displayName": "Contact"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },                            
+                            {
                                 "relationship": "hasA",
                                 "dataType": "boolean",
                                 "name": "currentEmployment",
@@ -404,7 +476,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_currentemployment",
-                                "sourceOrdering": 34,
+                                "sourceOrdering": 35,
                                 "isNullable": true,
                                 "displayName": "Current Employment",
                                 "description": "Is this record a presumed current position?"
@@ -547,7 +619,7 @@
                                 ],
                                 "sourceName": "msnfp_employername",
                                 "maximumLength": 255,
-                                "sourceOrdering": 37,
+                                "sourceOrdering": 38,
                                 "isNullable": true,
                                 "displayName": "Employer Name",
                                 "description": "Employer Name"
@@ -600,7 +672,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_employmentenddate",
-                                "sourceOrdering": 38,
+                                "sourceOrdering": 39,
                                 "isNullable": true,
                                 "displayName": "Employment End Date",
                                 "description": "End Date of work."
@@ -653,7 +725,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_employmentstartdate",
-                                "sourceOrdering": 39,
+                                "sourceOrdering": 40,
                                 "isNullable": true,
                                 "displayName": "Employment Start Date",
                                 "description": "Start Date of work."
@@ -753,7 +825,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_industry",
-                                "sourceOrdering": 40,
+                                "sourceOrdering": 41,
                                 "isNullable": true,
                                 "displayName": "Industry",
                                 "description": "Type of Industry that the employee has worked for."
@@ -859,7 +931,7 @@
                                     }
                                 ],
                                 "sourceName": "msnfp_occupation",
-                                "sourceOrdering": 42,
+                                "sourceOrdering": 43,
                                 "isNullable": true,
                                 "displayName": "Occupation",
                                 "description": "Occupation of the employee."
@@ -913,7 +985,7 @@
                                 ],
                                 "sourceName": "msnfp_title",
                                 "maximumLength": 255,
-                                "sourceOrdering": 44,
+                                "sourceOrdering": 45,
                                 "isNullable": true,
                                 "displayName": "Title",
                                 "description": "Title of the Job or position of the employee."
