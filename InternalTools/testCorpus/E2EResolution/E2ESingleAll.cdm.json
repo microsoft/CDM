@@ -1,0 +1,148 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "AllRelsBases.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "E2ESingleAll",
+            "extendsEntity": "CdmObject",
+            "hasAttributes": [
+                {
+                    "name": "ARID",
+                    "relationship": "identifiedBy",
+                    "dataType": "integer"
+                },
+                {
+                    "name": "AR7",
+                    "dataType": "string"
+                },
+                {
+                    "name": "AR8",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SingleAllFromOneEnt",
+                    "relationship": {
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "does.imposeDirectives",
+                                "arguments": [
+                                    "none"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.disambiguateNames",
+                                "arguments": [
+                                    "SingleAllFromOneEnt_{n}{o}"
+                                ]
+                            },
+                            {
+                                "traitReference": "does.explainArray",
+                                "arguments": [
+                                    {
+                                        "name": "isArray",
+                                        "value": "false"
+                                    },
+                                    {
+                                        "name": "maximumExpansion",
+                                        "value": "3"
+                                    },
+                                    {
+                                        "name": "storeCountInAttribute",
+                                        "value": {
+                                            "name": "count",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "traitReference": "does.selectAttributes",
+                                "arguments": [
+                                    "all",
+                                    {
+                                        "name": "storeSelectionInAttribute",
+                                        "value": {
+                                            "name" : "class",
+                                            "dataType" : "entityName"
+                                        
+                                        }
+                                    }                                    
+                                ]
+                            },
+                            {
+                                "traitReference": "does.referenceEntityVia",
+                                "arguments": [
+                                    {
+                                        "name": "foreignKeyAttribute",
+                                        "value": {
+                                            "name": "FK",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "allPoly",
+                            "extendsEntity": "PolyBase",
+                            "hasAttributes": [
+                                {
+                                    "name": "polyDerivedAOption",
+                                    "entity": {
+                                        "entityReference": "PolyDerivedA",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "PolyDerivedA/(resolvedAttributes)/polyId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "polyDerivedBOption",
+                                    "entity": {
+                                        "entityReference": "PolyDerivedB",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "PolyDerivedB/(resolvedAttributes)/polyId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "polyDerivedCOption",
+                                    "entity": {
+                                        "entityReference": "PolyDerivedC",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "PolyDerivedC/(resolvedAttributes)/polyId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

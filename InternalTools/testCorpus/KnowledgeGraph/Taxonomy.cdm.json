@@ -1,0 +1,127 @@
+{
+  "$schema": "../../schema.cdm.json",
+  "schemaVersion": "0.7.0",
+  "imports": [
+    {
+      "uri": "/foundations.cdm.json"
+    },
+    {
+      "uri": "LocalizedName.cdm.json"
+    },
+    {
+      "uri": "LinguisticAlternate.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Taxonomy",
+      "extendsEntity": "CdmObject",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "a taxonomy item."
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "taxonomyId",
+          "relationship": "identifiedBy",
+          "dataType": "integer"
+        },
+        {
+          "name": "code",
+          "dataType": "string",
+          "description": "the code used to identify the taxonomy member."
+        },
+        {
+          "name": "description",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "description_{n}{o}"
+                ]
+              },
+              {
+                "traitReference": "does.explainArray",
+                "arguments": [
+                  {
+                    "name": "isArray",
+                    "value": "true"
+                  },
+                  {
+                    "name": "maximumExpansion",
+                    "value": "4"
+                  }
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "LocalizedName",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "LocalizedName/(resolvedAttributes)/nameId"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "alternate",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "alternate_{n}{o}"
+                ]
+              },
+              {
+                "traitReference": "does.explainArray",
+                "arguments": [
+                  {
+                    "name": "isArray",
+                    "value": "true"
+                  },
+                  {
+                    "name": "maximumExpansion",
+                    "value": "4"
+                  }
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "LinguisticAlternate",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "LinguisticAlternate/(resolvedAttributes)/alternateId"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

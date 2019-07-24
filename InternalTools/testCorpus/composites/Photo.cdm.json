@@ -1,0 +1,80 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "attributeGroupName": "vector3D",
+            "members": [
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "position.x"
+                },
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "position.y"
+                },
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "position.z"
+                }
+            ]
+        },
+        {
+            "attributeGroupName": "quaternion",
+            "members": [
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "q.x"
+                },
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "q.y"
+                },
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "q.z"
+                },
+                {
+                    "relationship":"hasA",
+                    "dataType":"double",
+                    "name": "q.w"
+                }
+            ]
+        },
+        {
+            "attributeGroupName": "sensorLocation",
+            "members": [
+                "vector3D",
+                "quaternion"
+            ]
+        },
+        {
+            "entityName": "Photo",
+            "extendsEntity": "CdmObject",
+            "hasAttributes": [
+                {
+                    "name": "photoId",
+                    "relationship": "identifiedBy",
+                    "dataType": "entityId"
+                },
+                "sensorLocation",
+                {
+                    "name": "content",
+                    "relationship": "hasA",
+                    "dataType": "image"
+                }
+            ]
+        }
+    ]
+}

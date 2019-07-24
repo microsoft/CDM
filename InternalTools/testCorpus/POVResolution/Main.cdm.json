@@ -1,0 +1,128 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        },
+        {
+            "uri": "/POVResolution/Linked.cdm.json"
+        },
+        {
+            "uri": "/POVResolution/Linked2.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "sampleEntityTrait",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "P1",
+                    "dataType": "string",
+                    "defaultValue": "P1Def"
+                },
+                {
+                    "name": "P2",
+                    "dataType": "entity"
+                }
+            ]
+        },
+        {
+            "entityName": "Main",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "sampleEntityTrait",
+                    "arguments": [
+                        {
+                            "name": "P1",
+                            "value": "P1FromBase"
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "name": "A1",
+                    "relationship": "hasA",
+                    "dataType": "string"
+                },
+                {
+                    "name": "A2",
+                    "relationship": "orderedBy",
+                    "dataType": "string"
+                },
+                {
+                    "name": "useLinked",
+                    "relationship": {
+                        "relationshipReference": "referencesA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "arguments": [
+                                    {
+                                        "name": "addedAttribute",
+                                        "value": {
+                                            "name": "main2linked",
+                                            "relationship": "hasA",
+                                            "dataType": "entityId"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": "Linked",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Linked/(resolvedAttributes)/linkedId"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "mainId",
+                    "relationship": "identifiedBy",
+                    "dataType": "entityId"
+                },
+                {
+                    "name": "useLinked2",
+                    "relationship": {
+                        "relationshipReference": "referencesA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
+                                "arguments": [
+                                    {
+                                        "name": "addedAttribute",
+                                        "value": {
+                                            "name": "main2linked2",
+                                            "relationship": "hasA",
+                                            "dataType": "entityId"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": "Linked2",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Linked2/(resolvedAttributes)/linkedId"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
