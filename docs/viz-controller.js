@@ -217,6 +217,9 @@ function messageHandlePingMainControl(messageType, data1, data2) {
                 controller.mainContainer.messageHandle("navigateEntitySelect", controller.multiSelectEntityList, singleSelected);
             }
         }
+        else if (messageType == "additionalValidationRequest") {
+            controller.corpus.generateWarnings();
+        }
         else {
             controller.mainContainer.messageHandle(messageType, data1, data2);
         }
@@ -237,17 +240,11 @@ function messageHandlePingMainControl(messageType, data1, data2) {
         }
         if (messageType === "loadFail") {
             let waitPanel = document.getElementById("wait_pane");
-            let errorContent = "File load failed for file: '"+data1.docName+"'. This might be caused by Ad Blockers. Please disable AdBlock on this site and reload the page.";
+            let errorContent = "Loading failed for file: '"+data1.docName+"'. This might be caused by ad blocking software. Please disable the ad blockers on this site and reload the page.";
             waitPanel.children[0].textContent = errorContent;
             waitPanel.style.background = "#FF6464";
             waitPanel.style.color = "#ffffff";
             throw new Error(errorContent);
-            let entState = data1;
-            controller.loadFails++;
-            entState.rawContent = null;
-            entState.loadState = 2;
-            controller.pendingLoads.delete(entState.path + entState.docName);
-            controller.mainContainer.messageHandle("loadEntity", entState, data2);
         }
         else if (messageType === "loadModeResult") {
             if (controller.pendingLoads.size == 0) {
