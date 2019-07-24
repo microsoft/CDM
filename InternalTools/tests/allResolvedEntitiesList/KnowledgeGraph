@@ -1,0 +1,178 @@
+/KnowledgeGraph/
+ =====ENTITY=====
+ LinguisticAlternate
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:alternateId
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"A list of alternate meanings with associated sources"},{"languageTag":"de","displayText":"the Germnan translation of 'A list of alternate meanings with associated sources'"}]
+attributes:
+  [alternateId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:alternateId
+  [alternateText]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.linguistic.synonym]
+  [source]
+  -[does.haveDefault]
+  ---default:[{"languageTag":"en","displayText":"colloquial"},{"languageTag":"en","displayText":"formal"},{"languageTag":"en","displayText":"popular"}]
+  -[is.constrainedList]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [taxonomyId]
+  -[does.disambiguateNames]
+  ---renameFormat:{n}{o}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.imposeDirectives]
+  ---directives:referenceOnly
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"integer","name":"taxonomyId","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.integer]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/KnowledgeGraph/Taxonomy.cdm.json/Taxonomy","attributeReference":"taxonomyId"}]
+relationships:
+  (rer[0])(referencing) ent=LinguisticAlternate
+  (rer[0])(referencing)  atts:[taxonomyId]
+  (rer[0])(referencing)  atts:-[does.disambiguateNames]
+  (rer[0])(referencing)  atts:---renameFormat:{n}{o}
+  (rer[0])(referencing)  atts:---ordinal:
+  (rer[0])(referencing)  atts:-[does.explainArray]
+  (rer[0])(referencing)  atts:---isArray:false
+  (rer[0])(referencing)  atts:---maximumExpansion:5
+  (rer[0])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[0])(referencing)  atts:---startingIndex:0
+  (rer[0])(referencing)  atts:-[does.imposeDirectives]
+  (rer[0])(referencing)  atts:---directives:referenceOnly
+  (rer[0])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[0])(referencing)  atts:---foreignKeyAttribute:{"dataType":"integer","name":"taxonomyId","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[0])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[0])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[0])(referencing)  atts:-[does.selectAttributes]
+  (rer[0])(referencing)  atts:---selects:all
+  (rer[0])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[0])(referencing)  atts:-[is.dataFormat.integer]
+  (rer[0])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[0])(referencing)  atts:---entityReferences:[{"entityReference":"/KnowledgeGraph/Taxonomy.cdm.json/Taxonomy","attributeReference":"taxonomyId"}]
+  (rer[0])(referenced[0]) ent=Taxonomy
+  (rer[0])(referenced[0])  atts:[taxonomyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:taxonomyId
+ =====ENTITY=====
+ LocalizedName
+ ================
+ traits:
+  [is.identifiedBy]
+  --attribute:languageTag
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"localized names for taxonomy objects"}]
+attributes:
+  [description]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.reference.description]
+  [displayText]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.reference.displayText]
+  [languageTag]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:languageTag
+  -[means.reference.language.tag]
+  [nameId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:nameId
+  [taxonomyId]
+  -[does.disambiguateNames]
+  ---renameFormat:{n}{o}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.imposeDirectives]
+  ---directives:referenceOnly
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"integer","name":"taxonomyId","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.integer]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/KnowledgeGraph/Taxonomy.cdm.json/Taxonomy","attributeReference":"taxonomyId"}]
+relationships:
+  (rer[0])(referencing) ent=LocalizedName
+  (rer[0])(referencing)  atts:[taxonomyId]
+  (rer[0])(referencing)  atts:-[does.disambiguateNames]
+  (rer[0])(referencing)  atts:---renameFormat:{n}{o}
+  (rer[0])(referencing)  atts:---ordinal:
+  (rer[0])(referencing)  atts:-[does.explainArray]
+  (rer[0])(referencing)  atts:---isArray:false
+  (rer[0])(referencing)  atts:---maximumExpansion:5
+  (rer[0])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[0])(referencing)  atts:---startingIndex:0
+  (rer[0])(referencing)  atts:-[does.imposeDirectives]
+  (rer[0])(referencing)  atts:---directives:referenceOnly
+  (rer[0])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[0])(referencing)  atts:---foreignKeyAttribute:{"dataType":"integer","name":"taxonomyId","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[0])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[0])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[0])(referencing)  atts:-[does.selectAttributes]
+  (rer[0])(referencing)  atts:---selects:all
+  (rer[0])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[0])(referencing)  atts:-[is.dataFormat.integer]
+  (rer[0])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[0])(referencing)  atts:---entityReferences:[{"entityReference":"/KnowledgeGraph/Taxonomy.cdm.json/Taxonomy","attributeReference":"taxonomyId"}]
+  (rer[0])(referenced[0]) ent=Taxonomy
+  (rer[0])(referenced[0])  atts:[taxonomyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:taxonomyId
+ =====ENTITY=====
+ Taxonomy
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:taxonomyId
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"a taxonomy item."}]
+attributes:
+  [code]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"the code used to identify the taxonomy member."}]
+  [taxonomyId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:taxonomyId
+relationships:

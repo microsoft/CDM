@@ -1,0 +1,539 @@
+/E2EResolution/
+ =====ENTITY=====
+ PolyBase
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:polyId
+attributes:
+  [PB1]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [polyId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:polyId
+relationships:
+ =====ENTITY=====
+ PolyDerivedA
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:polyId
+attributes:
+  [PB1]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDA2]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDA3]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [polyId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:polyId
+relationships:
+ =====ENTITY=====
+ PolyDerivedB
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:polyId
+  [NoticeThis]
+attributes:
+  [PB1]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDB4]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDS5]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [polyId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:polyId
+relationships:
+ =====ENTITY=====
+ PolyDerivedC
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:polyId
+attributes:
+  [PB1]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDC6]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [PDS5]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [polyId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:polyId
+relationships:
+ =====ENTITY=====
+ BusinessDocument
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.classified]
+  --impact:MBI
+  [is.identifiedBy]
+  --attribute:documentId
+attributes:
+  [documentId]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:documentId
+  [title]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+ =====ENTITY=====
+ Communication
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:commId
+attributes:
+  [commId]
+  -[does.addSupportingAttribute]
+  ---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  ---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:commId
+  [from]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [middleChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [peekChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [to]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+ =====ENTITY=====
+ E2EArrayAll
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:ARID
+attributes:
+  [AR7]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [AR8]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [ARID]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:ARID
+relationships:
+  (rer[0])(referencing) ent=E2EArrayAll
+  (rer[0])(referenced[0]) ent=PolyDerivedA
+  (rer[0])(referenced[0])  atts:[polyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:polyId
+  (rer[0])(referenced[1]) ent=PolyDerivedB
+  (rer[0])(referenced[1])  atts:[polyId]
+  (rer[0])(referenced[1])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[1])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[1])  atts:---attribute:polyId
+  (rer[0])(referenced[2]) ent=PolyDerivedC
+  (rer[0])(referenced[2])  atts:[polyId]
+  (rer[0])(referenced[2])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[2])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[2])  atts:---attribute:polyId
+ =====ENTITY=====
+ E2EArrayOne
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:ARID
+attributes:
+  [AR7]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [AR8]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [ARID]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:ARID
+relationships:
+  (rer[0])(referencing) ent=E2EArrayOne
+  (rer[0])(referenced[0]) ent=PolyDerivedA
+  (rer[0])(referenced[0])  atts:[polyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:polyId
+  (rer[0])(referenced[1]) ent=PolyDerivedB
+  (rer[0])(referenced[1])  atts:[polyId]
+  (rer[0])(referenced[1])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[1])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[1])  atts:---attribute:polyId
+  (rer[0])(referenced[2]) ent=PolyDerivedC
+  (rer[0])(referenced[2])  atts:[polyId]
+  (rer[0])(referenced[2])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[2])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[2])  atts:---attribute:polyId
+ =====ENTITY=====
+ E2ESingleAll
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:ARID
+attributes:
+  [AR7]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [AR8]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [ARID]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:ARID
+relationships:
+  (rer[0])(referencing) ent=E2ESingleAll
+  (rer[0])(referenced[0]) ent=PolyDerivedA
+  (rer[0])(referenced[0])  atts:[polyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:polyId
+  (rer[0])(referenced[1]) ent=PolyDerivedB
+  (rer[0])(referenced[1])  atts:[polyId]
+  (rer[0])(referenced[1])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[1])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[1])  atts:---attribute:polyId
+  (rer[0])(referenced[2]) ent=PolyDerivedC
+  (rer[0])(referenced[2])  atts:[polyId]
+  (rer[0])(referenced[2])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[2])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[2])  atts:---attribute:polyId
+ =====ENTITY=====
+ E2ESingleOne
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:ARID
+attributes:
+  [AR7]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [AR8]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [ARID]
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:ARID
+relationships:
+  (rer[0])(referencing) ent=E2ESingleOne
+  (rer[0])(referenced[0]) ent=PolyDerivedA
+  (rer[0])(referenced[0])  atts:[polyId]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:polyId
+  (rer[0])(referenced[1]) ent=PolyDerivedB
+  (rer[0])(referenced[1])  atts:[polyId]
+  (rer[0])(referenced[1])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[1])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[1])  atts:---attribute:polyId
+  (rer[0])(referenced[2]) ent=PolyDerivedC
+  (rer[0])(referenced[2])  atts:[polyId]
+  (rer[0])(referenced[2])  atts:-[is.dataFormat.integer]
+  (rer[0])(referenced[2])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[2])  atts:---attribute:polyId
+ =====ENTITY=====
+ Email
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:commId
+attributes:
+  [commId]
+  -[does.addSupportingAttribute]
+  ---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  ---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:commId
+  [from]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [fromAddress]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.email]
+  [middleChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [peekChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [to]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [toAddress]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.email]
+relationships:
+ =====ENTITY=====
+ EmploymentOffer
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.classified]
+  --impact:HBI
+  [is.identifiedBy]
+  --attribute:documentId
+attributes:
+  [documentId]
+  -[is.classified]
+  ---impact:HBI
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:documentId
+  [jobTitle]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [regardingPerson]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.email]
+  [title]
+  -[is.classified]
+  ---impact:HBI
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+  (rer[0])(referencing) ent=EmploymentOffer
+  (rer[0])(referenced[0]) ent=Email
+  (rer[1])(referencing) ent=EmploymentOffer
+  (rer[1])(referenced[0]) ent=Email
+  (rer[1])(referenced[0])  atts:[commId]
+  (rer[1])(referenced[0])  atts:-[does.addSupportingAttribute]
+  (rer[1])(referenced[0])  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  (rer[1])(referenced[0])  atts:---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  (rer[1])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[1])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[1])(referenced[0])  atts:---attribute:commId
+  (rer[2])(referencing) ent=EmploymentOffer
+  (rer[2])(referenced[0]) ent=Email
+  (rer[2])(referenced[1]) ent=Letter
+  (rer[2])(referenced[2]) ent=Meeting
+  (rer[3])(referencing) ent=EmploymentOffer
+  (rer[3])(referenced[0]) ent=Email
+  (rer[3])(referenced[0])  atts:[commId]
+  (rer[3])(referenced[0])  atts:-[does.addSupportingAttribute]
+  (rer[3])(referenced[0])  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  (rer[3])(referenced[0])  atts:---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  (rer[3])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[3])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[3])(referenced[0])  atts:---attribute:commId
+  (rer[3])(referenced[1]) ent=Letter
+  (rer[3])(referenced[1])  atts:[commId]
+  (rer[3])(referenced[1])  atts:-[does.addSupportingAttribute]
+  (rer[3])(referenced[1])  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  (rer[3])(referenced[1])  atts:---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  (rer[3])(referenced[1])  atts:-[is.dataFormat.integer]
+  (rer[3])(referenced[1])  atts:-[is.identifiedBy]
+  (rer[3])(referenced[1])  atts:---attribute:commId
+  (rer[3])(referenced[2]) ent=Meeting
+  (rer[3])(referenced[2])  atts:[commId]
+  (rer[3])(referenced[2])  atts:-[does.addSupportingAttribute]
+  (rer[3])(referenced[2])  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  (rer[3])(referenced[2])  atts:---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  (rer[3])(referenced[2])  atts:-[is.dataFormat.integer]
+  (rer[3])(referenced[2])  atts:-[is.identifiedBy]
+  (rer[3])(referenced[2])  atts:---attribute:commId
+ =====ENTITY=====
+ HumanResources
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.classified]
+  --impact:HBI
+  [is.identifiedBy]
+  --attribute:documentId
+attributes:
+  [documentId]
+  -[is.classified]
+  ---impact:HBI
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:documentId
+  [regardingPerson]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.email]
+  [title]
+  -[is.classified]
+  ---impact:HBI
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+  (rer[0])(referencing) ent=HumanResources
+  (rer[0])(referenced[0]) ent=Email
+  (rer[1])(referencing) ent=HumanResources
+  (rer[1])(referenced[0]) ent=Email
+  (rer[1])(referenced[0])  atts:[commId]
+  (rer[1])(referenced[0])  atts:-[does.addSupportingAttribute]
+  (rer[1])(referenced[0])  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  (rer[1])(referenced[0])  atts:---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  (rer[1])(referenced[0])  atts:-[is.dataFormat.integer]
+  (rer[1])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[1])(referenced[0])  atts:---attribute:commId
+ =====ENTITY=====
+ Letter
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:commId
+attributes:
+  [commId]
+  -[does.addSupportingAttribute]
+  ---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  ---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:commId
+  [from]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [mailedTo]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [middleChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [peekChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [to]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [when]
+  -[is.dataFormat.date]
+  -[means.measurement.date]
+relationships:
+ =====ENTITY=====
+ Meeting
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:commId
+attributes:
+  [commId]
+  -[does.addSupportingAttribute]
+  ---addedAttribute:{"relationship":"hasA","dataType":"entityName","name":"communicationType","isReadOnly":true}
+  ---appliedTrait:{"traitReference":"is.addedInSupportOf"}
+  -[is.dataFormat.integer]
+  -[is.identifiedBy]
+  ---attribute:commId
+  [from]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [location]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [middleChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [peekChannel]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [to]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  [when]
+  -[is.dataFormat.date]
+  -[means.measurement.date]
+relationships:

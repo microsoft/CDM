@@ -1,0 +1,208 @@
+/composites/
+ =====ENTITY=====
+ Address
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.locatable.global]
+attributes:
+  [closeCity]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.location.address.city]
+  [street1]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.location.address.street]
+  [zip]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.location.address.postalCode]
+relationships:
+ =====ENTITY=====
+ Customers
+ ================
+ traits:
+  [does.liveAt]
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:custId
+  [is.named]
+  --attribute:custFullName
+attributes:
+  [custFullName]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.named]
+  ---attribute:custFullName
+  -[means.identity.person.fullName]
+  [custId]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:custId
+  [mainPhotoId]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/composites/Photo.cdm.json/Photo","attributeReference":"photoId"}]
+  -[means.identity.entityId]
+  -[referencesA/exhibitsTraits/does.referenceEntity]
+  ---addedAttribute:{"relationship":"hasA","dataType":"entityId","name":"mainPhotoId","appliedTraits":["is.linkedEntity.identifier"]}
+  ---appliedTrait:
+relationships:
+  (rer[0])(referencing) ent=Customers
+  (rer[0])(referenced[0]) ent=Address
+  (rer[1])(referencing) ent=Customers
+  (rer[1])(referenced[0]) ent=Address
+  (rer[2])(referencing) ent=Customers
+  (rer[2])(referencing)  atts:[mainPhotoId]
+  (rer[2])(referencing)  atts:-[is.dataFormat.array]
+  (rer[2])(referencing)  atts:-[is.dataFormat.big]
+  (rer[2])(referencing)  atts:-[is.dataFormat.character]
+  (rer[2])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[2])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[2])(referencing)  atts:---entityReferences:[{"entityReference":"/composites/Photo.cdm.json/Photo","attributeReference":"photoId"}]
+  (rer[2])(referencing)  atts:-[means.identity.entityId]
+  (rer[2])(referencing)  atts:-[referencesA/exhibitsTraits/does.referenceEntity]
+  (rer[2])(referencing)  atts:---addedAttribute:{"relationship":"hasA","dataType":"entityId","name":"mainPhotoId","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[2])(referencing)  atts:---appliedTrait:
+  (rer[2])(referenced[0]) ent=Photo
+  (rer[2])(referenced[0])  atts:[photoId]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.array]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.big]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.character]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.guid]
+  (rer[2])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[2])(referenced[0])  atts:---attribute:photoId
+  (rer[2])(referenced[0])  atts:-[means.identity.entityId]
+ =====ENTITY=====
+ Photo
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:photoId
+attributes:
+  [content]
+  -[is.dataFormat.array]
+  -[is.dataFormat.byte]
+  -[means.content.binary.image]
+  [photoId]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.identifiedBy]
+  ---attribute:photoId
+  -[means.identity.entityId]
+  [position.x]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [position.y]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [position.z]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [q.w]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [q.x]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [q.y]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+  [q.z]
+  -[is.dataFormat.big]
+  -[is.dataFormat.floatingPoint]
+relationships:
+ =====ENTITY=====
+ address
+ ================
+ traits:
+attributes:
+  [cid]
+  -[is.format.integer]
+  [cityName]
+  -[is.constrained.length]
+  ---maxLength:255
+  -[is.format.string]
+  -[means.personName]
+  [street]
+  -[is.format.string]
+relationships:
+ =====ENTITY=====
+ simpleCust
+ ================
+ traits:
+attributes:
+  [foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:{n}{o}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/composites/simpleCust.cdm.json/address","attributeReference":"cid"}]
+  -[means.identity.entityId]
+  [fullName]
+  -[is.constrained.length]
+  ---maxLength:130
+  -[is.format.string]
+  -[means.personName]
+  [id]
+  -[is.format.integer]
+relationships:
+  (rer[0])(referencing) ent=simpleCust
+  (rer[0])(referencing)  atts:[foreignKey]
+  (rer[0])(referencing)  atts:-[does.disambiguateNames]
+  (rer[0])(referencing)  atts:---renameFormat:{n}{o}
+  (rer[0])(referencing)  atts:---ordinal:
+  (rer[0])(referencing)  atts:-[does.explainArray]
+  (rer[0])(referencing)  atts:---isArray:false
+  (rer[0])(referencing)  atts:---maximumExpansion:5
+  (rer[0])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[0])(referencing)  atts:---startingIndex:0
+  (rer[0])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[0])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[0])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[0])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[0])(referencing)  atts:-[does.selectAttributes]
+  (rer[0])(referencing)  atts:---selects:all
+  (rer[0])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[0])(referencing)  atts:-[is.dataFormat.array]
+  (rer[0])(referencing)  atts:-[is.dataFormat.big]
+  (rer[0])(referencing)  atts:-[is.dataFormat.character]
+  (rer[0])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[0])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[0])(referencing)  atts:---entityReferences:[{"entityReference":"/composites/simpleCust.cdm.json/address","attributeReference":"cid"}]
+  (rer[0])(referencing)  atts:-[means.identity.entityId]
+  (rer[0])(referenced[0]) ent=address
+  (rer[0])(referenced[0])  atts:[cid]
+  (rer[0])(referenced[0])  atts:-[is.format.integer]

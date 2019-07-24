@@ -1,0 +1,94 @@
+{
+    "$schema": "../schema.cdm.json",
+    "schemaVersion": "0.6.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "means.location.address.street",
+            "extendsTrait": "means.location.address",
+            "explanation": "where on the street"
+        },
+        {
+            "dataTypeName": "street",
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "means.location.address.street"
+            ]
+        },
+        {
+            "traitName": "means.location.address.city",
+            "extendsTrait": "means.location.address",
+            "explanation": "what city"
+        },
+        {
+            "dataTypeName": "city",
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "means.location.address.city"
+            ]
+        },
+        {
+            "traitName": "means.location.address.postalCode",
+            "extendsTrait": "means.location.address",
+            "explanation": "a code"
+        },
+        {
+            "dataTypeName": "postalCode",
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "means.location.address.postalCode"
+            ]
+        },
+        {
+            "traitName": "is.locatable",
+            "extendsTrait": "is",
+            "elevated": true
+        },
+        {
+            "traitName": "is.locatable.global",
+            "extendsTrait": "is.locatable",
+            "explanation": "a code"
+        },
+        {
+            "traitName": "does.liveAt",
+            "extendsTrait": "does",
+            "elevated": true
+        },
+        {
+            "relationshipName": "livesAt",
+            "extendsRelationship": "hasA",
+            "exhibitsTraits": [
+                "does.liveAt"
+            ],
+            "explanation": "a code"
+        },
+        {
+            "entityName": "Address",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                "is.locatable.global"
+            ],
+            "hasAttributes": [
+                {
+                    "relationship": "hasA",
+                    "dataType": "street",
+                    "name": "street1"
+                },
+                {
+                    "relationship": "hasA",
+                    "dataType": "city",
+                    "name": "closeCity"
+                },
+                {
+                    "name": "zip",
+                    "dataType": "postalCode",
+                    "relationship": "hasA"
+                }
+            ]
+        }
+    ]
+}

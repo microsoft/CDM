@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>CDM Entity Navigator</title>
+    <link rel="Stylesheet" href="SchemaViz.css" type="text/css" />
+    <script>
+        window.onload = function () {
+
+            // check if ie
+            var sAgent = window.navigator.userAgent;
+            if (sAgent.indexOf("MSIE") > 0 || sAgent.indexOf("Trident") > 0) {
+                var classItem = document.getElementsByClassName("main_container")[0];
+                while (classItem.childNodes.length > 0)
+                    classItem.removeChild(classItem.lastChild);
+
+                classItem.textContent = "We're very sorry, this page uses some features not supported by your browser.";
+                return;
+            }
+
+            initController(document);
+            initDrag();
+        }
+
+        function onresizeMain() {
+            if (posPanes)
+                posPanes(window.innerWidth / 2);
+        }
+
+    </script>
+    <!-- Application Insights-->
+    <script type="text/javascript">
+        var appInsights = window.appInsights || function (a) {
+            function b(a) { c[a] = function () { var b = arguments; c.queue.push(function () { c[a].apply(c, b) }) } } var c = { config: a }, d = document, e = window; setTimeout(function () { var b = d.createElement("script"); b.src = a.url || "https://az416426.vo.msecnd.net/scripts/a/ai.0.js", d.getElementsByTagName("script")[0].parentNode.appendChild(b) }); try { c.cookie = d.cookie } catch (a) { } c.queue = []; for (var f = ["Event", "Exception", "Metric", "PageView", "Trace", "Dependency"]; f.length;)b("track" + f.pop()); if (b("setAuthenticatedUserContext"), b("clearAuthenticatedUserContext"), b("startTrackEvent"), b("stopTrackEvent"), b("startTrackPage"), b("stopTrackPage"), b("flush"), !a.disableExceptionTracking) { f = "onerror", b("_" + f); var g = e[f]; e[f] = function (a, b, d, e, h) { var i = g && g(a, b, d, e, h); return !0 !== i && c["_" + f](a, b, d, e, h), i } } return c
+        }({
+            instrumentationKey: "ddf73c40-b237-4745-bab2-516f10700ba3"
+        });
+
+        window.appInsights = appInsights, appInsights.queue && 0 === appInsights.queue.length && appInsights.trackPageView();
+    </script>
+</head>
+
+<body style="height:100%" onresize="onresizeMain()">
+    <script src="cdm-bundle.js"></script>
+    <script src="simpledrag.js"></script>
+    <script src="viz-controller.js"></script>
+    <script>
+
+        var navPaneMinWidth = 256;
+        var navPaneMinHeight = 64;
+        var buttonBarHeight = 34;
+        var colorKeyHeight = 56;
+        var listPaneWidth = 260;
+        var detailPaneMinWidth = 150;
+        var resizeBarWidth = 6;
+
+        var posPanes = function (mid) {
+
+            // positions the 6 fixed panes that make up this little app
+            var innerWidth = window.innerWidth - 0;
+            var innerHeight = window.innerHeight - 0;
+
+            if (innerHeight < navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight)
+                innerHeight = navPaneMinHeight + buttonBarHeight * 3 + colorKeyHeight;
+            if (innerWidth < navPaneMinWidth + listPaneWidth + detailPaneMinWidth)
+                innerWidth = navPaneMinWidth + listPaneWidth + detailPaneMinWidth;
+
+            let xStop0 = 0;
+            let xStop1 = mid - (resizeBarWidth / 2);
+            let xStop2 = xStop1 + resizeBarWidth;
+            let xStop3 = xStop2 + listPaneWidth;
+            let xStop4 = innerWidth;
+
+            let yStop0 = 0;
+            let yStop1 = yStop0 + buttonBarHeight;
+            let yStop2 = yStop1 + buttonBarHeight;
+            let yStop3 = yStop2 + buttonBarHeight;
+            let yStop5 = innerHeight;
+            let yStop4 = yStop5 - colorKeyHeight;
+
+            var setShape = function (pane, x1, y1, x2, y2, margin) {
+                pane.style.top = (y1 + margin) + "px";
+                pane.style.left = (x1 + margin) + "px";
+                pane.style.width = (x2 - x1 - margin * 2) + "px";
+                pane.style.height = (y2 - y1 - margin * 2) + "px";
+            }
+
+            setShape(controller.paneButtonHost, xStop0, yStop0, xStop1, yStop1, 0);
+            setShape(controller.paneNavHost, xStop0, yStop1, xStop1, yStop4, 0);
+            setShape(controller.paneColorKey, xStop0, yStop4, xStop1, yStop5, 0);
+            setShape(controller.paneResize, xStop1, yStop0, xStop2, yStop5, 0);
+            setShape(controller.paneDirectivesHost, xStop2, yStop0, xStop4, yStop1, 0);
+            setShape(controller.paneListTitle, xStop2, yStop1, xStop3, yStop2, 0);
+            setShape(controller.paneListHost, xStop2, yStop2, xStop3, yStop5, 0);
+            setShape(controller.paneTabHost, xStop3, yStop1, xStop4, yStop2, 0);
+            setShape(controller.paneDetailTool, xStop3, yStop2, xStop4, yStop3, 0);
+            setShape(controller.paneDetailHost, xStop3, yStop3, xStop4, yStop5, 0);
+
+        }
+
+
+        function initController() {
+
+            controller.document = document;
+            controller.mainContainer = document.getElementsByClassName("main_container")[0];
+            controller.navDataGhExpected = navDataGhExpected;
+            controller.appState = "navigateMode";
+            controller.navHost = document.getElementById("nav_pane");
+            controller.paneButtonHost = document.getElementById("button_host_pane");
+            controller.paneDetailTool = document.getElementById("detail_tool_pane");
+            controller.paneNavHost = document.getElementById("navigate_host_pane");
+            controller.paneColorKey = document.getElementById("color_key_pane");
+            controller.paneResize = document.getElementById("resize_pane");
+            controller.paneListHost = document.getElementById("list_host_pane");
+            controller.paneDirectivesHost = document.getElementById("directives_host_pane");
+            controller.paneDetailHost = document.getElementById("detail_host_pane");
+            controller.paneListTitle = document.getElementById("list_title_pane");
+            controller.paneTabHost = document.getElementById("tab_host_pane");
+            controller.paneWait = document.getElementById("wait_pane");
+            controller.listContainer = document.getElementsByClassName("list_container")[0];
+            controller.statusPane = document.getElementsByClassName("status_pane")[0];
+            controller.traitsPane = document.getElementsByClassName("traits_pane")[0];
+            controller.propertiesPane = document.getElementsByClassName("properties_pane")[0];
+            controller.definitionPane = document.getElementsByClassName("definition_pane")[0];
+            controller.resolvedPane = document.getElementsByClassName("resolved_pane")[0];
+            controller.backDefinitionButton = document.getElementById("back_definition_tool_button");
+            controller.backResolvedButton = document.getElementById("back_resolved_tool_button");
+            controller.checkboxUgly = document.getElementById("ugly_trait_checkbox");
+            controller.labelUgly = document.getElementById("ugly_trait_label");
+            controller.checkboxDirectiveNormalized = document.getElementById("normalized_checkbox");
+            controller.checkboxDirectiveRelational = document.getElementById("relational_checkbox");
+            controller.checkboxDirectiveStructured = document.getElementById("structured_checkbox");
+
+            controller.onclickFolderItem = onclickFolderItem;
+            controller.onclickDetailItem = onclickDetailItem;
+            controller.ondblclickDetailItem = ondblclickDetailItem;
+            controller.onclickListItem = onclickListItem;
+            controller.onclickResizeUp = onclickResizeUp;
+            controller.onclickResizeDown = onclickResizeDown;
+            document.onkeydown = onkeydownMain;
+
+            init();
+        }
+
+        function initDrag() {
+
+            controller.paneResize.sdrag(function (el, pageX, startX, pageY, startY, fix) {
+
+                var innerWidth = window.innerWidth;
+                var leftMin = navPaneMinWidth + resizeBarWidth / 2;
+                var rightMax = innerWidth - (listPaneWidth + detailPaneMinWidth + resizeBarWidth / 2);
+
+                fix.skipX = true;
+                fix.skipX = true;
+
+                if (pageX < leftMin) {
+                    fix.pageX = leftMin;
+                    pageX = leftMin;
+                } else if (pageX > rightMax) {
+                    pageX = rightMax;
+                    fix.pageX = rightMax;
+                }
+                posPanes(pageX);
+
+            }, null, 'horizontal');
+
+            posPanes(window.innerWidth / 2);
+
+        }
+
+        function onclickGithub() {
+            controller.mainContainer.messageHandlePing("githubLoadRequest", null, null);
+        }
+
+        function onclickValidate() {
+            controller.mainContainer.messageHandlePing("additionalValidationRequest", null, null);
+        }
+
+        function onclickFiles(files) {
+            controller.mainContainer.messageHandlePing("filesLoadRequest", files, null);
+            document.getElementById("validate_button").disabled = false;
+        }
+
+        function onclickFolderItem(event) {
+            controller.mainContainer.messageHandlePing("navigateEntitySelect", this.folderState, event.ctrlKey);
+        }
+
+        function onclickDetailItem(event) {
+            controller.mainContainer.messageHandlePing("navigateEntitySelect", this.entityState, event.ctrlKey);
+        }
+
+        function ondblclickDetailItem(event) {
+            controller.mainContainer.messageHandlePing("navigateRelatedSelect", this.entityState, event.ctrlKey);
+        }
+
+        function onclickListItem() {
+            controller.mainContainer.messageHandlePing("listItemSelect", this.cdmObject, null);
+        }
+
+        function onclickDetailTab(fromId) {
+            controller.mainContainer.messageHandlePing("detailTabSelect", fromId, null);
+        }
+
+        function onclickResizeUp(event) {
+            this.messageHandlePing("resize", "up", null);
+        }
+        function onclickResizeDown(event) {
+            this.messageHandlePing("resize", "down", null);
+        }
+
+        function onclickDirective() {
+            controller.mainContainer.messageHandlePing("directiveAlter", null, null);
+        }
+
+
+        function onkeydownMain(event) {
+            if (event.ctrlKey || event.altKey || event.key == "Shift")
+                return;
+            if (event.key == "Escape" || event.key == "Enter")
+                controller.mainContainer.messageHandlePing("searchClear", null, null);
+            else if (event.key == "Backspace")
+                controller.mainContainer.messageHandlePing("searchRemove", null, null);
+            else if (event.key && event.key.length)
+                controller.mainContainer.messageHandlePing("searchAdd", event.key, null);
+        }      
+        var navDataGhExpected =
+            { d: "INSERTDATA" };
+
+    </script>
+    <span class="main_container">
+        <span class="fixed_container" id="button_host_pane">
+            <span class="detail_container">
+                <button id="github_button" class="button" onclick=onclickGithub()>Load from Github!</button>
+                <button id="local_button" class="button" onclick="document.getElementById('local-files').click();">Load
+                    from files...</button>
+                <button id="validate_button" class="button" onclick=onclickValidate() disabled>Validate!</button>
+                <input type="file" multiple directory webkitdirectory accept=".json" id="local-files" name="file"
+                    style="display: none" onchange="onclickFiles(document.getElementById('local-files').files)">
+            </span>
+        </span>
+        <span class="fixed_container" id="navigate_host_pane">
+            <span class="parent_container">
+                <!--chrome bug with smashing flex boxes when they scroll-->
+                <span class="parent_container" id="nav_pane" style="border:0px;padding:0px;margin:0px;">
+                    <span>
+                        <br />
+                        <br />Add some entities to get started.
+                        <br />
+                        <br />
+                    </span>
+                </span>
+            </span>
+        </span>
+        <span class="fixed_container" id="color_key_pane">
+            <span class="detail_container">
+                <span class="group_title">Color Key:</span>
+                <span class="key_item" style="background-color: var(--item-back-referenced)">Used by Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-referencing)">Uses the Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-base)">Base of Selected</span>
+                <span class="key_item" style="background-color: var(--item-back-extension)">Extension of Selected</span>
+            </span>
+        </span>
+        <span class="resize_bar" id="resize_pane"></span>
+        <span class="fixed_container" id="list_title_pane" style="background-color: var(--back-alternate1);">
+            <span class="group_title">
+                Attributes:
+            </span>
+        </span>
+        <span class="fixed_container" id="directives_host_pane">
+            <span class="detail_container">
+                <label>Default resolution directives:</label>
+                <label><input id="relational_checkbox" checked=true type="checkbox" onclick="onclickDirective()" />By
+                    Reference</label>
+                <label><input id="normalized_checkbox" checked=true type="checkbox"
+                        onclick="onclickDirective()" />Normalized</label>
+                <label><input id="structured_checkbox" type="checkbox" name="Structured"
+                        onclick="onclickDirective()" />Structured</label>
+            </span>
+        </span>
+        <span class="fixed_container" id="list_host_pane">
+            <span class="list_container" id="attributeList">
+            </span>
+        </span>
+        <span class="fixed_container" id="tab_host_pane">
+            <span class="detail_container" style="background-color: var(--back-alternate1);">
+                <span class="tab" id="property_tab" style="background-color: var(--back-alternate1)"
+                    onclick="onclickDetailTab('property_tab')">Properties</span>
+                <span class="tab" id="trait_tab" style="background-color: var(--back-alternate1)"
+                    onclick="onclickDetailTab('trait_tab')">Traits</span>
+                <span class="tab" id="definition_tab" style="background-color: var(--back-alternate1)"
+                    onclick="onclickDetailTab('definition_tab')">Definition</span>
+                <span class="tab" id="resolved_tab" style="background-color: var(--back-alternate1)"
+                    onclick="onclickDetailTab('resolved_tab')">Resolved</span>
+                <span class="tab" id="status_tab" style="background-color: var(--back-alternate2)"
+                    onclick="onclickDetailTab('status_tab')">Status</span>
+            </span>
+        </span>
+        <span class="fixed_container" id="detail_tool_pane" style="border-style:inset">
+            <span class="detail_container">
+                <button id="copy_tool_button" class="button" onclick=copyActivePane()>Copy</button>
+                <button id="back_definition_tool_button" class="button" style="display: none"
+                    onclick=popDefinitionPane()>Go Back</button>
+                <button id="back_resolved_tool_button" class="button" style="display: none" onclick=popResolvedPane()>Go
+                    Back</button>
+                <label id="ugly_trait_label" style="display: none"><input id="ugly_trait_checkbox" type="checkbox"
+                        onclick="onclickDirective()" />Show Ugly Traits</label>
+            </span>
+        </span>
+
+        <span class="fixed_container" id="detail_host_pane">
+            <span class="status_pane">
+            </span>
+            <span class="traits_pane">
+            </span>
+            <span class="properties_pane">
+            </span>
+            <span class="definition_pane">
+            </span>
+            <span class="resolved_pane">
+            </span>
+        </span>
+        <span class="fixed_container" id="wait_pane" style="display:none">
+            <span id="message_text">
+                <br />Loading and resolving entity documents, please wait...
+            </span>
+        </span>
+    </span>
+
+</body>
+
+</html>

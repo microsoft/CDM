@@ -1,0 +1,75 @@
+{
+    "$schema": "../../schema.cdm.json",
+    "schemaVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Opportunity",
+            "extendsEntity": "Base",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "perfStandard",
+                    "arguments": [
+                        {
+                            "name": "P1",
+                            "value": "P1FromOpportunity"
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "name": "opportunityId",
+                    "relationship": "identifiedBy",
+                    "dataType": "integer"
+                },
+                {
+                    "name": "product",
+                    "relationship": "hasA",
+                    "dataType": "string"
+                },
+                {
+                    "name": "amount",
+                    "relationship": "hasA",
+                    "dataType": "currency"
+                },
+                {
+                    "name": "forAccount",
+                    "relationship": {
+                        "relationshipReference": "hasFlexibleRelationshipWithEntity",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "does.referenceEntityVia",
+                                "arguments": [
+                                    {
+                                        "name": "foreignKeyAttribute",
+                                        "value": {
+                                            "name": "forAccountId",
+                                            "relationship": "hasA",
+                                            "dataType": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "entityReference": "Account",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Account/(resolvedAttributes)/accountId"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

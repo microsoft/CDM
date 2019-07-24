@@ -1,0 +1,600 @@
+/webClicks/
+ =====ENTITY=====
+ Device
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:typeID
+  [is.localized.describedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"An identified device that is an application or browser instance that is trackable across sessions, normally by cookies."}]
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Device"}]
+attributes:
+  [colorDepth]
+  -[is.dataFormat.integer]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The number of colors the display is able to represent."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Color Depth"}]
+  [manufacturer]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The name of the organization who owns the design and creation of the Device. For example, 'Apple' is the manufacturer of the iPhone."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Manufacturer"}]
+  [model]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The name of the model for the Device. This is the common, human-readable or marketing name for the Device. The 'iPhone 6S' is a particular model of mobile phone."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Model"}]
+  [modelNumber]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The unique model number designation assigned by the manufacturer for this Device. Model numbers are not versions, but unique identifiers that identify a particular model configuration. While the model for a particular phone might be 'iPhone 6S' the model number would be 'A1633', or 'A1634' based on configuration at the time of sale."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Model Number"}]
+  [screenHeight]
+  -[is.dataFormat.integer]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The number of veritcal pixels of the device's active display in its default orientation."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Screen Height"}]
+  -[means.measurement.distance.pixels]
+  -[means.measurement.size.height]
+  [screenWidth]
+  -[is.dataFormat.integer]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The number of horizontal pixels of the device's active display in its default orientation."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Screen Width"}]
+  -[means.measurement.distance.pixels]
+  -[means.measurement.size.width]
+  [type]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Type of device being tracked."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Type"}]
+  [typeID]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:typeID
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"An identifier for the device. This may be an identifier from Device Atlas or another service that identifies the hardware that is being used."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Type Identifier"}]
+  [typeIDService]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The namespace of the service that is used to identify the device type."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Type Identifier Service"}]
+  -[means.reference.URL]
+relationships:
+ =====ENTITY=====
+ EmailAddress
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:identityId
+attributes:
+  [address]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.email]
+  [identityId]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:identityId
+  [primary]
+  -[is.dataFormat.boolean]
+  [type]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+ =====ENTITY=====
+ ExperienceEvent
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:id
+  [is.localized.describedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"The core ExperienceEvent XDM is used to capture observations that are altering one or more related XDMs/entities. The ExperienceEvent captures information about the observation taking place and when it is occurring. It is critical for time domain analytics as it allows observation and analysis of changes that occur in windows of time and comparison with other windows of time to track trends. ExperienceEvent are either explicit or implicit. Explicit events are direct observations of a human action taking place during a session. Implicit events are events that are being raised without a direct human action. Examples of implicit events are scheduled email sending of newsletters, battery voltage reaching a certain threshold, a person entering into range of a proximity sensor. While not all events are easily categorized across all data sources, it is extremely valuable to harmonize similar events into similar types for processing where possible, and the XDM specifications does this by defining a set of enumerated **type** attribute values with specific semantic meanings. Where possible events must be constrained to these enumerated values to facilitate interoperability."}]
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Experience Event"}]
+attributes:
+  [device_foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:device_{n}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/webClicks/Device.cdm.json/Device","attributeReference":"typeID"}]
+  -[means.identity.entityId]
+  [id]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:id
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The unique identifier for the ExperienceEvent."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Identifier"}]
+  -[means.reference.URL]
+  [receivedTimestamp]
+  -[is.dataFormat.date]
+  -[is.dataFormat.time]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The time at which this interaction was received by a server."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Received Timestamp"}]
+  -[means.measurement.date]
+  -[means.measurement.time]
+  [timestamp]
+  -[is.dataFormat.date]
+  -[is.dataFormat.time]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The time when the first event of the interaction occurred."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Timestamp"}]
+  -[means.measurement.date]
+  -[means.measurement.date.occurrence]
+  -[means.measurement.time]
+  [web_foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:web_{n}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/webClicks/WebInfo.cdm.json/WebInfo","attributeReference":"webInfoId"}]
+  -[means.identity.entityId]
+relationships:
+  (rer[0])(referencing) ent=ExperienceEvent
+  (rer[0])(referencing)  atts:[device_foreignKey]
+  (rer[0])(referencing)  atts:-[does.disambiguateNames]
+  (rer[0])(referencing)  atts:---renameFormat:device_{n}
+  (rer[0])(referencing)  atts:---ordinal:
+  (rer[0])(referencing)  atts:-[does.explainArray]
+  (rer[0])(referencing)  atts:---isArray:false
+  (rer[0])(referencing)  atts:---maximumExpansion:5
+  (rer[0])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[0])(referencing)  atts:---startingIndex:0
+  (rer[0])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[0])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[0])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[0])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[0])(referencing)  atts:-[does.selectAttributes]
+  (rer[0])(referencing)  atts:---selects:all
+  (rer[0])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[0])(referencing)  atts:-[is.dataFormat.array]
+  (rer[0])(referencing)  atts:-[is.dataFormat.big]
+  (rer[0])(referencing)  atts:-[is.dataFormat.character]
+  (rer[0])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[0])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[0])(referencing)  atts:---entityReferences:[{"entityReference":"/webClicks/Device.cdm.json/Device","attributeReference":"typeID"}]
+  (rer[0])(referencing)  atts:-[means.identity.entityId]
+  (rer[0])(referenced[0]) ent=Device
+  (rer[0])(referenced[0])  atts:[typeID]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.array]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.big]
+  (rer[0])(referenced[0])  atts:-[is.dataFormat.character]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:typeID
+  (rer[0])(referenced[0])  atts:-[is.localized.describedAs]
+  (rer[0])(referenced[0])  atts:---localizedDisplayText:[{"languageTag":"en","displayText":"An identifier for the device. This may be an identifier from Device Atlas or another service that identifies the hardware that is being used."}]
+  (rer[0])(referenced[0])  atts:-[is.localized.displayedAs]
+  (rer[0])(referenced[0])  atts:---localizedDisplayText:[{"languageTag":"en","displayText":"Type Identifier"}]
+  (rer[1])(referencing) ent=ExperienceEvent
+  (rer[1])(referencing)  atts:[web_foreignKey]
+  (rer[1])(referencing)  atts:-[does.disambiguateNames]
+  (rer[1])(referencing)  atts:---renameFormat:web_{n}
+  (rer[1])(referencing)  atts:---ordinal:
+  (rer[1])(referencing)  atts:-[does.explainArray]
+  (rer[1])(referencing)  atts:---isArray:false
+  (rer[1])(referencing)  atts:---maximumExpansion:5
+  (rer[1])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[1])(referencing)  atts:---startingIndex:0
+  (rer[1])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[1])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[1])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[1])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[1])(referencing)  atts:-[does.selectAttributes]
+  (rer[1])(referencing)  atts:---selects:all
+  (rer[1])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[1])(referencing)  atts:-[is.dataFormat.array]
+  (rer[1])(referencing)  atts:-[is.dataFormat.big]
+  (rer[1])(referencing)  atts:-[is.dataFormat.character]
+  (rer[1])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[1])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[1])(referencing)  atts:---entityReferences:[{"entityReference":"/webClicks/WebInfo.cdm.json/WebInfo","attributeReference":"webInfoId"}]
+  (rer[1])(referencing)  atts:-[means.identity.entityId]
+  (rer[1])(referenced[0]) ent=WebInfo
+  (rer[1])(referenced[0])  atts:[webInfoId]
+  (rer[1])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[1])(referenced[0])  atts:---attribute:webInfoId
+ =====ENTITY=====
+ PhoneNumber
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:identityId
+attributes:
+  [identityId]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:identityId
+  [number]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[means.identity.service.phone]
+  [primary]
+  -[is.dataFormat.boolean]
+  [type]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+relationships:
+ =====ENTITY=====
+ WebInfo
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:webInfoId
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Web Info"}]
+attributes:
+  [details_foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:details_{n}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/webClicks/WebPageDetails.cdm.json/WebPageDetails","attributeReference":"detailId"}]
+  -[means.identity.entityId]
+  [interaction_foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:interaction_{n}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/webClicks/WebInteraction.cdm.json/WebInteraction","attributeReference":"interactionId"}]
+  -[means.identity.entityId]
+  [referrer_foreignKey]
+  -[does.disambiguateNames]
+  ---renameFormat:referrer_{n}
+  ---ordinal:
+  -[does.explainArray]
+  ---isArray:false
+  ---maximumExpansion:5
+  ---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  ---startingIndex:0
+  -[does.referenceEntityVia]
+  ---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  ---alwaysAddForeignKey:false
+  ---referencesOnlyAfterDepth:2
+  -[does.selectAttributes]
+  ---selects:all
+  ---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.dataFormat.guid]
+  -[is.linkedEntity.identifier]
+  ---entityReferences:[{"entityReference":"/webClicks/WebReferrer.cdm.json/WebReferrer","attributeReference":"URL"}]
+  -[means.identity.entityId]
+  [webInfoId]
+  -[is.identifiedBy]
+  ---attribute:webInfoId
+relationships:
+  (rer[0])(referencing) ent=WebInfo
+  (rer[0])(referencing)  atts:[interaction_foreignKey]
+  (rer[0])(referencing)  atts:-[does.disambiguateNames]
+  (rer[0])(referencing)  atts:---renameFormat:interaction_{n}
+  (rer[0])(referencing)  atts:---ordinal:
+  (rer[0])(referencing)  atts:-[does.explainArray]
+  (rer[0])(referencing)  atts:---isArray:false
+  (rer[0])(referencing)  atts:---maximumExpansion:5
+  (rer[0])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[0])(referencing)  atts:---startingIndex:0
+  (rer[0])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[0])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[0])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[0])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[0])(referencing)  atts:-[does.selectAttributes]
+  (rer[0])(referencing)  atts:---selects:all
+  (rer[0])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[0])(referencing)  atts:-[is.dataFormat.array]
+  (rer[0])(referencing)  atts:-[is.dataFormat.big]
+  (rer[0])(referencing)  atts:-[is.dataFormat.character]
+  (rer[0])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[0])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[0])(referencing)  atts:---entityReferences:[{"entityReference":"/webClicks/WebInteraction.cdm.json/WebInteraction","attributeReference":"interactionId"}]
+  (rer[0])(referencing)  atts:-[means.identity.entityId]
+  (rer[0])(referenced[0]) ent=WebInteraction
+  (rer[0])(referenced[0])  atts:[interactionId]
+  (rer[0])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[0])(referenced[0])  atts:---attribute:interactionId
+  (rer[1])(referencing) ent=WebInfo
+  (rer[1])(referencing)  atts:[details_foreignKey]
+  (rer[1])(referencing)  atts:-[does.disambiguateNames]
+  (rer[1])(referencing)  atts:---renameFormat:details_{n}
+  (rer[1])(referencing)  atts:---ordinal:
+  (rer[1])(referencing)  atts:-[does.explainArray]
+  (rer[1])(referencing)  atts:---isArray:false
+  (rer[1])(referencing)  atts:---maximumExpansion:5
+  (rer[1])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[1])(referencing)  atts:---startingIndex:0
+  (rer[1])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[1])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[1])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[1])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[1])(referencing)  atts:-[does.selectAttributes]
+  (rer[1])(referencing)  atts:---selects:all
+  (rer[1])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[1])(referencing)  atts:-[is.dataFormat.array]
+  (rer[1])(referencing)  atts:-[is.dataFormat.big]
+  (rer[1])(referencing)  atts:-[is.dataFormat.character]
+  (rer[1])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[1])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[1])(referencing)  atts:---entityReferences:[{"entityReference":"/webClicks/WebPageDetails.cdm.json/WebPageDetails","attributeReference":"detailId"}]
+  (rer[1])(referencing)  atts:-[means.identity.entityId]
+  (rer[1])(referenced[0]) ent=WebPageDetails
+  (rer[1])(referenced[0])  atts:[detailId]
+  (rer[1])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[1])(referenced[0])  atts:---attribute:detailId
+  (rer[2])(referencing) ent=WebInfo
+  (rer[2])(referencing)  atts:[referrer_foreignKey]
+  (rer[2])(referencing)  atts:-[does.disambiguateNames]
+  (rer[2])(referencing)  atts:---renameFormat:referrer_{n}
+  (rer[2])(referencing)  atts:---ordinal:
+  (rer[2])(referencing)  atts:-[does.explainArray]
+  (rer[2])(referencing)  atts:---isArray:false
+  (rer[2])(referencing)  atts:---maximumExpansion:5
+  (rer[2])(referencing)  atts:---storeCountInAttribute:{"dataType":"integer","name":"arrayMemberCount"}
+  (rer[2])(referencing)  atts:---startingIndex:0
+  (rer[2])(referencing)  atts:-[does.referenceEntityVia]
+  (rer[2])(referencing)  atts:---foreignKeyAttribute:{"dataType":"entityId","name":"foreignKey","appliedTraits":["is.linkedEntity.identifier"]}
+  (rer[2])(referencing)  atts:---alwaysAddForeignKey:false
+  (rer[2])(referencing)  atts:---referencesOnlyAfterDepth:2
+  (rer[2])(referencing)  atts:-[does.selectAttributes]
+  (rer[2])(referencing)  atts:---selects:all
+  (rer[2])(referencing)  atts:---storeSelectionInAttribute:{"dataType":"entityName","name":"selectedEntity"}
+  (rer[2])(referencing)  atts:-[is.dataFormat.array]
+  (rer[2])(referencing)  atts:-[is.dataFormat.big]
+  (rer[2])(referencing)  atts:-[is.dataFormat.character]
+  (rer[2])(referencing)  atts:-[is.dataFormat.guid]
+  (rer[2])(referencing)  atts:-[is.linkedEntity.identifier]
+  (rer[2])(referencing)  atts:---entityReferences:[{"entityReference":"/webClicks/WebReferrer.cdm.json/WebReferrer","attributeReference":"URL"}]
+  (rer[2])(referencing)  atts:-[means.identity.entityId]
+  (rer[2])(referenced[0]) ent=WebReferrer
+  (rer[2])(referenced[0])  atts:[URL]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.array]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.big]
+  (rer[2])(referenced[0])  atts:-[is.dataFormat.character]
+  (rer[2])(referenced[0])  atts:-[is.identifiedBy]
+  (rer[2])(referenced[0])  atts:---attribute:URL
+  (rer[2])(referenced[0])  atts:-[is.localized.describedAs]
+  (rer[2])(referenced[0])  atts:---localizedDisplayText:[{"languageTag":"en","displayText":"The referrer URL"}]
+  (rer[2])(referenced[0])  atts:-[means.reference.URL]
+ =====ENTITY=====
+ WebInteraction
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:interactionId
+  [is.localized.describedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Interaction details from inside the context of a loaded webpage."}]
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Web Interaction"}]
+attributes:
+  [interactionId]
+  -[is.identifiedBy]
+  ---attribute:interactionId
+  [linkClicks]
+  -[is.dataFormat.integer]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Click of a web-link has occurred."}]
+  [Name]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative name of the web page. This name is not necessarily the page title or directy associate with page content, but is used to organize a site's pages for classification purposes"}]
+  -[means.identity.name]
+  [type]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The link type"}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Type"}]
+  [URL]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative or usual URL of the web page.  This may or may not be the actual URL used to reach the page, which would be recorded using `Web Link`."}]
+  -[means.reference.URL]
+relationships:
+ =====ENTITY=====
+ WebPageDetails
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:detailId
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Web Page Details"}]
+attributes:
+  [detailId]
+  -[is.identifiedBy]
+  ---attribute:detailId
+  [isErrorPage]
+  -[is.dataFormat.boolean]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Flag that indicate if the page is error page or not.  Error here is defined by the application, and may nor may not correspond to a page served with an HTTP error code.  This flag is used to broadly categorize web interactions."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Is Error Page"}]
+  [isHomePage]
+  -[is.dataFormat.boolean]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Flag that indicate if the page is the site home page or not.  The definition of home page is determined by the application, but is commonly used to designate a top level landing page or common site entry point.  This flag is used to broadly categorize web interactions."}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Is Home Page"}]
+  [Name]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative name of the web page. This name is not necessarily the page title or directy associate with page content, but is used to organize a site's pages for classification purposes"}]
+  -[means.identity.name]
+  [pageViews]
+  -[is.dataFormat.integer]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"View(s) of a webpage has occurred"}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Is Error Page"}]
+  [server]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative or usual server that hosts the web page.  This may or may not be the host or server that actually served the page interaction, but is used for classification purposes."}]
+  [siteSection]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative name of the site section where this web page resides, which may be used to classify or categorize the interaction"}]
+  -[is.localized.displayedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"Site Section"}]
+  [URL]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The normative or usual URL of the web page.  This may or may not be the actual URL used to reach the page, which would be recorded using `Web Link`."}]
+  -[means.reference.URL]
+relationships:
+ =====ENTITY=====
+ WebReferrer
+ ================
+ traits:
+  [is.CDM.entityVersion]
+  --versionNumber:0.8
+  [is.identifiedBy]
+  --attribute:URL
+  [is.localized.displayedAs]
+  --localizedDisplayText:[{"languageTag":"en","displayText":"Web Referrer"}]
+attributes:
+  [type]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The referrer type."}]
+  [URL]
+  -[is.dataFormat.array]
+  -[is.dataFormat.big]
+  -[is.dataFormat.character]
+  -[is.identifiedBy]
+  ---attribute:URL
+  -[is.localized.describedAs]
+  ---localizedDisplayText:[{"languageTag":"en","displayText":"The referrer URL"}]
+  -[means.reference.URL]
+relationships:

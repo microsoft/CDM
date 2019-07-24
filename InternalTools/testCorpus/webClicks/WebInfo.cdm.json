@@ -1,0 +1,115 @@
+{
+  "$schema": "../schema.cdm.json",
+  "schemaVersion": "0.7.0",
+  "imports": [
+    {
+      "uri": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WebInfo",
+      "extendsEntity": "CdmObject",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Web Info"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "webInfoId",
+          "relationship": "identifiedBy",
+          "dataFormat": "string"
+        },
+        {
+          "name": "details",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "details_{n}"
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "WebPageDetails",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "WebPageDetails/(resolvedAttributes)/detailId"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "interaction",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "interaction_{n}"
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "WebInteraction",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "WebInteraction/(resolvedAttributes)/interactionId"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer",
+          "relationship": {
+            "relationshipReference": "hasFlexibleRelationshipWithEntity",
+            "appliedTraits": [
+              {
+                "traitReference": "does.disambiguateNames",
+                "arguments": [
+                  "referrer_{n}"
+                ]
+              }
+            ]
+          },
+          "entity": {
+            "entityReference": "WebReferrer",
+            "appliedTraits": [
+              {
+                "traitReference": "is.identifiedBy",
+                "arguments": [
+                  "WebReferrer/(resolvedAttributes)/URL"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
