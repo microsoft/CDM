@@ -1,8 +1,13 @@
-## customerInsights/
-| Entity Name | Location: | Description | External Link |
-|:--- |:--- |:--- |:--- |
-|[**CustomerActivity**](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/CustomerActivity.cdm.json)|[customerInsights/](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/)|An activity performed by a user that has observational value to the business.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/CustomerActivity)|
-|[**CustomerProfile**](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/CustomerProfile.cdm.json)|[customerInsights/](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/)|A person or organization that either performed or has the potential to engage in a business activity. |[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/CustomerProfile)|
-|[**MeasureDefinition**](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/MeasureDefinition.cdm.json)|[customerInsights/](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/)|Definition of KPIs partitioned by zero or more dimensions (eg. Monthly Active Users, Total Spend By Customer, Average Customer Acquisition Cost)|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/MeasureDefinition)|
-|[**Segment**](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/Segment.cdm.json)|[customerInsights/](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/)|Defines a group of members  that exhibit common traits.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/Segment)|
-|[**SegmentMembership**](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/SegmentMembership.cdm.json)|[customerInsights/](https://github.com/Microsoft/CDM/blob/experimental/schemaDocuments/core/applicationCommon/foundationCommon/crmCommon/solutions/customerInsights/)|Members participating in a given segment.|[Docs](https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/entities/SegmentMembership)|
+
+# customerInsights
+
+
+## Entities
+
+|Name|Description|
+|---|---|
+|[CustomerActivity](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/customerinsights/CustomerActivity)|An activity performed by a user that has observational value to the business.  |
+|[CustomerProfile](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/customerinsights/CustomerProfile)|A person or organization that either performed or has the potential to engage in a business activity.   |
+|[MeasureDefinition](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/customerinsights/MeasureDefinition)|Definition of KPIs partitioned by zero or more dimensions (eg. Monthly Active Users, Total Spend By Customer, Average Customer Acquisition Cost)  |
+|[Segment](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/customerinsights/Segment)|Defines a group of members  that exhibit common traits.|
+|[SegmentMembership](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/solutions/customerinsights/SegmentMembership)|Members participating in a given segment.  |
