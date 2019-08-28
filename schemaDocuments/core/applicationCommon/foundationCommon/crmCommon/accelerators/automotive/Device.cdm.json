@@ -1,0 +1,2404 @@
+{
+    "jsonSchemaSemanticVersion": "0.7.0",
+    "imports": [
+        {
+            "uri": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Device",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Device"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Physical piece of equipment of considerable value such as a vehicle or a device such as an excavator, that can be tracked through its entire life cycle of trade, ownership and service and may be related to one or more customers over time."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "members": [
+                            {
+                                "name": "entityImage",
+                                "dataType": "image",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "EntityImage"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "9437328"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Image"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            ""
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "entityimage",
+                                "displayName": "Image",
+                                "description": "",
+                                "maximumLength": 9437328,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "exchangeRate",
+                                "dataType": "decimal",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "ExchangeRate"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "1E-10"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "100000000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange rate for the currency associated with the entity with respect to the base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "exchangerate",
+                                "displayName": "Exchange Rate",
+                                "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "BusinessOperation",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "BusinessOperation/(resolvedAttributes)/businessOperationId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "businessOperation",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'BusinessOperation'.",
+                                                        "name": "businessOperationId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Business Operation"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Department/team at business operation responsible for vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_businessoperationid",
+                                                        "displayName": "Business Operation",
+                                                        "description": "Department/team at business operation responsible for vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "chassisNumber",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_ChassisNumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Chassis Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique number for the vehicle's engine; last 6 digits of the VIN."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_chassisnumber",
+                                "displayName": "Chassis Number",
+                                "description": "Unique number for the vehicle's engine; last 6 digits of the VIN.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "condition",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Excellent",
+                                                                "972230000"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Good",
+                                                                "972230001"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Fair",
+                                                                "972230002"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Poor",
+                                                                "972230003"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Unknown",
+                                                                "972230004"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'condition_display' is added to the 'Device' entity to provide the localized display text for the value of the listLookup attribute 'condition'",
+                                                    "name": "condition_display",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true,
+                                                    "relationship": "hasA"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_Condition"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Condition"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Current condition of the vehicle or device (excellent, good, fair, poor or unknown)."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_condition",
+                                "displayName": "Condition",
+                                "description": "Current condition of the vehicle or device (excellent, good, fair, poor or unknown).",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "description",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_Description"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "2000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description of the vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_description",
+                                "displayName": "Description",
+                                "description": "Description of the vehicle or device.",
+                                "maximumLength": 2000,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceBrand",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceBrand/(resolvedAttributes)/deviceBrandId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceBrand",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceBrand'.",
+                                                        "name": "deviceBrandId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Brand"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Brand of the vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicebrandid",
+                                                        "displayName": "Device Brand",
+                                                        "description": "Brand of the vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceClass",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceClass/(resolvedAttributes)/deviceClassId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceClass",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceClass'.",
+                                                        "name": "deviceClassId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Class"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Class of the vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_deviceclassid",
+                                                        "displayName": "Device Class",
+                                                        "description": "Class of the vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceGeneration",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceGeneration/(resolvedAttributes)/deviceGenerationId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceGeneration",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceGeneration'.",
+                                                        "name": "deviceGenerationId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Generation"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Generation of the vehicle or device's model."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicegenerationid",
+                                                        "displayName": "Device Generation",
+                                                        "description": "Generation of the vehicle or device's model.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "deviceId",
+                                "dataType": "entityId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_deviceId"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Device"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for entity instances"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_deviceid",
+                                "displayName": "Device",
+                                "description": "Unique identifier for entity instances",
+                                "relationship": "identifiedBy"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceModelCode",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceModelCode/(resolvedAttributes)/deviceModelCodeId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceModelCode",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceModelCode'.",
+                                                        "name": "deviceModelCodeId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Model Code"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Configuration of the vehicle or device model."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicemodelcodeid",
+                                                        "displayName": "Device Model Code",
+                                                        "description": "Configuration of the vehicle or device model.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceModel",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceModel/(resolvedAttributes)/deviceModelId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceModel",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceModel'.",
+                                                        "name": "deviceModelId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Model"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Model of the vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicemodelid",
+                                                        "displayName": "Device Model",
+                                                        "description": "Model of the vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "deviceNumber",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_DeviceNumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Device Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique number of the vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_devicenumber",
+                                "displayName": "Device Number",
+                                "description": "Unique number of the vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceState",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceState/(resolvedAttributes)/deviceStateId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceState",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceState'.",
+                                                        "name": "deviceStateId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "required"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device State"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Status of the vehicle or device, which may represent a given combination of inventory, ownership and trade status."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicestateid",
+                                                        "displayName": "Device State",
+                                                        "description": "Status of the vehicle or device, which may represent a given combination of inventory, ownership and trade status.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceStyle",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceStyle/(resolvedAttributes)/deviceStyleId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceStyle",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceStyle'.",
+                                                        "name": "deviceStyleId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Style"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Body style of the vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicestyleid",
+                                                        "displayName": "Device Style",
+                                                        "description": "Body style of the vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceType",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceType/(resolvedAttributes)/deviceTypeId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceType",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceType'.",
+                                                        "name": "deviceTypeId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "required"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Type"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Type of this vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicetypeid",
+                                                        "displayName": "Device Type",
+                                                        "description": "Type of this vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "DeviceVariant",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceVariant/(resolvedAttributes)/deviceVariantId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "deviceVariant",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'DeviceVariant'.",
+                                                        "name": "deviceVariantId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Device Variant"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Specific configuration for this vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_devicevariantid",
+                                                        "displayName": "Device Variant",
+                                                        "description": "Specific configuration for this vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "listPrice",
+                                "dataType": "currency",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_ListPrice"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "List Price"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Sale price of vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_listprice",
+                                "displayName": "List Price",
+                                "description": "Sale price of vehicle or device.",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "listPriceBase",
+                                "dataType": "currency",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_listprice_Base"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "List Price (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the List Price in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_listprice_base",
+                                "displayName": "List Price (Base)",
+                                "description": "Value of the List Price in base currency.",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "listPriceComments",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_ListPriceComments"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "2000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "List Price Comments"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Comments regarding the listed price for this vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_listpricecomments",
+                                "displayName": "List Price Comments",
+                                "description": "Comments regarding the listed price for this vehicle or device.",
+                                "maximumLength": 2000,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "name",
+                                "dataType": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_name"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name of the vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_name",
+                                "displayName": "Name",
+                                "description": "Name of the vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "registrationNumber",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_RegistrationNumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Registration Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Registration number for this vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_registrationnumber",
+                                "displayName": "Registration Number",
+                                "description": "Registration number for this vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "Specification",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Specification/(resolvedAttributes)/specificationId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "specification",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'Specification'.",
+                                                        "name": "specificationId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Specification"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Specification tied to this vehicle or device."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "msauto_specificationid",
+                                                        "displayName": "Specification",
+                                                        "description": "Specification tied to this vehicle or device.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            },
+                            {
+                                "name": "URL",
+                                "dataType": "url",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_URL"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "URL"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Webpage for vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_url",
+                                "displayName": "URL",
+                                "description": "Webpage for vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "vendorsStockNumber",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_VendorsStockNumber"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Vendors Stock Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Stock number for vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_vendorsstocknumber",
+                                "displayName": "Vendors Stock Number",
+                                "description": "Stock number for vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "VIN",
+                                "dataType": "string",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_VIN"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "VIN"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique code used to identify an vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_vin",
+                                "displayName": "VIN",
+                                "description": "Unique code used to identify an vehicle or device.",
+                                "maximumLength": 100,
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "year",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_Year"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Year"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Manufacture year of the vehicle or device."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_year",
+                                "displayName": "Year",
+                                "description": "Manufacture year of the vehicle or device.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "stateCode",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Device' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                                    "name": "stateCode_display",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true,
+                                                    "relationship": "hasA"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statecode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Device"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "statecode",
+                                "displayName": "Status",
+                                "description": "Status of the Device",
+                                "relationship": "representsStateWith"
+                            },
+                            {
+                                "name": "statusCode",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.addSupportingAttribute",
+                                            "arguments": [
+                                                {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Device' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                                    "name": "statusCode_display",
+                                                    "dataType": "localizedDisplayText",
+                                                    "isReadOnly": true,
+                                                    "relationship": "hasA"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statuscode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the Device"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "statuscode",
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the Device",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "representsCorrelatedStatusWith"
+                                }
+                            },
+                            {
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "transactionCurrency",
+                                "relationship": {
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.disambiguateNames",
+                                            "arguments": [
+                                                "{n}"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "does.referenceEntityVia",
+                                            "arguments": [
+                                                {
+                                                    "name": "foreignKeyAttribute",
+                                                    "value": {
+                                                        "explanation": "Unique identifier of 'Currency'.",
+                                                        "name": "transactionCurrencyId",
+                                                        "dataType": "entityId",
+                                                        "appliedTraits": [
+                                                            {
+                                                                "traitReference": "is.CDS.lookup",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "style",
+                                                                        "value": "single"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Currency"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Unique identifier of the currency associated with the entity."
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
+                                                        ],
+                                                        "sourceName": "transactioncurrencyid",
+                                                        "displayName": "Currency",
+                                                        "description": "Unique identifier of the currency associated with the entity.",
+                                                        "relationship": "hasA"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "relationshipReference": "hasFlexibleRelationshipWithEntity"
+                                }
+                            }
+                        ],
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/accelerators/automotive/Device.cdm.json/Device/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "sourceName": "msauto_device",
+            "displayName": "Device",
+            "description": "Physical piece of equipment of considerable value such as a vehicle or a device such as an excavator, that can be tracked through its entire life cycle of trade, ownership and service and may be related to one or more customers over time."
+        }
+    ]
+}
