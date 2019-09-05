@@ -25,7 +25,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 There are two ways to consume the information in this repository:
 
 1. [Entity Reference Index](schemaDocuments#directory-of-cdm-entities)
-2. [Visual Entity Navigator](schemaDocuments/readme.md) for interactively exploring entities, entity extensions/inheritance, attributes, and relationships
+2. [Visual Entity Navigator](https://microsoft.github.io/CDM/) for interactively exploring entities, entity extensions/inheritance, attributes, and relationships
 
 # Versioning
 
