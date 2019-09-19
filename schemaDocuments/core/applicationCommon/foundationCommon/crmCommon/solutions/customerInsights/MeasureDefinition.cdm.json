@@ -91,7 +91,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_LastEvaluationDate",
+                                "sourceName": "msdynci_lastevaluationdate",
                                 "displayName": "Last Evaluation Date",
                                 "description": "Latest date when a measure is evaluated/refreshed.",
                                 "relationship": "hasA"
@@ -139,7 +139,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MeasureDefinitionId",
+                                "sourceName": "msdynci_measuredefinitionid",
                                 "displayName": "Measure Definition",
                                 "description": "Unique identifier for entity instances",
                                 "relationship": "identifiedBy"
@@ -205,7 +205,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MeasureName",
+                                "sourceName": "msdynci_measurename",
                                 "displayName": "Measure Name",
                                 "description": "Required name field. Name of the measure.",
                                 "maximumLength": 100,
@@ -263,7 +263,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MeasureQuery",
+                                "sourceName": "msdynci_measurequery",
                                 "displayName": "Measure Query",
                                 "description": "Measure definition including entities, variables, definition, calculations, dimensions etc.",
                                 "maximumLength": 2000,
@@ -284,17 +284,17 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Customer attribute",
+                                                                "Customer",
                                                                 "647430000"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Customer measure",
+                                                                "None",
                                                                 "647430001"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Business measure",
+                                                                "Business",
                                                                 "647430002"
                                                             ]
                                                         ]
@@ -306,6 +306,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'measureSubType_display' is added to the 'MeasureDefinition' entity to provide the localized display text for the value of the listLookup attribute 'measureSubType'",
                                                     "name": "measureSubType_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -364,7 +365,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MeasureSubType",
+                                "sourceName": "msdynci_measuresubtype",
                                 "displayName": "Measure SubType",
                                 "description": "Subtype of the measure.\n",
                                 "relationship": "hasA"
@@ -384,13 +385,18 @@
                                                         "constantValues": [
                                                             [
                                                                 "en",
-                                                                "Customer",
+                                                                "Attribute",
                                                                 "647430000"
                                                             ],
                                                             [
                                                                 "en",
-                                                                "Business",
+                                                                "Entity",
                                                                 "647430001"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Single value / scalar",
+                                                                "647430002"
                                                             ]
                                                         ]
                                                     }
@@ -401,6 +407,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'measureType_display' is added to the 'MeasureDefinition' entity to provide the localized display text for the value of the listLookup attribute 'measureType'",
                                                     "name": "measureType_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -459,9 +466,81 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MeasureType",
+                                "sourceName": "msdynci_measuretype",
                                 "displayName": "Measure Type",
                                 "description": "Type of the measure.\n",
+                                "relationship": "hasA"
+                            },
+                            {
+                                "name": "version",
+                                "dataType": "integer",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msdynci_Version"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "2147483647"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Denotes latest version of a segment for manual tracking."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msdynci_version",
+                                "displayName": "Version",
+                                "description": "Denotes latest version of a segment for manual tracking.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -478,14 +557,16 @@
                                                         "entityShape": "listLookupValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "0"
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "1"
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -496,6 +577,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'MeasureDefinition' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
                                                     "name": "stateCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -509,7 +591,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "stateCode"
+                                            "statecode"
                                         ]
                                     },
                                     {
@@ -545,7 +627,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stateCode",
+                                "sourceName": "statecode",
                                 "displayName": "Status",
                                 "description": "Status of the Measure Definition",
                                 "relationship": "representsStateWith"
@@ -564,14 +646,18 @@
                                                         "entityShape": "listLookupCorrelatedValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "1"
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "2"
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -582,6 +668,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'MeasureDefinition' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                                                     "name": "statusCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -595,7 +682,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "statusCode"
+                                            "statuscode"
                                         ]
                                     },
                                     {
@@ -631,7 +718,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statusCode",
+                                "sourceName": "statuscode",
                                 "displayName": "Status Reason",
                                 "description": "Reason for the status of the Measure Definition",
                                 "relationship": {
@@ -667,7 +754,7 @@
                     }
                 }
             ],
-            "sourceName": "MeasureDefinition",
+            "sourceName": "msdynci_MeasureDefinition",
             "displayName": "Measure Definition",
             "description": "Definition of KPIs partitioned by zero or more dimensions (eg. Monthly Active Users, Total Spend By Customer, Average Customer Acquisition Cost)"
         }
