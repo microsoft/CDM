@@ -100,7 +100,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Description",
+                                "sourceName": "msdynci_description",
                                 "displayName": "Description",
                                 "description": "Segment description.",
                                 "maximumLength": 2000,
@@ -149,7 +149,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_LastEvaluationDate",
+                                "sourceName": "msdynci_lastevaluationdate",
                                 "displayName": "Last Evaluation Date",
                                 "description": "Latest date when segments are evaluated/refreshed.",
                                 "relationship": "hasA"
@@ -169,7 +169,7 @@
                                         "arguments": [
                                             {
                                                 "name": "minimumValue",
-                                                "value": "-2147483648"
+                                                "value": "0"
                                             },
                                             {
                                                 "name": "maximumValue",
@@ -210,11 +210,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_MemberCount",
+                                "sourceName": "msdynci_membercount",
                                 "displayName": "Member Count",
                                 "description": "Count of customers/members associated with a segment.",
                                 "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -278,7 +278,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Name",
+                                "sourceName": "msdynci_name",
                                 "displayName": "Name",
                                 "description": "Required name field",
                                 "maximumLength": 100,
@@ -336,68 +336,10 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_QueryDefinition",
+                                "sourceName": "msdynci_querydefinition",
                                 "displayName": "Query Definition",
                                 "description": "Segment definition including groups, filters, conditions etc.",
                                 "maximumLength": 2000,
-                                "relationship": "hasA"
-                            },
-                            {
-                                "name": "schedule",
-                                "dataType": "string",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.CDS.sourceNamed",
-                                        "arguments": [
-                                            "msdynci_Schedule"
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.constrained",
-                                        "arguments": [
-                                            {
-                                                "name": "maximumLength",
-                                                "value": "100"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Schedule"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "A recurring schedule when a segment is refreshed."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdynci_Schedule",
-                                "displayName": "Schedule",
-                                "description": "A recurring schedule when a segment is refreshed.",
-                                "maximumLength": 100,
                                 "relationship": "hasA"
                             },
                             {
@@ -443,7 +385,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_SegmentId",
+                                "sourceName": "msdynci_segmentid",
                                 "displayName": "Segment",
                                 "description": "Unique identifier for entity instances",
                                 "relationship": "identifiedBy"
@@ -480,6 +422,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'segmentType_display' is added to the 'Segment' entity to provide the localized display text for the value of the listLookup attribute 'segmentType'",
                                                     "name": "segmentType_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -529,7 +472,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_SegmentType",
+                                "sourceName": "msdynci_segmenttype",
                                 "displayName": "Segment Type",
                                 "description": "Segment type.",
                                 "relationship": "hasA"
@@ -549,7 +492,7 @@
                                         "arguments": [
                                             {
                                                 "name": "minimumValue",
-                                                "value": "-2147483648"
+                                                "value": "0"
                                             },
                                             {
                                                 "name": "maximumValue",
@@ -599,11 +542,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Version",
+                                "sourceName": "msdynci_version",
                                 "displayName": "Version",
                                 "description": "Denotes latest version of a segment for manual tracking.",
                                 "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -620,14 +563,16 @@
                                                         "entityShape": "listLookupValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "0"
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "1"
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -638,6 +583,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Segment' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
                                                     "name": "stateCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -651,7 +597,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "stateCode"
+                                            "statecode"
                                         ]
                                     },
                                     {
@@ -687,7 +633,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stateCode",
+                                "sourceName": "statecode",
                                 "displayName": "Status",
                                 "description": "Status of the Segment",
                                 "relationship": "representsStateWith"
@@ -706,14 +652,18 @@
                                                         "entityShape": "listLookupCorrelatedValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "1"
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "2"
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -724,6 +674,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Segment' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                                                     "name": "statusCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -737,7 +688,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "statusCode"
+                                            "statuscode"
                                         ]
                                     },
                                     {
@@ -773,7 +724,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statusCode",
+                                "sourceName": "statuscode",
                                 "displayName": "Status Reason",
                                 "description": "Reason for the status of the Segment",
                                 "relationship": {
@@ -809,7 +760,7 @@
                     }
                 }
             ],
-            "sourceName": "Segment",
+            "sourceName": "msdynci_Segment",
             "displayName": "Segment",
             "description": "Defines a group of members  that exhibit common traits.\n"
         }

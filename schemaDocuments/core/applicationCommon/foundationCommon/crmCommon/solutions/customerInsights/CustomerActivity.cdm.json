@@ -55,7 +55,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "msdynci_ActivityName"
+                                            "msdynci_activityname"
                                         ]
                                     },
                                     {
@@ -109,7 +109,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_ActivityName",
+                                "sourceName": "msdynci_activityname",
                                 "displayName": "Activity Name",
                                 "description": "Specific fields that includes data on customer's activity.",
                                 "maximumLength": 100,
@@ -167,7 +167,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_ActivityType",
+                                "sourceName": "msdynci_activitytype",
                                 "displayName": "Activity Type",
                                 "description": "",
                                 "maximumLength": 100,
@@ -216,7 +216,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_ActualEndDate",
+                                "sourceName": "msdynci_actualenddate",
                                 "displayName": "Actual End Date",
                                 "description": "End time of an activity.",
                                 "relationship": "hasA"
@@ -273,7 +273,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_ActualStartDate",
+                                "sourceName": "msdynci_actualstartdate",
                                 "displayName": "Actual Start Date",
                                 "description": "Start time of an activity.",
                                 "relationship": "hasA"
@@ -330,7 +330,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_AttachmentReferences",
+                                "sourceName": "msdynci_attachmentreferences",
                                 "displayName": "AttachmentReferences",
                                 "description": "References to any attachment(s) for an activity.",
                                 "maximumLength": 100,
@@ -388,7 +388,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Community",
+                                "sourceName": "msdynci_community",
                                 "displayName": "Community",
                                 "description": "Activity community.",
                                 "maximumLength": 100,
@@ -437,7 +437,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_CustomerActivityId",
+                                "sourceName": "msdynci_customeractivityid",
                                 "displayName": "CustomerActivity",
                                 "description": "Unique identifier for entity instances",
                                 "relationship": "identifiedBy"
@@ -469,6 +469,7 @@
                                                 {
                                                     "name": "foreignKeyAttribute",
                                                     "value": {
+                                                        "explanation": "Unique identifier of 'CustomerProfile'.",
                                                         "name": "customerProfileId",
                                                         "dataType": "entityId",
                                                         "appliedTraits": [
@@ -480,9 +481,51 @@
                                                                         "value": "single"
                                                                     }
                                                                 ]
-                                                            }
+                                                            },
+                                                            {
+                                                                "traitReference": "is.requiredAtLevel",
+                                                                "arguments": [
+                                                                    {
+                                                                        "name": "level",
+                                                                        "value": "none"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.displayedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    "Customer Profile Id"
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "traitReference": "is.localized.describedAs",
+                                                                "arguments": [
+                                                                    {
+                                                                        "entityReference": {
+                                                                            "entityShape": "localizedTable",
+                                                                            "constantValues": [
+                                                                                [
+                                                                                    "en",
+                                                                                    ""
+                                                                                ]
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "is.linkedEntity.identifier"
                                                         ],
-                                                        "sourceName": "customerProfileId",
+                                                        "sourceName": "msdynci_customerprofileid",
                                                         "displayName": "Customer Profile Id",
                                                         "description": "",
                                                         "relationship": "hasA"
@@ -546,7 +589,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Description",
+                                "sourceName": "msdynci_description",
                                 "displayName": "Description",
                                 "description": "Description of the activity.",
                                 "maximumLength": 2000,
@@ -604,7 +647,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Mentions",
+                                "sourceName": "msdynci_mentions",
                                 "displayName": "Mentions",
                                 "description": "Activity mentions.",
                                 "maximumLength": 2000,
@@ -662,20 +705,20 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Message",
+                                "sourceName": "msdynci_message",
                                 "displayName": "Message",
                                 "description": "Message.",
                                 "maximumLength": 2000,
                                 "relationship": "hasA"
                             },
                             {
-                                "name": "numberofLikes",
+                                "name": "numberOfResponses",
                                 "dataType": "integer",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "msdynci_NumberofLikes"
+                                            "msdynci_NumberofResponses"
                                         ]
                                     },
                                     {
@@ -683,7 +726,7 @@
                                         "arguments": [
                                             {
                                                 "name": "minimumValue",
-                                                "value": "-2147483648"
+                                                "value": "0"
                                             },
                                             {
                                                 "name": "maximumValue",
@@ -700,7 +743,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "Number of Likes"
+                                                            "Number of Responses"
                                                         ]
                                                     ]
                                                 }
@@ -716,7 +759,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "Number of likes for an activity."
+                                                            "Number of responses for/on an activity, like, number of emails on a thread, number of likes on a LinkedIn, Facebook post etc."
                                                         ]
                                                     ]
                                                 }
@@ -724,11 +767,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_NumberofLikes",
-                                "displayName": "Number of Likes",
-                                "description": "Number of likes for an activity.",
+                                "sourceName": "msdynci_numberofresponses",
+                                "displayName": "Number of Responses",
+                                "description": "Number of responses for/on an activity, like, number of emails on a thread, number of likes on a LinkedIn, Facebook post etc.",
                                 "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -783,7 +826,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Sentiment",
+                                "sourceName": "msdynci_sentiment",
                                 "displayName": "Sentiment",
                                 "description": "Activity sentiment.",
                                 "maximumLength": 100,
@@ -850,7 +893,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Subject",
+                                "sourceName": "msdynci_subject",
                                 "displayName": "Subject",
                                 "description": "Activity subject.",
                                 "maximumLength": 100,
@@ -908,7 +951,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Url",
+                                "sourceName": "msdynci_url",
                                 "displayName": "Url",
                                 "description": "",
                                 "maximumLength": 100,
@@ -929,7 +972,7 @@
                                         "arguments": [
                                             {
                                                 "name": "minimumValue",
-                                                "value": "-2147483648"
+                                                "value": "0"
                                             },
                                             {
                                                 "name": "maximumValue",
@@ -979,11 +1022,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_Version",
+                                "sourceName": "msdynci_version",
                                 "displayName": "Version",
                                 "description": "Denotes latest version of an activity for manual tracking.",
                                 "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -1001,7 +1044,7 @@
                                         "arguments": [
                                             {
                                                 "name": "minimumValue",
-                                                "value": "-100000000000"
+                                                "value": "0"
                                             },
                                             {
                                                 "name": "maximumValue",
@@ -1042,11 +1085,11 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "msdynci_ViralityScore",
+                                "sourceName": "msdynci_viralityscore",
                                 "displayName": "Virality Score",
                                 "description": "Virality score for an activity.",
                                 "maximumValue": "100000000000",
-                                "minimumValue": "-100000000000",
+                                "minimumValue": "0",
                                 "relationship": "hasA"
                             },
                             {
@@ -1063,14 +1106,16 @@
                                                         "entityShape": "listLookupValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "0"
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "1"
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -1081,6 +1126,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'stateCode_display' is added to the 'CustomerActivity' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
                                                     "name": "stateCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -1094,7 +1140,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "stateCode"
+                                            "statecode"
                                         ]
                                     },
                                     {
@@ -1130,7 +1176,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "stateCode",
+                                "sourceName": "statecode",
                                 "displayName": "Status",
                                 "description": "Status of the CustomerActivity",
                                 "relationship": "representsStateWith"
@@ -1149,14 +1195,18 @@
                                                         "entityShape": "listLookupCorrelatedValues",
                                                         "constantValues": [
                                                             [
-                                                              "en",
-                                                              "Active",
-                                                              "1"
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
                                                             ],
                                                             [
-                                                              "en",
-                                                              "Inactive",
-                                                              "2"
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
                                                             ]
                                                         ]
                                                     }
@@ -1167,6 +1217,7 @@
                                             "traitReference": "does.addSupportingAttribute",
                                             "arguments": [
                                                 {
+                                                    "explanation": "This attribute 'statusCode_display' is added to the 'CustomerActivity' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                                                     "name": "statusCode_display",
                                                     "dataType": "localizedDisplayText",
                                                     "isReadOnly": true,
@@ -1180,7 +1231,7 @@
                                     {
                                         "traitReference": "is.CDS.sourceNamed",
                                         "arguments": [
-                                            "statusCode"
+                                            "statuscode"
                                         ]
                                     },
                                     {
@@ -1216,7 +1267,7 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statusCode",
+                                "sourceName": "statuscode",
                                 "displayName": "Status Reason",
                                 "description": "Reason for the status of the CustomerActivity",
                                 "relationship": {
@@ -1252,7 +1303,7 @@
                     }
                 }
             ],
-            "sourceName": "CustomerActivity",
+            "sourceName": "msdynci_CustomerActivity",
             "displayName": "Customer Activity",
             "description": "An activity performed by a user that has observational value to the business."
         }
