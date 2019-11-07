@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "educationId",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "description": "Unique identifier for entity instances"
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -211,11 +199,21 @@
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24,
                                 "displayName": "Status",
-                                "description": "Status of the Education"
+                                "description": "Status of the Education",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +250,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -317,10 +303,20 @@
                                 "sourceOrdering": 26,
                                 "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Education"
+                                "description": "Reason for the status of the Education",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -357,7 +353,7 @@
                                 "displayName": "Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "classYear",
                                 "appliedTraits": [
@@ -412,7 +408,7 @@
                                 "description": "Year in which Graduation occurred."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "completionYear",
                                 "appliedTraits": [
@@ -467,7 +463,7 @@
                                 "description": "Year in which Degree/Certificate was obtained."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -487,18 +483,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDegreeOrCertificate_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDegreeOrCertificate'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "degreeOrCertificate_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -552,10 +536,90 @@
                                 "sourceOrdering": 36,
                                 "isNullable": true,
                                 "displayName": "Degree Or Certificate",
-                                "description": "Degree/Certificate associated with Education History being entered."
+                                "description": "Degree/Certificate associated with Education History being entered.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDegreeOrCertificate_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDegreeOrCertificate'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "degreeOrCertificate_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
                                 "name": "msnfp_education_departmentOrCollege",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "departmentorCollegeId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Department or College"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Account associated with Education."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_departmentorcollegeid",
+                                            "sourceOrdering": 38,
+                                            "isNullable": true,
+                                            "displayName": "Department or College",
+                                            "description": "Unique identifier for Account associated with Education."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -566,85 +630,80 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "departmentorCollegeId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Department or College"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Account associated with Education."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_departmentorcollegeid",
-                                                        "sourceOrdering": 38,
-                                                        "isNullable": true,
-                                                        "displayName": "Department or College",
-                                                        "description": "Unique identifier for Account associated with Education."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
                                 "name": "msnfp_education_contact",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "educationContactId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Contact"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Contact"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_education_contactid",
+                                            "sourceOrdering": 39,
+                                            "isNullable": true,
+                                            "displayName": "Contact",
+                                            "description": "Contact"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Contact",
                                     "appliedTraits": [
@@ -655,85 +714,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "educationContactId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_education_contactid",
-                                                        "sourceOrdering": 39,
-                                                        "isNullable": true,
-                                                        "displayName": "Contact",
-                                                        "description": "Contact"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -753,18 +737,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpFieldOfStudy1_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpFieldOfStudy1'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "fieldOfStudy1_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -818,10 +790,20 @@
                                 "sourceOrdering": 40,
                                 "isNullable": true,
                                 "displayName": "Field of Study #1",
-                                "description": "Major associated with Education History being entered."
+                                "description": "Major associated with Education History being entered.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpFieldOfStudy1_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpFieldOfStudy1'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "fieldOfStudy1_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -841,18 +823,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpFieldOfStudy2_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpFieldOfStudy2'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "fieldOfStudy2_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -906,10 +876,20 @@
                                 "sourceOrdering": 42,
                                 "isNullable": true,
                                 "displayName": "Field of Study #2",
-                                "description": "Additional major or minor associated with Education History being entered."
+                                "description": "Additional major or minor associated with Education History being entered.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpFieldOfStudy2_display' is added to the 'Education' entity to provide the localized display text for the value of the listLookup attribute 'msnfpFieldOfStudy2'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "fieldOfStudy2_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "firstYearAttended",
                                 "appliedTraits": [
@@ -964,7 +944,7 @@
                                 "description": "Start year for Education History being selected."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "grade",
                                 "appliedTraits": [
@@ -1019,6 +999,76 @@
                             },
                             {
                                 "name": "msnfp_education_institution",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "institutionId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Institution"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Account associated with Education."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_institutionid",
+                                            "sourceOrdering": 46,
+                                            "isNullable": true,
+                                            "displayName": "Institution",
+                                            "description": "Unique identifier for Account associated with Education."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -1029,85 +1079,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "institutionId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Institution"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Account associated with Education."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_institutionid",
-                                                        "sourceOrdering": 46,
-                                                        "isNullable": true,
-                                                        "displayName": "Institution",
-                                                        "description": "Unique identifier for Account associated with Education."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "lastYearAttended",
                                 "appliedTraits": [

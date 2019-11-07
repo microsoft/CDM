@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -32,9 +32,9 @@
                         ],
                         "members": [
                             {
-                                "name": "adxCreatedByIPAddress",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "adxCreatedByIPAddress",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -69,9 +69,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "adxCreatedByUsername",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "adxCreatedByUsername",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -106,9 +106,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "adxModifiedByIPAddress",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "adxModifiedByIPAddress",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -143,9 +143,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "adxModifiedByUsername",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "adxModifiedByUsername",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -180,9 +180,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "adxOrganizationName",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "adxOrganizationName",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -217,9 +217,9 @@
                                 "maximumLength": 250
                             },
                             {
-                                "name": "adxTimeZone",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "timezone",
+                                "name": "adxTimeZone",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -256,82 +256,6 @@
                             },
                             {
                                 "name": "Account_managingPartner",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Account' adds the 'managingPartner' attribute below to the 'Contact' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "managingPartner",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Managing Partner"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Account associated with Contact."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Managing Partner",
-                                                        "description": "Unique identifier for Account associated with Contact.",
-                                                        "isNullable": true,
-                                                        "sourceName": "msa_managingpartnerid",
-                                                        "sourceOrdering": 10017
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -342,12 +266,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "managingPartner",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Managing Partner"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Account associated with Contact."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Managing Partner",
+                                            "description": "Unique identifier for Account associated with Contact.",
+                                            "isNullable": true,
+                                            "sourceName": "msa_managingpartnerid",
+                                            "sourceOrdering": 10017
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "disableWebTracking",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "disableWebTracking",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -398,9 +391,9 @@
                                 "sourceOrdering": 10020
                             },
                             {
-                                "name": "isMinor",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isMinor",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -451,9 +444,9 @@
                                 "sourceOrdering": 10022
                             },
                             {
-                                "name": "isMinorWithParentalConsent",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isMinorWithParentalConsent",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -504,9 +497,9 @@
                                 "sourceOrdering": 10024
                             },
                             {
-                                "name": "portalTermsAgreementDate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "portalTermsAgreementDate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -558,82 +551,6 @@
                             },
                             {
                                 "name": "PortalLanguage_preferredLanguage",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'PortalLanguage' adds the 'preferredLanguage' attribute below to the 'Contact' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "preferredLanguage",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Preferred Language"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "User’s preferred portal language"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Preferred Language",
-                                                        "description": "User’s preferred portal language",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_preferredlanguageid",
-                                                        "sourceOrdering": 10027
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "PortalLanguage",
                                     "appliedTraits": [
@@ -644,12 +561,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "preferredLanguage",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Preferred Language"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "User’s preferred portal language"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Preferred Language",
+                                            "description": "User’s preferred portal language",
+                                            "isNullable": true,
+                                            "sourceName": "adx_preferredlanguageid",
+                                            "sourceOrdering": 10027
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "profileAlert",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "profileAlert",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -683,9 +669,9 @@
                                 "sourceOrdering": 10028
                             },
                             {
-                                "name": "profileAlertDate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "profileAlertDate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -719,9 +705,9 @@
                                 "sourceOrdering": 10030
                             },
                             {
-                                "name": "profileAlertInstructions",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "profileAlertInstructions",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -756,9 +742,9 @@
                                 "maximumLength": 4096
                             },
                             {
-                                "name": "adxProfileIsAnonymous",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "adxProfileIsAnonymous",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -792,9 +778,9 @@
                                 "sourceOrdering": 10032
                             },
                             {
-                                "name": "adxProfileLastActivity",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "adxProfileLastActivity",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -828,9 +814,9 @@
                                 "sourceOrdering": 10034
                             },
                             {
-                                "name": "profileModifiedOn",
-                                "relationship": "modifiedOn",
+                                "purpose": "modifiedOn",
                                 "dataType": "dateTime",
+                                "name": "profileModifiedOn",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -864,9 +850,9 @@
                                 "sourceOrdering": 10035
                             },
                             {
-                                "name": "publicProfileCopy",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "publicProfileCopy",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -901,9 +887,9 @@
                                 "maximumLength": 64000
                             },
                             {
-                                "name": "accessFailedCount",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "accessFailedCount",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -956,9 +942,9 @@
                                 "minimumValue": "-2147483648"
                             },
                             {
-                                "name": "emailConfirmed",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "emailConfirmed",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1009,9 +995,9 @@
                                 "sourceOrdering": 10039
                             },
                             {
-                                "name": "lastSuccessfulLogin",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "lastSuccessfulLogin",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1062,9 +1048,9 @@
                                 "sourceOrdering": 10041
                             },
                             {
-                                "name": "localLoginDisabled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "localLoginDisabled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1115,9 +1101,9 @@
                                 "sourceOrdering": 10042
                             },
                             {
-                                "name": "lockoutEnabled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "lockoutEnabled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1168,9 +1154,9 @@
                                 "sourceOrdering": 10044
                             },
                             {
-                                "name": "lockoutEndDate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "lockoutEndDate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1221,9 +1207,9 @@
                                 "sourceOrdering": 10046
                             },
                             {
-                                "name": "loginEnabled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "loginEnabled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1274,9 +1260,9 @@
                                 "sourceOrdering": 10047
                             },
                             {
-                                "name": "mobilePhoneConfirmed",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "mobilePhoneConfirmed",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1327,9 +1313,9 @@
                                 "sourceOrdering": 10049
                             },
                             {
-                                "name": "passwordHash",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "passwordHash",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1364,9 +1350,9 @@
                                 "maximumLength": 128
                             },
                             {
-                                "name": "securityStamp",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "securityStamp",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1418,9 +1404,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "twoFactorEnabled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "twoFactorEnabled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1471,9 +1457,9 @@
                                 "sourceOrdering": 10053
                             },
                             {
-                                "name": "userName",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "userName",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",

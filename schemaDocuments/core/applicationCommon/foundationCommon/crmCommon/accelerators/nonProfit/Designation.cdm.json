@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "designationId",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "description": "Unique identifier for entity instances"
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -159,18 +159,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -223,11 +211,21 @@
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24,
                                 "displayName": "Status",
-                                "description": "Status of the Designation"
+                                "description": "Status of the Designation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -278,18 +276,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -343,10 +329,20 @@
                                 "sourceOrdering": 26,
                                 "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Designation"
+                                "description": "Reason for the status of the Designation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -383,7 +379,7 @@
                                 "displayName": "Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "acknowledgementName",
                                 "appliedTraits": [
@@ -437,7 +433,7 @@
                                 "description": "e.g. \"Childhood hunger relief\""
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "description",
                                 "appliedTraits": [
@@ -474,7 +470,7 @@
                                 "displayName": "Description"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "designationCode",
                                 "appliedTraits": [
@@ -511,7 +507,7 @@
                                 "displayName": "Designation Code"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "designationGroup",
                                 "appliedTraits": [
@@ -548,7 +544,7 @@
                                 "displayName": "Designation Group"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "endDate",
                                 "appliedTraits": [
@@ -584,7 +580,7 @@
                                 "displayName": "End Date"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -610,18 +606,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpEndowmentType_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpEndowmentType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "endowmentType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -658,10 +642,20 @@
                                 "sourceName": "msnfp_endowmenttype",
                                 "sourceOrdering": 39,
                                 "isNullable": true,
-                                "displayName": "Endowment Type"
+                                "displayName": "Endowment Type",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpEndowmentType_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpEndowmentType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "endowmentType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "glCreditAccount",
                                 "appliedTraits": [
@@ -698,7 +692,7 @@
                                 "displayName": "GL Credit Account"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "glDebitAccount",
                                 "appliedTraits": [
@@ -735,7 +729,7 @@
                                 "displayName": "GL Debit Account"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "initiative",
                                 "appliedTraits": [
@@ -772,7 +766,7 @@
                                 "displayName": "Initiative"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isActive",
                                 "appliedTraits": [
@@ -809,6 +803,76 @@
                             },
                             {
                                 "name": "msnfp_designation_parentDesignation",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "parentDesignationId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent Designation"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent Designation"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_parentdesignationid",
+                                            "sourceOrdering": 46,
+                                            "isNullable": true,
+                                            "displayName": "Parent Designation",
+                                            "description": "Parent Designation"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Designation",
                                     "appliedTraits": [
@@ -819,85 +883,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "parentDesignationId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Parent Designation"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Parent Designation"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_parentdesignationid",
-                                                        "sourceOrdering": 46,
-                                                        "isNullable": true,
-                                                        "displayName": "Parent Designation",
-                                                        "description": "Parent Designation"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "program",
                                 "appliedTraits": [
@@ -934,7 +923,7 @@
                                 "displayName": "Program"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -947,18 +936,6 @@
                                                         "entityShape": "listLookupValues",
                                                         "constantValues": []
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpRestrictionType_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRestrictionType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "restrictionType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -995,10 +972,20 @@
                                 "sourceName": "msnfp_restrictiontype",
                                 "sourceOrdering": 48,
                                 "isNullable": true,
-                                "displayName": "Restriction Type"
+                                "displayName": "Restriction Type",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpRestrictionType_display' is added to the 'Designation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRestrictionType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "restrictionType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "startDate",
                                 "appliedTraits": [
@@ -1034,7 +1021,7 @@
                                 "displayName": "Start Date"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "totalDisbursed",
                                 "appliedTraits": [
@@ -1073,6 +1060,76 @@
                             },
                             {
                                 "name": "TransactionCurrency_msnfp_Designation",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "transactionCurrencyId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Currency"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the currency associated with the entity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "transactioncurrencyid",
+                                            "sourceOrdering": 52,
+                                            "isNullable": true,
+                                            "displayName": "Currency",
+                                            "description": "Unique identifier of the currency associated with the entity."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Currency",
                                     "appliedTraits": [
@@ -1083,85 +1140,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "transactionCurrencyId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Currency"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the currency associated with the entity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 52,
-                                                        "isNullable": true,
-                                                        "displayName": "Currency",
-                                                        "description": "Unique identifier of the currency associated with the entity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "exchangeRate",
                                 "appliedTraits": [
@@ -1216,7 +1198,7 @@
                                 "description": "Exchange rate for the currency associated with the entity with respect to the base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "totaldisbursedBase",
                                 "appliedTraits": [

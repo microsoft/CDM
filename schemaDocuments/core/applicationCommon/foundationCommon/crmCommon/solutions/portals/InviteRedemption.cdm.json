@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -69,9 +69,9 @@
                         ],
                         "members": [
                             {
-                                "name": "actualEnd",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "actualEnd",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -122,73 +122,7 @@
                                 "sourceOrdering": 2
                             },
                             {
-                                "name": "Activity_activityId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Activity' adds the 'activityId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "activityId",
-                                                        "relationship": "identifiedBy",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "systemrequired"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Activity"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the activity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Activity",
-                                                        "description": "Shows the activity.",
-                                                        "sourceName": "activityid",
-                                                        "sourceOrdering": 4
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "activity",
                                 "entity": {
                                     "entityReference": "Activity",
                                     "appliedTraits": [
@@ -199,12 +133,70 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "identifiedBy",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Activity"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the activity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Activity",
+                                            "description": "Shows the activity.",
+                                            "sourceName": "activityid",
+                                            "sourceOrdering": 4
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "isBilled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isBilled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -255,9 +247,9 @@
                                 "sourceOrdering": 5
                             },
                             {
-                                "name": "description",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "description",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -309,8 +301,7 @@
                                 "maximumLength": 2000
                             },
                             {
-                                "name": "activityTypeCode",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -325,21 +316,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'activityTypeCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'activityTypeCode'",
-                                                    "name": "activityTypeCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "activityTypeCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -383,14 +363,22 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'activityTypeCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'activityTypeCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "activityTypeCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Activity Type",
                                 "description": "Shows the type of activity.",
                                 "sourceName": "activitytypecode",
                                 "sourceOrdering": 9
                             },
                             {
-                                "name": "stateCode",
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -430,21 +418,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "name": "stateCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "stateCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -488,15 +465,24 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Activity Status",
                                 "description": "Status of the activity.",
                                 "sourceName": "statecode",
                                 "sourceOrdering": 10
                             },
                             {
-                                "name": "scheduledEnd",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "scheduledEnd",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -547,14 +533,14 @@
                                 "sourceOrdering": 11
                             },
                             {
-                                "name": "scheduledDurationMinutes",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "integer",
                                     "appliedTraits": [
                                         "means.measurement.duration.minutes"
                                     ]
                                 },
+                                "name": "scheduledDurationMinutes",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -607,14 +593,14 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "actualDurationMinutes",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "integer",
                                     "appliedTraits": [
                                         "means.measurement.duration.minutes"
                                     ]
                                 },
+                                "name": "actualDurationMinutes",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -667,9 +653,8 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "statusCode",
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -722,21 +707,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "name": "statusCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "statusCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -780,6 +754,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
                                 "description": "Select the activity's status.",
                                 "isNullable": true,
@@ -787,9 +770,9 @@
                                 "sourceOrdering": 14
                             },
                             {
-                                "name": "actualStart",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "actualStart",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -840,8 +823,7 @@
                                 "sourceOrdering": 16
                             },
                             {
-                                "name": "priorityCode",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -875,21 +857,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'priorityCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'priorityCode'",
-                                                    "name": "priorityCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "priorityCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -933,6 +904,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'priorityCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'priorityCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "priorityCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Priority",
                                 "description": "Shows the priority of the activity.",
                                 "isNullable": true,
@@ -940,89 +920,7 @@
                                 "sourceOrdering": 18
                             },
                             {
-                                "name": "Object_regardingObjectId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Quote and Case and WebPage and KnowledgeBaseRecord and Lead and KnowledgeArticle and Poll and PollSubmission and CaseDeflection and Blog and PollPlacement and PollOption and Opportunity and Website and Invitation and Account and Order and BlogPost and Contact and BookableResourceBookingHeader and Contract and Site and AdPlacement and QuickCampaign and BookableResourceBooking and CampaignActivity and Invoice and Entitlement and Ad and Campaign' adds the 'regardingObjectId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "regardingObjectId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Regarding"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the object with which the activity is associated."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Regarding",
-                                                        "description": "Unique identifier of the object with which the activity is associated.",
-                                                        "isNullable": true,
-                                                        "sourceName": "regardingobjectid",
-                                                        "sourceOrdering": 19
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.imposeDirectives",
-                                            "arguments": [
-                                                "selectOne"
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "regardingObject",
                                 "entity": {
                                     "entityReference": {
                                         "entityName": "Regarding",
@@ -1449,12 +1347,83 @@
                                             }
                                         ]
                                     }
+                                },
+                                "resolutionGuidance": {
+                                    "imposedDirectives": [
+                                        "selectOne"
+                                    ],
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Regarding"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the object with which the activity is associated."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Regarding",
+                                            "description": "Unique identifier of the object with which the activity is associated.",
+                                            "isNullable": true,
+                                            "sourceName": "regardingobjectid",
+                                            "sourceOrdering": 19
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "subject",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "subject",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1506,9 +1475,9 @@
                                 "maximumLength": 200
                             },
                             {
-                                "name": "isWorkflowCreated",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isWorkflowCreated",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1559,9 +1528,9 @@
                                 "sourceOrdering": 21
                             },
                             {
-                                "name": "scheduledStart",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "scheduledStart",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1612,8 +1581,7 @@
                                 "sourceOrdering": 22
                             },
                             {
-                                "name": "instanceTypeCode",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1659,21 +1627,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'instanceTypeCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'instanceTypeCode'",
-                                                    "name": "instanceTypeCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "instanceTypeCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1717,15 +1674,24 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'instanceTypeCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'instanceTypeCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "instanceTypeCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Recurring Instance Type",
                                 "description": "Shows the type of instance of a recurring series.",
                                 "sourceName": "instancetypecode",
                                 "sourceOrdering": 27
                             },
                             {
-                                "name": "seriesId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "guid",
+                                "name": "seriesId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1776,9 +1742,9 @@
                                 "sourceOrdering": 28
                             },
                             {
-                                "name": "isRegularActivity",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isRegularActivity",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1828,83 +1794,7 @@
                                 "sourceOrdering": 29
                             },
                             {
-                                "name": "Currency_transactionCurrencyId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Currency' adds the 'transactionCurrencyId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "transactionCurrencyId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Currency"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the currency associated with the activitypointer."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Currency",
-                                                        "description": "Unique identifier of the currency associated with the activitypointer.",
-                                                        "isNullable": true,
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 33
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "transactionCurrency",
                                 "entity": {
                                     "entityReference": "Currency",
                                     "appliedTraits": [
@@ -1915,12 +1805,80 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Currency"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the currency associated with the activitypointer."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Currency",
+                                            "description": "Unique identifier of the currency associated with the activitypointer.",
+                                            "isNullable": true,
+                                            "sourceName": "transactioncurrencyid",
+                                            "sourceOrdering": 33
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "exchangeRate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
+                                "name": "exchangeRate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1973,9 +1931,9 @@
                                 "minimumValue": "1E-10"
                             },
                             {
-                                "name": "leftVoiceMail",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "leftVoiceMail",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2026,8 +1984,7 @@
                                 "sourceOrdering": 35
                             },
                             {
-                                "name": "community",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2042,21 +1999,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'community_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'community'",
-                                                    "name": "community_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "community",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2100,6 +2046,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'community_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'community'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "community_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Social Channel",
                                 "description": "Shows how contact about the social activity originated, such as from Twitter or Facebook. This field is read-only.",
                                 "isNullable": true,
@@ -2107,9 +2062,9 @@
                                 "sourceOrdering": 36
                             },
                             {
-                                "name": "traversedPath",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "traversedPath",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2161,9 +2116,9 @@
                                 "maximumLength": 1250
                             },
                             {
-                                "name": "isMapiPrivate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isMapiPrivate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2214,9 +2169,9 @@
                                 "sourceOrdering": 38
                             },
                             {
-                                "name": "exchangeWebLink",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "exchangeWebLink",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2268,9 +2223,9 @@
                                 "maximumLength": 1250
                             },
                             {
-                                "name": "exchangeItemId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "exchangeItemId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2322,8 +2277,7 @@
                                 "maximumLength": 200
                             },
                             {
-                                "name": "deliveryPriorityCode",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2338,21 +2292,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'deliveryPriorityCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'deliveryPriorityCode'",
-                                                    "name": "deliveryPriorityCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "deliveryPriorityCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2396,6 +2339,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'deliveryPriorityCode_display' is added to the 'InviteRedemption' entity to provide the localized display text for the value of the listLookup attribute 'deliveryPriorityCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "deliveryPriorityCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Delivery Priority",
                                 "description": "Shows the priority of delivery of the activity to the email server.",
                                 "isNullable": true,
@@ -2403,9 +2355,9 @@
                                 "sourceOrdering": 41
                             },
                             {
-                                "name": "sentOn",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "sentOn",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2456,9 +2408,9 @@
                                 "sourceOrdering": 42
                             },
                             {
-                                "name": "deliveryLastAttemptedOn",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "deliveryLastAttemptedOn",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2509,9 +2461,9 @@
                                 "sourceOrdering": 43
                             },
                             {
-                                "name": "senderMailboxId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
+                                "name": "senderMailboxId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -2571,9 +2523,9 @@
                                 "sourceOrdering": 44
                             },
                             {
-                                "name": "postponeActivityProcessingUntil",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "postponeActivityProcessingUntil",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2624,9 +2576,9 @@
                                 "sourceOrdering": 45
                             },
                             {
-                                "name": "processId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "guid",
+                                "name": "processId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2677,9 +2629,9 @@
                                 "sourceOrdering": 46
                             },
                             {
-                                "name": "stageId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "guid",
+                                "name": "stageId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2730,9 +2682,9 @@
                                 "sourceOrdering": 47
                             },
                             {
-                                "name": "activityAdditionalParams",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "activityAdditionalParams",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2784,83 +2736,7 @@
                                 "maximumLength": 8192
                             },
                             {
-                                "name": "SLA_SLAId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'SLA' adds the 'SLAId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "SLAId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "SLA"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Choose the service level agreement (SLA) that you want to apply to the case record."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "SLA",
-                                                        "description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
-                                                        "isNullable": true,
-                                                        "sourceName": "slaid",
-                                                        "sourceOrdering": 49
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "SLA",
                                 "entity": {
                                     "entityReference": "SLA",
                                     "appliedTraits": [
@@ -2871,86 +2747,78 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "SLA"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Choose the service level agreement (SLA) that you want to apply to the case record."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "SLA",
+                                            "description": "Choose the service level agreement (SLA) that you want to apply to the case record.",
+                                            "isNullable": true,
+                                            "sourceName": "slaid",
+                                            "sourceOrdering": 49
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "SLA_SLAInvokedId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'SLA' adds the 'SLAInvokedId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "SLAInvokedId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Last SLA applied"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Last SLA that was applied to this case. This field is for internal use only."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Last SLA applied",
-                                                        "description": "Last SLA that was applied to this case. This field is for internal use only.",
-                                                        "isNullable": true,
-                                                        "sourceName": "slainvokedid",
-                                                        "sourceOrdering": 50
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "SLAInvoked",
                                 "entity": {
                                     "entityReference": "SLA",
                                     "appliedTraits": [
@@ -2961,12 +2829,80 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Last SLA applied"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Last SLA that was applied to this case. This field is for internal use only."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Last SLA applied",
+                                            "description": "Last SLA that was applied to this case. This field is for internal use only.",
+                                            "isNullable": true,
+                                            "sourceName": "slainvokedid",
+                                            "sourceOrdering": 50
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "onHoldTime",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "onHoldTime",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3019,9 +2955,9 @@
                                 "minimumValue": "-2147483648"
                             },
                             {
-                                "name": "lastOnHoldTime",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "lastOnHoldTime",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3072,9 +3008,9 @@
                                 "sourceOrdering": 52
                             },
                             {
-                                "name": "sortDate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "sortDate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3125,83 +3061,7 @@
                                 "sourceOrdering": 53
                             },
                             {
-                                "name": "Service_serviceId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Service' adds the 'serviceId' attribute below to the 'InviteRedemption' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "serviceId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Service"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of an associated service."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Service",
-                                                        "description": "Unique identifier of an associated service.",
-                                                        "isNullable": true,
-                                                        "sourceName": "serviceid",
-                                                        "sourceOrdering": 54
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "service",
                                 "entity": {
                                     "entityReference": "Service",
                                     "appliedTraits": [
@@ -3212,12 +3072,80 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Service"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of an associated service."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Service",
+                                            "description": "Unique identifier of an associated service.",
+                                            "isNullable": true,
+                                            "sourceName": "serviceid",
+                                            "sourceOrdering": 54
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "from",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "from",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3277,9 +3205,9 @@
                                 "sourceOrdering": 92
                             },
                             {
-                                "name": "to",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "to",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3339,9 +3267,9 @@
                                 "sourceOrdering": 93
                             },
                             {
-                                "name": "CC",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "CC",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3401,9 +3329,9 @@
                                 "sourceOrdering": 94
                             },
                             {
-                                "name": "BCC",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "BCC",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3463,9 +3391,9 @@
                                 "sourceOrdering": 95
                             },
                             {
-                                "name": "requiredAttendees",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "requiredAttendees",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3525,9 +3453,9 @@
                                 "sourceOrdering": 96
                             },
                             {
-                                "name": "optionalAttendees",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "optionalAttendees",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3587,9 +3515,9 @@
                                 "sourceOrdering": 97
                             },
                             {
-                                "name": "organizer",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "organizer",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3649,9 +3577,9 @@
                                 "sourceOrdering": 98
                             },
                             {
-                                "name": "resources",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "resources",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3711,9 +3639,9 @@
                                 "sourceOrdering": 99
                             },
                             {
-                                "name": "customers",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "customers",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3773,9 +3701,9 @@
                                 "sourceOrdering": 102
                             },
                             {
-                                "name": "partners",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "partylist",
+                                "name": "partners",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3835,9 +3763,9 @@
                                 "sourceOrdering": 103
                             },
                             {
-                                "name": "ipAddress",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "ipAddress",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",

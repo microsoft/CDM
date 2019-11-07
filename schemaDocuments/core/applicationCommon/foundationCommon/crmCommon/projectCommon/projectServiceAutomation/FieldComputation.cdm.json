@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "fieldComputationId",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "description": "Field computation record unique identifier."
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -211,11 +199,21 @@
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24,
                                 "displayName": "Status",
-                                "description": "Status of the Field Computation"
+                                "description": "Status of the Field Computation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +250,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -317,10 +303,20 @@
                                 "sourceOrdering": 26,
                                 "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Field Computation"
+                                "description": "Reason for the status of the Field Computation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -374,7 +370,7 @@
                                 "description": "Stores the name of the computed transaction field and product property computation mapping."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -394,18 +390,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'computedField_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'computedField'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "computedField_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -459,10 +443,90 @@
                                 "sourceOrdering": 34,
                                 "isNullable": true,
                                 "displayName": "Computed Transaction Field",
-                                "description": "Stores an enum value that indicates the supported sales document line field will be the target computed field."
+                                "description": "Stores an enum value that indicates the supported sales document line field will be the target computed field.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'computedField_display' is added to the 'FieldComputation' entity to provide the localized display text for the value of the listLookup attribute 'computedField'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "computedField_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
                                 "name": "msdyn_product_msdyn_fieldcomputation_ProductId",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "productId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Product"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Transaction product identifier."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msdyn_productid",
+                                            "sourceOrdering": 36,
+                                            "isNullable": true,
+                                            "displayName": "Product",
+                                            "description": "Transaction product identifier."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Product",
                                     "appliedTraits": [
@@ -473,85 +537,80 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "productId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Product"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Transaction product identifier."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msdyn_productid",
-                                                        "sourceOrdering": 36,
-                                                        "isNullable": true,
-                                                        "displayName": "Product",
-                                                        "description": "Transaction product identifier."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
                                 "name": "msdyn_dynamicproperty_msdyn_fieldcomputation_PropertyId",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "propertyId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Factor"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Product dynamic property identifier."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msdyn_propertyid",
+                                            "sourceOrdering": 37,
+                                            "isNullable": true,
+                                            "displayName": "Factor",
+                                            "description": "Product dynamic property identifier."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Property",
                                     "appliedTraits": [
@@ -562,81 +621,6 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "propertyId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Factor"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Product dynamic property identifier."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msdyn_propertyid",
-                                                        "sourceOrdering": 37,
-                                                        "isNullable": true,
-                                                        "displayName": "Factor",
-                                                        "description": "Product dynamic property identifier."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             }
                         ]
@@ -644,5 +628,6 @@
                 }
             ]
         }
-    ]
+    ],
+    "jsonSchemaSemanticVersion": "0.9.0"
 }

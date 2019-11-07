@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -32,9 +32,9 @@
                         ],
                         "members": [
                             {
-                                "name": "knowledgeArticleView",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "knowledgeArticleView",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -87,9 +87,9 @@
                                 "minimumValue": "-1"
                             },
                             {
-                                "name": "domainName",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "domainName",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -141,8 +141,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "referrer",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -194,21 +193,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'referrer_display' is added to the 'KnowledgeArticleViews' entity to provide the localized display text for the value of the listLookup attribute 'referrer'",
-                                                    "name": "referrer_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "referrer",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -252,6 +240,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'referrer_display' is added to the 'KnowledgeArticleViews' entity to provide the localized display text for the value of the listLookup attribute 'referrer'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "referrer_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Referrer",
                                 "description": "Types of knowledge article referrers that will be tracked for a portal.",
                                 "isNullable": true,

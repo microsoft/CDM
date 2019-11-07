@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "applicationDeadline",
                                 "appliedTraits": [
@@ -86,6 +86,59 @@
                             },
                             {
                                 "name": "msnfp_deliveryframework_lead_deliveryframeworkid",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "deliveryFrameworkId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Delivery Framework"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_deliveryframeworkid",
+                                            "sourceOrdering": 10281,
+                                            "isNullable": true,
+                                            "displayName": "Delivery Framework"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "DeliveryFramework",
                                     "appliedTraits": [
@@ -96,68 +149,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "deliveryFrameworkId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Delivery Framework"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_deliveryframeworkid",
-                                                        "sourceOrdering": 10281,
-                                                        "isNullable": true,
-                                                        "displayName": "Delivery Framework"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "expectedAmountRequested",
                                 "appliedTraits": [
@@ -212,7 +207,7 @@
                                 "description": "Amount requested by the Grant Seeker."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "expectedamountrequestedBase",
                                 "appliedTraits": [
@@ -276,7 +271,7 @@
                                 "description": "Value of the Expected Amount Requested in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "expectedDuration",
                                 "appliedTraits": [
@@ -331,7 +326,7 @@
                                 "description": "Expected duration of the Grant in months."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "expectedStartDate",
                                 "appliedTraits": [
@@ -384,7 +379,7 @@
                                 "description": "Expected start date of the Grant."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isRenewal",
                                 "appliedTraits": [
@@ -438,6 +433,76 @@
                             },
                             {
                                 "name": "msnfp_lead_docket",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "leadDocketId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Docket"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Docket"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_lead_docketid",
+                                            "sourceOrdering": 10288,
+                                            "isNullable": true,
+                                            "displayName": "Docket",
+                                            "description": "Docket"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Docket",
                                     "appliedTraits": [
@@ -448,85 +513,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "leadDocketId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Docket"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Docket"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_lead_docketid",
-                                                        "sourceOrdering": 10288,
-                                                        "isNullable": true,
-                                                        "displayName": "Docket",
-                                                        "description": "Docket"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "letterofIntentDeadline",
                                 "appliedTraits": [
@@ -579,7 +569,7 @@
                                 "description": "Deadline to submit notification to donor that organization will be competing for this grant."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "organizationalBudget",
                                 "appliedTraits": [
@@ -634,7 +624,7 @@
                                 "description": "Total budget of the Organization."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "organizationalBudgetBase",
                                 "appliedTraits": [
@@ -698,7 +688,7 @@
                                 "description": "Value of the Organization Budget in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -736,18 +726,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpOrganizationType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpOrganizationType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "organizationType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -801,10 +779,20 @@
                                 "sourceOrdering": 10292,
                                 "isNullable": true,
                                 "displayName": "Organization Type",
-                                "description": "Type of Account."
+                                "description": "Type of Account.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpOrganizationType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpOrganizationType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "organizationType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -830,18 +818,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpRequestType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRequestType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "requestType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -895,10 +871,20 @@
                                 "sourceOrdering": 10294,
                                 "isNullable": true,
                                 "displayName": "Request Type",
-                                "description": "Indicates the type of Inquiry/LOI/Lead."
+                                "description": "Indicates the type of Inquiry/LOI/Lead.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpRequestType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRequestType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "requestType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "totalProjectBudget",
                                 "appliedTraits": [
@@ -953,7 +939,7 @@
                                 "description": "Budget defined by the Grant Seeker."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "totalProjectBudgetBase",
                                 "appliedTraits": [

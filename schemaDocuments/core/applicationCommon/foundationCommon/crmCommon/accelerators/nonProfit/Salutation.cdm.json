@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "salutationId",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "description": "Unique identifier for entity instances"
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -211,11 +199,21 @@
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24,
                                 "displayName": "Status",
-                                "description": "Status of the Salutation"
+                                "description": "Status of the Salutation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +250,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -317,10 +303,20 @@
                                 "sourceOrdering": 26,
                                 "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Salutation"
+                                "description": "Reason for the status of the Salutation",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -357,7 +353,7 @@
                                 "displayName": "Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "addressLabelLine1",
                                 "appliedTraits": [
@@ -412,7 +408,7 @@
                                 "description": "The first line of the address label when printing an envelope\n>Mr John Smith\nMrs Wilma Smith\n1234 Main Street\nAnytown, USA 11111"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "addressLabelLine2",
                                 "appliedTraits": [
@@ -467,7 +463,7 @@
                                 "description": "This is the 2nd line of the envelope usually the 2nd person in the household if applicable\nMr John Smith\n>Mrs Wilma Smith\n1234 Main Street\nAnytown, USA 11111"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "addressLabelLine3",
                                 "appliedTraits": [
@@ -522,7 +518,7 @@
                                 "description": "This is the 3rd line of the address which could be an Organization name or a C/O\nMr John Smith\nMrs Wilma Smith c/o Anytown Company\n1234 Main Street\nAnytown, USA 11111"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -542,18 +538,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpCommunicationMethod_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpCommunicationMethod'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "communicationMethod_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -607,10 +591,20 @@
                                 "sourceOrdering": 37,
                                 "isNullable": true,
                                 "displayName": "Communication Method",
-                                "description": "Indicates that this Salutation should be applied when the Customer is contacted via the indicated communication channel"
+                                "description": "Indicates that this Salutation should be applied when the Customer is contacted via the indicated communication channel",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpCommunicationMethod_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpCommunicationMethod'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "communicationMethod_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -630,18 +624,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpConstituentType_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpConstituentType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "constituentType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -695,10 +677,20 @@
                                 "sourceOrdering": 39,
                                 "isNullable": true,
                                 "displayName": "Constituent Type",
-                                "description": "Indicates that this Salutation should be applied when the Customer is contacted in their capacity as the indicated ConstituentType"
+                                "description": "Indicates that this Salutation should be applied when the Customer is contacted in their capacity as the indicated ConstituentType",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpConstituentType_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpConstituentType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "constituentType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "firstName",
                                 "name": "firstName",
                                 "appliedTraits": [
@@ -752,7 +744,7 @@
                                 "description": "First Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "fullName",
                                 "name": "fullName",
                                 "appliedTraits": [
@@ -806,7 +798,7 @@
                                 "description": "Full Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "insideSalutation",
                                 "appliedTraits": [
@@ -860,7 +852,7 @@
                                 "description": "This is the information that appears after the word Dear on the letter sent to the donor."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isPreferred",
                                 "appliedTraits": [
@@ -913,7 +905,7 @@
                                 "description": "Indicates that this Salutation may be applied by business logic when matches on other selection criteria (Comm. method, Account, Constituent Type) are not found."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "lastName",
                                 "name": "lastName",
                                 "appliedTraits": [
@@ -967,7 +959,7 @@
                                 "description": "Last Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "middleName",
                                 "name": "middleName",
                                 "appliedTraits": [
@@ -1021,7 +1013,7 @@
                                 "description": "Middle Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "onBehalfOfAccount",
                                 "appliedTraits": [
@@ -1110,67 +1102,13 @@
                                         ]
                                     }
                                 },
-                                "relationship": {
-                                    "relationshipReference": "referencesCustomer",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "salutationCustomer",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Customer"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_salutation_customer",
-                                                        "sourceOrdering": 50,
-                                                        "isNullable": true,
-                                                        "displayName": "Customer"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
+                                "purpose": {
+                                    "purposeReference": "referencesCustomer",
+                                    "appliedTraits": []
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1196,18 +1134,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpSuffix_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSuffix'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "suffix_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1261,10 +1187,20 @@
                                 "sourceOrdering": 51,
                                 "isNullable": true,
                                 "displayName": "Suffix",
-                                "description": "Suffix"
+                                "description": "Suffix",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpSuffix_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSuffix'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "suffix_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1308,18 +1244,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpTitle_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTitle'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "title_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1373,10 +1297,20 @@
                                 "sourceOrdering": 53,
                                 "isNullable": true,
                                 "displayName": "Title",
-                                "description": "Prefix"
+                                "description": "Prefix",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpTitle_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTitle'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "title_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1464,18 +1398,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'type_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'type'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "type_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -1527,7 +1449,17 @@
                                 "sourceOrdering": 55,
                                 "isNullable": true,
                                 "displayName": "Type",
-                                "description": "Indicates that this Salutation should be applied when the Customer is contacted for the indicated category of mailing or acknowledgement."
+                                "description": "Indicates that this Salutation should be applied when the Customer is contacted for the indicated category of mailing or acknowledgement.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'type_display' is added to the 'Salutation' entity to provide the localized display text for the value of the listLookup attribute 'type'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "type_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             }
                         ]
                     }

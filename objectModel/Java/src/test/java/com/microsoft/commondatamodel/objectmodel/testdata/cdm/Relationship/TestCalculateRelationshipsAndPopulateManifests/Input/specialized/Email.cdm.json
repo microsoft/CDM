@@ -1,0 +1,55 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "Acct.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Email",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "entityId",
+                    "name": "emailId"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "subject"
+                },
+                {
+                    "name": "sendToAcct",
+                    "entity": {
+                        "entityReference": "Acct",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Acct/(resolvedAttributes)/acctId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "sendToAcctId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

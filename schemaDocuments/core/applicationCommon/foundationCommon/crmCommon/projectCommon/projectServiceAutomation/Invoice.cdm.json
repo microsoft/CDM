@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
                                 "name": "salesOrderId",
                                 "appliedTraits": [
@@ -94,7 +94,7 @@
                                 "description": "Choose the order related to the invoice to make sure the order is fulfilled and invoiced correctly."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "billToContactName",
                                 "appliedTraits": [
@@ -148,7 +148,7 @@
                                 "description": "Type the primary contact name at the customer's billing address."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "hasCorrections",
                                 "appliedTraits": [
@@ -201,7 +201,7 @@
                                 "description": "Indicates if this invoice contains corrections to previous invoices."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -227,18 +227,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'orderType_display' is added to the 'Invoice' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "orderType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -292,10 +280,20 @@
                                 "sourceOrdering": 10131,
                                 "isNullable": true,
                                 "displayName": "Type",
-                                "description": "Whether the invoice is for an Item- based Order or a Work-based Project Contract"
+                                "description": "Whether the invoice is for an Item- based Order or a Work-based Project Contract",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'orderType_display' is added to the 'Invoice' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "orderType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -333,18 +331,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'projectInvoiceStatus_display' is added to the 'Invoice' entity to provide the localized display text for the value of the listLookup attribute 'projectInvoiceStatus'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "projectInvoiceStatus_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -398,12 +384,23 @@
                                 "sourceOrdering": 10133,
                                 "isNullable": true,
                                 "displayName": "Project Invoice Status",
-                                "description": "Project specific status"
+                                "description": "Project specific status",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'projectInvoiceStatus_display' is added to the 'Invoice' entity to provide the localized display text for the value of the listLookup attribute 'projectInvoiceStatus'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "projectInvoiceStatus_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             }
                         ]
                     }
                 }
             ]
         }
-    ]
+    ],
+    "jsonSchemaSemanticVersion": "0.9.0"
 }

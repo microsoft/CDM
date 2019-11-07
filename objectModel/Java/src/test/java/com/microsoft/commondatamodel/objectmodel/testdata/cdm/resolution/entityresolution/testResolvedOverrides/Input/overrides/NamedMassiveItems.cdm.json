@@ -1,0 +1,84 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "NamedItems.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "explanation": "indicates a measurement of mass in kilogram units",
+            "traitName": "means.measurement.weight.kilograms",
+            "extendsTrait": "means.measurement.weight"
+        },
+        {
+            "dataTypeName": "kilos",
+            "extendsDataType": "double",
+            "exhibitsTraits": [
+                "means.measurement.weight.kilograms"
+            ]
+        },
+        {
+            "entityName": "NamedMassiveItems",
+            "extendsEntity": {
+                "entityReference": "NamedItems",
+                "appliedTraits": [
+                    {
+                        "traitReference": "sampleEntityTrait",
+                        "arguments": [
+                            {
+                                "name": "P1",
+                                "value": "P1FromDerived"
+                            },
+                            {
+                                "name": "P2",
+                                "value": {
+                                    "entityReference": {
+                                        "entityShape": "sampleList",
+                                        "constantValues": [
+                                            [
+                                                "0",
+                                                "Item zero"
+                                            ],
+                                            [
+                                                "3",
+                                                "Item Three"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "integer",
+                    "name": "lastChecked",
+                    "appliedTraits": [
+                        "means.calendar.dayOfYear"
+                    ]
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "legacyGoo",
+                    "resolutionGuidance": {
+                        "removeAttribute": true
+                    }
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "kilos",
+                    "name": "mass"
+                }
+            ]
+        }
+    ]
+}

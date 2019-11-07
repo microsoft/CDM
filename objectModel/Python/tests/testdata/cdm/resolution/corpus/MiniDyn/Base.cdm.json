@@ -1,0 +1,274 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "User.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "perfStandard",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "P1",
+                    "defaultValue": "P1Def",
+                    "required": false,
+                    "direction": "in",
+                    "dataType": "string"
+                }
+            ]
+        },
+        {
+            "entityName": "Base",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "perfStandard",
+                    "arguments": [
+                        {
+                            "name": "P1",
+                            "value": "P1FromBase"
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "name": "localizedDisplayText",
+                            "value": {
+                                "entityReference": {
+                                    "entityShape": "localizedTable",
+                                    "constantValues": [
+                                        [
+                                            "en",
+                                            "EntityDisplay"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "name": "localizedDisplayText",
+                            "value": {
+                                "entityReference": {
+                                    "entityShape": "localizedTable",
+                                    "constantValues": [
+                                        [
+                                            "en",
+                                            "This is the base class"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "displayName": "EntityDisplay",
+            "description": "This is the base class",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "base",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "fromTheBase"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "hasA",
+                                "dataType": "dateTime",
+                                "name": "createdOn",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "AttributeDisplay"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "This is example description text"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "AttributeDisplay",
+                                "description": "This is example description text"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "dateTime",
+                                "name": "modifiedOn",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "AttributeDisplay"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "This is example description text"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "AttributeDisplay",
+                                "description": "This is example description text"
+                            },
+                            {
+                                "name": "owner",
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/userId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "integer",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "OwnerId"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "This is example description text"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "AttributeDisplay",
+                                            "description": "This is example description text"
+                                        }
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,167 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "HumanResources.cdm.json"
+        },
+        {
+            "corpusPath": "Email.cdm.json"
+        },
+        {
+            "corpusPath": "Letter.cdm.json"
+        },
+        {
+            "corpusPath": "Meeting.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "EmploymentOffer",
+            "extendsEntity": "HumanResources",
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "jobTitle"
+                },
+                {
+                    "name": "notificationVia",
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "allComms",
+                            "extendsEntity": "Communication",
+                            "hasAttributes": [
+                                {
+                                    "name": "emailOption",
+                                    "entity": "Email"
+                                },
+                                {
+                                    "name": "letterOption",
+                                    "entity": "Letter"
+                                },
+                                {
+                                    "name": "meetingOption",
+                                    "entity": "Meeting"
+                                }
+                            ]
+                        }
+                    },
+                    "resolutionGuidance": {
+                        "cardinality": "one",
+                        "renameFormat": "notify_{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "notificationViaCommId",
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier"
+                                ]
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "one",
+                            "selectedTypeAttribute": {
+                                "dataType": "entityName",
+                                "name": "selectedEntity",
+                                "appliedTraits": [
+                                    "is.linkedEntity.name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "responseVia",
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "allComms",
+                            "extendsEntity": "Communication",
+                            "hasAttributes": [
+                                {
+                                    "name": "emailOption",
+                                    "entity": {
+                                        "entityReference": "Email",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Email/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "letterOption",
+                                    "entity": {
+                                        "entityReference": "Letter",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Letter/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "meetingOption",
+                                    "entity": {
+                                        "entityReference": "Meeting",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "Meeting/(resolvedAttributes)/commId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "resolutionGuidance": {
+                        "imposedDirectives": [
+                            "referenceOnly"
+                        ],
+                        "cardinality": "one",
+                        "renameFormat": "notify_{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "responseViaCommId",
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier"
+                                ]
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "one",
+                            "selectedTypeAttribute": {
+                                "dataType": "entityName",
+                                "name": "selectedEntity",
+                                "appliedTraits": [
+                                    "is.linkedEntity.name"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

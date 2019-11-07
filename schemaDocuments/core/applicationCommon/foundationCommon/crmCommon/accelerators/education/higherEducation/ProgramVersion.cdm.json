@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "programVersionId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_programversionid",
-                                "sourceOrdering": 1,
                                 "displayName": "Program Version",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_programversionid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Program Version"
+                                "description": "Status of the Program Version",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Program Version"
+                                "description": "Reason for the status of the Program Version",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,15 +360,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Program Version Name",
-                                "description": "Program Version Name"
+                                "description": "Program Version Name",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "code",
                                 "appliedTraits": [
@@ -420,15 +414,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_code",
-                                "maximumLength": 20,
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Code",
-                                "description": "Abbreviated code for the program version."
+                                "description": "Abbreviated code for the program version.",
+                                "isNullable": true,
+                                "sourceName": "mshied_code",
+                                "sourceOrdering": 34,
+                                "maximumLength": 20
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalIdentifier",
                                 "appliedTraits": [
@@ -474,15 +468,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalidentifier",
-                                "maximumLength": 255,
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "External Identifier",
-                                "description": "External Identifier"
+                                "description": "External Identifier",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalidentifier",
+                                "sourceOrdering": 35,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -514,18 +508,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'externalSourceSystem_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "externalSourceSystem_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -575,14 +557,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalsourcesystem",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'externalSourceSystem_display' is added to the 'ProgramVersion' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "externalSourceSystem_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "External Source System",
-                                "description": "External Source System"
+                                "description": "External Source System",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalsourcesystem",
+                                "sourceOrdering": 36
                             },
                             {
-                                "name": "mshied_program_programversion_ProgramId",
+                                "name": "program",
                                 "entity": {
                                     "entityReference": "Program",
                                     "appliedTraits": [
@@ -594,84 +585,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "programId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Program"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Lookup to the program."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Program"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_programid",
-                                                        "sourceOrdering": 38,
-                                                        "isNullable": true,
-                                                        "displayName": "Program",
-                                                        "description": "Lookup to the program."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Lookup to the program."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Program",
+                                            "description": "Lookup to the program.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_programid",
+                                            "sourceOrdering": 38
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "name": "mshied_programlevel_programversion_ProgramLevelId",
+                                "name": "programLevel",
                                 "entity": {
                                     "entityReference": "ProgramLevel",
                                     "appliedTraits": [
@@ -683,80 +672,78 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "programLevelId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Program Level"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Link to Program Level entity"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Program Level"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_programlevelid",
-                                                        "sourceOrdering": 39,
-                                                        "isNullable": true,
-                                                        "displayName": "Program Level",
-                                                        "description": "Link to Program Level entity"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Link to Program Level entity"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Program Level",
+                                            "description": "Link to Program Level entity",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_programlevelid",
+                                            "sourceOrdering": 39
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             }
                         ]

@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "academicPeriodDetailsId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_academicperioddetailsid",
-                                "sourceOrdering": 1,
                                 "displayName": "Academic Period Detail",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_academicperioddetailsid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Academic Period Detail"
+                                "description": "Status of the Academic Period Detail",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Academic Period Detail"
+                                "description": "Reason for the status of the Academic Period Detail",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,12 +360,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Academic Period Detail Name",
-                                "description": "The name of the custom entity."
+                                "description": "The name of the custom entity.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
                                 "name": "mshied_academicperiod_academicperioddetails_AcademicPeriod",
@@ -386,67 +380,66 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "academicPeriodID",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "academicPeriodID",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Academic Period"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Academic Period"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_academicperiodid",
-                                                        "sourceOrdering": 34,
-                                                        "isNullable": true,
-                                                        "displayName": "Academic Period"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Academic Period",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_academicperiodid",
+                                            "sourceOrdering": 34
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -490,18 +483,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'attendanceType_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'attendanceType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "attendanceType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -551,14 +532,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_attendancetype",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'attendanceType_display' is added to the 'AcademicPeriodDetail' entity to provide the localized display text for the value of the listLookup attribute 'attendanceType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "attendanceType_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Attendance Type",
-                                "description": "The enrollment attendance type for the student."
+                                "description": "The enrollment attendance type for the student.",
+                                "isNullable": true,
+                                "sourceName": "mshied_attendancetype",
+                                "sourceOrdering": 35
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "creditLoad",
                                 "appliedTraits": [
@@ -604,16 +594,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_creditload",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "Credit Load",
-                                "description": "Assigned credit load for academic period"
+                                "description": "Assigned credit load for academic period",
+                                "isNullable": true,
+                                "sourceName": "mshied_creditload",
+                                "sourceOrdering": 37,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
-                                "name": "mshied_educationlevel_academicperioddetails_EducationLevelId",
+                                "name": "educationLevel",
                                 "entity": {
                                     "entityReference": "EducationLevel",
                                     "appliedTraits": [
@@ -625,84 +615,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "educationLevelId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Education Level"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "The education level for the student."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Education Level"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_educationlevelid",
-                                                        "sourceOrdering": 38,
-                                                        "isNullable": true,
-                                                        "displayName": "Education Level",
-                                                        "description": "The education level for the student."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The education level for the student."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Education Level",
+                                            "description": "The education level for the student.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_educationlevelid",
+                                            "sourceOrdering": 38
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "employedHoursPerWeek",
                                 "appliedTraits": [
@@ -748,16 +736,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_employedhoursperweek",
-                                "maximumValue": "50",
-                                "minimumValue": "0",
-                                "sourceOrdering": 39,
-                                "isNullable": true,
                                 "displayName": "Employed Hours Per Week",
-                                "description": "Employed for how many hours/week?"
+                                "description": "Employed for how many hours/week?",
+                                "isNullable": true,
+                                "sourceName": "mshied_employedhoursperweek",
+                                "sourceOrdering": 39,
+                                "maximumValue": "50",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isAthlete",
                                 "appliedTraits": [
@@ -803,14 +791,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_isathlete",
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "Is Athlete?",
-                                "description": "Athlete"
+                                "description": "Athlete",
+                                "isNullable": true,
+                                "sourceName": "mshied_isathlete",
+                                "sourceOrdering": 40
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isEmployed",
                                 "appliedTraits": [
@@ -856,14 +844,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_isemployed",
-                                "sourceOrdering": 42,
-                                "isNullable": true,
                                 "displayName": "Is Employed?",
-                                "description": "Employed"
+                                "description": "Employed",
+                                "isNullable": true,
+                                "sourceName": "mshied_isemployed",
+                                "sourceOrdering": 42
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isInternationalStudent",
                                 "appliedTraits": [
@@ -909,14 +897,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_isinternationalstudent",
-                                "sourceOrdering": 44,
-                                "isNullable": true,
                                 "displayName": "Is International Student?",
-                                "description": "International Student"
+                                "description": "International Student",
+                                "isNullable": true,
+                                "sourceName": "mshied_isinternationalstudent",
+                                "sourceOrdering": 44
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "ISIRonFIle",
                                 "appliedTraits": [
@@ -962,14 +950,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_isironfile",
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "ISIR on FIle",
-                                "description": "ISIR received and on file?"
+                                "description": "ISIR received and on file?",
+                                "isNullable": true,
+                                "sourceName": "mshied_isironfile",
+                                "sourceOrdering": 46
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isTransferStudent",
                                 "appliedTraits": [
@@ -1015,14 +1003,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_istransferstudent",
-                                "sourceOrdering": 48,
-                                "isNullable": true,
                                 "displayName": "Is Transfer Student?",
-                                "description": "Transfer Student"
+                                "description": "Transfer Student",
+                                "isNullable": true,
+                                "sourceName": "mshied_istransferstudent",
+                                "sourceOrdering": 48
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "majorCreditEarned",
                                 "appliedTraits": [
@@ -1068,16 +1056,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_majorcreditearned",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 50,
-                                "isNullable": true,
                                 "displayName": "Major Credit Earned",
-                                "description": "Major Credit Earned"
+                                "description": "Major Credit Earned",
+                                "isNullable": true,
+                                "sourceName": "mshied_majorcreditearned",
+                                "sourceOrdering": 50,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "majorGPA",
                                 "appliedTraits": [
@@ -1123,16 +1111,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_majorgpa",
-                                "maximumValue": "100",
-                                "minimumValue": "-100000000000",
-                                "sourceOrdering": 51,
-                                "isNullable": true,
                                 "displayName": "Major GPA",
-                                "description": "Major GPA"
+                                "description": "Major GPA",
+                                "isNullable": true,
+                                "sourceName": "mshied_majorgpa",
+                                "sourceOrdering": 51,
+                                "maximumValue": "100",
+                                "minimumValue": "-100000000000"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "midTermDeficiency",
                                 "appliedTraits": [
@@ -1178,14 +1166,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_midtermdeficiency",
-                                "sourceOrdering": 52,
-                                "isNullable": true,
                                 "displayName": "Mid-Term Deficiency",
-                                "description": "Mid-Term Deficiency"
+                                "description": "Mid-Term Deficiency",
+                                "isNullable": true,
+                                "sourceName": "mshied_midtermdeficiency",
+                                "sourceOrdering": 52
                             },
                             {
-                                "name": "mshied_program_academicperioddetails_ProgramId",
+                                "name": "program",
                                 "entity": {
                                     "entityReference": "Program",
                                     "appliedTraits": [
@@ -1197,84 +1185,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "programId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Program"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "The program for the student."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Program"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_programid",
-                                                        "sourceOrdering": 54,
-                                                        "isNullable": true,
-                                                        "displayName": "Program",
-                                                        "description": "The program for the student."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The program for the student."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Program",
+                                            "description": "The program for the student.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_programid",
+                                            "sourceOrdering": 54
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "name": "mshied_contact_academicperioddetails_StudentId",
+                                "name": "student",
                                 "entity": {
                                     "entityReference": "Contact",
                                     "appliedTraits": [
@@ -1286,84 +1272,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "studentId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Student"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Lookup to Student (Contact)."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Student"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_studentid",
-                                                        "sourceOrdering": 55,
-                                                        "isNullable": true,
-                                                        "displayName": "Student",
-                                                        "description": "Lookup to Student (Contact)."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Lookup to Student (Contact)."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Student",
+                                            "description": "Lookup to Student (Contact).",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_studentid",
+                                            "sourceOrdering": 55
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "termCreditsEarned",
                                 "appliedTraits": [
@@ -1409,16 +1393,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_termcreditsearned",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 56,
-                                "isNullable": true,
                                 "displayName": "Term Credits Earned",
-                                "description": "Term Credits Earned"
+                                "description": "Term Credits Earned",
+                                "isNullable": true,
+                                "sourceName": "mshied_termcreditsearned",
+                                "sourceOrdering": 56,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "termGPA",
                                 "appliedTraits": [
@@ -1464,13 +1448,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_termgpa",
-                                "maximumValue": "100",
-                                "minimumValue": "-100000000000",
-                                "sourceOrdering": 57,
-                                "isNullable": true,
                                 "displayName": "Term GPA",
-                                "description": "Term GPA"
+                                "description": "Term GPA",
+                                "isNullable": true,
+                                "sourceName": "mshied_termgpa",
+                                "sourceOrdering": 57,
+                                "maximumValue": "100",
+                                "minimumValue": "-100000000000"
                             }
                         ]
                     }

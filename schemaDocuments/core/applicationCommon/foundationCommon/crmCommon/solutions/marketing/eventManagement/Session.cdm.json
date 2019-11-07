@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -52,9 +52,9 @@
                         ],
                         "members": [
                             {
-                                "name": "sessionId",
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
+                                "name": "sessionId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -104,8 +104,7 @@
                                 "sourceOrdering": 1
                             },
                             {
-                                "name": "stateCode",
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -133,21 +132,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "name": "stateCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "stateCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -191,15 +179,23 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
                                 "description": "Status of the Session",
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24
                             },
                             {
-                                "name": "statusCode",
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -238,21 +234,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "name": "statusCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "statusCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -296,6 +281,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
                                 "description": "Reason for the status of the Session",
                                 "isNullable": true,
@@ -303,9 +297,9 @@
                                 "sourceOrdering": 26
                             },
                             {
-                                "name": "name",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "name",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -357,8 +351,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "audienceType",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -398,21 +391,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'audienceType_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'audienceType'",
-                                                    "name": "audienceType_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "audienceType",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -456,6 +438,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'audienceType_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'audienceType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "audienceType_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Audience Type",
                                 "description": "Audience Type of the Session.",
                                 "isNullable": true,
@@ -463,8 +454,7 @@
                                 "sourceOrdering": 34
                             },
                             {
-                                "name": "AVSupport",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -492,21 +482,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'AVSupport_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'AVSupport'",
-                                                    "name": "AVSupport_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "AVSupport",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -550,6 +529,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'AVSupport_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'AVSupport'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "AVSupport_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "A/V Support",
                                 "description": "Audio/Video Support.",
                                 "isNullable": true,
@@ -557,8 +545,7 @@
                                 "sourceOrdering": 36
                             },
                             {
-                                "name": "byInvitationOnly",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -586,21 +573,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'byInvitationOnly_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'byInvitationOnly'",
-                                                    "name": "byInvitationOnly_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "byInvitationOnly",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -644,6 +620,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'byInvitationOnly_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'byInvitationOnly'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "byInvitationOnly_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "By invitation only",
                                 "description": "Is access by invitation only.",
                                 "isNullable": true,
@@ -651,8 +636,7 @@
                                 "sourceOrdering": 38
                             },
                             {
-                                "name": "camerasPermitted",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -680,21 +664,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'camerasPermitted_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'camerasPermitted'",
-                                                    "name": "camerasPermitted_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "camerasPermitted",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -738,6 +711,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'camerasPermitted_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'camerasPermitted'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "camerasPermitted_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Cameras permitted",
                                 "description": "Are cameras permitted.",
                                 "isNullable": true,
@@ -745,9 +727,9 @@
                                 "sourceOrdering": 40
                             },
                             {
-                                "name": "checkInCount",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "checkInCount",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -800,9 +782,9 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "detailedDescription",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "detailedDescription",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -854,9 +836,9 @@
                                 "maximumLength": 2000
                             },
                             {
-                                "name": "endTime",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "endTime",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -908,82 +890,6 @@
                             },
                             {
                                 "name": "Event_event",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Event' adds the 'event' attribute below to the 'Session' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "event",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Event"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Event associated with Event Session."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Event",
-                                                        "description": "Unique identifier for Event associated with Event Session.",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_event",
-                                                        "sourceOrdering": 45
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "Event",
                                     "appliedTraits": [
@@ -994,12 +900,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "event",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Event"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Event associated with Event Session."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Event",
+                                            "description": "Unique identifier for Event associated with Event Session.",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_event",
+                                            "sourceOrdering": 45
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "eventSpeakerId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
+                                "name": "eventSpeakerId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -1059,9 +1034,9 @@
                                 "sourceOrdering": 46
                             },
                             {
-                                "name": "externalUrl",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
+                                "name": "externalUrl",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1113,8 +1088,7 @@
                                 "maximumLength": 1024
                             },
                             {
-                                "name": "flipChart",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1142,21 +1116,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'flipChart_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'flipChart'",
-                                                    "name": "flipChart_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "flipChart",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1200,6 +1163,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'flipChart_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'flipChart'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "flipChart_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Flip-Chart",
                                 "description": "Is available flip-chart for the Session.",
                                 "isNullable": true,
@@ -1207,8 +1179,7 @@
                                 "sourceOrdering": 48
                             },
                             {
-                                "name": "industry",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1278,21 +1249,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'industry_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'industry'",
-                                                    "name": "industry_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "industry",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1336,6 +1296,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'industry_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'industry'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "industry_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Industry",
                                 "description": "Industry of the Session.",
                                 "isNullable": true,
@@ -1343,8 +1312,7 @@
                                 "sourceOrdering": 50
                             },
                             {
-                                "name": "internetConnection",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1372,21 +1340,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'internetConnection_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'internetConnection'",
-                                                    "name": "internetConnection_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "internetConnection",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1430,6 +1387,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'internetConnection_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'internetConnection'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "internetConnection_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Internet Connection",
                                 "description": "Are internet connections available.",
                                 "isNullable": true,
@@ -1437,9 +1403,9 @@
                                 "sourceOrdering": 52
                             },
                             {
-                                "name": "keywords",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "keywords",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1491,8 +1457,7 @@
                                 "maximumLength": 500
                             },
                             {
-                                "name": "language",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1592,21 +1557,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'language_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'language'",
-                                                    "name": "language_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "language",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1650,6 +1604,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'language_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'language'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "language_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Language",
                                 "description": "The language of the webinar",
                                 "isNullable": true,
@@ -1657,8 +1620,7 @@
                                 "sourceOrdering": 55
                             },
                             {
-                                "name": "NDA",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1686,21 +1648,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'NDA_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'NDA'",
-                                                    "name": "NDA_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "NDA",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1744,6 +1695,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'NDA_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'NDA'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "NDA_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "NDA",
                                 "description": "Non Disclosure Agreement",
                                 "isNullable": true,
@@ -1752,82 +1712,6 @@
                             },
                             {
                                 "name": "Pass_passSessions",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Pass' adds the 'passSessions' attribute below to the 'Session' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "passSessions",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "ProductPass Sessions"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Product associated with Session."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "ProductPass Sessions",
-                                                        "description": "Unique identifier for Product associated with Session.",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_passsessions",
-                                                        "sourceOrdering": 59
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "Pass",
                                     "appliedTraits": [
@@ -1838,12 +1722,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "passSessions",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "ProductPass Sessions"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Product associated with Session."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "ProductPass Sessions",
+                                            "description": "Unique identifier for Product associated with Session.",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_passsessions",
+                                            "sourceOrdering": 59
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "presentationManagerUrl",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
+                                "name": "presentationManagerUrl",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1879,82 +1832,6 @@
                             },
                             {
                                 "name": "EventTeamMember_producer",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'EventTeamMember' adds the 'producer' attribute below to the 'Session' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "producer",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Producer"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Producer of the session"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Producer",
-                                                        "description": "Producer of the session",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_producer",
-                                                        "sourceOrdering": 61
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "EventTeamMember",
                                     "appliedTraits": [
@@ -1965,11 +1842,79 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "producer",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Producer"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Producer of the session"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Producer",
+                                            "description": "Producer of the session",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_producer",
+                                            "sourceOrdering": 61
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "publishStatus",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2009,21 +1954,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'publishStatus_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'publishStatus'",
-                                                    "name": "publishStatus_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "publishStatus",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2067,6 +2001,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'publishStatus_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'publishStatus'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "publishStatus_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Publish Status",
                                 "description": "Publish status of the Session",
                                 "isNullable": true,
@@ -2074,8 +2017,7 @@
                                 "sourceOrdering": 62
                             },
                             {
-                                "name": "recordingsPermitted",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2103,21 +2045,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'recordingsPermitted_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'recordingsPermitted'",
-                                                    "name": "recordingsPermitted_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "recordingsPermitted",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2161,6 +2092,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'recordingsPermitted_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'recordingsPermitted'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "recordingsPermitted_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Recordings permitted",
                                 "description": "Are recordings permitted.",
                                 "isNullable": true,
@@ -2168,9 +2108,9 @@
                                 "sourceOrdering": 64
                             },
                             {
-                                "name": "recurrencePattern",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "recurrencePattern",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2205,9 +2145,9 @@
                                 "maximumLength": 500
                             },
                             {
-                                "name": "registrationCount",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "registrationCount",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2260,9 +2200,9 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "sessionCode",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "sessionCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2314,8 +2254,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "sessionFormat",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2349,21 +2288,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'sessionFormat_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'sessionFormat'",
-                                                    "name": "sessionFormat_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "sessionFormat",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2391,15 +2319,24 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'sessionFormat_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'sessionFormat'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "sessionFormat_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Session Format",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_sessionformat",
                                 "sourceOrdering": 69
                             },
                             {
-                                "name": "sessionMaxCapacity",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "sessionMaxCapacity",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2452,9 +2389,9 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "sessionObjectives",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "sessionObjectives",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2506,9 +2443,9 @@
                                 "maximumLength": 2000
                             },
                             {
-                                "name": "sessionPreRequisites",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "sessionPreRequisites",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2560,9 +2497,9 @@
                                 "maximumLength": 2000
                             },
                             {
-                                "name": "sessionSummary",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "sessionSummary",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2614,8 +2551,7 @@
                                 "maximumLength": 700
                             },
                             {
-                                "name": "sessionType",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2667,21 +2603,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'sessionType_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'sessionType'",
-                                                    "name": "sessionType_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "sessionType",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2725,6 +2650,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'sessionType_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'sessionType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "sessionType_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Session Type",
                                 "description": "Type of the Session.",
                                 "isNullable": true,
@@ -2732,9 +2666,9 @@
                                 "sourceOrdering": 75
                             },
                             {
-                                "name": "startTime",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "startTime",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2786,82 +2720,6 @@
                             },
                             {
                                 "name": "Venue_venue",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Venue' adds the 'venue' attribute below to the 'Session' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "venue",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Venue"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Active Venue records for this Session."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Venue",
-                                                        "description": "Active Venue records for this Session.",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_venue",
-                                                        "sourceOrdering": 78
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "Venue",
                                     "appliedTraits": [
@@ -2872,11 +2730,79 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "venue",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Venue"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Active Venue records for this Session."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Venue",
+                                            "description": "Active Venue records for this Session.",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_venue",
+                                            "sourceOrdering": 78
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "videoConferencing",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2904,21 +2830,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'videoConferencing_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'videoConferencing'",
-                                                    "name": "videoConferencing_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "videoConferencing",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -2962,6 +2877,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'videoConferencing_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'videoConferencing'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "videoConferencing_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Video Conferencing",
                                 "description": "Is available video conferencing for the Session.",
                                 "isNullable": true,
@@ -2969,9 +2893,9 @@
                                 "sourceOrdering": 79
                             },
                             {
-                                "name": "webinarConfigurationId",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
+                                "name": "webinarConfigurationId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3031,9 +2955,9 @@
                                 "sourceOrdering": 81
                             },
                             {
-                                "name": "webinarID",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "webinarID",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3085,9 +3009,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "webinarNotificationSeen",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "webinarNotificationSeen",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3138,9 +3062,9 @@
                                 "sourceOrdering": 83
                             },
                             {
-                                "name": "webinarOperation",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "webinarOperation",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3175,9 +3099,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "webinarStatus",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "webinarStatus",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3212,9 +3136,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "webinarStatusReason",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "webinarStatusReason",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3249,9 +3173,9 @@
                                 "maximumLength": 5000
                             },
                             {
-                                "name": "webinarType",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
+                                "name": "webinarType",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -3294,9 +3218,9 @@
                                 "sourceOrdering": 88
                             },
                             {
-                                "name": "webinarURL",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
+                                "name": "webinarURL",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3331,8 +3255,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "whiteBoard",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3360,21 +3283,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'whiteBoard_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'whiteBoard'",
-                                                    "name": "whiteBoard_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "whiteBoard",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3418,6 +3330,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'whiteBoard_display' is added to the 'Session' entity to provide the localized display text for the value of the listLookup attribute 'whiteBoard'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "whiteBoard_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Whiteboard",
                                 "description": "Is available white board for the Session.",
                                 "isNullable": true,
@@ -3425,9 +3346,9 @@
                                 "sourceOrdering": 90
                             },
                             {
-                                "name": "durationMins",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "durationMins",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3480,9 +3401,9 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "totalNumberOfQuestionsAsked",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "totalNumberOfQuestionsAsked",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -3535,9 +3456,9 @@
                                 "minimumValue": "-2147483648"
                             },
                             {
-                                "name": "totalNumberOfQuestionsAskedDate",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
+                                "name": "totalNumberOfQuestionsAskedDate",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.calculationOf",
@@ -3597,9 +3518,9 @@
                                 "sourceOrdering": 94
                             },
                             {
-                                "name": "totalNumberOfQuestionsAskedState",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "totalNumberOfQuestionsAskedState",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.calculationOf",

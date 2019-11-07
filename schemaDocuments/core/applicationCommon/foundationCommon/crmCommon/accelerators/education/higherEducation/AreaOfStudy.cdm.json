@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "The master list of all areas of studies that an institution offers. Areas of studies are more specific program offerings, such as Master's of Public Administration - Emergency Management."
+                                        "The master list of all area of studies offered by an institution.  Areas of studies are more specific program offerings, such as Master's of Public Administration - Emergency Management."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Area of Study",
-            "description": "The master list of all areas of studies that an institution offers. Areas of studies are more specific program offerings, such as Master's of Public Administration - Emergency Management.",
+            "description": "The master list of all area of studies offered by an institution.  Areas of studies are more specific program offerings, such as Master's of Public Administration - Emergency Management.",
             "sourceName": "mshied_areaofstudy",
             "hasAttributes": [
                 {
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "areaOfStudyId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_areaofstudyid",
-                                "sourceOrdering": 1,
                                 "displayName": "Area of Study",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_areaofstudyid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Area of Study"
+                                "description": "Status of the Area of Study",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Area of Study"
+                                "description": "Reason for the status of the Area of Study",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,15 +360,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Area of Study Name",
-                                "description": "The name of the custom entity."
+                                "description": "The name of the custom entity.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "code",
                                 "appliedTraits": [
@@ -420,15 +414,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_code",
-                                "maximumLength": 20,
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Code",
-                                "description": "Abbreviated code for the area of study."
+                                "description": "Abbreviated code for the area of study.",
+                                "isNullable": true,
+                                "sourceName": "mshied_code",
+                                "sourceOrdering": 34,
+                                "maximumLength": 20
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalIdentifier",
                                 "appliedTraits": [
@@ -474,15 +468,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalidentifier",
-                                "maximumLength": 255,
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "External Identifier",
-                                "description": "External Identifier"
+                                "description": "External Identifier",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalidentifier",
+                                "sourceOrdering": 35,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -514,18 +508,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'externalSourceSystem_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "externalSourceSystem_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -575,14 +557,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalsourcesystem",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'externalSourceSystem_display' is added to the 'AreaOfStudy' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "externalSourceSystem_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "External Source System",
-                                "description": "External Source System"
+                                "description": "External Source System",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalsourcesystem",
+                                "sourceOrdering": 36
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "minimumRequiredGPA",
                                 "appliedTraits": [
@@ -628,16 +619,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_minimumrequiredgpa",
-                                "maximumValue": "1000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 38,
-                                "isNullable": true,
                                 "displayName": "Minimum Required GPA",
-                                "description": "Minimum Required GPA"
+                                "description": "Minimum Required GPA",
+                                "isNullable": true,
+                                "sourceName": "mshied_minimumrequiredgpa",
+                                "sourceOrdering": 38,
+                                "maximumValue": "1000",
+                                "minimumValue": "0"
                             },
                             {
-                                "name": "mshied_studentprogramtype_areaofstudy_ProgramTypeId",
+                                "name": "programType",
                                 "entity": {
                                     "entityReference": "StudentProgramType",
                                     "appliedTraits": [
@@ -649,84 +640,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "programTypeId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Program Type"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "The program type for the area of study, such as major or concentration."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Program Type"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_programtypeid",
-                                                        "sourceOrdering": 39,
-                                                        "isNullable": true,
-                                                        "displayName": "Program Type",
-                                                        "description": "The program type for the area of study, such as major or concentration."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The program type for the area of study, such as major or concentration."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Program Type",
+                                            "description": "The program type for the area of study, such as major or concentration.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_programtypeid",
+                                            "sourceOrdering": 39
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "requiredCredits",
                                 "appliedTraits": [
@@ -772,13 +761,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_requiredcredits",
-                                "maximumValue": "1000",
-                                "minimumValue": "0",
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "Required Credits",
-                                "description": "The number of credits required to be completed by a student pursuing the area of study."
+                                "description": "The number of credits required to be completed by a student pursuing the area of study.",
+                                "isNullable": true,
+                                "sourceName": "mshied_requiredcredits",
+                                "sourceOrdering": 40,
+                                "maximumValue": "1000",
+                                "minimumValue": "0"
                             }
                         ]
                     }

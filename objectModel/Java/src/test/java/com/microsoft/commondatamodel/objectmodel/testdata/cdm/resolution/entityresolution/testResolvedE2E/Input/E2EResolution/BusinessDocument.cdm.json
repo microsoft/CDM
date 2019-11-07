@@ -1,0 +1,44 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "is.classified",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "impact",
+                    "defaultValue": "MBI",
+                    "required": true,
+                    "direction": "in",
+                    "dataType": "string"
+                }
+            ],
+            "elevated": true
+        },
+        {
+            "entityName": "BusinessDocument",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                "is.classified"
+            ],
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "documentId"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "title"
+                }
+            ]
+        }
+    ]
+}

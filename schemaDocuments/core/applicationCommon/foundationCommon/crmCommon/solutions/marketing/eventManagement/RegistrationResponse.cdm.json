@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -52,9 +52,9 @@
                         ],
                         "members": [
                             {
-                                "name": "registrationResponseId",
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
+                                "name": "registrationResponseId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -104,8 +104,7 @@
                                 "sourceOrdering": 1
                             },
                             {
-                                "name": "stateCode",
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -133,21 +132,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'RegistrationResponse' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "name": "stateCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "stateCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -191,15 +179,23 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'RegistrationResponse' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
                                 "description": "Status of the Registration Response",
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24
                             },
                             {
-                                "name": "statusCode",
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -238,21 +234,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'RegistrationResponse' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "name": "statusCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "statusCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -296,6 +281,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'RegistrationResponse' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
                                 "description": "Reason for the status of the Registration Response",
                                 "isNullable": true,
@@ -303,9 +297,9 @@
                                 "sourceOrdering": 26
                             },
                             {
-                                "name": "response",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "response",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -358,65 +352,6 @@
                             },
                             {
                                 "name": "CustomRegistrationField_customRegistrationField",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'CustomRegistrationField' adds the 'customRegistrationField' attribute below to the 'RegistrationResponse' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "customRegistrationField",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Custom Registration Field"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Custom Registration Field",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_customregistrationfield",
-                                                        "sourceOrdering": 34
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "CustomRegistrationField",
                                     "appliedTraits": [
@@ -427,69 +362,62 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "customRegistrationField",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Custom Registration Field"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Custom Registration Field",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_customregistrationfield",
+                                            "sourceOrdering": 34
+                                        }
+                                    }
                                 }
                             },
                             {
                                 "name": "EventRegistration_eventRegistration",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'EventRegistration' adds the 'eventRegistration' attribute below to the 'RegistrationResponse' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "eventRegistration",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Event Registration"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Event Registration",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_eventregistration",
-                                                        "sourceOrdering": 35
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "EventRegistration",
                                     "appliedTraits": [
@@ -500,6 +428,58 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "eventRegistration",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Event Registration"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Event Registration",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_eventregistration",
+                                            "sourceOrdering": 35
+                                        }
+                                    }
                                 }
                             }
                         ]

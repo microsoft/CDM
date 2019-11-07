@@ -1,0 +1,124 @@
+{
+    "$schema": "../../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Account",
+            "extendsEntity": "BaseAccount/Account",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "perfStandard",
+                    "arguments": [
+                        {
+                            "name": "P1",
+                            "value": "P1FromExtAccount"
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "name": "localizedDisplayText",
+                            "value": {
+                                "entityReference": {
+                                    "entityShape": "localizedTable",
+                                    "constantValues": [
+                                        [
+                                            "en",
+                                            "This is the extended Account"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "This is the extended Account",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "base",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "fromAccountExt"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "hasA",
+                                "dataType": "email",
+                                "name": "emailContact",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "AttributeDisplay"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "email contact"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "AttributeDisplay",
+                                "description": "email contact"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "phone",
+                                "name": "phone"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

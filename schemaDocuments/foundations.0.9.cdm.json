@@ -1,0 +1,430 @@
+{
+    "$schema": "./schema.0.9.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/primitives.0.9.cdm.json"
+        },
+        {
+            "corpusPath": "/meanings.0.9.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "is.CDM",
+            "extendsTrait": "is",
+            "elevated": true,
+            "explanation": "root trait for information about the CDM itself."
+        },
+        {
+            "traitName": "is.CDM.entityVersion",
+            "extendsTrait": "is.CDM",
+            "hasParameters": [
+                {
+                    "name": "versionNumber",
+                    "dataType": "string",
+                    "explanation": "semantic version number of the entity",
+                    "required": true
+                }
+            ],
+            "associatedProperties": [
+                "version"
+            ],
+            "elevated": true
+        },
+        {
+            "traitName": "is.CDM.attributeGroup",
+            "extendsTrait": "is.CDM",
+            "hasParameters": [
+                {
+                    "name": "groupList",
+                    "dataType": "entity",
+                    "required": false
+                }
+            ],
+            "associatedProperties": [
+                "cdmSchemas"
+            ],
+            "elevated": true,
+            "explanation": "identifies standard groups of attributes in CDM entities."
+        },
+        {
+            "entityName": "CdmEntity",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "0.9"
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        "0.9"
+                    ]
+                }
+            ]
+        },
+        {
+            "explanation": "a set of references to attributeGroups",
+            "entityName": "attributeGroupSet",
+            "extendsEntity": "reference",
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "attributeGroup",
+                    "name": "attributeGroupReference"
+                }
+            ]
+        },
+        {
+            "explanation": "holds a list of entity references",
+            "entityName": "entityGroupSet",
+            "extendsEntity": "reference",
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "entityName",
+                    "name": "entityReference"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "attributeName",
+                    "name": "attributeReference"
+                }
+            ]
+        },
+        {
+            "explanation": "localized text",
+            "entityName": "localizedTable",
+            "extendsEntity": "reference",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "languageTag",
+                    "name": "languageTag"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "name": "displayText"
+                }
+            ]
+        },
+        {
+            "traitName": "is.localized",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "localizedDisplayText",
+                    "dataType": "entity",
+                    "explanation": "a reference to the constant entity holding the list of localized text",
+                    "required": false
+                }
+            ],
+            "explanation": "Associates a list of localized string with an object"
+        },
+        {
+            "traitName": "is.localized.displayedAs",
+            "extendsTrait": "is.localized",
+            "associatedProperties": [
+                "displayName"
+            ],
+            "explanation": "Holds the list of language specific display text for an object."
+        },
+        {
+            "traitName": "is.localized.describedAs",
+            "extendsTrait": "is.localized",
+            "associatedProperties": [
+                "description"
+            ],
+            "explanation": "Holds the list of language specific descriptive text for an object."
+        },
+        {
+            "explanation": "a localized list of descriptions for possible values in a listLookup type attribute",
+            "entityName": "listLookupValues",
+            "extendsEntity": "localizedTable",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "attributeValue"
+                },
+                {
+                    "purpose": "orderedBy",
+                    "dataType": "displayOrder",
+                    "name": "displayOrder"
+                }
+            ]
+        },
+        {
+            "explanation": "a localized list of descriptions for possible values in a listLookupCorrelated type attribute",
+            "entityName": "listLookupCorrelatedValues",
+            "extendsEntity": "listLookupValues",
+            "hasAttributes": [
+                {
+                    "explanation": "value for the correlated attribute that corresponds to the associated attributeValue",
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "correlatedValue"
+                }
+            ]
+        },
+        {
+            "traitName": "does.haveDefault",
+            "extendsTrait": "does",
+            "hasParameters": [
+                {
+                    "name": "default",
+                    "dataType": "any",
+                    "required": true
+                }
+            ],
+            "associatedProperties": [
+                "defaultValue"
+            ],
+            "explanation": "An attribute has a default value"
+        },
+        {
+            "traitName": "is.nullable",
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "isNullable"
+            ],
+            "explanation": "The attribute value may be set to NULL."
+        },
+        {
+            "traitName": "is.readOnly",
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "isReadOnly"
+            ]
+        },
+        {
+            "traitName": "is.requiredAtLevel",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "level",
+                    "dataType": "string",
+                    "explanation": "values can be: 'systemrequired', 'required', 'recommended', 'none'",
+                    "required": true
+                }
+            ],
+            "explanation": "The requirement level for setting values into this attribute in CDS for Applications or for including this attribute in entities created in CDS for Analytics"
+        },
+        {
+            "traitName": "is.constrained",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "maximumLength",
+                    "dataType": "integer",
+                    "required": false
+                },
+                {
+                    "name": "minimumValue",
+                    "dataType": "decimal",
+                    "required": false
+                },
+                {
+                    "name": "maximumValue",
+                    "dataType": "decimal",
+                    "required": false
+                }
+            ],
+            "associatedProperties": [
+                "maximumValue",
+                "minimumValue",
+                "maximumLength"
+            ],
+            "explanation": "maximum length or value constraints"
+        },
+        {
+            "traitName": "is.constrainedList",
+            "extendsTrait": "is",
+            "associatedProperties": [
+                "valueConstrainedToList"
+            ],
+            "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities"
+        },
+        {
+            "traitName": "means.entityState",
+            "extendsTrait": "does.elevateAttribute",
+            "elevated": true,
+            "explanation": "the attribute represents the current state of the entity."
+        },
+        {
+            "explanation": "the related attribute describes the current state of the entity",
+            "purposeName": "representsStateWith",
+            "extendsPurpose": "hasA",
+            "exhibitsTraits": [
+                "means.entityState"
+            ]
+        },
+        {
+            "traitName": "is.correlatedWith",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "sourceAttribute",
+                    "dataType": "attributeName",
+                    "required": true
+                }
+            ],
+            "explanation": "the attribute value is correlated with the sourceAttribute"
+        },
+        {
+            "explanation": "the related attribute describes the current status of the entity in its current state",
+            "purposeName": "representsCorrelatedStatusWith",
+            "extendsPurpose": "hasA",
+            "exhibitsTraits": [
+                "is.correlatedWith"
+            ]
+        },
+        {
+            "explanation": "One integer value from a defined list of possibilities",
+            "dataTypeName": "listLookup",
+            "extendsDataType": "integer",
+            "exhibitsTraits": [
+                "does.haveDefault",
+                "is.constrainedList"
+            ]
+        },
+        {
+            "explanation": "A set of one or more values from a defined list of possibilities",
+            "dataTypeName": "listLookupMultiple",
+            "extendsDataType": "string",
+            "exhibitsTraits": [
+                "does.haveDefault",
+                "means.content.text.CSV",
+                "is.constrainedList"
+            ]
+        },
+        {
+            "traitName": "is.calculationOf",
+            "extendsTrait": "is.correlatedWith",
+            "explanation": "the attribute value is the result of a calculation on the sourceAttribute"
+        },
+        {
+            "traitName": "is.partition",
+            "extendsTrait": "is",
+            "explanation": "The base trait for partition specific traits."
+        },
+        {
+            "traitName": "is.partition.format",
+            "extendsTrait": "is.partition"
+        },
+        {
+            "traitName": "is.partition.format.CSV",
+            "extendsTrait": "is.partition.format",
+            "hasParameters": [
+                {
+                    "name": "columnHeaders",
+                    "dataType": "boolean",
+                    "explanation": "Indicates whether the .csv file has headers.",
+                    "required": false
+                },
+                {
+                    "name": "csvStyle",
+                    "dataType": "string",
+                    "explanation": "The CSV style which is always CsvStyle.QuoteAlways or CsvStyle.QuoteAfterDelimiter.",
+                    "required": false
+                },
+                {
+                    "name": "delimiter",
+                    "dataType": "string",
+                    "explanation": "The delimiter type in the .csv file.",
+                    "required": false
+                },
+                {
+                    "name": "quoteStyle",
+                    "dataType": "string",
+                    "explanation": "The quote style which is always QuoteStyle.Csv or QuoteStyle.None.",
+                    "required": false
+                },
+                {
+                    "name": "encoding",
+                    "dataType": "string",
+                    "explanation": "The character encoding in the .csv file.",
+                    "required": false
+                }
+            ],
+            "explanation": "The value is the file format settings of a partition CSV file."
+        },
+        {
+            "traitName": "is.partition.format.parquet",
+            "extendsTrait": "is.partition.format",
+            "explanation": "The value is the file format settings of a partition parquet file."
+        },
+        {
+            "traitName": "is.partition.culture",
+            "extendsTrait": "is.partition",
+            "hasParameters": [
+                {
+                    "name": "culture",
+                    "dataType": "string",
+                    "required": false
+                }
+            ],
+            "explanation": "The value denotes culture in the partition files."
+        },
+        {
+            "traitName": "is.modelConversion",
+            "extendsTrait": "is",
+            "explanation": "Represents a correlation with model.json to CDM model conversion."
+        },
+        {
+            "traitName": "is.modelConversion.modelVersion",
+            "extendsTrait": "is.modelConversion",
+            "hasParameters": [
+                {
+                    "name": "version",
+                    "dataType": "string",
+                    "required": false
+                }
+            ],
+            "explanation": "The value denotes the version number set in a converted model.json file"
+        },
+        {
+            "traitName": "is.modelConversion.otherAnnotations",
+            "extendsTrait": "is.modelConversion",
+            "hasParameters": [
+                {
+                    "name": "annotations",
+                    "dataType": "object",
+                    "required": false
+                }
+            ],
+            "explanation": "The value denotes model.json annotations which have not been recognized."
+        },
+        {
+            "traitName": "is.modelConversion.referenceModelMap",
+            "extendsTrait": "is.modelConversion",
+            "hasParameters": [
+                {
+                    "name": "referenceModelMap",
+                    "dataType": "object",
+                    "required": false
+                }
+            ],
+            "explanation": "The value denotes a reference model map containing multiple id-location pairs used for reference entity resolution."
+        },
+        {
+            "traitName": "is.managedBy",
+            "extendsTrait": "is",
+            "hasParameters": [
+                {
+                    "name": "application",
+                    "dataType": "string",
+                    "explanation": "The name of the managing entity or service.",
+                    "required": false
+                }
+            ],
+            "explanation": "The value denotes information about a service/entity who is owning a model."
+        }
+    ]
+}

@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -52,9 +52,9 @@
                         ],
                         "members": [
                             {
-                                "name": "communityForumId",
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
+                                "name": "communityForumId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -104,8 +104,7 @@
                                 "sourceOrdering": 1
                             },
                             {
-                                "name": "stateCode",
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -133,21 +132,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Forum' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "name": "stateCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "stateCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -191,15 +179,23 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Forum' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
                                 "description": "Status of the Forum",
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24
                             },
                             {
-                                "name": "statusCode",
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -238,21 +234,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Forum' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "name": "statusCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "statusCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -288,7 +273,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "Select the forum's status.\r\n"
+                                                            "Select the forum's status.\n"
                                                         ]
                                                     ]
                                                 }
@@ -296,16 +281,25 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Forum' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Select the forum's status.\r\n",
+                                "description": "Select the forum's status.\n",
                                 "isNullable": true,
                                 "sourceName": "statuscode",
                                 "sourceOrdering": 26
                             },
                             {
-                                "name": "name",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "name",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -357,9 +351,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "description",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "description",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -394,9 +388,9 @@
                                 "maximumLength": 4096
                             },
                             {
-                                "name": "displayOrder",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "displayOrder",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -432,9 +426,9 @@
                                 "minimumValue": "-2147483648"
                             },
                             {
-                                "name": "enableQueuedPosts",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "enableQueuedPosts",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -486,82 +480,6 @@
                             },
                             {
                                 "name": "PageTemplate_forumPageTemplateID",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'PageTemplate' adds the 'forumPageTemplateID' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "forumPageTemplateID",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Forum Page Template"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the Page Template associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Forum Page Template",
-                                                        "description": "Shows the Page Template associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_forumpagetemplateid",
-                                                        "sourceOrdering": 38
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "PageTemplate",
                                     "appliedTraits": [
@@ -572,12 +490,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "forumPageTemplateID",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Forum Page Template"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the Page Template associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Forum Page Template",
+                                            "description": "Shows the Page Template associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_forumpagetemplateid",
+                                            "sourceOrdering": 38
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "hiddenFromSitemap",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "hiddenFromSitemap",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -612,82 +599,6 @@
                             },
                             {
                                 "name": "ForumPost_lastPostID",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'ForumPost' adds the 'lastPostID' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "lastPostID",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "recommended"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Last Post"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the forum post associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Last Post",
-                                                        "description": "Shows the forum post associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_lastpostid",
-                                                        "sourceOrdering": 41
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "ForumPost",
                                     "appliedTraits": [
@@ -698,86 +609,79 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "lastPostID",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "recommended"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Last Post"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the forum post associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Last Post",
+                                            "description": "Shows the forum post associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_lastpostid",
+                                            "sourceOrdering": 41
+                                        }
+                                    }
                                 }
                             },
                             {
                                 "name": "WebPage_parentPageID",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'WebPage' adds the 'parentPageID' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "parentPageID",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "recommended"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Parent Page"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the webpage associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Parent Page",
-                                                        "description": "Shows the webpage associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_parentpageid",
-                                                        "sourceOrdering": 42
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "WebPage",
                                     "appliedTraits": [
@@ -788,12 +692,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "parentPageID",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "recommended"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent Page"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the webpage associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Parent Page",
+                                            "description": "Shows the webpage associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_parentpageid",
+                                            "sourceOrdering": 42
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "partialURL",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
+                                "name": "partialURL",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -828,9 +801,9 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "postCount",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "postCount",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -867,82 +840,6 @@
                             },
                             {
                                 "name": "PublishingState_publishingStateID",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'PublishingState' adds the 'publishingStateID' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "publishingStateID",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Publishing State"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the Publishing State associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Publishing State",
-                                                        "description": "Shows the Publishing State associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_publishingstateid",
-                                                        "sourceOrdering": 45
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "PublishingState",
                                     "appliedTraits": [
@@ -953,12 +850,81 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "publishingStateID",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Publishing State"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the Publishing State associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Publishing State",
+                                            "description": "Shows the Publishing State associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_publishingstateid",
+                                            "sourceOrdering": 45
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "threadCount",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "threadCount",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -995,82 +961,6 @@
                             },
                             {
                                 "name": "PageTemplate_threadPageTemplateID",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'PageTemplate' adds the 'threadPageTemplateID' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "threadPageTemplateID",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Thread Page Template"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the Page Template associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Thread Page Template",
-                                                        "description": "Shows the Page Template associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_threadpagetemplateid",
-                                                        "sourceOrdering": 47
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "PageTemplate",
                                     "appliedTraits": [
@@ -1081,86 +971,79 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "threadPageTemplateID",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Thread Page Template"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the Page Template associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Thread Page Template",
+                                            "description": "Shows the Page Template associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_threadpagetemplateid",
+                                            "sourceOrdering": 47
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "Website_websiteId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Website' adds the 'websiteId' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "websiteId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Website"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Shows the Website associated with the forum."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Website",
-                                                        "description": "Shows the Website associated with the forum.",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_websiteid",
-                                                        "sourceOrdering": 48
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "website",
                                 "entity": {
                                     "entityReference": "Website",
                                     "appliedTraits": [
@@ -1171,86 +1054,78 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Website"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Shows the Website associated with the forum."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Website",
+                                            "description": "Shows the Website associated with the forum.",
+                                            "isNullable": true,
+                                            "sourceName": "adx_websiteid",
+                                            "sourceOrdering": 48
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "WebsiteLanguage_forumLanguageId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'WebsiteLanguage' adds the 'forumLanguageId' attribute below to the 'Forum' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "forumLanguageId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Forum Language"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Option to make forums and forum posts language specific"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Forum Language",
-                                                        "description": "Option to make forums and forum posts language specific",
-                                                        "isNullable": true,
-                                                        "sourceName": "adx_websitelanguageid",
-                                                        "sourceOrdering": 49
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "forumLanguage",
                                 "entity": {
                                     "entityReference": "WebsiteLanguage",
                                     "appliedTraits": [
@@ -1261,6 +1136,74 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Forum Language"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Option to make forums and forum posts language specific"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Forum Language",
+                                            "description": "Option to make forums and forum posts language specific",
+                                            "isNullable": true,
+                                            "sourceName": "adx_websitelanguageid",
+                                            "sourceOrdering": 49
+                                        }
+                                    }
                                 }
                             }
                         ]

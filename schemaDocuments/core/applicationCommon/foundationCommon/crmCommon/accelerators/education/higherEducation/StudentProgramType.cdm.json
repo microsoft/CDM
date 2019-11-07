@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "The master list of program types (such as major, minor, or concentration) that the institution has defined."
+                                        "The master list of program types defined by the institution, such as major, minor, or concentration."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Student Program Type",
-            "description": "The master list of program types (such as major, minor, or concentration) that the institution has defined.",
+            "description": "The master list of program types defined by the institution, such as major, minor, or concentration.",
             "sourceName": "mshied_studentprogramtype",
             "hasAttributes": [
                 {
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "studentProgramTypeId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_studentprogramtypeid",
-                                "sourceOrdering": 1,
                                 "displayName": "Student Program Type",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_studentprogramtypeid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'StudentProgramType' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'StudentProgramType' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Student Program Type"
+                                "description": "Status of the Student Program Type",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'StudentProgramType' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'StudentProgramType' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Student Program Type"
+                                "description": "Reason for the status of the Student Program Type",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,12 +360,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Student Program Type Name",
-                                "description": "The name of the program type."
+                                "description": "The name of the program type.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             }
                         ]
                     }

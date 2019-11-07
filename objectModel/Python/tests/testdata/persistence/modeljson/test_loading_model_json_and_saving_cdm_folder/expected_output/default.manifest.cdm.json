@@ -1,0 +1,149 @@
+{
+  "entities": [
+    {
+      "entityPath": "remote:/contoso/entity.model.json/Orders",
+      "type": "ReferencedEntity",
+      "exhibitsTraits": [
+        {
+          "arguments": [
+            {
+              "name": "annotations",
+              "value": [
+                {
+                  "value": "LinkedEntity",
+                  "name": "pbi:EntityTypeDisplayHint"
+                }
+              ]
+            }
+          ],
+          "traitReference": "is.modelConversion.otherAnnotations"
+        },
+        {
+          "arguments": [
+            {
+              "value": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+              "name": "modelId"
+            }
+          ],
+          "traitReference": "is.propertyContent.multiTrait"
+        }
+      ],
+      "entityName": "Orders"
+    },
+    {
+      "entityPath": "Customers.cdm.json/Customers",
+      "type": "LocalEntity",
+      "entityName": "Customers",
+      "dataPartitions": [
+        {
+          "lastFileStatusCheckTime": "2019-05-20T23:36:00.000Z",
+          "location": "remote:/contoso/EpisodeOfCare/partition-data.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "name": "localizedDisplayText",
+                  "value": {
+                    "entityReference": {
+                      "entityShape": "localizedTable",
+                      "constantValues": [
+                        [
+                          "en",
+                          "just a description"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "arguments": [
+                {
+                  "value": true,
+                  "name": "columnHeaders"
+                },
+                {
+                  "value": ",",
+                  "name": "delimiter"
+                }
+              ],
+              "traitReference": "is.partition.format.CSV"
+            }
+          ],
+          "lastFileModifiedTime": "2019-05-21T23:36:00.000Z"
+        }
+      ]
+    }
+  ],
+  "manifestName": "OrdersProductsCustomersLinked",
+  "exhibitsTraits": [
+    {
+      "arguments": [
+        {
+          "value": "1.0",
+          "name": "version"
+        }
+      ],
+      "traitReference": "means.measurement.version"
+    },
+    {
+      "arguments": [
+        {
+          "value": [
+            {
+              "id": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+              "location": "http://contoso.com/entity.model.json"
+            }
+          ],
+          "name": "referenceModelMap"
+        }
+      ],
+      "traitReference": "is.modelConversion.referenceModelMap"
+    },
+    {
+      "traitReference": "is.extension.pbi:mashup",
+      "arguments": [
+        {
+          "name": "fastCombine",
+          "value": true
+        },
+        {
+          "name": "allowNativeQueries",
+          "value": false
+        },
+        {
+          "name": "queriesMetadata",
+          "value": {
+            "Orders": {
+              "queryId": "88bc570c-047d-460f-8eed-c0ef17649afd",
+              "queryName": "Orders",
+              "loadEnabled": true
+            },
+            "Products": {
+              "queryId": "f33e2de9-69f0-42db-adc9-a244aa544b0a",
+              "queryName": "Products",
+              "loadEnabled": true
+            },
+            "Customers": {
+              "queryId": "77ea2dfa-b868-4527-a6ee-c1da01a3b4c3",
+              "queryName": "Customers",
+              "loadEnabled": true
+            }
+          }
+        },
+        {
+          "name": "document",
+          "value": "section Section1;\r\nshared Customers = let\r\n  Source = OData.Feed(\"https://services.odata.org/V2/Northwind/Northwind.svc\"),\r\n  Navigation = Source{[Name = \"Customers\", Signature = \"table\"]}[Data],\r\n  #\"Remove columns\" = Table.RemoveColumns(Navigation, Table.ColumnsOfType(Navigation, {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\n"
+        }
+      ]
+    }
+  ],
+  "jsonSchemaSemanticVersion": "0.9.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/extensions/pbi.extension.cdm.json"
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
-            "uri": "_allImports.cdm.json"
+            "corpusPath": "_allImports.cdm.json"
         }
     ],
     "definitions": [
@@ -52,9 +52,9 @@
                         ],
                         "members": [
                             {
-                                "name": "eventRegistrationId",
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
+                                "name": "eventRegistrationId",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -104,8 +104,7 @@
                                 "sourceOrdering": 1
                             },
                             {
-                                "name": "stateCode",
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -133,21 +132,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "name": "stateCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "stateCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -191,15 +179,23 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
                                 "description": "Status of the Event Registration",
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24
                             },
                             {
-                                "name": "statusCode",
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -238,21 +234,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "name": "statusCode_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "statusCode",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -296,6 +281,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
                                 "description": "Reason for the status of the Event Registration",
                                 "isNullable": true,
@@ -303,9 +297,9 @@
                                 "sourceOrdering": 26
                             },
                             {
-                                "name": "name",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
+                                "name": "name",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -357,8 +351,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "area",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -434,21 +427,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'area_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'area'",
-                                                    "name": "area_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "area",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -476,14 +458,22 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'area_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'area'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "area_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Area",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_area",
                                 "sourceOrdering": 34
                             },
                             {
-                                "name": "companySize",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -553,21 +543,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'companySize_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'companySize'",
-                                                    "name": "companySize_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "companySize",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -595,72 +574,22 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'companySize_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'companySize'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "companySize_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Company Size",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_companysize",
                                 "sourceOrdering": 36
                             },
                             {
-                                "name": "Contact_contactId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Contact' adds the 'contactId' attribute below to the 'EventRegistration' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "contactId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Contact",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_contactid",
-                                                        "sourceOrdering": 38
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "contact",
                                 "entity": {
                                     "entityReference": "Contact",
                                     "appliedTraits": [
@@ -671,86 +600,62 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",                                    
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "contactId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Contact"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Contact",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_contactid",
+                                            "sourceOrdering": 38
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "Event_eventId",
-                                "relationship": {
-                                    "relationshipReference": "referencesA",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "referencesA/exhibitsTraits/does.referenceEntity",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This 'referencesA' relationship to the entity 'Event' adds the 'eventId' attribute below to the 'EventRegistration' entity as a key",
-                                                    "name": "addedAttribute",
-                                                    "value": {
-                                                        "name": "eventId",
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "required"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Event"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Event associated with Event Registration."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "displayName": "Event",
-                                                        "description": "Unique identifier for Event associated with Event Registration.",
-                                                        "isNullable": true,
-                                                        "sourceName": "msevtmgt_eventid",
-                                                        "sourceOrdering": 39
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
+                                "name": "event",
                                 "entity": {
                                     "entityReference": "Event",
                                     "appliedTraits": [
@@ -761,11 +666,78 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Event"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Event associated with Event Registration."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Event",
+                                            "description": "Unique identifier for Event associated with Event Registration.",
+                                            "isNullable": true,
+                                            "sourceName": "msevtmgt_eventid",
+                                            "sourceOrdering": 39
+                                        }
+                                    }
                                 }
                             },
                             {
-                                "name": "industry",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -835,21 +807,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'industry_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'industry'",
-                                                    "name": "industry_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "industry",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -877,15 +838,24 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'industry_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'industry'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "industry_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Industry",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_industry",
                                 "sourceOrdering": 40
                             },
                             {
-                                "name": "isCanceled",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "isCanceled",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -919,9 +889,9 @@
                                 "sourceOrdering": 42
                             },
                             {
-                                "name": "memo",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "memo",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -956,8 +926,7 @@
                                 "maximumLength": 2000
                             },
                             {
-                                "name": "primaryRole",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -991,21 +960,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'primaryRole_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'primaryRole'",
-                                                    "name": "primaryRole_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "primaryRole",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1049,6 +1007,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'primaryRole_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'primaryRole'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "primaryRole_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Primary Role",
                                 "description": "Primary Role of the event attendee.",
                                 "isNullable": true,
@@ -1056,8 +1023,7 @@
                                 "sourceOrdering": 45
                             },
                             {
-                                "name": "publishingState",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1103,21 +1069,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'publishingState_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'publishingState'",
-                                                    "name": "publishingState_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "publishingState",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1161,6 +1116,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'publishingState_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'publishingState'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "publishingState_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Publishing State",
                                 "description": "The publishing state of the event registration.",
                                 "isNullable": true,
@@ -1168,9 +1132,9 @@
                                 "sourceOrdering": 47
                             },
                             {
-                                "name": "registeredBy",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "entityId",
+                                "name": "registeredBy",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.CDS.lookup",
@@ -1230,9 +1194,9 @@
                                 "sourceOrdering": 49
                             },
                             {
-                                "name": "registrationNotificationSeen",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
+                                "name": "registrationNotificationSeen",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1283,9 +1247,9 @@
                                 "sourceOrdering": 50
                             },
                             {
-                                "name": "registrationStatus",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "registrationStatus",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1320,8 +1284,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "syncedWithProvider",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1349,21 +1312,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'syncedWithProvider_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'syncedWithProvider'",
-                                                    "name": "syncedWithProvider_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "syncedWithProvider",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1407,6 +1359,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'syncedWithProvider_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'syncedWithProvider'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "syncedWithProvider_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Synced with Provider",
                                 "description": "A flag that indicates that the registration was synced with provider",
                                 "isNullable": true,
@@ -1414,9 +1375,9 @@
                                 "sourceOrdering": 53
                             },
                             {
-                                "name": "timesCheckedIn",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
+                                "name": "timesCheckedIn",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1452,7 +1413,7 @@
                                                     "constantValues": [
                                                         [
                                                             "en",
-                                                            "Hidden field. Number of Event Check-ins related to this ER.\r\nUsed as partial aggregation for Check-in count of Event.\r\nIncreasing and decreasing done by corresponding workflows."
+                                                            "Hidden field. Number of Event Check-ins related to this ER.\nUsed as partial aggregation for Check-in count of Event.\nIncreasing and decreasing done by corresponding workflows."
                                                         ]
                                                     ]
                                                 }
@@ -1461,7 +1422,7 @@
                                     }
                                 ],
                                 "displayName": "Times Checked-in",
-                                "description": "Hidden field. Number of Event Check-ins related to this ER.\r\nUsed as partial aggregation for Check-in count of Event.\r\nIncreasing and decreasing done by corresponding workflows.",
+                                "description": "Hidden field. Number of Event Check-ins related to this ER.\nUsed as partial aggregation for Check-in count of Event.\nIncreasing and decreasing done by corresponding workflows.",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_timescheckedin",
                                 "sourceOrdering": 55,
@@ -1469,9 +1430,9 @@
                                 "minimumValue": "0"
                             },
                             {
-                                "name": "webinarRegistrationID",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
+                                "name": "webinarRegistrationID",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1523,8 +1484,7 @@
                                 "maximumLength": 100
                             },
                             {
-                                "name": "yearsInIndustry",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1564,21 +1524,10 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'yearsInIndustry_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'yearsInIndustry'",
-                                                    "name": "yearsInIndustry_display",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
+                                "name": "yearsInIndustry",
                                 "appliedTraits": [
                                     {
                                         "traitReference": "is.requiredAtLevel",
@@ -1606,6 +1555,15 @@
                                         ]
                                     }
                                 ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'yearsInIndustry_display' is added to the 'EventRegistration' entity to provide the localized display text for the value of the listLookup attribute 'yearsInIndustry'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "yearsInIndustry_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Years in Industry",
                                 "isNullable": true,
                                 "sourceName": "msevtmgt_yearsinindustry",

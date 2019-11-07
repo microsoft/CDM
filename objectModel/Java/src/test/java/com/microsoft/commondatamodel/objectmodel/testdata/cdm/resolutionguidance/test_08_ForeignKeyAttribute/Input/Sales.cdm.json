@@ -1,0 +1,56 @@
+{
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Sales",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "SalesId"
+                },
+                {
+                    "dataType": "integer",
+                    "name": "SalesNumberOfUnits"
+                },
+                {
+                    "dataType": "decimal",
+                    "name": "SalesAmount"
+                },
+                {
+                    "dataType": "int",
+                    "name": "SalesProductId",
+                    "entity": {
+                        "entityReference": "Product",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Product/(resolvedAttributes)/ProductId"
+                                ]
+                            }
+                        ]
+                    },
+		    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "identityId"
+                            }
+			}
+		    }
+                }
+            ]
+        }
+    ]
+}
