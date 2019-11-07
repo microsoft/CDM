@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "GDPROptOut",
                                 "appliedTraits": [
@@ -85,7 +85,7 @@
                                 "description": "Describes whether lead is opted out or not"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -111,18 +111,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'orderType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "orderType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -176,12 +164,23 @@
                                 "sourceOrdering": 10237,
                                 "isNullable": true,
                                 "displayName": "Type",
-                                "description": "Whether the Opportunity created when qualifying this Lead is for an Item- based or a Work-based sale"
+                                "description": "Whether the Opportunity created when qualifying this Lead is for an Item- based or a Work-based sale",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'orderType_display' is added to the 'Lead' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "orderType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             }
                         ]
                     }
                 }
             ]
         }
-    ]
+    ],
+    "jsonSchemaSemanticVersion": "0.9.0"
 }

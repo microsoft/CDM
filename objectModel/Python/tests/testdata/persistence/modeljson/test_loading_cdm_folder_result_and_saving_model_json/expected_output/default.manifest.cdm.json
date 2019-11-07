@@ -1,0 +1,116 @@
+{
+  "jsonSchemaSemanticVersion": "0.9.0",
+  "imports": [
+    {
+      "corpusPath": "local.extension.cdm.json"
+    }
+  ],
+  "manifestName": "OrdersProductsCustomersLinked",
+  "exhibitsTraits": [
+    {
+      "traitReference": "means.measurement.version",
+      "arguments": [
+        {
+          "name": "version",
+          "value": "1.0"
+        }
+      ]
+    },
+    {
+      "traitReference": "is.modelConversion.referenceModelMap",
+      "arguments": [
+        {
+          "name": "referenceModelMap",
+          "value": [
+            {
+              "id": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+              "location": "http://contoso.com/entity.model.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitReference": "is.extension.pbi:mashup",
+      "arguments": [
+        {
+          "name": "is.extension.pbi:mashup",
+          "value": {
+            "queriesMetadata": {
+              "Customers": {
+                "queryId": "77ea2dfa-b868-4527-a6ee-c1da01a3b4c3",
+                "loadEnabled": true,
+                "queryName": "Customers"
+              },
+              "Products": {
+                "queryId": "f33e2de9-69f0-42db-adc9-a244aa544b0a",
+                "loadEnabled": true,
+                "queryName": "Products"
+              },
+              "Orders": {
+                "queryId": "88bc570c-047d-460f-8eed-c0ef17649afd",
+                "loadEnabled": true,
+                "queryName": "Orders"
+              }
+            },
+            "document": "section Section1;\r\nshared Customers = let\r\n  Source = OData.Feed(\"https://services.odata.org/V2/Northwind/Northwind.svc\"),\r\n  Navigation = Source{[Name = \"Customers\", Signature = \"table\"]}[Data],\r\n  #\"Remove columns\" = Table.RemoveColumns(Navigation, Table.ColumnsOfType(Navigation, {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\n",
+            "fastCombine": true
+          }
+        }
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "type": "ReferencedEntity",
+      "entityName": "Orders",
+      "entityPath": "remote:/contoso/entity.model.json/Orders",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.modelConversion.otherAnnotations",
+          "arguments": [
+            {
+              "name": "pbi:EntityTypeDisplayHint",
+              "value": "LinkedEntity"
+            }
+          ]
+        },
+        {
+          "traitReference": "is.propertyContent.multiTrait",
+          "arguments": [
+            {
+              "name": "modelId",
+              "value": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Customers",
+      "entityPath": "local:/Customers.cdm.json/Customers",
+      "dataPartitions": [
+        {
+          "lastFileStatusCheckTime": "2019-05-20T23:36:00.000Z",
+          "location": "remote:/contoso/EpisodeOfCare/partition-data.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.format.CSV",
+              "arguments": [
+                {
+                  "name": "columnHeaders",
+                  "value": true
+                },
+                {
+                  "name": "delimiter",
+                  "value": ","
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

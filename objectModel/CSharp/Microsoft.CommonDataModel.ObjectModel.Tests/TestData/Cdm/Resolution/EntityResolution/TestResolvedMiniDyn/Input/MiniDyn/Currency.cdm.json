@@ -1,0 +1,85 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Currency",
+            "extendsEntity": "Base",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "perfStandard",
+                    "arguments": [
+                        {
+                            "name": "P1",
+                            "value": "P1FromCurrency"
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "currencyId",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                                {
+                                    "name": "localizedDisplayText",
+                                    "value": {
+                                        "entityReference": {
+                                            "entityShape": "localizedTable",
+                                            "constantValues": [
+                                                [
+                                                    "en",
+                                                    "AttributeDisplay"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                                {
+                                    "name": "localizedDisplayText",
+                                    "value": {
+                                        "entityReference": {
+                                            "entityShape": "localizedTable",
+                                            "constantValues": [
+                                                [
+                                                    "en",
+                                                    "This is example description text"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "AttributeDisplay",
+                    "description": "This is example description text"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "currencyName"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "symbol"
+                }
+            ]
+        }
+    ]
+}

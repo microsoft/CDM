@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "plannedGivingId",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "description": "Unique identifier for entity instances"
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -211,11 +199,21 @@
                                 "sourceName": "statecode",
                                 "sourceOrdering": 24,
                                 "displayName": "Status",
-                                "description": "Status of the Planned Giving"
+                                "description": "Status of the Planned Giving",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +250,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -317,10 +303,20 @@
                                 "sourceOrdering": 26,
                                 "isNullable": true,
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Planned Giving"
+                                "description": "Reason for the status of the Planned Giving",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -357,7 +353,7 @@
                                 "displayName": "Name"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "actualPercentOfEstateRecieved",
                                 "appliedTraits": [
@@ -412,7 +408,7 @@
                                 "description": "Actual percent of donor estate received by organization"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -432,18 +428,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpAffiliation_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpAffiliation'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "affiliation_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -497,10 +481,20 @@
                                 "sourceOrdering": 35,
                                 "isNullable": true,
                                 "displayName": "Affiliation",
-                                "description": "Represents groups within the organization."
+                                "description": "Represents groups within the organization.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpAffiliation_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpAffiliation'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "affiliation_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "amountPerFrequency",
                                 "appliedTraits": [
@@ -556,6 +550,76 @@
                             },
                             {
                                 "name": "TransactionCurrency_msnfp_PlannedGiving",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "transactionCurrencyId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Currency"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the currency associated with the entity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "transactioncurrencyid",
+                                            "sourceOrdering": 38,
+                                            "isNullable": true,
+                                            "displayName": "Currency",
+                                            "description": "Unique identifier of the currency associated with the entity."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Currency",
                                     "appliedTraits": [
@@ -566,85 +630,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "transactionCurrencyId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Currency"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier of the currency associated with the entity."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "transactioncurrencyid",
-                                                        "sourceOrdering": 38,
-                                                        "isNullable": true,
-                                                        "displayName": "Currency",
-                                                        "description": "Unique identifier of the currency associated with the entity."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "exchangeRate",
                                 "appliedTraits": [
@@ -699,7 +688,7 @@
                                 "description": "Exchange rate for the currency associated with the entity with respect to the base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "amountPerFrequencyBase",
                                 "appliedTraits": [
@@ -763,7 +752,7 @@
                                 "description": "Value of the Amount Per Frequency in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "annualMarketValue",
                                 "appliedTraits": [
@@ -818,7 +807,7 @@
                                 "description": "Annual Market Value provided by official valuation source such as Kaspick."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "annualMarketValueBase",
                                 "appliedTraits": [
@@ -882,7 +871,7 @@
                                 "description": "Value of the Annual Market Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "annualMarketValueDate",
                                 "appliedTraits": [
@@ -935,7 +924,7 @@
                                 "description": "Date Annual Market Value provided by official valuation source such as Kaspick."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "annualPayment",
                                 "appliedTraits": [
@@ -990,7 +979,7 @@
                                 "description": "Annual Payment to organization."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "annualPaymentBase",
                                 "appliedTraits": [
@@ -1054,7 +1043,7 @@
                                 "description": "Value of the Annual Payment in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "anticipatedAnnualPayment",
                                 "appliedTraits": [
@@ -1109,7 +1098,7 @@
                                 "description": "Anticipated Annual Payment to organization."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "anticipatedAnnualPaymentBase",
                                 "appliedTraits": [
@@ -1173,7 +1162,7 @@
                                 "description": "Value of the Anticipated Annual Payment in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "anticipatedDistributionDateOfTrust",
                                 "appliedTraits": [
@@ -1226,7 +1215,7 @@
                                 "description": "Anticipated distribution date of trust typically provided by executor, trustee or attorney or in estate documentation."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "anticipatedPercentOfTrust",
                                 "appliedTraits": [
@@ -1281,7 +1270,7 @@
                                 "description": "Anticipated percent of trust that will go to the organization. This is typically provided by executor, trustee or attorney or in estate documentation."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "appraisalDate",
                                 "appliedTraits": [
@@ -1334,7 +1323,7 @@
                                 "description": "Date the appraisal was conducted."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "appraisalValue",
                                 "appliedTraits": [
@@ -1389,7 +1378,7 @@
                                 "description": "Value of the appraised item or asset from qualified appraiser"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "appraisalValueBase",
                                 "appliedTraits": [
@@ -1453,7 +1442,7 @@
                                 "description": "Value of the Appraisal Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1485,18 +1474,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpBequestType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpBequestType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "bequestType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1550,10 +1527,20 @@
                                 "sourceOrdering": 54,
                                 "isNullable": true,
                                 "displayName": "Bequest Type",
-                                "description": "Is the Bequest a Living Trust, Will, or both?"
+                                "description": "Is the Bequest a Living Trust, Will, or both?",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpBequestType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpBequestType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "bequestType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "capitalGainIncome",
                                 "appliedTraits": [
@@ -1608,7 +1595,7 @@
                                 "description": "Beneficiary's taxable capital gain income portion of life insurance income."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "capitalGainIncomeBase",
                                 "appliedTraits": [
@@ -1672,7 +1659,7 @@
                                 "description": "Value of the Capital Gain Income in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "cashSurrenderValue",
                                 "appliedTraits": [
@@ -1727,7 +1714,7 @@
                                 "description": "The current Cash Surrender Value of the insurance policy."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "cashSurrenderValueBase",
                                 "appliedTraits": [
@@ -1791,7 +1778,7 @@
                                 "description": "Value of the Cash Surrender Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "charitableDeduction",
                                 "appliedTraits": [
@@ -1846,7 +1833,7 @@
                                 "description": "Calculated Charitable Deduction for Planned Giving."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "charitableDeductionBase",
                                 "appliedTraits": [
@@ -1910,7 +1897,7 @@
                                 "description": "Value of the Charitable Deduction in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "contractDate",
                                 "appliedTraits": [
@@ -1963,7 +1950,7 @@
                                 "description": "Date funding will start as specified on the Contract."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "costBasis",
                                 "appliedTraits": [
@@ -2018,7 +2005,7 @@
                                 "description": "Original purchase price of funding asset."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "costBasisBase",
                                 "appliedTraits": [
@@ -2082,7 +2069,7 @@
                                 "description": "Value of the Cost Basis in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateClaimFormsRecieved",
                                 "appliedTraits": [
@@ -2135,7 +2122,7 @@
                                 "description": "Date Claim Forms Received."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateClaimFormsSubmitted",
                                 "appliedTraits": [
@@ -2188,7 +2175,7 @@
                                 "description": "Date Claim Forms Submitted."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateEstateClosed",
                                 "appliedTraits": [
@@ -2241,7 +2228,7 @@
                                 "description": "Date a management agreement is signed as provided by executor, trustee or attorney."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateManagementAgreementSigned",
                                 "appliedTraits": [
@@ -2294,7 +2281,7 @@
                                 "description": "Date a management agreement is signed as provided by executor, trustee or attorney."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateStationNotifiedOfDeath",
                                 "appliedTraits": [
@@ -2347,7 +2334,7 @@
                                 "description": "Date your organization is notified of the donor's death."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateStationNotifiedOfIntention",
                                 "appliedTraits": [
@@ -2400,7 +2387,7 @@
                                 "description": "Date organization Notified of Intention to give a Planned Giving."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateStationNotifiedToMakeClaim",
                                 "appliedTraits": [
@@ -2453,7 +2440,7 @@
                                 "description": "Date Organization notified to make a claim."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateWillExecuted",
                                 "appliedTraits": [
@@ -2506,7 +2493,7 @@
                                 "description": "Date Will Executed as provided in estate documentation."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "deceased",
                                 "appliedTraits": [
@@ -2559,7 +2546,7 @@
                                 "description": "Indicates the Contact is Deceased."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2761,18 +2748,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDeceasedDay_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedDay'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "deceasedDay_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -2824,10 +2799,20 @@
                                 "sourceOrdering": 75,
                                 "isNullable": true,
                                 "displayName": "Deceased Day",
-                                "description": "Day the Contact was deceased."
+                                "description": "Day the Contact was deceased.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDeceasedDay_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedDay'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "deceasedDay_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2915,18 +2900,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDeceasedMonth_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedMonth'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "deceasedMonth_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -2978,10 +2951,20 @@
                                 "sourceOrdering": 77,
                                 "isNullable": true,
                                 "displayName": "Deceased Month",
-                                "description": "Month the Contact was deceased."
+                                "description": "Month the Contact was deceased.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDeceasedMonth_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedMonth'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "deceasedMonth_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3063,18 +3046,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDeceasedYear_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedYear'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "deceasedYear_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -3126,10 +3097,20 @@
                                 "sourceOrdering": 79,
                                 "isNullable": true,
                                 "displayName": "Deceased Year",
-                                "description": "Year the Contact was deceased."
+                                "description": "Year the Contact was deceased.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDeceasedYear_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDeceasedYear'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "deceasedYear_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "deferredToDate",
                                 "appliedTraits": [
@@ -3182,7 +3163,7 @@
                                 "description": "Same as date of first payment when more than one year after the contract date."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "designatedOrganizationPercent",
                                 "appliedTraits": [
@@ -3237,7 +3218,7 @@
                                 "description": "Percent of remainder designated to organization"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "designatedPrincipleAmount",
                                 "appliedTraits": [
@@ -3292,7 +3273,7 @@
                                 "description": "Amount of principle designated to organization."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "designatedPrincipleAmountBase",
                                 "appliedTraits": [
@@ -3356,7 +3337,7 @@
                                 "description": "Value of the Designated Principle Amount in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3388,18 +3369,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDesignation_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDesignation'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "designation_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -3453,10 +3422,20 @@
                                 "sourceOrdering": 85,
                                 "isNullable": true,
                                 "displayName": "Designation",
-                                "description": "Usage of gift funds will be unrestricted, restricted or permanently restricted."
+                                "description": "Usage of gift funds will be unrestricted, restricted or permanently restricted.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDesignation_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDesignation'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "designation_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "discountRate",
                                 "appliedTraits": [
@@ -3511,7 +3490,7 @@
                                 "description": "Interest rate a central bank charges depository institutions that borrow reserves from it."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3593,18 +3572,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDiscountRateMonth_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDiscountRateMonth'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "discountRateMonth_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -3656,10 +3623,20 @@
                                 "sourceOrdering": 88,
                                 "isNullable": true,
                                 "displayName": "Discount Rate Month",
-                                "description": "Month in which latest Discount Rate was populated."
+                                "description": "Month in which latest Discount Rate was populated.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDiscountRateMonth_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDiscountRateMonth'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "discountRateMonth_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3741,18 +3718,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpDiscountRateYear_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDiscountRateYear'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "discountRateYear_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -3804,10 +3769,20 @@
                                 "sourceOrdering": 90,
                                 "isNullable": true,
                                 "displayName": "Discount Rate Year",
-                                "description": "Year in which latest Discount Rate was populated."
+                                "description": "Year in which latest Discount Rate was populated.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpDiscountRateYear_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpDiscountRateYear'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "discountRateYear_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -3845,18 +3820,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpEndowmentType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpEndowmentType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "endowmentType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -3910,10 +3873,20 @@
                                 "sourceOrdering": 92,
                                 "isNullable": true,
                                 "displayName": "Endowment Type",
-                                "description": "Specific endowment at organization where gift will be applied."
+                                "description": "Specific endowment at organization where gift will be applied.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpEndowmentType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpEndowmentType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "endowmentType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "estimatedGivingAmount",
                                 "appliedTraits": [
@@ -3968,7 +3941,7 @@
                                 "description": "Estimated amount organization will receive as provided by executor, trustee, or attorney."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "estimatedGivingAmountBase",
                                 "appliedTraits": [
@@ -4032,7 +4005,7 @@
                                 "description": "Value of the Estimated Giving Amount in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "estimatedTrustProbateDate",
                                 "appliedTraits": [
@@ -4085,7 +4058,7 @@
                                 "description": "Estimated Date Trust/Probate received as provided by executor, trustee or attorney or in estate documentation."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "expectedFinalDistributionDate",
                                 "appliedTraits": [
@@ -4138,7 +4111,7 @@
                                 "description": "Expected Date of Final Distribution, typically information provided by executor, trustee or attorney."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "expectedFirstDistributionDate",
                                 "appliedTraits": [
@@ -4191,7 +4164,7 @@
                                 "description": "Expected Date of First Distribution, typically information provided by executor, trustee or attorney."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalID",
                                 "appliedTraits": [
@@ -4245,7 +4218,7 @@
                                 "description": "ID from External or Legacy system."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "faceValue",
                                 "appliedTraits": [
@@ -4300,7 +4273,7 @@
                                 "description": "Value of funds donated."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "faceValueBase",
                                 "appliedTraits": [
@@ -4365,6 +4338,76 @@
                             },
                             {
                                 "name": "msnfp_plannedgiving_fund",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "fundId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Account"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Account associated with Planned Giving."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_fundid",
+                                            "sourceOrdering": 102,
+                                            "isNullable": true,
+                                            "displayName": "Account",
+                                            "description": "Unique identifier for Account associated with Planned Giving."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -4375,85 +4418,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "fundId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Account"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Account associated with Planned Giving."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_fundid",
-                                                        "sourceOrdering": 102,
-                                                        "isNullable": true,
-                                                        "displayName": "Account",
-                                                        "description": "Unique identifier for Account associated with Planned Giving."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "givingAmount",
                                 "appliedTraits": [
@@ -4508,7 +4476,7 @@
                                 "description": "Sum of gifts entered on this record (logic field)."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "givingReceivedDate",
                                 "appliedTraits": [
@@ -4561,7 +4529,7 @@
                                 "description": "Date distribution or remainder for Planned Giving is received."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -4667,18 +4635,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpGivingSubtype_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpGivingSubtype'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "givingSubtype_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -4730,10 +4686,20 @@
                                 "sourceOrdering": 105,
                                 "isNullable": true,
                                 "displayName": "Giving Subtype",
-                                "description": "Specific type of Planned Giving instrument."
+                                "description": "Specific type of Planned Giving instrument.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpGivingSubtype_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpGivingSubtype'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "givingSubtype_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "insuranceAnnualPremium",
                                 "appliedTraits": [
@@ -4788,7 +4754,7 @@
                                 "description": "Annual Premium of the Life Insurance."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "insuranceAnnualPremiumBase",
                                 "appliedTraits": [
@@ -4852,7 +4818,7 @@
                                 "description": "Value of the Insurance Annual Premium in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "insuranceCompany",
                                 "appliedTraits": [
@@ -4906,7 +4872,7 @@
                                 "description": "Insurance Company for related to this Planned Giving."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "insuranceDeathBenefitAmount",
                                 "appliedTraits": [
@@ -4961,7 +4927,7 @@
                                 "description": "Death Benefit Amount from Insurance."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "insurancePolicyCode",
                                 "appliedTraits": [
@@ -5015,7 +4981,7 @@
                                 "description": "Insurance policy code related to this Planned Giving."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "insurancePolicyName",
                                 "appliedTraits": [
@@ -5069,7 +5035,7 @@
                                 "description": "Insurance Policy Name for this Planned Giving."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "insurancePremiumDueDate",
                                 "appliedTraits": [
@@ -5122,7 +5088,7 @@
                                 "description": "Insurance Premium Due Date related to this Planned Giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "insurancePremiumPaymentAddress",
                                 "appliedTraits": [
@@ -5176,7 +5142,7 @@
                                 "description": "Address for the Life Insurance Premium Payment."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isRevocable",
                                 "appliedTraits": [
@@ -5229,7 +5195,7 @@
                                 "description": "Related trust may be amended, altered or revoked by its settlor at any time, provided the settlor is not mentally incapacitated."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -5299,18 +5265,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpLeadSource_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpLeadSource'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "leadSource_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -5362,10 +5316,20 @@
                                 "sourceOrdering": 117,
                                 "isNullable": true,
                                 "displayName": "Lead Source",
-                                "description": "Method of communication that prompted Donor to discuss Planned Giving options."
+                                "description": "Method of communication that prompted Donor to discuss Planned Giving options.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpLeadSource_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpLeadSource'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "leadSource_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "ordinaryIncome",
                                 "appliedTraits": [
@@ -5420,7 +5384,7 @@
                                 "description": "Income other than capital gain. Examples of Ordinary income can consist of income from wages, salaries, tips, commissions, bonuses, and other types of compensation from employment."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "ordinaryIncomeBase",
                                 "appliedTraits": [
@@ -5484,7 +5448,7 @@
                                 "description": "Value of the Ordinary Income in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -5522,18 +5486,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpPaymentFrequency_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpPaymentFrequency'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "paymentFrequency_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -5587,10 +5539,20 @@
                                 "sourceOrdering": 121,
                                 "isNullable": true,
                                 "displayName": "Payment Frequency",
-                                "description": "Defined frequency payments are distributed to the organization."
+                                "description": "Defined frequency payments are distributed to the organization.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpPaymentFrequency_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpPaymentFrequency'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "paymentFrequency_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "payoutRate",
                                 "appliedTraits": [
@@ -5646,6 +5608,76 @@
                             },
                             {
                                 "name": "msnfp_plannedGiving_campaign",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "plannedGivingCampaignId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Campaign"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Campaign"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_plannedgiving_campaignid",
+                                            "sourceOrdering": 124,
+                                            "isNullable": true,
+                                            "displayName": "Campaign",
+                                            "description": "Campaign"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Campaign",
                                     "appliedTraits": [
@@ -5656,85 +5688,80 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "plannedGivingCampaignId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Campaign"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Campaign"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_plannedgiving_campaignid",
-                                                        "sourceOrdering": 124,
-                                                        "isNullable": true,
-                                                        "displayName": "Campaign",
-                                                        "description": "Campaign"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
                                 "name": "msnfp_plannedGiving_contact",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "plannedGivingPledgedByContactId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Pledged By Contact"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Pledged By Contact"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_plannedgiving_pledgedbycontactid",
+                                            "sourceOrdering": 125,
+                                            "isNullable": true,
+                                            "displayName": "Pledged By Contact",
+                                            "description": "Pledged By Contact"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Contact",
                                     "appliedTraits": [
@@ -5745,85 +5772,80 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "plannedGivingPledgedByContactId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Pledged By Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Pledged By Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_plannedgiving_pledgedbycontactid",
-                                                        "sourceOrdering": 125,
-                                                        "isNullable": true,
-                                                        "displayName": "Pledged By Contact",
-                                                        "description": "Pledged By Contact"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
                                 "name": "msnfp_plannedgiving_account",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "pledgesOnAccountId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Pledges On Account"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier for Account associated with Planned Giving."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msnfp_pledgesonaccountid",
+                                            "sourceOrdering": 126,
+                                            "isNullable": true,
+                                            "displayName": "Pledges On Account",
+                                            "description": "Unique identifier for Account associated with Planned Giving."
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -5834,85 +5856,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "pledgesOnAccountId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Pledges On Account"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Unique identifier for Account associated with Planned Giving."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msnfp_pledgesonaccountid",
-                                                        "sourceOrdering": 126,
-                                                        "isNullable": true,
-                                                        "displayName": "Pledges On Account",
-                                                        "description": "Unique identifier for Account associated with Planned Giving."
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "presentValue",
                                 "appliedTraits": [
@@ -5967,7 +5914,7 @@
                                 "description": "The value on a given date of a payment or series of payments made at other times for an investment."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "presentValueBase",
                                 "appliedTraits": [
@@ -6031,7 +5978,7 @@
                                 "description": "Value of the Present Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "recordType",
                                 "appliedTraits": [
@@ -6085,7 +6032,7 @@
                                 "description": "Type of Planned Giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "remainderAmount",
                                 "appliedTraits": [
@@ -6140,7 +6087,7 @@
                                 "description": "Remainder $ value a Charitable Organization receives."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "remainderAmountBase",
                                 "appliedTraits": [
@@ -6204,7 +6151,7 @@
                                 "description": "Value of the Remainder Amount in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "rollupGiving",
                                 "appliedTraits": [
@@ -6257,7 +6204,7 @@
                                 "description": "Populated by trigger, reflects the most recent Date/Time for Giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "salvageValueOfBuildings",
                                 "appliedTraits": [
@@ -6312,7 +6259,7 @@
                                 "description": "Estimated value of property at the end of its useful life. It is what you expect to get for the property if you sell it after you can no longer use it productively."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "salvageValueOfBuildingsBase",
                                 "appliedTraits": [
@@ -6376,7 +6323,7 @@
                                 "description": "Value of the Salvage Value of Buildings in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "severDate",
                                 "appliedTraits": [
@@ -6429,7 +6376,7 @@
                                 "description": "The term end date' or the date of the related Contact's death."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -6547,18 +6494,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpStage_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpStage'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stage_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -6610,10 +6545,20 @@
                                 "sourceOrdering": 136,
                                 "isNullable": true,
                                 "displayName": "Stage",
-                                "description": "The current phase the giving record."
+                                "description": "The current phase the giving record.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpStage_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpStage'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stage_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "taxFreeIncome",
                                 "appliedTraits": [
@@ -6668,7 +6613,7 @@
                                 "description": "The tax free income from the asset related to this giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "taxFreeIncomeBase",
                                 "appliedTraits": [
@@ -6732,7 +6677,7 @@
                                 "description": "Value of the Tax Free Income in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "termEndDate",
                                 "appliedTraits": [
@@ -6785,7 +6730,7 @@
                                 "description": "Term end date for the asset related to the Planned Giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -6823,18 +6768,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpTermType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTermType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "termType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -6888,10 +6821,20 @@
                                 "sourceOrdering": 141,
                                 "isNullable": true,
                                 "displayName": "Term Type",
-                                "description": "Term type for the asset related to the Planned Giving record."
+                                "description": "Term type for the asset related to the Planned Giving record.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpTermType_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTermType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "termType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "termYears",
                                 "appliedTraits": [
@@ -6946,7 +6889,7 @@
                                 "description": "Term years for the asset related to the Planned Giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "totalEstateValue",
                                 "appliedTraits": [
@@ -7001,7 +6944,7 @@
                                 "description": "Total Estate Value as provided by executor, trustee or attorney or in estate documentation."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "totalEstateValueBase",
                                 "appliedTraits": [
@@ -7065,7 +7008,7 @@
                                 "description": "Value of the Total Estate Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "currency",
                                 "name": "trustMarketValue",
                                 "appliedTraits": [
@@ -7120,7 +7063,7 @@
                                 "description": "Trust Market Value related to this planned giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "baseCurrency",
                                 "name": "trustMarketValueBase",
                                 "appliedTraits": [
@@ -7184,7 +7127,7 @@
                                 "description": "Value of the Trust Market Value in base currency."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "trustProbateNoticeDate",
                                 "appliedTraits": [
@@ -7237,7 +7180,7 @@
                                 "description": "Date Trust/Probate Notice received."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "trustValueDate",
                                 "appliedTraits": [
@@ -7290,7 +7233,7 @@
                                 "description": "Trust Value Date related to this planned giving record."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -7322,18 +7265,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'typeOfManagement_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'typeOfManagement'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "typeOfManagement_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -7387,7 +7318,17 @@
                                 "sourceOrdering": 150,
                                 "isNullable": true,
                                 "displayName": "Type of Management",
-                                "description": "The type of management for the underlying asset or assets related to this Planned Giving record."
+                                "description": "The type of management for the underlying asset or assets related to this Planned Giving record.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'typeOfManagement_display' is added to the 'PlannedGiving' entity to provide the localized display text for the value of the listLookup attribute 'typeOfManagement'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "typeOfManagement_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             }
                         ]
                     }

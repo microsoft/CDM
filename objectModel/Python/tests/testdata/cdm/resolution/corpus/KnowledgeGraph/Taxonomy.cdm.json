@@ -1,0 +1,149 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "LocalizedName.cdm.json"
+        },
+        {
+            "corpusPath": "LinguisticAlternate.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Taxonomy",
+            "extendsEntity": "CdmObject",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "a taxonomy item."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "displayName": "a taxonomy item.",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "taxonomyId"
+                },
+                {
+                    "dataType": "string",
+                    "name": "code",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                                {
+                                    "name": "localizedDisplayText",
+                                    "value": {
+                                        "entityReference": {
+                                            "entityShape": "localizedTable",
+                                            "constantValues": [
+                                                [
+                                                    "en",
+                                                    "the code used to identify the taxonomy member."
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "the code used to identify the taxonomy member."
+                },
+                {
+                    "name": "description",
+                    "entity": {
+                        "entityReference": "LocalizedName",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "LocalizedName/(resolvedAttributes)/nameId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "cardinality": "many",
+                        "renameFormat": "{a}_{m}{o}",
+                        "expansion": {
+                            "startingOrdinal": 0,
+                            "maximumExpansion": 4,
+                            "countAttribute": {
+                                "dataType": "integer",
+                                "name": "arrayMemberCount"
+                            }
+                        },
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "dataType": "entityId",
+                                "name": "foreignKey"
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "all"
+                        }
+                    }
+                },
+                {
+                    "name": "alternate",
+                    "entity": {
+                        "entityReference": "LinguisticAlternate",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "LinguisticAlternate/(resolvedAttributes)/alternateId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "cardinality": "many",
+                        "renameFormat": "{a}_{m}{o}",
+                        "expansion": {
+                            "startingOrdinal": 0,
+                            "maximumExpansion": 4,
+                            "countAttribute": {
+                                "dataType": "integer",
+                                "name": "arrayMemberCount"
+                            }
+                        },
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "dataType": "entityId",
+                                "name": "foreignKey"
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "all"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,187 @@
+﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+{
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Linq;
+
+    public class ManifestPersistence
+    {
+        public static CdmManifestDefinition FromData(CdmCorpusContext ctx, string name, string nameSpace, string path, ManifestContent dataObj)
+        {
+            // Determine name of the manifest
+            var manifestName = !string.IsNullOrEmpty(dataObj.ManifestName) ? dataObj.ManifestName : dataObj.FolioName;
+            // We haven't found the name in the file, use one provided in the call but without the suffixes
+            if (string.IsNullOrEmpty(manifestName))
+                manifestName = name.Replace(".manifest.cdm.json", "").Replace(".folio.cdm.json", "");      
+
+            var manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, manifestName);
+
+            manifest.Name = name; // this is the document name which is assumed by constructor to be related to the the manifestName, but may not be
+            manifest.FolderPath = path;
+            manifest.Namespace = nameSpace;
+            manifest.Explanation = dataObj.Explanation;
+
+            // set this as the current doc of the context for this operation
+            ctx.UpdateDocumentContext(manifest);
+
+            if (!string.IsNullOrEmpty(dataObj.Schema))
+                manifest.Schema = dataObj.Schema;
+            if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(dataObj.JsonSchemaSemanticVersion))
+                manifest.JsonSchemaSemanticVersion = dataObj.JsonSchemaSemanticVersion;
+
+            if (!string.IsNullOrEmpty(dataObj.ManifestName))
+                manifest.ManifestName = dataObj.ManifestName;
+            // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
+            else if (!string.IsNullOrEmpty(dataObj.FolioName))
+                manifest.ManifestName = dataObj.FolioName;
+
+            if (dataObj.ExhibitsTraits != null)
+                Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, JArray.FromObject(dataObj.ExhibitsTraits)));
+            if (dataObj.Imports != null)
+            {
+                foreach (var importObj in dataObj.Imports)
+                {
+                    manifest.Imports.Add(ImportPersistence.FromData(ctx, importObj));
+                }
+            }
+
+            if (dataObj.Definitions != null)
+            {
+                for (int i = 0; i < dataObj.Definitions.Count; i++)
+                {
+                    dynamic d = dataObj.Definitions[i];
+                    if (d["dataTypeName"] != null)
+                        manifest.Definitions.Add(DataTypePersistence.FromData(ctx, d));
+                    else if (d["purposeName"] != null)
+                        manifest.Definitions.Add(PurposePersistence.FromData(ctx, d));
+                    else if (d["attributeGroupName"] != null)
+                        manifest.Definitions.Add(AttributeGroupPersistence.FromData(ctx, d));
+                    else if (d["traitName"] != null)
+                        manifest.Definitions.Add(TraitPersistence.FromData(ctx, d));
+                    else if (d["entityShape"] != null)
+                        manifest.Definitions.Add(ConstantEntityPersistence.FromData(ctx, d));
+                    else if (d["entityName"] != null)
+                        manifest.Definitions.Add(EntityPersistence.FromData(ctx, d));
+                }
+            }
+
+            ctx.UpdateDocumentContext(null);
+
+            if (dataObj.LastFileStatusCheckTime != null)
+            {
+                manifest.LastFileStatusCheckTime = DateTimeOffset.Parse(dataObj.LastFileStatusCheckTime);
+            }
+
+            if (dataObj.LastFileModifiedTime != null)
+            {
+                manifest.LastFileModifiedTime = DateTimeOffset.Parse(dataObj.LastFileModifiedTime);
+            }
+
+            if (dataObj.LastChildFileModifiedTime != null)
+            {
+                manifest.LastChildFileModifiedTime = DateTimeOffset.Parse(dataObj.LastChildFileModifiedTime);
+            }
+
+
+            if (dataObj.Entities != null)
+            {
+                var fullPath = !string.IsNullOrEmpty(nameSpace) ? $"{nameSpace}:{path}" : path;
+                foreach (var entityObj in dataObj.Entities)
+                {
+                    CdmEntityDeclarationDefinition entity = null;
+
+                    if (entityObj["type"] != null)
+                    {
+                       if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.LocalEntity)
+                       {
+                            entity = LocalEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
+                       }
+                       else if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.ReferencedEntity)
+                       {
+                            entity = ReferencedEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
+                       }
+                       else
+                       {
+                            Logger.Error(nameof(ManifestPersistence), ctx, "Couldn't find the type for entity declaration", "FromData");
+                       }
+                    } 
+                    else
+                    {
+                        // We see old structure of entity declaration, check for entity schema/declaration.
+                        if (entityObj["entitySchema"] != null)
+                        {
+                            // Local entity declaration used to use entity schema.
+                            entity = LocalEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
+                        }
+                        else
+                        {
+                            // While referenced entity declaration used to use entity declaration.
+                            entity = ReferencedEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
+                        }
+                    }
+                    
+                    manifest.Entities.Add(entity);
+                }
+            }
+
+            if (dataObj.Relationships != null)
+            {
+                foreach (var rel in dataObj.Relationships)
+                {
+                    manifest.Relationships.Add(E2ERelationshipPersistence.FromData(ctx, rel));
+                }
+            }
+
+            if (dataObj.SubManifests != null)
+            {
+                foreach (var subManifest in dataObj.SubManifests)
+                {
+                    manifest.SubManifests.Add(ManifestDeclarationPersistence.FromData(ctx, subManifest));
+                }
+            }
+            // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
+            else if (dataObj.SubFolios != null)
+            {
+                foreach (var subFolio in dataObj.SubFolios)
+                {
+                    manifest.SubManifests.Add(ManifestDeclarationPersistence.FromData(ctx, subFolio));
+                }
+            }
+
+            return manifest;
+        }
+
+        public static ManifestContent ToData(CdmManifestDefinition instance, ResolveOptions resOpt, CopyOptions options)
+        {
+            var documentContent = DocumentPersistence.ToData(instance, resOpt, options);
+            var manifestContent = new ManifestContent()
+            {
+                ManifestName = instance.ManifestName,
+                JsonSchemaSemanticVersion = documentContent.JsonSchemaSemanticVersion,
+                Schema = documentContent.Schema,
+                Imports = documentContent.Imports
+            };
+
+            manifestContent.ManifestName = instance.ManifestName;
+            manifestContent.LastFileStatusCheckTime = TimeUtils.GetFormattedDateString(instance.LastFileStatusCheckTime);
+            manifestContent.LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime);
+            manifestContent.LastChildFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastChildFileModifiedTime);
+            manifestContent.Entities = Utils.ListCopyData(resOpt, instance.Entities, options);
+            manifestContent.SubManifests = Utils.ListCopyData<ManifestDeclaration>(resOpt, instance.SubManifests, options);
+            manifestContent.Explanation = instance.Explanation;
+            manifestContent.ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options);
+
+            if (instance.Relationships != null && instance.Relationships.Count > 0)
+            {
+                manifestContent.Relationships = instance.Relationships.Select(relationship => { return E2ERelationshipPersistence.ToData(relationship); }).ToList();
+            }
+
+            return manifestContent;
+        }
+    }
+}

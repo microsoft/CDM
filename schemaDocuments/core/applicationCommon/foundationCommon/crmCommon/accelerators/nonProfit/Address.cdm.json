@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "endDate",
                                 "appliedTraits": [
@@ -85,7 +85,7 @@
                                 "description": "Effective end date of the address and related contact info"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isUspsValidated",
                                 "appliedTraits": [
@@ -121,7 +121,7 @@
                                 "displayName": "USPS Validated"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isvalidated",
                                 "appliedTraits": [
@@ -174,7 +174,7 @@
                                 "description": "Indicates the address has been validated."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -194,18 +194,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpRegion_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRegion'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "region_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -259,10 +247,20 @@
                                 "sourceOrdering": 10067,
                                 "isNullable": true,
                                 "displayName": "Region",
-                                "description": "Indicates the region of the world that the address is located."
+                                "description": "Indicates the region of the world that the address is located.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpRegion_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpRegion'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "region_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -282,18 +280,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpSeasonalEndDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndDay'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "seasonalEndDay_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -347,10 +333,20 @@
                                 "sourceOrdering": 10069,
                                 "isNullable": true,
                                 "displayName": "Seasonal End Day",
-                                "description": "Annual end day (of month) of the address and related contact info"
+                                "description": "Annual end day (of month) of the address and related contact info",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpSeasonalEndDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndDay'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "seasonalEndDay_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -370,18 +366,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpSeasonalEndMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndMonth'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "seasonalEndMonth_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -435,10 +419,20 @@
                                 "sourceOrdering": 10071,
                                 "isNullable": true,
                                 "displayName": "Seasonal End Month",
-                                "description": "Annual end month of the address and related contact info"
+                                "description": "Annual end month of the address and related contact info",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpSeasonalEndMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalEndMonth'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "seasonalEndMonth_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -458,18 +452,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpSeasonalStartDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartDay'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "seasonalStartDay_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -523,10 +505,20 @@
                                 "sourceOrdering": 10073,
                                 "isNullable": true,
                                 "displayName": "Seasonal Start Day",
-                                "description": "Annual start day (of month) of the address and related contact info"
+                                "description": "Annual start day (of month) of the address and related contact info",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpSeasonalStartDay_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartDay'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "seasonalStartDay_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -546,18 +538,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpSeasonalStartMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartMonth'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "seasonalStartMonth_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -611,10 +591,20 @@
                                 "sourceOrdering": 10075,
                                 "isNullable": true,
                                 "displayName": "Seasonal Start Month",
-                                "description": "Annual start month of the address and related contact info"
+                                "description": "Annual start month of the address and related contact info",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpSeasonalStartMonth_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpSeasonalStartMonth'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "seasonalStartMonth_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "startDate",
                                 "appliedTraits": [
@@ -667,7 +657,7 @@
                                 "description": "Effective start date of the address and related contact info"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -699,18 +689,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpTelephone1TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone1TypeCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "telephone1TypeCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -747,10 +725,20 @@
                                 "sourceName": "msnfp_telephone1typecode",
                                 "sourceOrdering": 10078,
                                 "isNullable": true,
-                                "displayName": "Telephone 1 Type"
+                                "displayName": "Telephone 1 Type",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpTelephone1TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone1TypeCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "telephone1TypeCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -782,18 +770,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpTelephone2TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone2TypeCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "telephone2TypeCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -830,10 +806,20 @@
                                 "sourceName": "msnfp_telephone2typecode",
                                 "sourceOrdering": 10080,
                                 "isNullable": true,
-                                "displayName": "Telephone 2 Type"
+                                "displayName": "Telephone 2 Type",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpTelephone2TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone2TypeCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "telephone2TypeCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -865,18 +851,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'msnfpTelephone3TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone3TypeCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "telephone3TypeCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -913,7 +887,17 @@
                                 "sourceName": "msnfp_telephone3typecode",
                                 "sourceOrdering": 10082,
                                 "isNullable": true,
-                                "displayName": "Telephone 3 Type"
+                                "displayName": "Telephone 3 Type",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'msnfpTelephone3TypeCode_display' is added to the 'Address' entity to provide the localized display text for the value of the listLookup attribute 'msnfpTelephone3TypeCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "telephone3TypeCode_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             }
                         ]
                     }

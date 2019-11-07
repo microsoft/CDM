@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "The master list of all courses that an institution offers."
+                                        "The master list of all courses offered by an institution."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Course",
-            "description": "The master list of all courses that an institution offers.",
+            "description": "The master list of all courses offered by an institution.",
             "sourceName": "mshied_course",
             "hasAttributes": [
                 {
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "courseId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_courseid",
-                                "sourceOrdering": 1,
                                 "displayName": "Course",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_courseid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Course"
+                                "description": "Status of the Course",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Course"
+                                "description": "Reason for the status of the Course",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,15 +360,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Course Name",
-                                "description": "The name or title of the course."
+                                "description": "The name or title of the course.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -432,18 +426,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'academicLevel_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'academicLevel'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "academicLevel_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -491,14 +473,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_academiclevel",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'academicLevel_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'academicLevel'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "academicLevel_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Academic Level",
-                                "description": "Academic Level"
+                                "description": "Academic Level",
+                                "isNullable": true,
+                                "sourceName": "mshied_academiclevel",
+                                "sourceOrdering": 34
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "courseNumber",
                                 "appliedTraits": [
@@ -544,15 +535,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_coursenumber",
-                                "maximumLength": 20,
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Course Number",
-                                "description": "The number of the course."
+                                "description": "The number of the course.",
+                                "isNullable": true,
+                                "sourceName": "mshied_coursenumber",
+                                "sourceOrdering": 36,
+                                "maximumLength": 20
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "endDate",
                                 "appliedTraits": [
@@ -598,14 +589,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_enddate",
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "End Date",
-                                "description": "The end date of the course."
+                                "description": "The end date of the course.",
+                                "isNullable": true,
+                                "sourceName": "mshied_enddate",
+                                "sourceOrdering": 37
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalIdentifier",
                                 "appliedTraits": [
@@ -651,15 +642,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalidentifier",
-                                "maximumLength": 255,
-                                "sourceOrdering": 38,
-                                "isNullable": true,
                                 "displayName": "External Identifier",
-                                "description": "External Identifier"
+                                "description": "External Identifier",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalidentifier",
+                                "sourceOrdering": 38,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -691,18 +682,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'externalSourceSystem_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "externalSourceSystem_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -752,14 +731,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalsourcesystem",
-                                "sourceOrdering": 39,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'externalSourceSystem_display' is added to the 'Course' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "externalSourceSystem_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "External Source System",
-                                "description": "External Source System"
+                                "description": "External Source System",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalsourcesystem",
+                                "sourceOrdering": 39
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "prerequisites",
                                 "appliedTraits": [
@@ -789,14 +777,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_prerequisites",
-                                "maximumLength": 255,
-                                "sourceOrdering": 41,
+                                "displayName": "Prerequisites",
                                 "isNullable": true,
-                                "displayName": "Prerequisites"
+                                "sourceName": "mshied_prerequisites",
+                                "sourceOrdering": 41,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "section",
                                 "appliedTraits": [
@@ -842,15 +830,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_section",
-                                "maximumLength": 100,
-                                "sourceOrdering": 42,
-                                "isNullable": true,
                                 "displayName": "Section",
-                                "description": "The specific section of the course."
+                                "description": "The specific section of the course.",
+                                "isNullable": true,
+                                "sourceName": "mshied_section",
+                                "sourceOrdering": 42,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "startDate",
                                 "appliedTraits": [
@@ -896,14 +884,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_startdate",
-                                "sourceOrdering": 43,
-                                "isNullable": true,
                                 "displayName": "Start Date",
-                                "description": "The start date of the course."
+                                "description": "The start date of the course.",
+                                "isNullable": true,
+                                "sourceName": "mshied_startdate",
+                                "sourceOrdering": 43
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "subject",
                                 "appliedTraits": [
@@ -949,12 +937,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_subject",
-                                "maximumLength": 100,
-                                "sourceOrdering": 44,
-                                "isNullable": true,
                                 "displayName": "Subject",
-                                "description": "The subject the course is related to."
+                                "description": "The subject the course is related to.",
+                                "isNullable": true,
+                                "sourceName": "mshied_subject",
+                                "sourceOrdering": 44,
+                                "maximumLength": 100
                             }
                         ]
                     }

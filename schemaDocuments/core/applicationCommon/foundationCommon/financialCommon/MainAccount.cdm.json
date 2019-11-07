@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -8,9 +8,49 @@
     "definitions": [
         {
             "entityName": "MainAccount",
-            "extendsEntity": "CdmObject",
-            "description": "An account whose balance is displayed in major financial statements",
+            "extendsEntity": "CdmEntity",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "name": "localizedDisplayText",
+                            "value": {
+                                "entityReference": {
+                                    "entityShape": "localizedTable",
+                                    "constantValues": [
+                                        [
+                                            "en",
+                                            "Main Account"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "name": "localizedDisplayText",
+                            "value": {
+                                "entityReference": {
+                                    "entityShape": "localizedTable",
+                                    "constantValues": [
+                                        [
+                                            "en",
+                                            "An account whose balance is displayed in major financial statements"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
             "displayName": "Main Account",
+            "description": "An account whose balance is displayed in major financial statements",
             "hasAttributes": [
                 {
                     "attributeGroupReference": {
@@ -34,48 +74,148 @@
                         ],
                         "members": [
                             {
+                                "purpose": "identifiedBy",
+                                "dataType": "string",
                                 "name": "mainAccountId",
-                                "relationship": "identifiedBy",
-                                "dataType": "string",
-                                "description": "The surrogate key of the main account record",
-                                "displayName": "MainAccountId"
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "MainAccountId"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "The surrogate key of the main account record"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "MainAccountId",
+                                "description": "The surrogate key of the main account record"
                             },
                             {
-                                "name": "name",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
-                                "description": "The user-readable name of the main account",
-                                "displayName": "Name"
+                                "name": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Name"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "The user-readable name of the main account"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Name",
+                                "description": "The user-readable name of the main account"
                             },
                             {
-                                "name": "number",
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
-                                "description": "The numerical designation of the account according to the chart of accounts, usually designed such that accounts of the same type have similar numbers",
-                                "displayName": "Number"
+                                "name": "number",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Number"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "name": "localizedDisplayText",
+                                                "value": {
+                                                    "entityReference": {
+                                                        "entityShape": "localizedTable",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "The numerical designation of the account according to the chart of accounts, usually designed such that accounts of the same type have similar numbers"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "displayName": "Number",
+                                "description": "The numerical designation of the account according to the chart of accounts, usually designed such that accounts of the same type have similar numbers"
                             },
                             {
                                 "name": "mainAccountCategoryKey",
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "name": "mainAccountCategoryKey",
-                                                        "relationship": "hasA",
-                                                        "dataType": "string",
-                                                        "description": "The categorization of the main account, by which accounting aspects such as account type are defined",
-                                                        "displayName": "Main Account Category Key"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "MainAccountCategory",
                                     "appliedTraits": [
@@ -86,30 +226,69 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "string",
+                                            "name": "mainAccountCategoryKey",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "Main Account Category Key"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "The categorization of the main account, by which accounting aspects such as account type are defined"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Main Account Category Key",
+                                            "description": "The categorization of the main account, by which accounting aspects such as account type are defined"
+                                        }
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
                                 "name": "currencyKey",
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "name": "currencyKey",
-                                                        "relationship": "hasA",
-                                                        "dataType": "string",
-                                                        "description": "The currency in which amounts held by this account are expressed",
-                                                        "displayName": "Currency Key"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
                                 "entity": {
                                     "entityReference": "Currency",
                                     "appliedTraits": [
@@ -120,6 +299,65 @@
                                             ]
                                         }
                                     ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "string",
+                                            "name": "currencyKey",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "Currency Key"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "localizedDisplayText",
+                                                            "value": {
+                                                                "entityReference": {
+                                                                    "entityShape": "localizedTable",
+                                                                    "constantValues": [
+                                                                        [
+                                                                            "en",
+                                                                            "The currency in which amounts held by this account are expressed"
+                                                                        ]
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Currency Key",
+                                            "description": "The currency in which amounts held by this account are expressed"
+                                        }
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             }
                         ]
