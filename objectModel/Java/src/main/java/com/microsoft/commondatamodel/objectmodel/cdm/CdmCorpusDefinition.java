@@ -422,7 +422,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
         }
         // ask the adapter to make it happen
         try {
-          adapter.writeAsync(newPath, JMapper.MAP.writeValueAsString(persistedDoc)).join();
+          adapter.writeAsync(newPath, JMapper.WRITER.writeValueAsString(persistedDoc)).join();
 
           if (options.isTopLevelDocument()) {
             this.storage.saveAdapterConfig("/config.json", adapter);

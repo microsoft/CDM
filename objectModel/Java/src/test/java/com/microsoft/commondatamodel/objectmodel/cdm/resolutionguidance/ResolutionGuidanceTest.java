@@ -22,6 +22,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ResolutionGuidanceTest {
+  /**
+   * The path of the SchemaDocs project.
+   */
+  private static final String SCHEMA_DOCS_PATH = "../CDM.SchemaDocuments";
 
   /**
    * The test's data path.
@@ -55,7 +59,7 @@ public class ResolutionGuidanceTest {
         githubAdapter.setTimeout(Duration.ofSeconds(3));
         githubAdapter.setNumberOfRetries(1);
 
-        corpus.getStorage().mount("cdm", githubAdapter);
+        corpus.getStorage().mount("cdm", new LocalAdapter(SCHEMA_DOCS_PATH));
 
         corpus.getStorage().setDefaultNamespace("localInput");
 

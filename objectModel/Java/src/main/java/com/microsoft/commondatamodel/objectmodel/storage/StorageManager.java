@@ -49,8 +49,10 @@ public class StorageManager {
    */
   @Deprecated
   public ImmutablePair<String, String> splitNamespacePath(final String objectPath) {
-    if (objectPath.contains(":")) {
-      return new ImmutablePair<>(objectPath.substring(0, objectPath.indexOf(":")), objectPath.substring(objectPath.indexOf(":") + 1));
+    if (objectPath != null && objectPath.contains(":")) {
+      return new ImmutablePair<>(
+          objectPath.substring(0, objectPath.indexOf(":")),
+          objectPath.substring(objectPath.indexOf(":") + 1));
     }
     return new ImmutablePair<>("", objectPath);
   }
@@ -121,11 +123,11 @@ public class StorageManager {
         } else if (AdlsAdapter.TYPE.equals(itemType)) {
           adapter = new AdlsAdapter();
         } else {
-          unrecognizedAdapters.add(JMapper.MAP.writeValueAsString(item));
+          unrecognizedAdapters.add(JMapper.WRITER.writeValueAsString(item));
         }
 
         if (adapter != null) {
-          adapter.updateConfig(JMapper.MAP.writeValueAsString(configs));
+          adapter.updateConfig(JMapper.WRITER.writeValueAsString(configs));
           this.mount(nameSpace, adapter);
         }
       } catch (final JsonProcessingException e) {
@@ -282,7 +284,7 @@ public class StorageManager {
     resultConfig.put("defaultNamespace", this.defaultNamespace);
     resultConfig.set("adapters", adaptersArray);
     try {
-      return JMapper.MAP.writeValueAsString(resultConfig);
+      return JMapper.WRITER.writeValueAsString(resultConfig);
     } catch (final JsonProcessingException e) {
       throw new StorageAdapterException("Cannot generate adapters config", e);
     }
