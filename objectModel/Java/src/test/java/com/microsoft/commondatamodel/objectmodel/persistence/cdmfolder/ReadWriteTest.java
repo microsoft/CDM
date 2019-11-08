@@ -46,7 +46,7 @@ public class ReadWriteTest {
           (CdmLocalEntityDeclarationDefinition) localEntityDef,
           new ResolveOptions(),
           new CopyOptions());
-      JMapper.MAP.writeValue(new File(PROJECT_PATH + "out.localentitydeclaration.cdm.json"), localEntityDecl);
+      JMapper.WRITER.writeValue(new File(PROJECT_PATH + "out.localentitydeclaration.cdm.json"), localEntityDecl);
 
       // assertTrue(classUnderTest.someLibraryMethod(), "someLibraryMethod should return 'true'");
     }

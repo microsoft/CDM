@@ -130,7 +130,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
             (new StringEntity(data, "UTF-8").getContentLength()), "PATCH");
         this.readOrWrite(request).get();
       } catch (final InterruptedException | ExecutionException e) {
-        throw new StorageAdapterException("Could not read ADLS content at path, there was an issue at: " + corpusPath, e);
+        throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
       }
     });
   }
@@ -324,7 +324,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     }
     resultConfig.set("config", configObject);
     try {
-      return JMapper.MAP.writeValueAsString(resultConfig);
+      return JMapper.WRITER.writeValueAsString(resultConfig);
     } catch (final JsonProcessingException e) {
       throw new StorageAdapterException("Failed to construct config string", e);
     }

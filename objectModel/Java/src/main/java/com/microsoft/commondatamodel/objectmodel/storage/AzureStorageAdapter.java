@@ -104,7 +104,7 @@ public class AzureStorageAdapter implements StorageAdapter {
         return CompletableFuture.runAsync(() -> {
             try (final CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
                 final HttpPut httpPut = (HttpPut) buildMessage("PUT", corpusPath);
-                final StringEntity entity = new StringEntity(JMapper.MAP.writeValueAsString(data), "UTF-8");
+                final StringEntity entity = new StringEntity(JMapper.WRITER.writeValueAsString(data), "UTF-8");
                 entity.setContentType("application/json; charset=utf-8");
                 httpPut.setEntity(entity);
 

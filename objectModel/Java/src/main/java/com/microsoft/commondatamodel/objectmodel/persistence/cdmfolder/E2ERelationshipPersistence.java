@@ -11,7 +11,7 @@ public class E2ERelationshipPersistence {
     relationship.setFromEntity(dataObj.getFromEntity());
     relationship.setFromEntityAttribute(dataObj.getFromEntityAttribute());
     relationship.setToEntity(dataObj.getToEntity());
-    relationship.setToEntityAttribute(dataObj.getFromEntityAttribute());
+    relationship.setToEntityAttribute(dataObj.getToEntityAttribute());
     return relationship;
   }
 
@@ -20,7 +20,7 @@ public class E2ERelationshipPersistence {
     e2ERelationship.setFromEntity(instance.getFromEntity());
     e2ERelationship.setFromEntityAttribute(instance.getFromEntityAttribute());
     e2ERelationship.setToEntity(instance.getToEntity());
-    e2ERelationship.setToEntityAttribute(instance.getFromEntityAttribute());
+    e2ERelationship.setToEntityAttribute(instance.getToEntityAttribute());
     return e2ERelationship;
   }
 }

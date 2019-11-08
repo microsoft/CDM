@@ -14,6 +14,11 @@
     public class ResolutionGuidanceTest
     {
         /// <summary>
+        /// The path of the SchemaDocs project.
+        /// </summary>
+        private const string SchemaDocsPath = "../../../../../../CDM.SchemaDocuments";
+
+        /// <summary>
         /// The test's data path.
         /// </summary>
         private static string testsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
@@ -135,12 +140,7 @@
                 corpus.Storage.Mount("localInput", new LocalAdapter(testInputPath));
                 corpus.Storage.Mount("localExpectedOutput", new LocalAdapter(testExpectedOutputPath));
                 corpus.Storage.Mount("localActualOutput", new LocalAdapter(testActualOutputPath));
-                corpus.Storage.Mount("cdm", new GithubAdapter()
-                {
-                    Timeout = TimeSpan.FromSeconds(3),
-                    MaximumTimeout = TimeSpan.FromSeconds(6),
-                    NumberOfRetries = 1
-                });
+                corpus.Storage.Mount("cdm", new LocalAdapter(SchemaDocsPath));
                 corpus.Storage.DefaultNamespace = "localInput";
 
                 CdmEntityDefinition srcEntityDef = await corpus.FetchObjectAsync<CdmEntityDefinition>($"localInput:/{sourceEntityName}.cdm.json/{sourceEntityName}") as CdmEntityDefinition;
@@ -249,7 +249,7 @@
             Assert.AreEqual(
                 File.ReadAllText(Path.Combine(testExpectedOutputPath, outputEntityFileName)),
                 File.ReadAllText(Path.Combine(testActualOutputPath, outputEntityFileName))
-            );
+                );
         }
     }
 }

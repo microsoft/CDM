@@ -21,11 +21,15 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the storage adapter interface which operates over a local filesystem.
  */
 public class LocalAdapter implements StorageAdapter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalAdapter.class);
+
   static final String TYPE = "local";
   private String root;
   private String fullRoot;
@@ -55,7 +59,7 @@ public class LocalAdapter implements StorageAdapter {
 
     resultConfig.put("config", configObject);
     try {
-      return JMapper.MAP.writeValueAsString(resultConfig);
+      return JMapper.WRITER.writeValueAsString(resultConfig);
     } catch (final JsonProcessingException e) {
       throw new StorageAdapterException("Failed to construct config string", e);
     }
@@ -114,7 +118,7 @@ public class LocalAdapter implements StorageAdapter {
   }
 
   public String createAdapterPath(String corpusPath) {
-    if (corpusPath.contains(":")) {
+    if (corpusPath != null && corpusPath.contains(":")) {
       corpusPath = StringUtils.slice(corpusPath, corpusPath.indexOf(":") + 1);
     }
 
@@ -133,6 +137,10 @@ public class LocalAdapter implements StorageAdapter {
   public String createCorpusPath(final String adapterPath) {
     // make this a file system path and normalize it
     String formattedAdapterPath = this.convertPathToAbsolutePath(adapterPath);
+    if (formattedAdapterPath == null) {
+      return null;
+    }
+
     formattedAdapterPath = formattedAdapterPath.replace('\\', '/');
     final String formattedRoot = this.fullRoot.replace('\\', '/');
 
@@ -235,14 +243,19 @@ public class LocalAdapter implements StorageAdapter {
   /**
    * Converts the given path to an absolute path.
    *
-   * @param path Any kind of path
-   * @return absolute path
+   * @param path Any kind of path.
+   * @return absolute path or null if path is invalid.
    */
   private String convertPathToAbsolutePath(final String path) {
-    return FileSystems.getDefault()
-            .getPath(path)
-            .normalize().toAbsolutePath()
-            .toString();
+    try {
+      return FileSystems.getDefault()
+          .getPath(path)
+          .normalize().toAbsolutePath()
+          .toString();
+    } catch (Exception E) {
+      LOGGER.error("Unable to parse path '{}'.", path);
+      return null;
+    }
   }
 
   @Override

@@ -8,9 +8,12 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Model;
+import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.Test;
@@ -37,6 +40,30 @@ public class ModelJsonTest extends ModelJsonTestBase {
     final Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
 
     this.handleOutput("testFromAndToData", MODEL_JSON, obtainedModelJson);
+  }
+
+  @Test
+  public void testLoadingModelJsonWithInvalidPath()
+      throws InterruptedException, ExecutionException, IOException, JSONException {
+    final String testInputPath =
+        TestHelper.getInputFolderPath(TESTS_SUBPATH, "testLoadingModelJsonWithInvalidPath");
+    final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+    cdmCorpus.getStorage().mount("local", new LocalAdapter(testInputPath));
+    cdmCorpus.getStorage().setDefaultNamespace("local");
+    final AdlsAdapter adlsAdapter = new AdlsAdapter(
+        "<ACCOUNT-NAME>.dfs.core.windows.net",
+        "/<FILESYSTEM-NAME>",
+        "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "<CLIENT-ID>",
+        "<CLIENT-SECRET>"
+    );
+    cdmCorpus.getStorage().mount("adls", adlsAdapter);
+
+    final CdmManifestDefinition manifest =
+        cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/model.json").get();
+    final Model obtainedModelJson = ManifestPersistence.toData(manifest, null, null).join();
+
+    this.handleOutput("testLoadingModelJsonWithInvalidPath", MODEL_JSON, obtainedModelJson);
   }
 
   @Test
