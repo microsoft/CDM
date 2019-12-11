@@ -48,8 +48,20 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmDataTypeDefinition copy = new CdmDataTypeDefinition(this.getCtx(), this.getDataTypeName(), null);
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    CdmDataTypeDefinition copy;
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    if (host == null) {
+      copy = new CdmDataTypeDefinition(this.getCtx(), this.getDataTypeName(), null);
+    } else {
+      copy = (CdmDataTypeDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setDataTypeName(this.getDataTypeName());
+    }
+
     if (this.getExtendsDataType() != null) {
       copy.setExtendsDataType((CdmDataTypeReference) this.getExtendsDataType().copy(resOpt));
     }
@@ -64,16 +76,23 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return this.isDerivedFromDef(resOpt, this.getExtendsDataType(), this.getName(), baseDef);
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.getDataTypeName();
-      this.setDeclaredPath(path);
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (Strings.isNullOrEmpty(path)) {
+        path = pathFrom + this.getDataTypeName();
+        this.setDeclaredPath(path);
+      }
     }
 
     if (preChildren != null && preChildren.invoke(this, path)) {

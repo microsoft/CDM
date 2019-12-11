@@ -115,7 +115,7 @@
             var inputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestModelJsonExtensibility");
 
             var cdmCorpus = this.GetLocalCorpus(inputPath);
-            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("SerializerTesting-model.json", cdmCorpus.Storage.FetchRootFolder("local"));
+            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
             var obtainedModel = await ManifestPersistence.ToData(cdmManifest, null, null);
 
             // The imports were generated during processing and are not present in the original file.

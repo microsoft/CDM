@@ -11,14 +11,15 @@ import unittest.mock as mock
 import dateutil.tz
 
 from tests.common import async_test
-from cdm.storage.adls import AdlsAdapter
+from cdm.storage.adls import ADLSAdapter
 
 
 class AdlsStorageAdapterTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.adapter = AdlsAdapter(adapter='ADLSAdapter', root='/fs', hostname='dummy.dfs.core.windows.net', tenant='dummyTenant', resource='dummyResource',
-                                   client_id='dummyClientId', secret='dummySecret', http_config={'number_of_retries': 0})
+        self.adapter = ADLSAdapter(root='/fs', hostname='dummy.dfs.core.windows.net', tenant='dummyTenant', resource='dummyResource',
+                                   client_id='dummyClientId', secret='dummySecret')
+        self.adapter.number_of_retries = 0
 
     @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open, read_data=json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'}).encode())
     @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
@@ -30,7 +31,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         raw_data = await self.adapter.read_async('/dir1/dir2/file.json')
         data = json.loads(raw_data)
 
-        #mock_credentials.assert_called_once_with('dummyResource', 'dummyClientId', 'dummySecret')
+        mock_credentials.assert_called_once_with('https://storage.azure.com', 'dummyClientId', 'dummySecret')
 
         self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
         self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
@@ -75,6 +76,8 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
         mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
 
+        mock_urlopen.return_value.status = 200
+        mock_urlopen.return_value.reason = 'OK'
         mock_urlopen.return_value.getheaders = mock.MagicMock(side_effect=lambda: {'Last-Modified': 'Mon, 31 Dec 2018 23:59:59 GMT'})
 
         time = await self.adapter.compute_last_modified_time_async('https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
@@ -100,11 +103,13 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
             # Folder path.
             with mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', mock.mock_open(read_data=list_response)) as mock_urlopen:
+                mock_urlopen.return_value.status = 200
+                mock_urlopen.return_value.reason = 'OK'
                 all_files = await self.adapter.fetch_all_files_async('/dir1/dir2')
 
                 self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=/dir1/dir2&recursive=true&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=/dir1/dir2&recursive=True&resource=filesystem')
                 self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
                 self.assertEqual(all_files, ['/dir1/dir2/file1.json', '/dir1/dir2/file2.json'])  # Verify data.
 
@@ -113,7 +118,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
                 all_files = await self.adapter.fetch_all_files_async('/')
 
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=/&recursive=true&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=/&recursive=True&resource=filesystem')
 
 
 if __name__ == '__main__':

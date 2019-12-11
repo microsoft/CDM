@@ -137,7 +137,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         # path should be absolute and without a namespace
                         relative_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
                         if relative_ent_path.startswith(namespace+':'):
-                            relative_ent_path[len(namespace) + 1:]
+                            relative_ent_path = relative_ent_path[len(namespace) + 1:]
                         ent_references.append(relative_ent_path)
                         att_references.append(att_name)
 
@@ -158,7 +158,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 reqd_trait.parameter_values.update_parameter_value(res_opt, 'entityReferences', param)
 
         # a 'structured' directive wants to keep all entity attributes together in a group
-        if rts_this_att and rts_this_att.res_opt.directives and rts_this_att.res_opt.directives.has('structured'):
+        if arc and arc.res_opt.directives and arc.res_opt.directives.has('structured'):
             ra_sub = ResolvedAttribute(rts_this_att.res_opt, rasb.ras, self.name, rasb.ras.attribute_context)
             if rel_info.is_array:
                 # put a resolved trait on this att group, yuck,
@@ -178,10 +178,17 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
         self._add_resolved_traits_applied(rtsb, res_opt)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmEntityAttributeDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmEntityAttributeDefinition'] = None) -> 'CdmEntityAttributeDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmEntityAttributeDefinition(self.ctx, self.name)
+        if not host:
+            copy = CdmEntityAttributeDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
+
         copy.entity = self.entity.copy(res_opt)
         self._copy_att(res_opt, copy)
 
@@ -309,10 +316,12 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         return bool(self.name) and bool(self.entity)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

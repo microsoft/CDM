@@ -126,7 +126,7 @@ class TypeAttributePersistence:
             data.minimumValue = minimum_value
 
         data_format = instance.fetch_property('dataFormat')
-        if data_format:
+        if data_format != CdmDataFormat.UNKNOWN:
             data.dataFormat = data_format.value
 
         default_value = instance.fetch_property('defaultValue')

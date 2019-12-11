@@ -21,12 +21,12 @@ class LocalEntityDeclarationPersistence:
         local_entity = ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF, data.entityName)
         local_entity.explanation = data.get('explanation')
 
-        entity_path = data.get('entitySchema') or data.get('entityPath')
+        entity_path = data.get('entityPath') or data.get('entitySchema')
 
-        if entity_path.find(':') == -1:
-            local_entity.entity_path = '{}{}'.format(prefix_path, entity_path[1:] if entity_path.startswith('/') else entity_path)
-        else:
-            local_entity.entity_path = entity_path
+        if entity_path is None:
+            ctx.logger.error('Couldn\'t find entity path or similar.')
+
+        local_entity.entity_path = entity_path
 
         if data.get('lastFileStatusCheckTime'):
             local_entity.last_file_status_check_time = dateutil.parser.parse(data.lastFileStatusCheckTime)

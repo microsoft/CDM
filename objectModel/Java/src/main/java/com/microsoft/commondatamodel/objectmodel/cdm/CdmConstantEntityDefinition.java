@@ -11,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetB
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.List;
 import org.slf4j.Logger;
@@ -35,13 +36,21 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + (!Strings.isNullOrEmpty(this.getConstantEntityName()) ? this
-          .getConstantEntityName() : "(unspecified)");
-      this.setDeclaredPath(path);
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (StringUtils.isNullOrTrimEmpty(path)) {
+        path = pathFrom + (!Strings.isNullOrEmpty(this.getConstantEntityName())
+            ? this.getConstantEntityName()
+            : "(unspecified)");
+        this.setDeclaredPath(path);
+      }
     }
-    //trackVisits(path);
+
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -113,8 +122,19 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmConstantEntityDefinition copy = new CdmConstantEntityDefinition(this.getCtx());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmConstantEntityDefinition copy;
+    if (host == null) {
+      copy = new CdmConstantEntityDefinition(this.getCtx());
+    } else {
+      copy = (CdmConstantEntityDefinition) host;
+      copy.setCtx(this.getCtx());
+    }
+
     copy.setConstantEntityName(this.getConstantEntityName());
     copy.setEntityShape((CdmEntityReference) this.getEntityShape().copy(resOpt));
     copy.setConstantValues(this.getConstantValues()); // is a deep copy needed?
@@ -123,7 +143,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 

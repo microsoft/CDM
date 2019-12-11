@@ -32,77 +32,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
                 Console.WriteLine(msg);
         };
 
-        public static async Task LoadCorpusFolder(CdmCorpusDefinition corpus, CdmFolderDefinition folder, IList<string> ignoreFolders, string version)
-        {
-            string path = corpus.RootPath + folder.FolderPath;
-
-            if (ignoreFolders != null && ignoreFolders.Contains(folder.Name))
-            {
-                return;
-            }
-
-            string endMatch = ".cdm.json";
-            if (!version.EndsWith(".json"))
-            {
-                endMatch = (!string.IsNullOrEmpty(version)) ? $".{version}.cdm.json" : ".cdm.json";
-            }
-
-            if (!Directory.Exists(path))
-            {
-                throw new InvalidOperationException($"No directory found at {path}.");
-            }
-            DirectoryInfo rootDirectory = new DirectoryInfo(path);
-            await WalkDirectoryTree(rootDirectory, corpus, folder, ignoreFolders, endMatch).ConfigureAwait(false);
-
-        }
-
-        static async Task WalkDirectoryTree(DirectoryInfo root, CdmCorpusDefinition corpus, CdmFolderDefinition folder, IList<string> ignoreFolders, string endMatch)
-        {
-            FileInfo[] files = null;
-            DirectoryInfo[] subDirs = null;
-
-            // First, process all the files directly under this folder
-            try
-            {
-                files = root.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            if (files != null)
-            {
-                foreach (FileInfo fi in files)
-                {
-                    string postfix = fi.Name.Substring(fi.Name.IndexOf("."));
-                    if (postfix == endMatch)
-                    {
-                        using (var reader = File.OpenText(fi.FullName))
-                        {
-                            string content = await reader.ReadToEndAsync().ConfigureAwait(false);
-                            string name = folder.FolderPath + fi.Name;
-                            CdmDocumentDefinition doc = DocumentPersistence.FromData(corpus.Ctx, name, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<DocumentContent>(content));
-                            corpus.Documents.Add(doc);
-                            Console.WriteLine($"Loading {fi.FullName}");
-                        }
-                    }
-                }
-
-                // Now find all the subdirectories under this directory.
-                subDirs = root.GetDirectories();
-
-                foreach (DirectoryInfo dirInfo in subDirs)
-                {
-                    // Resursive call for each subdirectory.
-                    await LoadCorpusFolder(corpus, folder.ChildFolders.Add(dirInfo.Name), ignoreFolders, endMatch).ConfigureAwait(false);
-                }
-            }
-        }
 
         public static async Task ValidateSchemaAsync(CdmCorpusDefinition cdmCorpus, CdmValidationStep finishStep)
         {
@@ -149,14 +78,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             };
 
             await validateStep(CdmValidationStep.Start).ConfigureAwait(false);
-        }
-
-        public static void PersistCorpus(CdmCorpusDefinition cdmCorpus, AttributeResolutionDirectiveSet directives, CopyOptions options = null)
-        {
-            if (cdmCorpus != null && cdmCorpus.ChildFolders != null && cdmCorpus.ChildFolders.Count == 1)
-            {
-                PersistCorpusFolder(cdmCorpus.RootPath, cdmCorpus.ChildFolders[0], directives, options);
-            }
         }
 
         public static void PersistCorpusFolder(string rootPath, CdmFolderDefinition cdmFolder, AttributeResolutionDirectiveSet directives, CopyOptions options = null)

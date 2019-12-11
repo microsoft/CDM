@@ -9,7 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmContainerDefinition {
   private static final Logger LOGGER = LoggerFactory.getLogger(CdmFolderDefinition.class);
-  private final Map<String, CdmDocumentDefinition> documentLookup = new HashMap<>();
+  private final Map<String, CdmDocumentDefinition> documentLookup = new LinkedHashMap<>();
   private final CdmFolderCollection childFolders = new CdmFolderCollection(this.getCtx(), this);
   private final CdmDocumentCollection documents = new CdmDocumentCollection(this.getCtx(), this);
 
@@ -144,7 +144,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
     return CompletableFuture.supplyAsync(() -> {
       final CdmDocumentDefinition documentDefinition =
-          PersistenceLayer.loadDocumentFromPathAsync(this, docName).join();
+          PersistenceLayer.loadDocumentFromPathAsync(this, docName, doc).join();
       return documentDefinition;
     });
   }
@@ -233,16 +233,18 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public String getAtCorpusPath() {
-    if (this.namespace != null && this.folderPath != null) {
+    if (this.namespace == null) {
+      // We're not under any adapter (not in a corpus), so return special indicator.
+      return "NULL:" + this.folderPath;
+    } else {
       return this.namespace + ":" + this.folderPath;
     }
-    return this.folderPath;
   }
 
   @Override
@@ -266,7 +268,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
+  public CdmObject copy(final ResolveOptions resOpt, final CdmObject host) {
     // Intended to return null;
     return null;
   }

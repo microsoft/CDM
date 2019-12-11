@@ -1,10 +1,16 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Cdm
+﻿//-----------------------------------------------------------------------
+// <copyright file="CdmArgumentCollection.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using System.Collections.Generic;
 
     /// <summary>
-    /// <see cref="CdmCollection"/> customezid for <see cref="CdmArgumentDefinition"/>
+    /// <see cref="CdmCollection"/> customized for <see cref="CdmArgumentDefinition"/>.
     /// </summary>
     public class CdmArgumentCollection : CdmCollection<CdmArgumentDefinition>
     {
@@ -18,7 +24,7 @@
         }
 
         /// <summary>
-        /// Constructs a CdmArgumentCollection
+        /// Constructs a CdmArgumentCollection.
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <param name="owner">The owner of the collection. Has to be a <see cref="CdmTraitReference"/> because this collection is optimized to handle adjustments to the trait when adding an argument.</param>
@@ -66,7 +72,7 @@
 
         /// <summary>
         /// Retrieves the value of the argument with the provided name.
-        /// If no argument with provided name is found and there is only one argument with null name, retrieves the value of this argument.
+        /// If no argument with the provided name is found and there is only one argument with a null name, retrieves the value of this argument.
         /// </summary>
         /// <param name="name">The name of the argument we should fetch the value for.</param>
         /// <returns>The value of the argument.</returns>
@@ -90,7 +96,7 @@
         }
 
         /// <summary>
-        /// Updates the value of an existing argument, or, in case no argument is found with the provided name, an argument is created and added.
+        /// Updates the value of an existing argument. If no argument is found with the provided name, an argument is created and added.
         /// </summary>
         /// <param name="name">The name of the argument to be updated.</param>
         /// <param name="value">The value to update the argument with.</param>

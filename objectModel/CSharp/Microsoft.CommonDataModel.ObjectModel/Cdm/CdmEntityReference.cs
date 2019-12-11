@@ -12,6 +12,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmEntityReference : CdmObjectReferenceBase
     {
+        /// <summary>
+        /// Constructs a CdmEntityReference.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="entityRef">The entity to reference.</param>
+        /// <param name="simpleReference">Whether this reference is a simple reference.</param>
         public CdmEntityReference(CdmCorpusContext ctx, dynamic entityRef, bool simpleReference)
             : base(ctx, (object)entityRef, simpleReference)
         {
@@ -24,9 +30,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.EntityRef;
         }
 
-        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference)
+        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
-            return new CdmEntityReference(this.Ctx, refTo, simpleReference);
+            if (host == null)
+                return new CdmEntityReference(this.Ctx, refTo, simpleReference);
+            else
+                return host.CopyToHost(this.Ctx, refTo, simpleReference);
         }
 
         internal override bool VisitRef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)

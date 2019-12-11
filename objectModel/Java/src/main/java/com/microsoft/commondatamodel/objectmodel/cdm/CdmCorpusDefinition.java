@@ -21,12 +21,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import java.nio.file.InvalidPathException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,16 +43,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CdmCorpusDefinition extends CdmFolderDefinition {
+public class CdmCorpusDefinition {
   private static final Logger LOGGER = LoggerFactory.getLogger(CdmCorpusDefinition.class);
   private static final String cdmExtension = "cdm.json";
 
-  private static int nextId = 0;
-  private final CdmCorpusDefinition corpus;
+  private static AtomicInteger nextId = new AtomicInteger(0);
   private final StorageManager storage;
+  private CdmCorpusContext ctx;
   final private Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> outgoingRelationships;
   final private Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> incomingRelationships;
-  final private Map<String, CdmCollection<CdmEntityDefinition>> symbol2EntityDefList;
+  final private Map<String, List<CdmEntityDefinition>> symbol2EntityDefList;
 
   private String appId;
   private String rootPath;
@@ -68,24 +66,33 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
   private Map<String, CdmObject> objectCache;
 
+  /**
+   * Whether we are currently performing a resolution or not.
+   * Used to stop making documents dirty during CdmCollections operations.
+   */
+  boolean isCurrentlyResolving = false;
+
+  /**
+   * Used by Visit functions of CdmObjects to skip calculating the declaredPath.
+   */
+  boolean blockDeclaredPathChanges = false;
+
   public CdmCorpusDefinition() {
-    super(null, "");
-    this.corpus = this; // well ... it is
     this.allDocuments = new ArrayList<>();
-    this.pathLookup = new HashMap<>();
-    this.directory = new HashMap<>();
-    this.symbolDefinitions = new HashMap<>();
-    this.definitionReferenceSymbols = new HashMap<>();
-    this.definitionWrtTag = new HashMap<>();
-    this.emptyRts = new HashMap<>();
+    this.pathLookup = new LinkedHashMap<>();
+    this.directory = new LinkedHashMap<>();
+    this.symbolDefinitions = new LinkedHashMap<>();
+    this.definitionReferenceSymbols = new LinkedHashMap<>();
+    this.definitionWrtTag = new LinkedHashMap<>();
+    this.emptyRts = new LinkedHashMap<>();
 
     this.setCtx(new ResolveContext(this));
     this.storage = new StorageManager(this);
 
-    this.outgoingRelationships = new HashMap<>();
-    this.incomingRelationships = new HashMap<>();
-    this.symbol2EntityDefList = new HashMap<>();
-    this.objectCache = new HashMap<>();
+    this.outgoingRelationships = new LinkedHashMap<>();
+    this.incomingRelationships = new LinkedHashMap<>();
+    this.symbol2EntityDefList = new LinkedHashMap<>();
+    this.objectCache = new LinkedHashMap<>();
   }
 
   public static CdmDocumentDefinition fetchPriorityDocument(final List<CdmDocumentDefinition> docs,
@@ -205,14 +212,9 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
   }
 
   static int getNextId() {
-    return ++nextId;
+    return nextId.incrementAndGet();
   }
 
-  public static void setNextId(final int nextId) {
-    CdmCorpusDefinition.nextId = nextId;
-  }
-
-  @Override
   public boolean validate() {
     return false;
   }
@@ -251,7 +253,6 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       this.getAllDocuments().add(new ImmutablePair<>(cdmFolderDefinition, doc));
       this.getPathLookup().put(path, new ImmutablePair<>(cdmFolderDefinition, doc));
       this.getDirectory().put(doc, cdmFolderDefinition);
-      ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
     }
     return doc;
   }
@@ -304,7 +305,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     if (symbolsRef == null && thisName != null) {
       // every symbol should depend on at least itself
       final SymbolSet symSetThis = new SymbolSet();
-      symSetThis.add(this.getName());
+      symSetThis.add(thisName);
       this.registerDefinitionReferenceSymbols(definition, kind, symSetThis);
       symbolsRef = symSetThis;
     }
@@ -391,19 +392,27 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       } else {
         // what kind of document is requested?
         final String persistenceType =
-            (newName.endsWith(CdmConstants.MODEL_JSON_EXTENSION)) ? "ModelJson" : "CdmFolder";
+            org.apache.commons.lang3.StringUtils.endsWithIgnoreCase(newName, CdmConstants.MODEL_JSON_EXTENSION)
+                ? "ModelJson"
+                : "CdmFolder";
 
         // save the object into a json blob
         final ResolveOptions resOpt = new ResolveOptions(doc);
         final Object persistedDoc;
 
-        if (newName.endsWith(CdmConstants.MODEL_JSON_EXTENSION)
-            || newName.endsWith(CdmConstants.FOLIO_EXTENSION)
-            || newName.endsWith(CdmConstants.MANIFEST_EXTENSION)) {
+        if (org.apache.commons.lang3.StringUtils.endsWithIgnoreCase(newName, CdmConstants.MODEL_JSON_EXTENSION)
+            || org.apache.commons.lang3.StringUtils.endsWithIgnoreCase(newName, CdmConstants.FOLIO_EXTENSION)
+            || org.apache.commons.lang3.StringUtils.endsWithIgnoreCase(newName, CdmConstants.MANIFEST_EXTENSION)) {
           if ("CdmFolder".equals(persistenceType)) {
-            persistedDoc = ManifestPersistence.toData(((CdmManifestDefinition) doc), resOpt, options);
+            persistedDoc =
+                ManifestPersistence.toData(((CdmManifestDefinition) doc), resOpt, options);
           } else {
-            persistedDoc = com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence
+            if (!org.apache.commons.lang3.StringUtils.equalsIgnoreCase(newName, CdmConstants.MODEL_JSON_EXTENSION)) {
+              LOGGER.error("Failed to persist '{}', as it's not an acceptable filename. It must be model.json", newName);
+              return false;
+            }
+            persistedDoc =
+                com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence
                 .toData(((CdmManifestDefinition) doc), resOpt, options).join();
           }
         } else {
@@ -447,9 +456,10 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     });
   }
 
-  CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc,
-                                              final LinkedHashMap<CdmDocumentDefinition, Short> docsNotIndexed,
-                                              final LinkedHashMap<String, Short> docsNotFound) {
+  CompletableFuture<Void> resolveImportsAsync(
+      final CdmDocumentDefinition doc,
+      final LinkedHashMap<CdmDocumentDefinition, Short> docsNotIndexed,
+      final LinkedHashMap<String, Short> docsNotFound) {
     return CompletableFuture.runAsync(() -> {
       final LinkedHashMap<String, Short> missingSet = new LinkedHashMap<>();
       final LinkedHashMap<CdmDocumentDefinition, Short> importsNotIndexed = new LinkedHashMap<>();
@@ -491,122 +501,97 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     CdmObject newObj = null;
     switch (ofType) {
       case ArgumentDef:
-        newObj = new CdmArgumentDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmArgumentDefinition(this.ctx, nameOrRef);
         break;
       case AttributeContextDef:
-        newObj = new CdmAttributeContext(this.getCtx(), nameOrRef);
+        newObj = new CdmAttributeContext(this.ctx, nameOrRef);
         break;
       case AttributeContextRef:
-        newObj = new CdmAttributeContextReference(this.getCtx(), nameOrRef);
+        newObj = new CdmAttributeContextReference(this.ctx, nameOrRef);
         break;
       case AttributeGroupDef:
-        newObj = new CdmAttributeGroupDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmAttributeGroupDefinition(this.ctx, nameOrRef);
         break;
       case AttributeGroupRef:
-        newObj = new CdmAttributeGroupReference(this.getCtx(), nameOrRef, simpleNameRef);
+        newObj = new CdmAttributeGroupReference(this.ctx, nameOrRef, simpleNameRef);
         break;
       case AttributeRef:
-        newObj = new CdmAttributeReference(this.getCtx(), nameOrRef, simpleNameRef);
+        newObj = new CdmAttributeReference(this.ctx, nameOrRef, simpleNameRef);
         break;
       case AttributeResolutionGuidanceDef:
-        newObj = new CdmAttributeResolutionGuidance(this.getCtx());
+        newObj = new CdmAttributeResolutionGuidance(this.ctx);
         break;
       case ConstantEntityDef:
-        final CdmConstantEntityDefinition constantEntity = new CdmConstantEntityDefinition(this.getCtx());
+        final CdmConstantEntityDefinition constantEntity = new CdmConstantEntityDefinition(this.ctx);
         constantEntity.setConstantEntityName(nameOrRef);
         newObj = constantEntity;
         break;
       case DataPartitionDef:
-        newObj = new CdmDataPartitionDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmDataPartitionDefinition(this.ctx, nameOrRef);
         break;
       case DataPartitionPatternDef:
-        newObj = new CdmDataPartitionPatternDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmDataPartitionPatternDefinition(this.ctx, nameOrRef);
         break;
       case DataTypeDef:
-        newObj = new CdmDataTypeDefinition(this.getCtx(), nameOrRef, null);
+        newObj = new CdmDataTypeDefinition(this.ctx, nameOrRef, null);
         break;
       case DataTypeRef:
-        newObj = new CdmDataTypeReference(this.getCtx(), nameOrRef, simpleNameRef);
+        newObj = new CdmDataTypeReference(this.ctx, nameOrRef, simpleNameRef);
         break;
       case DocumentDef:
-        newObj = new CdmDocumentDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmDocumentDefinition(this.ctx, nameOrRef);
         break;
       case EntityAttributeDef:
-        newObj = new CdmEntityAttributeDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmEntityAttributeDefinition(this.ctx, nameOrRef);
         break;
       case EntityDef:
-        newObj = new CdmEntityDefinition(this.getCtx(), nameOrRef, null);
+        newObj = new CdmEntityDefinition(this.ctx, nameOrRef, null);
         break;
       case EntityRef:
-        newObj = new CdmEntityReference(this.getCtx(), nameOrRef, simpleNameRef);
+        newObj = new CdmEntityReference(this.ctx, nameOrRef, simpleNameRef);
         break;
       case FolderDef:
-        newObj = new CdmFolderDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmFolderDefinition(this.ctx, nameOrRef);
         break;
       case ManifestDef:
-        newObj = new CdmManifestDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmManifestDefinition(this.ctx, nameOrRef);
         break;
       case ManifestDeclarationDef:
-        newObj = new CdmManifestDeclarationDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmManifestDeclarationDefinition(this.ctx, nameOrRef);
         break;
       case Import:
-        newObj = new CdmImport(this.getCtx(), nameOrRef, null);
+        newObj = new CdmImport(this.ctx, nameOrRef, null);
         break;
       case LocalEntityDeclarationDef:
-        newObj = new CdmLocalEntityDeclarationDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmLocalEntityDeclarationDefinition(this.ctx, nameOrRef);
         break;
       case ParameterDef:
-        newObj = new CdmParameterDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmParameterDefinition(this.ctx, nameOrRef);
         break;
       case PurposeDef:
-        newObj = new CdmPurposeDefinition(this.getCtx(), nameOrRef, null);
+        newObj = new CdmPurposeDefinition(this.ctx, nameOrRef, null);
         break;
       case PurposeRef:
-        newObj = new CdmPurposeReference(this.getCtx(), nameOrRef, simpleNameRef);
+        newObj = new CdmPurposeReference(this.ctx, nameOrRef, simpleNameRef);
         break;
       case ReferencedEntityDeclarationDef:
-        newObj = new CdmReferencedEntityDeclarationDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmReferencedEntityDeclarationDefinition(this.ctx, nameOrRef);
         break;
       case TraitDef:
-        newObj = new CdmTraitDefinition(this.getCtx(), nameOrRef, null);
+        newObj = new CdmTraitDefinition(this.ctx, nameOrRef, null);
         break;
       case TraitRef:
-        newObj = new CdmTraitReference(this.getCtx(), nameOrRef, simpleNameRef, false);
+        newObj = new CdmTraitReference(this.ctx, nameOrRef, simpleNameRef, false);
         break;
       case TypeAttributeDef:
-        newObj = new CdmTypeAttributeDefinition(this.getCtx(), nameOrRef);
+        newObj = new CdmTypeAttributeDefinition(this.ctx, nameOrRef);
         break;
       case E2ERelationshipDef:
-        newObj = new CdmE2ERelationship(this.getCtx(), nameOrRef);
+        newObj = new CdmE2ERelationship(this.ctx, nameOrRef);
         break;
     }
 
     return (T) newObj;
-  }
-
-  public CompletableFuture<CdmDocumentDefinition> addDocumentFromContentAsync(
-      final CdmCorpusDefinition corpus,
-      final String corpusPath,
-      final CdmDocumentDefinition doc) {
-    final int last = corpusPath.lastIndexOf('/');
-    if (last < 0) {
-      return CompletableFuture.supplyAsync(() -> {
-        throw new InvalidPathException(corpusPath, "Bad path");
-      });
-    }
-
-    final String name = StringUtils.slice(corpusPath, last + 1);
-    final String path = StringUtils.slice(corpusPath, 0, last + 1);
-    CdmFolderDefinition folder = this.fetchChildFolderFromPathAsync(path, true).join();
-
-    folder.setCorpus(corpus);
-    if (null == folder && "/".equals(path)) {
-      folder = this;
-    }
-
-    doc.setName(name);
-    folder.getDocuments().add(doc);
-    return CompletableFuture.completedFuture(doc);
   }
 
   private void registerSymbol(final String symbol, final CdmDocumentDefinition inDoc) {
@@ -620,23 +605,19 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
     // every symbol defined in this document is pointing at the document, so remove from cache.
     // also remove the list of docs that it depends on
-    this.removeObjectDefinition(doc);
+    this.removeObjectDefinitions(doc);
 
     // remove from path lookup, cdmFolderDefinition lookup and global list of documents
     final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc).toLowerCase();
     if (this.getPathLookup().containsKey(path)) {
       this.getPathLookup().remove(path);
-      this.getDirectory().remove(doc);
-      this.getAllDocuments()
-          .stream()
-          .filter(pair -> pair.getLeft().equals(cdmFolderDefinition) && pair.getRight().equals(doc))
-          .findFirst()
-          .ifPresent(pair -> this.getAllDocuments().remove(pair)); // TODO-BQ: Verify if this works.
+      final int index = this.getAllDocuments().indexOf(ImmutablePair.of(cdmFolderDefinition, doc));
+      this.getAllDocuments().remove(index);
     }
   }
 
-  private void removeObjectDefinition(final CdmDocumentDefinition doc) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+  private void removeObjectDefinitions(final CdmDocumentDefinition doc) {
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     doc.visit("", new removeObjectCallBack(this, ctx, doc), null);
   }
 
@@ -651,7 +632,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
   }
 
   private DocsResult docsForSymbol(final ResolveOptions resOpt, final CdmDocumentDefinition wrtDoc, final CdmDocumentDefinition fromDoc, final String symbol) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     final DocsResult result = new DocsResult();
     result.setNewSymbol(symbol);
 
@@ -686,6 +667,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
               .containsKey(result.getNewSymbol())) {
             return docsForSymbol(resOpt, wrtDoc, tempMoniker, result.getNewSymbol());
           }
+          resOpt.setFromMoniker(prefix);
           result.setDocBest(tempMoniker);
         } else if (wrtDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
           // if that didn't work, then see if the wrtDoc can find the moniker.
@@ -715,7 +697,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       String symbolDef,
       final CdmObjectType expectedType,
       final boolean retry) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
 
     // Given a symbolic name, find the 'highest priority' definition of the object from the point
     // of view of a given document (with respect to, wrtDoc) (meaning given a document and the
@@ -726,11 +708,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       return null;
     }
 
-    CdmDocumentDefinition wrtDoc = null;
-
-    if (null != resOpt) {
-      wrtDoc = resOpt.getWrtDoc();
-    }
+    CdmDocumentDefinition wrtDoc = resOpt.getWrtDoc();
 
     // Get the array of documents where the symbol is defined.
     final DocsResult symbolDocsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
@@ -902,27 +880,25 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     }
   }
 
+  boolean visit(final String path, final VisitCallback preChildren, final VisitCallback postChildren) {
+    return false;
+  }
+
   private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
     return loadFolderOrDocumentAsync(objectPath, false);
   }
 
-  boolean indexDocuments(final ResolveOptions resOpt,
-                         final LinkedHashMap<CdmDocumentDefinition, Short> docsJustAdded) {
+  boolean indexDocuments(
+      final ResolveOptions resOpt,
+      final CdmDocumentDefinition currentDoc,
+      final LinkedHashMap<CdmDocumentDefinition, Short> docsJustAdded) {
     if (docsJustAdded.size() > 0) {
-      final CdmDocumentDefinition oldDoc = ((ResolveContext) this.getCtx()).getCurrentDoc();
-      // Remove all of the cached paths and resolved pointers.
-      this.visit("", null, (iObject, path) -> {
-        ((CdmObjectBase) iObject).setDeclaredPath(null);
-        return false;
-      });
-
       // Index any imports.
       for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
           doc.clearCaches();
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
           doc.getImportPriorities();
         }
       }
@@ -932,8 +908,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
-          if (!this.checkObjectIntegrity()) {
+          if (!this.checkObjectIntegrity(doc)) {
             return false;
           }
         }
@@ -944,8 +919,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
-          this.declareObjectDefinitions("");
+          this.declareObjectDefinitions(doc, "");
         }
       }
 
@@ -954,10 +928,9 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
-          this.resolveObjectDefinitions(resOptLocal);
+          this.resolveObjectDefinitions(doc, resOptLocal);
         }
       }
 
@@ -966,10 +939,9 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
-          this.resolveTraitArguments(resOptLocal);
+          this.resolveTraitArguments(resOptLocal, doc);
         }
       }
 
@@ -978,13 +950,9 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           : docsJustAdded.entrySet()) {
         final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
         if (doc.getNeedsIndexing()) {
-          ((ResolveContext) this.getCtx()).setCurrentDoc(doc);
           this.finishDocumentResolve(doc);
         }
       }
-
-      // Go back to what you had before.
-      ((ResolveContext) this.getCtx()).setCurrentDoc(oldDoc);
     }
 
     return true;
@@ -1033,18 +1001,42 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     return CompletableFuture.completedFuture(null);
   }
 
+  /**
+   * Fetches an object by the path from the corpus.
+   *
+   * @param <T>        Type of the object to be fetched.
+   * @param objectPath Object path, absolute or relative.
+   * @return The object obtained from the provided path.
+   * @see #fetchObjectAsync(String, CdmObject)
+   */
   public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(final String objectPath) {
-    return fetchObjectAsync(objectPath, null, false).thenApply(cdmObject -> (T) cdmObject);
+    return fetchObjectAsync(objectPath, null).thenApply(cdmObject -> (T) cdmObject);
   }
 
-  public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(final String objectPath, final CdmObject cdmObject) {
-    return fetchObjectAsync(objectPath, cdmObject, false).thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
+  /**
+   * Fetches an object by the path from the corpus, with the CDM object specified.
+   *
+   * @param <T>        Type of the object to be fetched.
+   * @param objectPath Object path, absolute or relative.
+   * @param cdmObject  Optional parameter. When provided, it is used to obtain the FolderPath and
+   *                   the Namespace needed to create the absolute path from a relative path.
+   * @return The object obtained from the provided path.
+   */
+  public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(
+      final String objectPath,
+      final CdmObject cdmObject) {
+    return
+        fetchObjectAsync(objectPath, cdmObject, false)
+            .thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
   }
 
-  public CompletableFuture<CdmObject> fetchObjectAsync(final String objectPath, final CdmObject cdmObject,
-                                                       final boolean forceReload) {
+  CompletableFuture<CdmObject> fetchObjectAsync(
+      final String objectPath,
+      final CdmObject cdmObject,
+      final boolean forceReload) {
     // isRootManifestPath is required to deal with the load of the initial root manifest.
-    // In this case the the file name can be something different than a CDM CdmManifestDefinition, e.g.: "model.json"
+    // In this case the the file name can be something different than a CDM CdmManifestDefinition,
+    // e.g.: "model.json".
 
     final String absolutePath = this.storage.createAbsoluteCorpusPath(objectPath, cdmObject);
 
@@ -1063,8 +1055,13 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       if (loadedCdmObject != null) {
         // get imports and index each document that is loaded
         if (loadedCdmObject instanceof CdmDocumentDefinition) {
-          final ResolveOptions resOpt = new ResolveOptions(loadedCdmObject);
-          ((CdmDocumentDefinition) loadedCdmObject).indexIfNeededAsync(resOpt).join();
+          final ResolveOptions resOpt = new ResolveOptions();
+          resOpt.setWrtDoc((CdmDocumentDefinition) loadedCdmObject);
+          resOpt.setDirectives(new AttributeResolutionDirectiveSet());
+
+          if (!((CdmDocumentDefinition) loadedCdmObject).indexIfNeededAsync(resOpt).join()) {
+            return null;
+          }
         }
 
         if (Objects.equals(finalDocumentPath, absolutePath)) {
@@ -1090,12 +1087,14 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     });
   }
 
-  private CompletableFuture<Void> visitFolioTree(final CdmManifestDefinition folio, final List<CdmEntityDefinition> entitiesInFolioTree) {
+  private CompletableFuture<Void> visitManifestTreeAsync(
+      final CdmManifestDefinition manifest,
+      final List<CdmEntityDefinition> entitiesInManifestTree) {
     return CompletableFuture.runAsync(() -> {
-      final CdmEntityCollection entities = folio.getEntities();
+      final CdmEntityCollection entities = manifest.getEntities();
       if (entities != null) {
         for (final CdmEntityDeclarationDefinition entity : entities) {
-          CdmObject currentFile = folio;
+          CdmObject currentFile = manifest;
           CdmEntityDeclarationDefinition currentEnt = entity;
           while ((currentEnt instanceof CdmReferencedEntityDeclarationDefinition)) {
             currentEnt = this.<CdmReferencedEntityDeclarationDefinition>fetchObjectAsync(
@@ -1105,24 +1104,27 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
           final CdmEntityDefinition entityDef = this.<CdmEntityDefinition>fetchObjectAsync(
               currentEnt.getEntityPath(), currentFile).join();
-          entitiesInFolioTree.add(entityDef);
+          entitiesInManifestTree.add(entityDef);
         }
       }
 
-      final CdmCollection<CdmManifestDeclarationDefinition> subfolios = folio.getSubManifests();
-      if (subfolios == null) {
+      final CdmCollection<CdmManifestDeclarationDefinition> subManifests = manifest.getSubManifests();
+      if (subManifests == null) {
         return;
       }
 
-      subfolios.forEach(subFolder -> {
-        final CdmManifestDefinition childFolio = (CdmManifestDefinition) this.fetchObjectAsync(subFolder.getDefinition(), folio).join();
-        this.visitFolioTree(childFolio, entitiesInFolioTree).join();
+      subManifests.forEach(subFolder -> {
+        final CdmManifestDefinition childManifest =
+            this.<CdmManifestDefinition>fetchObjectAsync(subFolder.getDefinition(), manifest).join();
+        this.visitManifestTreeAsync(childManifest, entitiesInManifestTree).join();
       });
     });
   }
 
 
-  public CompletableFuture<Void> generateWarningsForSingleDoc(final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd, final ResolveOptions resOpt) {
+  public CompletableFuture<Void> generateWarningsForSingleDoc(
+      final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd,
+      final ResolveOptions resOpt) {
     final CdmDocumentDefinition doc = fd.getRight();
 
     if (doc.getDefinitions() == null) {
@@ -1176,23 +1178,41 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
   }
 
   /**
-   * Calculates the entity to entity relationships for all the entities present in the manifest and its sub-manifests.
-   * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate relationships for.
-   * @return A <see cref="Task"/> for the completion of entity graph calculation.
+   * Calculates the entity to entity relationships for all the entities present in the manifest and
+   * its sub-manifests.
+   *
+   * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate
+   *                     relationships for.
+   * @return A {@link CompletableFuture<Void>} for the completion of entity graph calculation.
    */
   public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest) {
     return calculateEntityGraphAsync(currManifest, null);
   }
 
-  public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest, final Map<String, String> resEntMap) {
+  /**
+   * Calculates the entity to entity relationships for all the entities present in the manifest and
+   * its sub-manifests.
+   *
+   * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate
+   *                     relationships for.
+   * @return A {@link CompletableFuture<Void>} for the completion of entity graph calculation.
+   */
+  CompletableFuture<Void> calculateEntityGraphAsync(
+      final CdmManifestDefinition currManifest,
+      final Map<String, String> resEntMap) {
     return CompletableFuture.runAsync(() -> {
       if (currManifest.getEntities() != null) {
         for (final CdmEntityDeclarationDefinition entityDec : currManifest.getEntities()) {
           final String entityPath =
               currManifest.createEntityPathFromDeclarationAsync(entityDec, currManifest).join();
+          // The path returned by GetEntityPathFromDeclaration is an absolute path.
+          // No need to pass the manifest to FetchObjectAsync.
           final CdmEntityDefinition entity =
-              this.<CdmEntityDefinition>fetchObjectAsync(entityPath, currManifest).join();
+              this.<CdmEntityDefinition>fetchObjectAsync(entityPath).join();
 
+          if (entity == null) {
+            continue;
+          }
           final CdmEntityDefinition resEntity;
           final ResolveOptions resOpt = new ResolveOptions(entity);
           final boolean isResolvedEntity = entity.getAttributeContext() != null;
@@ -1208,7 +1228,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           if (!this.symbol2EntityDefList.containsKey(entity.getEntityName())) {
             this.symbol2EntityDefList.put(
                 entity.getEntityName(),
-                new CdmCollection<>(this.getCtx(), this, this.getObjectType()));
+                new ArrayList<>());
           }
 
           this.symbol2EntityDefList.get(entity.getEntityName()).add(entity);
@@ -1233,16 +1253,19 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
             for (final CdmE2ERelationship outgoingRelationship : outgoingRelationships) {
               final CdmEntityDefinition targetEnt =
                   this.<CdmEntityDefinition>fetchObjectAsync(
-                      outgoingRelationship.getToEntity())
-                      .join();
-              if (!this.incomingRelationships.containsKey(targetEnt)) {
-                this.incomingRelationships.put(
-                    targetEnt,
-                    new ArrayList<>()
-                );
-              }
+                      outgoingRelationship.getToEntity(),
+                      currManifest
+                  ).join();
+              if (targetEnt != null) {
+                if (!this.incomingRelationships.containsKey(targetEnt)) {
+                  this.incomingRelationships.put(
+                      targetEnt,
+                      new ArrayList<>()
+                  );
+                }
 
-              this.incomingRelationships.get(targetEnt).add(outgoingRelationship);
+                this.incomingRelationships.get(targetEnt).add(outgoingRelationship);
+              }
             }
           }
 
@@ -1263,7 +1286,9 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
                   subManifestDef.getDefinition(),
                   currManifest)
                   .join();
-          this.calculateEntityGraphAsync(subManifest).join();
+          if (subManifest != null) {
+            this.calculateEntityGraphAsync(subManifest).join();
+          }
         }
       }
     });
@@ -1319,7 +1344,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
                   .substring(foreignKey.lastIndexOf("/") + 1)
                   .replace(child.getName() + "_", "");
 
-              final CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.getCtx(), "");
+              final CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.ctx, "");
               newE2ERel.setFromEntity(
                   this.storage.createAbsoluteCorpusPath(
                       resEntity
@@ -1373,106 +1398,118 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     return "";
   }
 
-  public CdmValidationStep resolveReferencesAndValidate(
+  /**
+   * Resolves references according to the provided stages and validates.
+   *
+   * @return The validation step that follows the completed step.
+   */
+  public CompletableFuture<CdmValidationStep> resolveReferencesAndValidateAsync(
       final CdmValidationStep stage,
       final CdmValidationStep stageThrough) {
-    return resolveReferencesAndValidate(stage, stageThrough, new ResolveOptions(this));
+    return resolveReferencesAndValidateAsync(
+        stage,
+        stageThrough,
+        null);
   }
 
-  public CdmValidationStep resolveReferencesAndValidate(
+  /**
+   * Resolves references according to the provided stages and validates.
+   *
+   * @return The validation step that follows the completed step.
+   */
+  private CompletableFuture<CdmValidationStep> resolveReferencesAndValidateAsync(
       final CdmValidationStep stage,
       final CdmValidationStep stageThrough,
-      ResolveOptions resOpt) {
-    // Use the provided directives or make a relational default.
-    final AttributeResolutionDirectiveSet directives;
-    if (null != resOpt) {
-      directives = resOpt.getDirectives();
-    } else {
-      final Set<String> set = new LinkedHashSet<>();
-      set.add("referenceOnly");
-      set.add("normalized");
+      final ResolveOptions resOpt) {
+    return CompletableFuture.supplyAsync(() -> {
+      // Use the provided directives or make a relational default.
+      final AttributeResolutionDirectiveSet directives;
+      if (null != resOpt) {
+        directives = resOpt.getDirectives();
+      } else {
+        final Set<String> set = new LinkedHashSet<>();
+        set.add("referenceOnly");
+        set.add("normalized");
 
-      directives = new AttributeResolutionDirectiveSet(set);
-    }
-
-    final ResolveOptions resolveOptions = new ResolveOptions();
-    resolveOptions.setWrtDoc(null);
-    resolveOptions.setDirectives(directives);
-    resolveOptions.setRelationshipDepth(0);
-
-    resOpt = resolveOptions;
-
-    for (final Pair doc : this.allDocuments) {
-      final Object documentImpl = doc.getRight();
-      ((CdmDocumentDefinition) documentImpl).indexIfNeededAsync(resOpt).join();
-    }
-
-    final boolean finishResolve = stageThrough == stage;
-    switch (stage) {
-      case Start:
-      case TraitAppliers: {
-        final ResolveOptions tempResOpt = resOpt;
-        return this.resolveReferencesStep(
-            "Defining traits...",
-            (CdmDocumentDefinition currentDoc, ResolveOptions resOptions, MutableInt entityNesting) -> {
-            },
-            tempResOpt,
-            true,
-            finishResolve || stageThrough == CdmValidationStep.MinimumForResolving,
-            CdmValidationStep.Traits);
+        directives = new AttributeResolutionDirectiveSet(set);
       }
 
-      case Traits: {
-        this.resolveReferencesStep(
-            "Resolving traits...",
-            this::resolveTraits,
-            resOpt,
-            false,
-            finishResolve,
-            CdmValidationStep.Traits);
+      final ResolveOptions finalResolveOptions = new ResolveOptions();
+      finalResolveOptions.setWrtDoc(null);
+      finalResolveOptions.setDirectives(directives);
+      finalResolveOptions.setRelationshipDepth(0);
 
-        return this.resolveReferencesStep(
-            "Checking required arguments...",
-            this::resolveReferencesTraitsArguments,
-            resOpt,
-            true,
-            finishResolve,
-            CdmValidationStep.Attributes);
+      for (final Pair doc : this.allDocuments) {
+        final Object documentImpl = doc.getRight();
+        ((CdmDocumentDefinition) documentImpl).indexIfNeededAsync(resOpt).join();
       }
 
-      case Attributes: {
-        return this.resolveReferencesStep(
-            "Resolving attributes...",
-            this::resolveAttributes,
-            resOpt,
-            true,
-            finishResolve,
-            CdmValidationStep.EntityReferences);
+      final boolean finishResolve = stageThrough == stage;
+      switch (stage) {
+        case Start:
+        case TraitAppliers: {
+          return this.resolveReferencesStep(
+              "Defining traits...",
+              (CdmDocumentDefinition currentDoc, ResolveOptions resOptions, MutableInt entityNesting) -> {},
+              finalResolveOptions,
+              true,
+              finishResolve || stageThrough == CdmValidationStep.MinimumForResolving,
+              CdmValidationStep.Traits);
+        }
+
+        case Traits: {
+          this.resolveReferencesStep(
+              "Resolving traits...",
+              this::resolveTraits,
+              finalResolveOptions,
+              false,
+              finishResolve,
+              CdmValidationStep.Traits);
+
+          return this.resolveReferencesStep(
+              "Checking required arguments...",
+              this::resolveReferencesTraitsArguments,
+              finalResolveOptions,
+              true,
+              finishResolve,
+              CdmValidationStep.Attributes);
+        }
+
+        case Attributes: {
+          return this.resolveReferencesStep(
+              "Resolving attributes...",
+              this::resolveAttributes,
+              finalResolveOptions,
+              true,
+              finishResolve,
+              CdmValidationStep.EntityReferences);
+        }
+
+        case EntityReferences:
+          return this.resolveReferencesStep(
+              "Resolving foreign key references...",
+              this::resolveForeignKeyReferences,
+              finalResolveOptions,
+              true,
+              true,
+              CdmValidationStep.Finished);
+
+        default: {
+          break;
+        }
       }
 
-      case EntityReferences:
-        return this.resolveReferencesStep(
-            "Resolving foreign key references...",
-            this::resolveForeignKeyReferences,
-            resOpt,
-            true,
-            true,
-            CdmValidationStep.Finished);
-
-      default: {
-        break;
-      }
-    }
-
-    // I'm the bad step.
-    return CdmValidationStep.Error;
+      // I'm the bad step.
+      return CdmValidationStep.Error;
+    });
   }
 
-  public Object constTypeCheck(
+  Object constTypeCheck(
       final ResolveOptions resOpt,
+      final CdmDocumentDefinition currentDoc,
       final CdmParameterDefinition paramDef,
       final Object aValue) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     Object replacement = aValue;
 
     // If parameter type is entity, then the value should be an entity or ref to one
@@ -1491,32 +1528,32 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       }
 
       if (null != pValue) {
-        if (dt.isDerivedFrom(resOpt, "cdmObject")) {
+        if (dt.isDerivedFrom("cdmObject", resOpt)) {
           final List<CdmObjectType> expectedTypes = new ArrayList<>();
           String expected = null;
-          if (dt.isDerivedFrom(resOpt, "entity")) {
+          if (dt.isDerivedFrom("entity", resOpt)) {
             expectedTypes.add(CdmObjectType.ConstantEntityDef);
             expectedTypes.add(CdmObjectType.EntityRef);
             expectedTypes.add(CdmObjectType.EntityDef);
             expected = "entity";
-          } else if (dt.isDerivedFrom(resOpt, "attribute")) {
+          } else if (dt.isDerivedFrom("attribute", resOpt)) {
             expectedTypes.add(CdmObjectType.AttributeRef);
             expectedTypes.add(CdmObjectType.TypeAttributeDef);
             expectedTypes.add(CdmObjectType.EntityAttributeDef);
             expected = "attribute";
-          } else if (dt.isDerivedFrom(resOpt, "dataType")) {
+          } else if (dt.isDerivedFrom("dataType", resOpt)) {
             expectedTypes.add(CdmObjectType.DataTypeRef);
             expectedTypes.add(CdmObjectType.DataTypeDef);
             expected = "dataType";
-          } else if (dt.isDerivedFrom(resOpt, "purpose")) {
+          } else if (dt.isDerivedFrom("purpose", resOpt)) {
             expectedTypes.add(CdmObjectType.PurposeRef);
             expectedTypes.add(CdmObjectType.PurposeDef);
             expected = "purpose";
-          } else if (dt.isDerivedFrom(resOpt, "trait")) {
+          } else if (dt.isDerivedFrom("trait", resOpt)) {
             expectedTypes.add(CdmObjectType.TraitRef);
             expectedTypes.add(CdmObjectType.TraitDef);
             expected = "trait";
-          } else if (dt.isDerivedFrom(resOpt, "attributeGroup")) {
+          } else if (dt.isDerivedFrom("attributeGroup", resOpt)) {
             expectedTypes.add(CdmObjectType.AttributeGroupRef);
             expectedTypes.add(CdmObjectType.AttributeGroupDef);
             expected = "attributeGroup";
@@ -1553,13 +1590,13 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
                 // Get an object there that will get resolved later after resolved attributes.
                 replacement = new CdmAttributeReference(ctx, pValueAsString, true);
                 ((CdmAttributeReference) replacement).setCtx(ctx);
-                ((CdmAttributeReference) replacement).setDocCreatedIn(ctx.getCurrentDoc());
+                ((CdmAttributeReference) replacement).setInDocument(currentDoc);
                 foundType = CdmObjectType.AttributeRef;
               } else {
                 final CdmObjectDefinitionBase lu = ctx.getCorpus()
                     .resolveSymbolReference(
                         resOpt,
-                        ctx.getCurrentDoc(),
+                        currentDoc,
                         pValueAsString,
                         CdmObjectType.Error,
                         true);
@@ -1567,7 +1604,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
                   if (expected.equalsIgnoreCase("attribute")) {
                     replacement = new CdmAttributeReference(ctx, pValueAsString, true);
                     ((CdmAttributeReference) replacement).setCtx(ctx);
-                    ((CdmAttributeReference) replacement).setDocCreatedIn(ctx.getCurrentDoc());
+                    ((CdmAttributeReference) replacement).setInDocument(currentDoc);
                     foundType = CdmObjectType.AttributeRef;
                   } else {
                     replacement = lu;
@@ -1597,18 +1634,16 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       final boolean stageFinished,
       final boolean finishResolve,
       final CdmValidationStep nextStage) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
 
     LOGGER.debug(statusMessage);
 
     final MutableInt entityNesting = new MutableInt(0);
-    for (final Pair doc : this.allDocuments) {
+    for (final Pair<CdmFolderDefinition, CdmDocumentDefinition> doc : this.allDocuments) {
       // Cache import documents.
-      ctx.setCurrentDoc((CdmDocumentDefinition) doc.getRight());
-      resolveOpt.setWrtDoc(ctx.getCurrentDoc());
-      final CdmDocumentDefinition currentDoc = ctx.getCurrentDoc();
+      CdmDocumentDefinition currentDoc = doc.getRight();
+      resolveOpt.setWrtDoc(currentDoc);
       resolveAction.invoke(currentDoc, resolveOpt, entityNesting);
-      ctx.setCurrentDoc(null);
     }
 
     if (stageFinished) {
@@ -1623,35 +1658,35 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     return nextStage;
   }
 
-  private boolean checkObjectIntegrity() {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+  private boolean checkObjectIntegrity(final CdmDocumentDefinition currentDoc) {
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     final AtomicInteger errorCount = new AtomicInteger();
     final VisitCallback preChildren = (iObject, path) -> {
       if (!iObject.validate()) {
         LOGGER.error(
             "Integrity check failed for folderPath: '{}', path: '{}'",
-            ctx.getCurrentDoc().getFolderPath(),
+            currentDoc.getFolderPath(),
             path);
         errorCount.getAndIncrement();
       } else {
         iObject.setCtx(ctx);
       }
 
-      LOGGER.info("Checked, folderPath: '{}', path: '{}'", ctx.getCurrentDoc().getFolderPath(), path);
+      LOGGER.info("Checked, folderPath: '{}', path: '{}'", currentDoc.getFolderPath(), path);
 
       return false;
     };
 
-    ctx.getCurrentDoc().visit("", preChildren, null);
+    currentDoc.visit("", preChildren, null);
     return Objects.equals(errorCount.get(), 0);
   }
 
-  private void declareObjectDefinitions(final String relativePath) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
-    ctx.setCorpusPathRoot(ctx.getCurrentDoc().getFolderPath() + ctx.getCurrentDoc().getName());
-    ctx.getCurrentDoc().visit(relativePath, (iObject, path) -> {
-      ((CdmObjectBase) iObject).setDocCreatedIn(ctx.getCurrentDoc());
-
+  private void declareObjectDefinitions(
+      final CdmDocumentDefinition currentDoc,
+      final String relativePath) {
+    final ResolveContext ctx = (ResolveContext) this.ctx;
+    final String corpusPathRoot = currentDoc.getFolderPath() + currentDoc.getName();
+    currentDoc.visit(relativePath, (iObject, path) -> {
       if (path.indexOf("(unspecified)") > 0) {
         return true;
       }
@@ -1671,21 +1706,20 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
         case ReferencedEntityDeclarationDef: {
           ctx.setRelativePath(relativePath);
           final String corpusPath;
-          if (ctx.getCorpusPathRoot().endsWith("/") || path.startsWith("/")) {
-            corpusPath = ctx.getCorpusPathRoot() + path;
+          if (corpusPathRoot.endsWith("/") || path.startsWith("/")) {
+            corpusPath = corpusPathRoot + path;
           } else {
-            corpusPath = ctx.getCorpusPathRoot() + '/' + path;
+            corpusPath = corpusPathRoot + "/" + path;
           }
-          if (ctx.getCurrentDoc().internalDeclarations.containsKey(path)) {
+          if (currentDoc.internalDeclarations.containsKey(path)) {
             LOGGER.error("Duplicate declaration for item: '{}'", corpusPath);
 
             return false;
           }
 
-          ctx.getCurrentDoc().internalDeclarations.putIfAbsent(path, (CdmObjectDefinitionBase) iObject);
-          ((CdmObjectDefinitionBase) iObject).setAtCorpusPath(corpusPath);
+          currentDoc.internalDeclarations.putIfAbsent(path, (CdmObjectDefinitionBase) iObject);
 
-          this.registerSymbol(path, ctx.getCurrentDoc());
+          this.registerSymbol(path, currentDoc);
           LOGGER.info("Declared: '{}'", corpusPath);
           break;
         }
@@ -1700,11 +1734,13 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     }, null);
   }
 
-  private void resolveObjectDefinitions(final ResolveOptions resOpt) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
-    resOpt.setIndexingDoc(ctx.getCurrentDoc());
+  private void resolveObjectDefinitions(
+      final CdmDocumentDefinition currentDoc,
+      final ResolveOptions resOpt) {
+    final ResolveContext ctx = (ResolveContext) this.ctx;
+    resOpt.setIndexingDoc(currentDoc);
 
-    ctx.getCurrentDoc().visit("", (iObject, path) -> {
+    currentDoc.visit("", (iObject, path) -> {
       final CdmObjectType objectType = iObject.getObjectType();
       switch (objectType) {
         case AttributeRef:
@@ -1723,14 +1759,14 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
             if (null == resNew) {
               // It is 'ok' to not find entity refs sometimes.
               if (objectType == CdmObjectType.EntityRef) {
-                LOGGER.warn("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), ctx.getCurrentDoc().getFolderPath(), path);
+                LOGGER.warn("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
               } else {
-                LOGGER.error("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), ctx.getCurrentDoc().getFolderPath(), path);
+                LOGGER.error("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
               }
 
               final CdmObjectDefinition debugRes = objectRef.fetchObjectDefinition(resOpt);
             } else {
-              LOGGER.info("Resolved folderPath: '{}', path: '{}'", ctx.getCurrentDoc().getFolderPath() , path);
+              LOGGER.info("Resolved folderPath: '{}', path: '{}'", currentDoc.getFolderPath() , path);
             }
           }
 
@@ -1751,7 +1787,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
           // When a parameter has a data type that is a cdm object, validate that any default value
           // is the right kind object.
           final CdmParameterDefinition parameterDef = (CdmParameterDefinition) iObject;
-          this.constTypeCheck(resOpt, parameterDef, null);
+          this.constTypeCheck(resOpt, currentDoc, parameterDef, null);
           break;
         }
 
@@ -1801,14 +1837,14 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
             }
           }
 
-          ((ResolveContext) this.getCtx()).setRelativePath(path);
+          ((ResolveContext) this.ctx).setRelativePath(path);
           iObject.fetchResolvedTraits(resOpt);
 
           break;
         }
         case EntityAttributeDef:
         case TypeAttributeDef: {
-          ((ResolveContext) this.getCtx()).setRelativePath(path);
+          ((ResolveContext) this.ctx).setRelativePath(path);
           iObject.fetchResolvedTraits(resOpt);
 
           break;
@@ -1842,7 +1878,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       if (ot == CdmObjectType.EntityDef) {
         nesting.increment();
         if (nesting.getValue() == 1) {
-          ((ResolveContext) this.getCtx()).setRelativePath(path);
+          ((ResolveContext) this.ctx).setRelativePath(path);
           ((CdmEntityDefinition) iObject).fetchResolvedEntityReferences(resOpt);
         }
       }
@@ -1864,7 +1900,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       final CdmDocumentDefinition currentDoc,
       final ResolveOptions resOpt,
       final MutableInt entityNesting) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     final MutableInt nesting = entityNesting;
     currentDoc.visit("", (iObject, path) -> {
       final CdmObjectType ot = iObject.getObjectType();
@@ -1901,7 +1937,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
       final CdmDocumentDefinition currentDoc,
       final ResolveOptions resOpt,
       final MutableInt entityNesting) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
     final Consumer<CdmObject> checkRequiredParamsOnResolvedTraits = obj -> {
       final ResolvedTraitSet rts = obj.fetchResolvedTraits(resOpt);
       if (rts != null) {
@@ -1964,9 +2000,11 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     });
   }
 
-  private void resolveTraitArguments(final ResolveOptions resOpt) {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
-    ctx.getCurrentDoc().visit("", (iObject, path) -> {
+  private void resolveTraitArguments(
+      final ResolveOptions resOpt,
+      final CdmDocumentDefinition currentDoc) {
+    final ResolveContext ctx = (ResolveContext) this.ctx;
+    currentDoc.visit("", (iObject, path) -> {
       final CdmObjectType objectType = iObject.getObjectType();
       switch (objectType) {
         case TraitRef: {
@@ -1991,7 +2029,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
                 // If parameter type is entity, then the value should be an entity or ref to one
                 // same is true of 'dataType' data type.
-                aValue = this.constTypeCheck(resOpt, paramFound, aValue);
+                aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
                 ((CdmArgumentDefinition) iObject).setValue(aValue);
               }
             }
@@ -2031,7 +2069,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
   }
 
   private void finishResolve() {
-    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    final ResolveContext ctx = (ResolveContext) this.ctx;
 
     // Cleanup References.
     LOGGER.debug("Finishing...");
@@ -2040,9 +2078,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
     // everything is resolved.
     final int documentCount = this.allDocuments.size();
     for (final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd : this.allDocuments) {
-      ctx.setCurrentDoc(fd.getRight());
-      this.finishDocumentResolve(ctx.getCurrentDoc());
-      ctx.setCurrentDoc(null);
+      this.finishDocumentResolve(fd.getRight());
     }
   }
 
@@ -2064,6 +2100,14 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
   public StorageManager getStorage() {
     return this.storage;
+  }
+
+  public CdmCorpusContext getCtx() {
+    return ctx;
+  }
+
+  public void setCtx(CdmCorpusContext ctx) {
+    this.ctx = ctx;
   }
 
   public String getAppId() {
@@ -2125,9 +2169,7 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
         return null;
       }
 
-      return adapter.computeLastModifiedTimeAsync(
-          adapter.createAdapterPath(currObject.getAtCorpusPath())
-      );
+      return adapter.computeLastModifiedTimeAsync(currObject.getAtCorpusPath());
     } else {
       return computeLastModifiedTimeFromObjectAsync(currObject.getInDocument());
     }
@@ -2163,9 +2205,28 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
   /**
    * Gets the last modified time of the object found at the input corpus path.
+   * @param corpusPath The path to the object that you want to get the last modified time for
+   * @return
    */
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-    return fetchObjectAsync(corpusPath).thenCompose(this::computeLastModifiedTimeFromObjectAsync);
+  CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
+    return this.computeLastModifiedTimeAsync(corpusPath, null);
+  }
+
+  /**
+   * Gets the last modified time of the object found at the input corpus path.
+   * @param corpusPath The path to the object that you want to get the last modified time for
+   * @param obj
+   * @return
+   */
+  CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(
+      final String corpusPath,
+      final CdmObject obj) {
+    return fetchObjectAsync(corpusPath, obj).thenCompose(currObject -> {
+      if (currObject != null) {
+        return this.computeLastModifiedTimeFromObjectAsync(currObject);
+      }
+      return CompletableFuture.completedFuture(null);
+    });
   }
 
   public Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> getOutgoingRelationships() {
@@ -2194,7 +2255,6 @@ public class CdmCorpusDefinition extends CdmFolderDefinition {
 
     @Override
     public boolean invoke(final CdmObject iObject, final String path) {
-      ((CdmObjectBase) iObject).setDocCreatedIn(ctx.getCurrentDoc());
       if (path.indexOf("(unspecified") > 0) {
         return true;
       }

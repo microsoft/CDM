@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +17,7 @@ import java.util.Map;
  * serialization.
  */
 public class MetadataObject {
-  private transient Map<String, Object> extensionFields = new HashMap<>();
+  private transient Map<String, Object> extensionFields = new LinkedHashMap<>();
 
   @JsonProperty("name")
   @JsonInclude(JsonInclude.Include.NON_NULL)

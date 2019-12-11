@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     public enum CdmStatusLevel

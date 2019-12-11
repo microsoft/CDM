@@ -2,9 +2,6 @@
 // <copyright file="CdmReferencedEntityDeclarationDefinition.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-// <summary>
-//   The object model implementation for referenced entity declaration.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -23,8 +20,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmReferencedEntityDeclarationDefinition"/> class.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
-        /// <param name="entityName"> The entity name. </param>
+        /// <param name="ctx">The context.</param>
+        /// <param name="entityName">The entity name.</param>
         public CdmReferencedEntityDeclarationDefinition(CdmCorpusContext ctx, string entityName)
             : base(ctx)
         {
@@ -32,13 +29,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.EntityName = entityName;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the entity name.
+        /// </summary>
         public string EntityName { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the last file status check time.
+        /// </summary>
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the last file modified time.
+        /// </summary>
         public DateTimeOffset? LastFileModifiedTime { get; set; }
 
         /// <summary>
@@ -46,10 +49,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string EntityPath { get; set; }
 
+        /// <inheritdoc />
         public CdmCollection<CdmDataPartitionDefinition> DataPartitions => null;
 
+        /// <inheritdoc />
         public CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns => null;
 
+        /// <summary>
+        /// Gets or sets the last child file modified time.
+        /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
         /// <inheritdoc />
@@ -66,20 +74,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            var copy =
-                new CdmReferencedEntityDeclarationDefinition(this.Ctx, this.EntityName)
-                {
-                    EntityPath = this.EntityPath,
-                    LastFileStatusCheckTime = this.LastFileStatusCheckTime,
-                    LastFileModifiedTime = this.LastFileModifiedTime
-                };
+            CdmReferencedEntityDeclarationDefinition copy;
+            if (host == null)
+            {
+                copy = new CdmReferencedEntityDeclarationDefinition(this.Ctx, this.EntityName);
+            }
+            else
+            {
+                copy = host as CdmReferencedEntityDeclarationDefinition;
+                copy.Ctx = this.Ctx;
+                copy.EntityName = this.EntityName;
+            }
+
+            copy.EntityPath = this.EntityPath;
+            copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
+            copy.LastFileModifiedTime = this.LastFileModifiedTime;
+
             this.CopyDef(resOpt, copy);
 
             return copy;
@@ -132,10 +149,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string nameSpace = this.InDocument.Namespace;
-            string fullPath = $"{nameSpace}:{this.EntityPath}";
-
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath);
+            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
+            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath, this);
 
             // update modified times
             this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;

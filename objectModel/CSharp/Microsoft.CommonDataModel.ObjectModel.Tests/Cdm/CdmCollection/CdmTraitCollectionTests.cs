@@ -168,8 +168,8 @@
             manifest.ExhibitsTraits.Add(trait);
             manifest.ExhibitsTraits.Add(otherTrait);
 
-            Assert.AreEqual(false, trait.IsFromProperty);
-            Assert.AreEqual(false, otherTrait.IsFromProperty);
+            Assert.IsFalse(trait.IsFromProperty);
+            Assert.IsFalse(otherTrait.IsFromProperty);
 
             Assert.AreEqual(2, manifest.ExhibitsTraits.Count);
             var removed = manifest.ExhibitsTraits.Remove(trait, true);
@@ -199,9 +199,9 @@
             traitCopyFromProperty.IsFromProperty = true;
             manifest.ExhibitsTraits.Add(traitCopyFromProperty);
 
-            Assert.AreEqual(false, trait.IsFromProperty);
-            Assert.AreEqual(false, otherTrait.IsFromProperty);
-            Assert.AreEqual(true, traitCopyFromProperty.IsFromProperty);
+            Assert.IsFalse(trait.IsFromProperty);
+            Assert.IsFalse(otherTrait.IsFromProperty);
+            Assert.IsTrue(traitCopyFromProperty.IsFromProperty);
 
             Assert.AreEqual(3, manifest.ExhibitsTraits.Count);
             var removed = manifest.ExhibitsTraits.Remove("TraitName");
@@ -229,7 +229,7 @@
             manifest.ExhibitsTraits.Add(otherTrait);
             Assert.AreEqual(6, manifest.ExhibitsTraits.Count);
 
-            Assert.AreEqual(true, manifest.ExhibitsTraits[2].IsFromProperty);
+            Assert.IsTrue(manifest.ExhibitsTraits[2].IsFromProperty);
 
             var removed = manifest.ExhibitsTraits.Remove(trait);
             Assert.AreEqual("TraitName", (manifest.ExhibitsTraits[0].ExplicitReference as CdmTraitDefinition).TraitName);
@@ -248,8 +248,8 @@
             manifest.ExhibitsTraits.Add(trait);
             manifest.ExhibitsTraits.Add(otherTrait);
 
-            Assert.AreEqual(false, manifest.ExhibitsTraits[0].IsFromProperty);
-            Assert.AreEqual(false, manifest.ExhibitsTraits[1].IsFromProperty);
+            Assert.IsFalse(manifest.ExhibitsTraits[0].IsFromProperty);
+            Assert.IsFalse(manifest.ExhibitsTraits[1].IsFromProperty);
 
             var index = manifest.ExhibitsTraits.IndexOf(trait.TraitName, true);
             Assert.AreEqual(-1, index);

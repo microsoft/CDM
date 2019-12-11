@@ -85,7 +85,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     // Intended to return false.
     return false;
   }
@@ -99,10 +99,14 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final String nameSpace = getInDocument().getNamespace();
-      final String fullPath = nameSpace + ":" + getEntityPath();
+      final String fullPath =
+          this.getCtx()
+              .getCorpus()
+              .getStorage()
+              .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
 
-      final OffsetDateTime modifiedTime = getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath).join();
+      final OffsetDateTime modifiedTime =
+          this.getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath, this).join();
 
       // update modified times
       setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
@@ -142,8 +146,20 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmReferencedEntityDeclarationDefinition copy = new CdmReferencedEntityDeclarationDefinition(this.getCtx(), this.getEntityName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmReferencedEntityDeclarationDefinition copy;
+    if (host == null) {
+      copy = new CdmReferencedEntityDeclarationDefinition(this.getCtx(), this.getEntityName());
+    } else {
+      copy = (CdmReferencedEntityDeclarationDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setEntityName(this.getEntityName());
+    }
+
     copy.setEntityPath(this.getEntityPath());
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());

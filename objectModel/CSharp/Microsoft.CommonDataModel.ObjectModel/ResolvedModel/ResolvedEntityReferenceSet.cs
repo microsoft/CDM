@@ -73,7 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     {
                         if (r.Referenced?.Count > 0)
                         {
-                            return string.Compare(l.Referenced[0].Entity?.GetName(), r.Referenced[0].Entity?.GetName(), StringComparison.OrdinalIgnoreCase);
+                            return StringUtils.CompareWithOrdinalIgnoreCase(l.Referenced[0].Entity?.GetName(), r.Referenced[0].Entity?.GetName());
                         }
                         return 1;
                     }

@@ -8,7 +8,7 @@ from . import extension_helper, utils
 from .types import Partition
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDataPartitionDefinition, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmDataPartitionDefinition, CdmFolderDefinition, CdmTraitDefinition, CdmTraitReference
     from cdm.utilities import CopyOptions, ResolveOptions
 
     from .types import CsvFormatSettings
@@ -16,11 +16,12 @@ if TYPE_CHECKING:
 
 class DataPartitionPersistence:
     @staticmethod
-    async def from_data(ctx: 'CdmCorpusContext', data: 'Partition', extension_trait_def_list: List['CdmTraitDefinition']) \
+    async def from_data(ctx: 'CdmCorpusContext', data: 'Partition', extension_trait_def_list: List['CdmTraitDefinition'],
+                        local_extension_trait_def_list: List['CdmTraitDefinition'], document_folder: 'CdmFolderDefinition') \
             -> Optional['CdmDataPartitionDefinition']:
         data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.name if data.get('name') else None)
         data_partition.description = data.get('description')
-        data_partition.location = ctx.corpus.storage.adapter_path_to_corpus_path(data.location)
+        data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
 
         if data.get('refreshTime'):
             data_partition.refresh_time = data.refreshTime
@@ -49,16 +50,17 @@ class DataPartitionPersistence:
                 ctx.logger.error('There was a problem while processing csv format settings inside data partition.')
                 return
 
-        await extension_helper.process_extension_from_json(ctx, data, data_partition.exhibits_traits, extension_trait_def_list)
+        extension_helper.process_extension_from_json(ctx, data, data_partition.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
 
         return data_partition
 
     @staticmethod
     async def to_data(instance: 'CdmDataPartitionDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions', ctx: 'CdmCorpusContext') -> Optional['Partition']:
         result = Partition()
-        result.name = instance.data_partition_name
+        result.name = instance.name
         result.description = instance.description
-        result.location = ctx.corpus.storage.corpus_path_to_adapter_path(instance.location)
+        result.location = ctx.corpus.storage.corpus_path_to_adapter_path(
+            ctx.corpus.storage.create_absolute_corpus_path(instance.location, instance.in_document))
         result.refreshTime = instance.refresh_time
         result.lastFileModifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         result.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)

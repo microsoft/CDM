@@ -12,12 +12,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     public class CdmE2ERelationship : CdmObjectDefinitionBase
     {
+        /// <summary>
+        /// Gets or sets the relationship name.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the corpus path to the entity the relationship is pointing from.
+        /// </summary>
         public string FromEntity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity attribute the relationship is pointing from.
+        /// </summary>
         public string FromEntityAttribute { get; set; }
+
+        /// <summary>
+        /// Gets or sets the corpus path to the entity the relationship is pointing to.
+        /// </summary>
         public string ToEntity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity attribute the relationship is pointing to.
+        /// </summary>
         public string ToEntityAttribute { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmE2ERelationship.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The relationship name.</param>
         public CdmE2ERelationship(CdmCorpusContext ctx, string name)
             : base(ctx)
         {
@@ -25,11 +49,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.ObjectType = CdmObjectType.E2ERelationshipDef;
         }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.Name;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -40,25 +66,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            var copy = new CdmE2ERelationship(this.Ctx, this.GetName())
+            CdmE2ERelationship copy;
+            if (host == null)
             {
-                FromEntity = this.FromEntity,
-                FromEntityAttribute = this.FromEntityAttribute,
-                ToEntity = this.ToEntity,
-                ToEntityAttribute = this.ToEntityAttribute
-            };
+                copy = new CdmE2ERelationship(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmE2ERelationship;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
+
+            copy.FromEntity = this.FromEntity;
+            copy.FromEntityAttribute = this.FromEntityAttribute;
+            copy.ToEntity = this.ToEntity;
+            copy.ToEntityAttribute = this.ToEntityAttribute;
+
             this.CopyDef(resOpt, copy);
 
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.FromEntity) && !string.IsNullOrEmpty(this.FromEntityAttribute)
@@ -80,13 +118,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            
-            if (string.IsNullOrEmpty(this.DeclaredPath))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                this.DeclaredPath = pathFrom + this.Name;
-            }
+                if (string.IsNullOrEmpty(this.DeclaredPath))
+                {
+                    this.DeclaredPath = pathFrom + this.Name;
+                }
 
-            var path = this.DeclaredPath;
+                path = this.DeclaredPath;
+            }
 
             if (preChildren != null && preChildren.Invoke(this, path))
             {

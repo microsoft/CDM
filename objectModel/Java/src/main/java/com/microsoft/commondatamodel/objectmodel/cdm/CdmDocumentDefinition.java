@@ -2,7 +2,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -14,8 +13,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +26,9 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   private static final Logger LOGGER = LoggerFactory.getLogger(CdmDocumentDefinition.class);
 
   protected Map<String, CdmObjectDefinitionBase> internalDeclarations;
-
+  protected boolean isDirty = true;
   private ImportPriorities importPriorities;
   private boolean needsIndexing;
-  protected boolean isDirty = true;
   private CdmDefinitionCollection definitions;
   private CdmImportCollection imports;
   private CdmFolderDefinition folder;
@@ -44,7 +46,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   public CdmDocumentDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx);
-    this.setDocCreatedIn(this);
+    this.setInDocument(this);
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
     this.jsonSchemaSemanticVersion = "0.9.0";
@@ -59,16 +61,15 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.definitions = new CdmDefinitionCollection(this.getCtx(), this);
   }
 
-  public void setNeedsIndexing(final boolean value) {
-    this.needsIndexing = value;
-  }
-
   public boolean getNeedsIndexing() {
     return this.needsIndexing;
   }
 
+  public void setNeedsIndexing(final boolean value) {
+    this.needsIndexing = value;
+  }
+
   /**
-   *
    * @return
    * @deprecated This function is extremely likely to be removed in
    * the public interface, and no meant to be called externally at all. Please refrain from using it.
@@ -80,7 +81,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @param folderPath
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -92,7 +92,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -104,7 +103,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @param namespace
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -136,7 +134,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @return
    * @deprecated User the Owner Property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -147,7 +144,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @param folder
    * @deprecated User the Owner Property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -177,15 +173,168 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.jsonSchemaSemanticVersion = jsonSchemaSemanticVersion;
   }
 
-  public void clearCaches() {
+  void clearCaches() {
     this.internalDeclarations = new LinkedHashMap<>();
+
+    // Remove all of the cached paths and resolved pointers.
+    this.visit("", null, (iObject, path) -> {
+      ((CdmObjectBase) iObject).setDeclaredPath(null);
+      return false;
+    });
+  }
+
+  /**
+   * Finds any relative corpus paths that are held within this document and makes them relative to
+   * the new folder instead.
+   */
+  boolean localizeCorpusPaths(CdmFolderDefinition newFolder) {
+    final AtomicBoolean allWentWell = new AtomicBoolean(true);
+    boolean wasBlocking = this.getCtx().getCorpus().blockDeclaredPathChanges;
+    this.getCtx().getCorpus().blockDeclaredPathChanges = true;
+
+    // shout into the void
+    LOGGER.info("Localizing corpus paths in document '{}'.", this.getName());
+
+    // find anything in the document that is a corpus path
+    this.visit("", (iObject, path) -> {
+      // i don't like that document needs to know a little about these objects
+      // in theory, we could create a virtual function on cdmObject that localizes properties
+      // but then every object would need to know about the documents and paths and such ...
+      // also, i already wrote this code.
+      switch (iObject.getObjectType()) {
+        case Import: {
+          final CdmImport typeObj = (CdmImport) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getCorpusPath());
+          // if this isn't a local path, then don't do anything to it
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setCorpusPath(corpusPath.getValue());
+          }
+          break;
+        }
+        case LocalEntityDeclarationDef:
+        case ReferencedEntityDeclarationDef: {
+          final CdmEntityDeclarationDefinition typeObj = (CdmEntityDeclarationDefinition) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getEntityPath());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setEntityPath(corpusPath.getValue());
+          }
+          break;
+        }
+        case DataPartitionDef: {
+          final CdmDataPartitionDefinition typeObj = (CdmDataPartitionDefinition) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getLocation());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setLocation(corpusPath.getValue());
+          }
+
+          corpusPath.setValue(typeObj.getSpecializedSchema());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setSpecializedSchema(corpusPath.getValue());
+          }
+          break;
+        }
+        case DataPartitionPatternDef: {
+          final CdmDataPartitionPatternDefinition typeObj = (CdmDataPartitionPatternDefinition) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getRootLocation());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setRootLocation(corpusPath.getValue());
+          }
+
+          corpusPath.setValue(typeObj.getSpecializedSchema());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setSpecializedSchema(corpusPath.getValue());
+          }
+          break;
+        }
+        case E2ERelationshipDef: {
+          final CdmE2ERelationship typeObj = (CdmE2ERelationship) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getToEntity());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setToEntity(corpusPath.getValue());
+          }
+          corpusPath.setValue(typeObj.getFromEntity());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setFromEntity(corpusPath.getValue());
+          }
+          break;
+        }
+        case ManifestDeclarationDef: {
+          final CdmManifestDeclarationDefinition typeObj = (CdmManifestDeclarationDefinition) iObject;
+          Mutable<String> corpusPath = new MutableObject<>(typeObj.getDefinition());
+          if (!localizeCorpusPath(corpusPath, newFolder)) {
+            allWentWell.set(false);
+          } else {
+            typeObj.setDefinition(corpusPath.getValue());
+          }
+          break;
+        }
+      }
+      return false;
+    }, null);
+
+    this.getCtx().getCorpus().blockDeclaredPathChanges = wasBlocking;
+
+    return allWentWell.get();
+  }
+
+  /**
+   * Changes a relative corpus path to be relative to the new folder.
+   */
+  private boolean localizeCorpusPath(Mutable<String> corpusPath, final CdmFolderDefinition newFolder) {
+    String path = corpusPath.getValue();
+    if (StringUtils.isNullOrTrimEmpty(path)) {
+      return true;
+    }
+
+    // First, if there was no previous folder (odd) then just localize as best we can.
+    CdmFolderDefinition oldFolder = (CdmFolderDefinition) this.getOwner();
+    String newPath;
+    if (oldFolder == null) {
+      newPath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(path, newFolder);
+    } else {
+      // If the current value != the absolute path, then assume it is a relative path.
+      String absPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(path, oldFolder);
+      if (Objects.equals(absPath, path)) {
+        newPath = absPath; // Leave it alone.
+      } else {
+        // Make it relative to the new folder then.
+        newPath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(absPath, newFolder);
+      }
+    }
+
+    if (newPath == null) {
+      return false;
+    }
+
+    corpusPath.setValue(newPath);
+    return true;
   }
 
   public CompletableFuture<Boolean> refreshAsync() {
     return this.refreshAsync(new ResolveOptions(this));
   }
 
-  public CompletableFuture<Boolean> refreshAsync(final ResolveOptions resOpt) {
+  public CompletableFuture<Boolean> refreshAsync(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
     this.needsIndexing = true;
     return this.indexIfNeededAsync(resOpt);
   }
@@ -195,18 +344,15 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing()) {
         final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
-        final CdmDocumentDefinition oldDoc = this;
 
         final LinkedHashMap<CdmDocumentDefinition, Short> docsJustAdded = new LinkedHashMap<>();
         final LinkedHashMap<String, Short> docsNotFound = new LinkedHashMap<>();
 
         corpus.resolveImportsAsync(this, docsJustAdded, docsNotFound).join();
 
-        ((ResolveContext) corpus.getCtx()).setCurrentDoc(oldDoc);
-        ((ResolveContext) this.getCtx().getCorpus().getCtx()).setCurrentDoc(oldDoc);
         docsJustAdded.put(this, (short) 1);
 
-        return corpus.indexDocuments(resOpt, docsJustAdded);
+        return corpus.indexDocuments(resOpt, this, docsJustAdded);
       }
 
       return true;
@@ -241,7 +387,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       this.isDirty = false;
     }
     return this.getCtx().getCorpus()
-            .saveDocumentAsAsync(this, newName, saveReferenced, options);
+        .saveDocumentAsAsync(this, newName, saveReferenced, options);
   }
 
   CdmObject fetchObjectFromDocumentPath(final String objectPath) {
@@ -254,8 +400,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   @Override
   public String getAtCorpusPath() {
-    final String path = (this.namespace != null ? this.namespace : this.getFolder().getNamespace());
-    return path + ":" + this.folderPath + this.name;
+    if (this.folder == null) {
+      return "NULL:/" + this.name;
+    } else {
+      return this.folder.getAtCorpusPath() + this.name;
+    }
   }
 
   @Override
@@ -264,7 +413,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       return false;
     }
     if (this.getDefinitions() != null && this.getDefinitions()
-            .visitList(pathFrom, preChildren, postChildren)) {
+        .visitList(pathFrom, preChildren, postChildren)) {
       return true;
     }
     return postChildren != null && postChildren.invoke(this, pathFrom);
@@ -276,7 +425,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @param resOpt
    * @param options
    * @return
@@ -291,11 +439,24 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmDocumentDefinition copy = new CdmDocumentDefinition(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
 
-    copy.setCtx(this.getCtx());
-    copy.setDirty(this.isDirty());
+    CdmDocumentDefinition copy;
+    if (host == null) {
+      copy = new CdmDocumentDefinition(this.getCtx(), this.getName());
+    } else {
+      copy = (CdmDocumentDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+      copy.getDefinitions().clear();
+      copy.getImports().clear();
+    }
+
+    copy.setInDocument(copy);
+    copy.setDirty(true);
     copy.setFolderPath(this.getFolderPath());
     copy.setSchema(this.getSchema());
     copy.setJsonSchemaSemanticVersion(this.getJsonSchemaSemanticVersion());
@@ -333,7 +494,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @param _fileSystemModifiedTime
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -436,7 +596,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           final CdmImport imp = anImport;
           // get the document object from the import
           final CdmDocumentDefinition docImp = ((CdmDocumentDefinition) this.getCtx().getCorpus()
-                  .fetchObjectAsync(imp.getCorpusPath(), this).join());
+              .fetchObjectAsync(imp.getCorpusPath(), this).join());
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
@@ -463,7 +623,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       this.importPriorities = new ImportPriorities();
       this.importPriorities.getImportPriority().put(this, 0);
       this.prioritizeImports(new LinkedHashSet<>(), this.importPriorities.getImportPriority(), 1,
-              this.importPriorities.getMonikerPriorityMap(), false);
+          this.importPriorities.getMonikerPriorityMap(), false);
     }
     // make a copy so the caller doesn't mess these up
     return this.importPriorities.copy();
@@ -474,7 +634,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -489,6 +648,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   public CompletableFuture<Void> reloadAsync() {
     return getCtx().getCorpus().fetchObjectAsync(getAtCorpusPath(), null, true)
-      .thenAccept((v) -> {});
+        .thenAccept((v) -> {
+        });
   }
 }

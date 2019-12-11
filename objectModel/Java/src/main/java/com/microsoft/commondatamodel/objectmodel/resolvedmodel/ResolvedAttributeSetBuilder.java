@@ -7,8 +7,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ApplierState;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionApplier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -98,49 +98,49 @@ public class ResolvedAttributeSetBuilder {
       for (final ResolvedAttribute ra : set) {
         ra.setArc(arc);
       }
-    }
 
-    // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
-    // this also can re-order the attributes
-    if (arc.getResGuide() != null
-        && arc.getResGuide().getSelectsSubAttribute() != null
-        && Objects.equals(arc.getResGuide().getSelectsSubAttribute().getSelects(), "some")
-        && (arc.getResGuide().getSelectsSubAttribute().getSelectsSomeTakeNames() != null
-        || arc.getResGuide().getSelectsSubAttribute().getSelectsSomeAvoidNames() != null)) {
-      // we will make a new resolved attribute set from the 'take' list
-      List<ResolvedAttribute> takeSet = new ArrayList<>();
-      List<String> selectsSomeTakeNames = arc.getResGuide().getSelectsSubAttribute().getSelectsSomeTakeNames();
-      List<String> selectsSomeAvoidNames = arc.getResGuide().getSelectsSubAttribute().getSelectsSomeAvoidNames();
+      // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
+      // this also can re-order the attributes
+      if (arc.getResGuide() != null
+              && arc.getResGuide().getSelectsSubAttribute() != null
+              && Objects.equals(arc.getResGuide().getSelectsSubAttribute().getSelects(), "some")
+              && (arc.getResGuide().getSelectsSubAttribute().getSelectsSomeTakeNames() != null
+              || arc.getResGuide().getSelectsSubAttribute().getSelectsSomeAvoidNames() != null)) {
+        // we will make a new resolved attribute set from the 'take' list
+        List<ResolvedAttribute> takeSet = new ArrayList<>();
+        List<String> selectsSomeTakeNames = arc.getResGuide().getSelectsSubAttribute().getSelectsSomeTakeNames();
+        List<String> selectsSomeAvoidNames = arc.getResGuide().getSelectsSubAttribute().getSelectsSomeAvoidNames();
 
-      if (selectsSomeTakeNames != null && selectsSomeAvoidNames == null) {
-        // make an index that goes from name to insertion order
-        Map<String, Integer> inverted = new HashMap<>();
-        for (int iOrder = 0; iOrder < set.size(); iOrder++) {
-          inverted.put(set.get(iOrder).getResolvedName(), iOrder);
-        }
+        if (selectsSomeTakeNames != null && selectsSomeAvoidNames == null) {
+          // make an index that goes from name to insertion order
+          Map<String, Integer> inverted = new LinkedHashMap<>();
+          for (int iOrder = 0; iOrder < set.size(); iOrder++) {
+            inverted.put(set.get(iOrder).getResolvedName(), iOrder);
+          }
 
-        for (String selectsSomeTakeName : selectsSomeTakeNames) {
-          // if in the original set of attributes, take it in the new order
-          int iOriginalOrder = inverted.getOrDefault(selectsSomeTakeName, 0);
-          if (iOriginalOrder != 0) {
-            takeSet.add(set.get(iOriginalOrder));
+          for (String selectsSomeTakeName : selectsSomeTakeNames) {
+            // if in the original set of attributes, take it in the new order
+            int iOriginalOrder = inverted.getOrDefault(selectsSomeTakeName, -1);
+            if (iOriginalOrder != -1) {
+              takeSet.add(set.get(iOriginalOrder));
+            }
           }
         }
-      }
-      if (selectsSomeAvoidNames != null) {
-        // make a quick look up of avoid names
-        Set<String> avoid = new HashSet<>(selectsSomeAvoidNames);
+        if (selectsSomeAvoidNames != null) {
+          // make a quick look up of avoid names
+          Set<String> avoid = new HashSet<>(selectsSomeAvoidNames);
 
-        for (ResolvedAttribute resolvedAttribute : set) {
-          // only take the ones not in avoid the list given
-          if (!avoid.contains(resolvedAttribute.getResolvedName())) {
-            takeSet.add(resolvedAttribute);
+          for (ResolvedAttribute resolvedAttribute : set) {
+            // only take the ones not in avoid the list given
+            if (!avoid.contains(resolvedAttribute.getResolvedName())) {
+              takeSet.add(resolvedAttribute);
+            }
           }
         }
-      }
 
-      // replace the guts of the resolvedAttributeSet with this
-      this.getResolvedAttributeSet().alterSetOrderAndScope(takeSet);
+        // replace the guts of the resolvedAttributeSet with this
+        this.getResolvedAttributeSet().alterSetOrderAndScope(takeSet);
+      }
     }
 
     // get the new atts and then add them one at a time into this set
@@ -278,7 +278,7 @@ public class ResolvedAttributeSetBuilder {
                 action.doGroupAdd, applyModifiers, "group", arc, attCtxContainerGroup, attCtxContainer);
 
         // save it
-        if (appCtx != null && appCtx.resAttNew != null) {
+        if (appCtx.resAttNew != null) {
           resAttOut.add(appCtx.resAttNew);
         }
       }
@@ -306,7 +306,7 @@ public class ResolvedAttributeSetBuilder {
                 action.doRoundAdd, applyModifiers, "round", arc, attCtxContainerGroup, attCtxContainer);
 
         // save it
-        if (appCtx != null && appCtx.resAttNew != null) {
+        if (appCtx.resAttNew != null) {
           // overall list
           resAttOut.add(appCtx.resAttNew);
           // previous list
@@ -326,11 +326,11 @@ public class ResolvedAttributeSetBuilder {
         continues = 0;
         final List<ResolvedAttribute> resAttThisRound = new ArrayList<>();
         if (caps.canAttributeAdd) {
-          for (int iAtt = 0; iAtt < resAttsLastRound.size(); iAtt++) {
+          for (ResolvedAttribute resolvedAttribute : resAttsLastRound) {
             if (arc.getActionsAttributeAdd() != null) {
               for (final AttributeResolutionApplier action : arc.getActionsAttributeAdd()) {
                 final ApplierContext appCtx = makeResolvedAttribute(
-                    resAttsLastRound.get(iAtt),
+                    resolvedAttribute,
                     action,
                     action.willAttributeAdd,
                     action.doAttributeAdd,
@@ -341,7 +341,7 @@ public class ResolvedAttributeSetBuilder {
                     attCtxContainer);
 
                 // save it
-                if (appCtx != null && appCtx.resAttNew != null) {
+                if (appCtx.resAttNew != null) {
                   // overall list
                   resAttOut.add(appCtx.resAttNew);
                   resAttThisRound.add(appCtx.resAttNew);
@@ -380,6 +380,7 @@ public class ResolvedAttributeSetBuilder {
                                                final CdmAttributeContext attCtxContainerGroup,
                                                final CdmAttributeContext attCtxContainer) {
     final ApplierContext appCtx = new ApplierContext();
+    appCtx.state = state;
     appCtx.resOpt = arc.getResOpt();
     appCtx.attCtx = attCtxContainer;
     appCtx.resAttSource = resAttSource;

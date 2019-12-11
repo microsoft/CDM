@@ -1,11 +1,17 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Cdm
+﻿//-----------------------------------------------------------------------
+// <copyright file="CdmFolderCollection.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using System.Collections.Generic;
 
     /// <summary>
-    /// <see cref="CdmCollection"/> customized for <see cref="CdmFolderDefinition"/> that are the children of af the Owner CdmFolderDefinition.
-    /// This collection of <see cref="CdmFolderDefinition"/> should only be used for childrens of the same parent folder as it copies fields from the parent to the child.
+    /// <see cref="CdmCollection"/> customized for <see cref="CdmFolderDefinition"/> that are the children of the Owner CdmFolderDefinition.
+    /// This collection of <see cref="CdmFolderDefinition"/> should only be used for children of the same parent folder as it copies fields from the parent to the child.
     /// </summary>
     public class CdmFolderCollection : CdmCollection<CdmFolderDefinition>
     {
@@ -19,7 +25,7 @@
         }
 
         /// <summary>
-        /// Constructs a CdmFolderCollection
+        /// Constructs a CdmFolderCollection.
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <param name="parentFolder">The owner of the collection, which has to be the parent folder.</param>
@@ -68,6 +74,10 @@
             childFolder.Corpus = this.Owner.Corpus;
             childFolder.Namespace = this.Owner.Namespace;
             childFolder.FolderPath = this.Owner.FolderPath + childFolder.Name + "/";
+
+            // TODO: At this point we should also propagate the root adapter into the child folder 
+            // and all its sub-folders and contained documents. For now, don't add things to the
+            // folder unless it's tied to an adapter root.
         }
     }
 }

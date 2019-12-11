@@ -1,5 +1,5 @@
 ﻿from datetime import datetime
-from typing import Dict, Optional, Set, TYPE_CHECKING
+from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import CopyOptions, ResolveOptions
@@ -36,6 +36,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # the document name.
         self.name = name  # type: str
 
+        self.in_document = self
+
         # the document schema.
         self.schema = None  # type: Optional[str]
 
@@ -52,8 +54,6 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self.folder_path = None  # type: Optional[str]
 
         # internal
-
-        self._doc_created_in = self
         self._currently_indexing = False
         self._file_system_modified_time = None  # type: Optional[datetime]
         self._imports_indexed = False
@@ -67,7 +67,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
     @property
     def at_corpus_path(self) -> str:
-        return '{}:{}{}'.format(self.namespace or self.folder.namespace, self.folder_path, self.name)
+        if (self.folder is None):
+            return 'NULL:/{}'.format(self.name)
+
+        return self.folder.at_corpus_path + self.name
 
     @property
     def imports(self) -> 'CdmImportCollection':
@@ -89,12 +92,20 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         pass
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDocumentDefinition'] = None) -> 'CdmDocumentDefinition':
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
 
-        copy = CdmDocumentDefinition(self.ctx, self.name)
-        copy.ctx = self.ctx
-        copy._is_dirty = self._is_dirty
+        if host is None:
+            copy = CdmDocumentDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
+            copy.definitions.clear()
+            copy.imports.clear()
+
+        copy.in_document = copy
+        copy._is_dirty = True
         copy.folder_path = self.folder_path
         copy.schema = self.schema
         copy.json_schema_semantic_version = self.json_schema_semantic_version
@@ -107,24 +118,21 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         return copy
 
-    async def _index_if_needed(self, res_opt: 'ResolveOptions') -> None:
+    async def _index_if_needed(self, res_opt: 'ResolveOptions') -> bool:
         if not self._needs_indexing:
-            return
+            return True
 
         # make the corpus internal machinery pay attention to this document for this call
-        corpus = self.folder.corpus
-        old_doc = self
+        corpus = self.folder._corpus
 
         docs_just_added = set()  # type Set[CdmDocumentDefinition]
         docs_not_found = set()  # type Set[str]
         await corpus.resolve_imports_async(self, docs_just_added, docs_not_found)
 
         # maintain actual current doc
-        corpus.ctx.current_doc = old_doc
-        self.ctx.corpus.ctx.current_doc = old_doc
         docs_just_added.add(self)
 
-        corpus._index_documents(res_opt, docs_just_added)
+        return corpus._index_documents(res_opt, self, docs_just_added)
 
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
@@ -141,6 +149,128 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def fetch_object_from_document_path(self, object_path: str) -> 'CdmObject':
         if object_path in self.internal_declarations:
             return self.internal_declarations[object_path]
+
+    def _localize_corpus_paths(self, new_folder: 'CdmFolderDefinition') -> bool:
+        all_went_well = True
+        was_blocking = self.ctx.corpus.block_declared_path_changes
+        self.ctx.corpus.block_declared_path_changes = True
+
+        # shout into the void
+        self.ctx.logger.info('Localizing corpus paths in document \'{}\''.format(self.name))
+
+        def import_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.corpus_path, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.corpus_path = corpus_path
+
+        def entity_declaration_definition_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.entity_path, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.entity_path = corpus_path
+
+        def data_partition_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.location, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.location = corpus_path
+            corpus_path, worked = self._localize_corpus_path(obj.specialized_schema, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.specialized_schema = corpus_path
+
+        def data_partition_pattern_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.root_location, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.root_location = corpus_path
+            corpus_path, worked = self._localize_corpus_path(obj.specialized_schema, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.specialized_schema = corpus_path
+
+        def e2e_relationship_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.to_entity, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.to_entity = corpus_path
+            corpus_path, worked = self._localize_corpus_path(obj.from_entity, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.from_entity = corpus_path
+
+        def manifest_declaration_callback(obj: 'CdmObject', path: str) -> bool:
+            nonlocal all_went_well
+            corpus_path, worked = self._localize_corpus_path(obj.definition, new_folder)
+            if not worked:
+                all_went_well = False
+            else:
+                obj.definition = corpus_path
+
+        switcher = {
+            CdmObjectType.IMPORT: import_callback,
+            CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF: entity_declaration_definition_callback,
+            CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF: entity_declaration_definition_callback,
+            CdmObjectType.DATA_PARTITION_DEF: data_partition_callback,
+            CdmObjectType.DATA_PARTITION_PATTERN_DEF: data_partition_pattern_callback,
+            CdmObjectType.E2E_RELATIONSHIP_DEF: e2e_relationship_callback,
+            CdmObjectType.MANIFEST_DECLARATION_DEF: manifest_declaration_callback
+        }
+
+        def pre_callback(obj: 'CdmObject', path: str) -> bool:
+            # i don't like that document needs to know a little about these objects
+            # in theory, we could create a virtual function on cdmObject that localizes properties
+            # but then every object would need to know about the documents and paths and such ...
+            # also, i already wrote this code.
+            func = switcher.get(obj.object_type)
+            if func:
+                func(obj, path)
+            return False
+
+        # find anything in the document that is a corpus path
+        self.visit('', pre_callback, None)
+
+        self.ctx.corpus.block_declared_path_changes = was_blocking
+
+        return all_went_well
+
+    def _localize_corpus_path(self, path: str, new_folder: Optional['CdmFolderDefinition']) -> Tuple[str, bool]:
+        # if this isn't a local path, then don't do anything to it
+        if not path:
+            return (path, True)
+
+        # but first, if there was no previous folder (odd) then just localize as best we can
+        old_folder = self.owner
+        new_path = ''
+        if old_folder is None:
+            new_path = self.ctx.corpus.storage.create_relative_corpus_path(path, new_folder)
+        else:
+            # if the current value != the absolute path, then assume it is a relative path
+            abs_path = self.ctx.corpus.storage.create_absolute_corpus_path(path, old_folder)
+            if abs_path == path:
+                new_path = abs_path  # leave it alone
+            else:
+                # make it relative to the new folder then
+                new_path = self.ctx.corpus.storage.create_relative_corpus_path(abs_path, new_folder)
+
+        if new_path is None:
+            return (new_path, False)
+
+        return (new_path, True)
 
     def _prioritize_imports(self, processed_set: Set['CdmDocumentDefinition'], priority_map: Dict['CdmDocumentDefinition', int], sequence: int,
                             moniker_map: Dict[str, 'CdmDocumentDefinition'], skip_monikered: bool = False) -> int:
@@ -200,12 +330,12 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         return sequence
 
-    async def refresh_async(self, res_opt: Optional['ResolveOptions'] = None) -> None:
+    async def refresh_async(self, res_opt: Optional['ResolveOptions'] = None) -> bool:
         """updates indexes for document content, call this after modifying objects in the document"""
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
 
         self._needs_indexing = True
-        await self._index_if_needed(res_opt)
+        return await self._index_if_needed(res_opt)
 
     async def _reload_async(self) -> None:
         await self.ctx.corpus._fetch_object_async(self.corpus_path, force_reload=True)
@@ -214,7 +344,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         """saves the document back through the adapter in the requested format
         format is specified via document name/extension based on conventions:
         'model.json' for back compat model, '*.manifest.json' for manifest, '*.json' for cdm defs
-        save_referenced (default false) when true will also save any schema defintion documents that are
+        save_referenced (default False) when true will also save any schema defintion documents that are
         linked from the source doc and that have been modified. existing document names are used for those."""
         options = options if options is not None else CopyOptions()
 
@@ -253,3 +383,9 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
     def _clear_caches(self):
         self.internal_declarations = {}
+
+        def post_visit(obj: 'CdmObject', path: str) -> bool:
+            obj.declared_path = None
+            return False
+
+        self.visit('', None, post_visit)

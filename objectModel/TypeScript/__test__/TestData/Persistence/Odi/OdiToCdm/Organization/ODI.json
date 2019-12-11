@@ -1,0 +1,423 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "organizationName",
+          "organizationDescription",
+          "annualRevenue",
+          "currencyCode",
+          "numberOfEmployees",
+          "tickerSymbol",
+          "stockExchange",
+          "dunAndBradstreetNumber",
+          "primaryContactId",
+          "parentOrganizationId",
+          "NAICSCode",
+          "SICCode",
+          "webDomain"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationName",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 5,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationDescription",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationAnnualRevenue",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationCurrencyCode",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationNumberOfEmployees",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationTickerSymbol",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationStockExchange",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 11,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationDunAndBradstreetNumber",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 12,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:primaryContact",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnInstance": "primaryContact0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Person",
+              "opm:columnIndex": 13,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:parentOrganization",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnInstance": "parentOrganization0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Organization",
+              "opm:columnIndex": 14,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:organizationNAICSCode",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 15,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationSICCode",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 16,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizationWebDomain",
+            "opm:columnEntity": "this:Organization",
+            "opm:columnIndex": 17,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__Organization",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:Organization"
+              },
+              {
+                "@id": "this:Organization",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:organizationName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The company or business name.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:organizationName",
+                    "olm:title": "Organization Name"
+                  },
+                  {
+                    "@id": "this:organizationDescription",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "Additional information to describe the organization, such as an excerpt from the company's website.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:organizationDescription",
+                    "olm:title": "Description"
+                  },
+                  {
+                    "@id": "this:organizationAnnualRevenue",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The annual revenue for the organization, used as an indicator in financial performance analysis.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:annualRevenue",
+                    "olm:title": "Annual Revenue"
+                  },
+                  {
+                    "@id": "this:organizationCurrencyCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The ISO 4217 currency code for currency values given in this Organization",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:currencyCode",
+                    "olm:title": "Currency Code"
+                  },
+                  {
+                    "@id": "this:organizationNumberOfEmployees",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The number of employees that work at the organization for use in marketing segmentation and demographic analysis.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:numberOfEmployees",
+                    "olm:title": "Number of Employees"
+                  },
+                  {
+                    "@id": "this:organizationTickerSymbol",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The stock exchange symbol for the organization to track financial performance of the company. You can click the code entered in this field to access the latest trading information from MSN Money.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:tickerSymbol",
+                    "olm:title": "Ticker Symbol"
+                  },
+                  {
+                    "@id": "this:organizationStockExchange",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The stock exchange at which the organization is listed to track their stock and financial performance of the company.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:stockExchange",
+                    "olm:title": "Stock Exchange"
+                  },
+                  {
+                    "@id": "this:organizationDunAndBradstreetNumber",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:dunAndBradstreetNumber",
+                    "olm:title": "Dun And Bradstreet Number"
+                  },
+                  {
+                    "@id": "this:organizationPrimaryContact",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:organizationParentOrganization",
+                    "olm:dataType": "this:Organization",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:organizationNAICSCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The organizations's primary industry for use in marketing segmentation and demographic analysis.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:NAICSCode",
+                    "olm:title": "NAICS Code"
+                  },
+                  {
+                    "@id": "this:organizationSICCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The organizations's primary SIC Code",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:SICCode",
+                    "olm:title": "SIC Code"
+                  },
+                  {
+                    "@id": "this:organizationWebDomain",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The organization's website URL to get quick details about the company profile.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:webDomain",
+                    "olm:title": "Web Domain"
+                  }
+                ],
+                "olm:description": "Business, agency, foundation or other similar group that represents a customer, potential customer or organization holder. The organization that is billed in business transactions.",
+                "olm:sameAs": "odic:Organization",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Organization"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

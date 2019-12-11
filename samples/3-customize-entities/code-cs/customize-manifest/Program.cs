@@ -6,6 +6,17 @@
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
 
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------
+     * This sample demonstrates how an existing entity loaded from some public standards can be customized.
+     * The steps are:
+     *      1. Load a manifest from local file-system
+     *      2. Create a new entity named 'MobileCareTeam' which extends from a standard entity called 'CareTeam', and add an attribute named 'currentCity'
+     *      3. Resolve and flatten this new local abstract description of 'CareTeam' entity, then add this customized version of 'CareTeam' entity to the manifest
+     *      4. Save the new documents
+     * ----------------------------------------------------------------------------------------------------------------------------------------
+     */
+
     class Program
     {
         static async Task Main(string[] args)
@@ -13,7 +24,7 @@
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var cdmCorpus = new CdmCorpusDefinition();
 
-            Console.WriteLine("configure storage adapters");
+            Console.WriteLine("Configure storage adapters");
             
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
@@ -35,39 +46,39 @@
             // "<CLIENT-SECRET>" // Client secret.
             // ));
 
-            // This sample will load an existing manifest and add to it a new entity that is a customized version of a standard
-            // we will add the CareTeam entity but first we will add the 'currentCity' attribute and give the new entity a new name 'MobileCareTeam'
-            // this new defintion becomes a local abstract description of an entity that is resolved and flattened before being added to the manifest
-
-            // open the default manifest at the root, used later when done
-            // this method turns relative corpus paths into absolute ones in case we are in some sub-folders and don't know it
+            // Open the default manifest at the root, used later when done
+            // This method turns relative corpus paths into absolute ones in case we are in some sub-folders and don't know it
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("default.folio.cdm.json");
 
-            Console.WriteLine("define new extension");
+            Console.WriteLine("Define new extension");
 
-            // First we will make a new document right in the same folder as the manifest.
+            // First we will make a new document right in the same folder as the manifest
             var docAbs = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, "MobileCareTeam.cdm.json");
             
-            // Import the cdm description of the original so the symbols will resolve.
+            // Import the cdm description of the original so the symbols will resolve
             docAbs.Imports.Add("cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CareTeam.cdm.json", null);
 
-            // we will make a new trait to identify things that are known to be temporary, used later. in theory this would be defined somewhere central so it can be shared
+            // We will make a new trait to identify things that are known to be temporary, used later
+            // In theory this would be defined somewhere central so it can be shared
             var traitTemp = docAbs.Definitions.Add(CdmObjectType.TraitDef, "means.temporary") as CdmTraitDefinition;
-            traitTemp.ExtendsTrait = cdmCorpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "means", true); // extends the standard 'means' base trait
-            // has a parameter for the expected duration in days
+            // Extends the standard 'means' base trait
+            traitTemp.ExtendsTrait = cdmCorpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "means", true);
+            // Add a parameter for the expected duration in days
             var param = cdmCorpus.MakeObject<CdmParameterDefinition>(CdmObjectType.ParameterDef, "estimatedDays");
-            param.DataTypeRef = cdmCorpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer"); // by not using "true" on the last arg, this becomes an real reference object in the json. go look at the difference from "means" when this is done
+            // By not using "true" on the last arg, this becomes an real reference object in the json. go look at the difference from "means" when this is done
+            param.DataTypeRef = cdmCorpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer");
             param.DefaultValue = "30";
             traitTemp.Parameters.Add(param);
 
             // Make an entity definition and add it to the list of definitions in the document.
             CdmEntityDefinition entAbs = docAbs.Definitions.Add(CdmObjectType.EntityDef, "MobileCareTeam") as CdmEntityDefinition;
-            // this entity extends the standard
-            entAbs.ExtendsEntity = cdmCorpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, "CareTeam", true); // this function with 'true' will make a simple reference to the base
+            // This entity extends the standard
+            // This function with 'true' will make a simple reference to the base
+            entAbs.ExtendsEntity = cdmCorpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, "CareTeam", true);
             
             // and we will add an attribute
             CdmTypeAttributeDefinition attNew = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "currentCity");
-            // the attribute is a type is 'City" this is one of the predefined semantic types in meanings.cdm.json
+            // The attribute is a type is 'City" this is one of the predefined semantic types in meanings.cdm.json
             attNew.DataType = cdmCorpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "city", true);
             attNew.Description = "The current city where the mobile care team is working";
 
@@ -76,26 +87,26 @@
             tr.Arguments.Add("estimatedDays", "90");
             attNew.AppliedTraits.Add(tr);
 
-            // add attribute to the entity
+            // Add attribute to the entity
             entAbs.Attributes.Add(attNew);
 
             // The entity abstract definition is done, add the document to the corpus in the root folder and then save that doc
             cdmCorpus.Storage.FetchRootFolder("local").Documents.Add(docAbs);
 
             // next step is to remove all of the guesswork out of decoding the entity shape by 'resolving' it to a relational by reference shape
-            Console.WriteLine("make a local 'resolved' copy");
+            Console.WriteLine("Make a local 'resolved' copy");
 
             // Now resolve it
-            var entFlat = await entAbs.CreateResolvedEntityAsync("LocalMobileCareTeam"); // made the entity and document have a different name to avoid conflicts in this folder
-
+            // Made the entity and document have a different name to avoid conflicts in this folder
+            var entFlat = await entAbs.CreateResolvedEntityAsync("LocalMobileCareTeam");
             // Now just add the pointer into our manifest.
-            Console.WriteLine("add to manifest");
+            Console.WriteLine("Add to manifest");
             manifest.Entities.Add(entFlat);
 
-            // This function will update all of the fileStatus times in the manifest.
-            //await manifest.RefreshFileStatus();
+            // This function will update all of the fileStatus times in the manifest
+            // await manifest.RefreshFileStatus();
 
-            // and save the manifest along with linked definition files
+            // Save the manifest along with linked definition files
             await manifest.SaveAsAsync("default.manifest.cdm.json", true);
         }
     }

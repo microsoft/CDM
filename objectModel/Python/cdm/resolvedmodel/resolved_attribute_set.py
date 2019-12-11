@@ -7,14 +7,14 @@ from collections import defaultdict
 from typing import cast, List, Dict, Optional, Set, Tuple, Union, TYPE_CHECKING
 import re
 
+from cdm.enums import CdmAttributeContextType
 from cdm.resolvedmodel.trait_param_spec import TraitParamSpec
-from cdm.utilities.applier_context import ApplierContext
-from cdm.utilities.ref_counted import RefCounted
+from cdm.utilities import ApplierContext, AttributeContextParameters, RefCounted
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmAttributeContext, CdmAttributeResolutionGuidanceDefinition, SpewCatcher
+    from cdm.objectmodel import CdmAttributeContext, CdmAttributeResolutionGuidanceDefinition
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedTraitSet, TraitSpec
-    from cdm.utilities import AttributeContextParameters, AttributeResolutionApplier, ResolveOptions
+    from cdm.utilities import AttributeResolutionApplier, ResolveOptions
 
 
 class ResolvedAttributeSet(RefCounted):
@@ -23,15 +23,15 @@ class ResolvedAttributeSet(RefCounted):
 
         self.attctx_to_rattr = {}  # type:  Dict[CdmAttributeContext, ResolvedAttribute]
         self.attribute_context = None  # type: CdmAttributeContext
-        self.basetrait_to_attr = None  # type: Optional[Dict[string, Set[ResolvedAttribute]]]
+        self.base_trait_to_attributes = None  # type: Optional[Dict[string, Set[ResolvedAttribute]]]
         self.insert_order = 0  # type: int
         self.rattr_to_attctxset = defaultdict(set)  # type: Dict[ResolvedAttribute, Set[CdmAttributeContext]]
-        self.rname_to_rattr = {}  # type: Dict[string, ResolvedAttribute]
+        self.resolved_name_to_resolved_attribute = {}  # type: Dict[string, ResolvedAttribute]
         self.set = []  # type: List[ResolvedAttribute]
 
     @property
     def size(self) -> int:
-        return len(self.rname_to_rattr)
+        return len(self.resolved_name_to_resolved_attribute)
 
     def create_attribute_context(self, res_opt: 'ResolveOptions', acp: 'AttributeContextParameters') -> 'CdmAttributeContext':
         if acp is None:
@@ -52,35 +52,44 @@ class ResolvedAttributeSet(RefCounted):
         ras_result = self
 
         if to_merge is not None:
-            if to_merge.resolved_name in self.rname_to_rattr:
-                existing = self.rname_to_rattr[to_merge.resolved_name]
+            if to_merge.resolved_name in ras_result.resolved_name_to_resolved_attribute:
+                existing = ras_result.resolved_name_to_resolved_attribute[to_merge.resolved_name]
 
                 if self.ref_cnt > 1 and existing.target != to_merge.target:
-                    ras_result = self.copy()  # Copy on write.
-                    existing = ras_result.rname_to_rattr[to_merge.resolved_name]
+                    ras_result = ras_result.copy()  # copy on write.
+                    existing = ras_result.resolved_name_to_resolved_attribute[to_merge.resolved_name]
 
-                existing.target = to_merge.target  # Replace with newest version.
+                existing.target = to_merge.target  # replace with newest version.
                 existing.arc = to_merge.arc
 
-                rts_merge = existing.resolved_traits.merge_set(to_merge.resolved_traits)  # Newest one may replace.
+                rts_merge = existing.resolved_traits.merge_set(to_merge.resolved_traits)  # newest one may replace.
                 if rts_merge != existing.resolved_traits:
-                    ras_result = ras_result.copy()  # Copy on write.
-                    existing = ras_result.rname_to_rattr[to_merge.resolved_name]
+                    ras_result = ras_result.copy()  # copy on write.
+                    existing = ras_result.resolved_name_to_resolved_attribute[to_merge.resolved_name]
                     existing.resolved_traits = rts_merge
             else:
                 if self.ref_cnt > 1:
-                    ras_result = self.copy()  # Copy on write.
+                    ras_result = ras_result.copy()  # copy on write.
                 if ras_result is None:
                     ras_result = self
-                ras_result.rname_to_rattr[to_merge.resolved_name] = to_merge
-                # Don't use the att_ctx on the actual attribute, that's only for doing appliers.
+                ras_result.resolved_name_to_resolved_attribute[to_merge.resolved_name] = to_merge
+                # don't use the att_ctx on the actual attribute, that's only for doing appliers.
                 if att_ctx is not None:
                     ras_result.cache_attribute_context(att_ctx, to_merge)
                 ras_result.set.append(to_merge)
 
-            self.basetrait_to_attr = None
+            self.base_trait_to_attributes = None
 
         return ras_result
+
+    def alter_set_order_and_scope(self, new_set: List['ResolvedAttribute']) -> None:
+        # assumption is that new_set contains only some or all attributes from the original value of Set.
+        # if not, the stored attribute context mappings are busted
+        self.base_trait_to_attributes = None
+        self.resolved_name_to_resolved_attribute = {}  # rebuild with smaller set
+        self.set = new_set
+        for ra in new_set:
+            self.resolved_name_to_resolved_attribute[ra.resolved_name] = ra
 
     def copy_att_ctx_mappings_into(self, rattr_to_attctxset: Dict['ResolvedAttribute', Set['CdmAttributeContext']],
                                    attctx_to_rattr: Dict['CdmAttributeContext', 'ResolvedAttribute'],
@@ -90,6 +99,7 @@ class ResolvedAttributeSet(RefCounted):
             if new_ra is None:
                 new_ra = source_ra
             # Get the set of attribute contexts for the old resolved attribute.
+            keys = list(self.rattr_to_attctxset.keys())
             if source_ra in self.rattr_to_attctxset:
                 # Map the new resolved attribute to the old context set.
                 att_ctx_set = self.rattr_to_attctxset[source_ra]
@@ -106,7 +116,7 @@ class ResolvedAttributeSet(RefCounted):
                 ras_merged = ras_result.merge(res_att)
                 if ras_merged != ras_result:
                     ras_result = ras_merged
-                # Copy context here.
+                # copy context here.
                 to_merge.copy_att_ctx_mappings_into(ras_result.rattr_to_attctxset, ras_result.attctx_to_rattr, res_att)
 
         return ras_result
@@ -119,9 +129,11 @@ class ResolvedAttributeSet(RefCounted):
             ras_result = ras_result.copy()
         ras_applied = ras_result.apply(traits, res_guide, actions)
 
-        ras_result.rname_to_rattr = ras_applied.rname_to_rattr
-        ras_result.basetrait_to_attr = None
+        ras_result.resolved_name_to_resolved_attribute = ras_applied.resolved_name_to_resolved_attribute
+        ras_result.base_trait_to_attributes = None
         ras_result.set = ras_applied.set
+        ras_result.rattr_to_attctxset = ras_applied.rattr_to_attctxset
+        ras_result.attctx_to_rattr = ras_applied.attctx_to_rattr
 
         return ras_result
 
@@ -146,18 +158,52 @@ class ResolvedAttributeSet(RefCounted):
 
     def apply(self, traits: 'ResolvedTraitSet', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
               actions: List['AttributeResolutionApplier']) -> 'ResolvedAttributeSet':
+        from cdm.objectmodel import CdmAttributeContext
 
         if not traits and not actions:
-            # Nothing can change.
+            # nothing can change.
             return self
 
-        # For every attribute in the set run any attribute appliers.
+        # for every attribute in the set run any attribute appliers.
         applied_att_set = ResolvedAttributeSet()
+        applied_att_set.attribute_context = self.attribute_context
+
+        # check to see if we need to make a copy of the attributes
+        # do this when building an attribute context and when we will modify the attributes (beyond traits)
+        # see if any of the appliers want to modify
+        making_copy = False
+        if self.set and applied_att_set.attribute_context and actions:
+            res_att_test = self.set[0]
+            for trait_action in actions:
+                ctx = ApplierContext(res_opt=traits.res_opt, res_att_source=res_att_test, res_guide=res_guide)
+                if trait_action.will_attribute_modify(ctx):
+                    making_copy = True
+                    break
+
+        if making_copy:
+            # fake up a generation round for these copies that are about to happen
+            acp = AttributeContextParameters(
+                under=applied_att_set.attribute_context,
+                type=CdmAttributeContextType.GENERATED_SET,
+                name='_generatedAttributeSet')
+            applied_att_set.attribute_context = CdmAttributeContext._create_child_under(traits.res_opt, acp)
+            acp = AttributeContextParameters(
+                under=applied_att_set.attribute_context,
+                type=CdmAttributeContextType.GENERATED_ROUND,
+                name='_generatedAttributeRound0')
+
+            applied_att_set.attribute_context = CdmAttributeContext._create_child_under(traits.res_opt, acp)
+
         for res_att in self.set:
-            sub_set = cast('ResolvedAttributeSet', res_att.target)
-            # TODO: check if should be "sub_set.set is not None"
-            if isinstance(sub_set, ResolvedAttributeSet) and sub_set.set:
-                # The set contains another set. Process those.
+            att_ctx_to_merge = None  # Optional[CdmAttributeContext]
+
+            if isinstance(res_att.target, ResolvedAttributeSet):
+                sub_set = cast('ResolvedAttributeSet', res_att.target)
+
+                if making_copy:
+                    res_att = res_att.copy()
+
+                # the set contains another set. Process those.
                 res_att.target = sub_set.apply(traits, res_guide, actions)
             else:
                 rts_merge = res_att.resolved_traits.merge_set(traits)
@@ -171,12 +217,33 @@ class ResolvedAttributeSet(RefCounted):
                         ctx.res_guide = res_guide
 
                         if trait_action.will_attribute_modify(ctx):
+                            # make a context for this new copy
+                            if making_copy:
+                                acp = AttributeContextParameters(
+                                    under=applied_att_set.attribute_context,
+                                    type=CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                                    name=res_att.resolved_name,
+                                    regarding=res_att.target)
+                                ctx.att_ctx = CdmAttributeContext._create_child_under(traits.res_opt, acp)
+                                att_ctx_to_merge = ctx.att_ctx  # type: CdmAttributeContext
+
+                            # make a copy of the resolved att
+                            if making_copy:
+                                res_att = res_att.copy()
+
+                            ctx.res_att_source = res_att
+
+                            # modify it
                             trait_action.do_attribute_modify(ctx)
 
-            applied_att_set.merge(res_att)
+            applied_att_set.merge(res_att, att_ctx_to_merge)
 
-        applied_att_set.rattr_to_attctxset = self.rattr_to_attctxset
-        applied_att_set.attctx_to_rattr = self.attctx_to_rattr
+        applied_att_set.attribute_context = self.attribute_context
+
+        if not making_copy:
+            # didn't copy the attributes or make any new context, so just take the old ones
+            applied_att_set.rattr_to_attctxset = self.rattr_to_attctxset
+            applied_att_set.attctx_to_rattr = self.attctx_to_rattr
         return applied_att_set
 
     def remove_requested_atts(self, marker: Tuple[int, int]) -> 'ResolvedAttributeSet':
@@ -187,8 +254,8 @@ class ResolvedAttributeSet(RefCounted):
         applied_att_set = None  # type: ResolvedAttributeSet
         for i_att, res_att in enumerate(self.set):
             # Possible for another set to be in this set.
-            sub_set = cast('ResolvedAttributeSet', res_att.target)
-            if isinstance(sub_set, ResolvedAttributeSet) and sub_set.set:
+            if isinstance(res_att.target, ResolvedAttributeSet):
+                sub_set = cast('ResolvedAttributeSet', res_att.target)
                 # Go around again on this same function and get rid of things from this group.
                 marker = (count_index, mark_index)
                 new_sub_set = sub_set.remove_requested_atts(marker)
@@ -241,7 +308,7 @@ class ResolvedAttributeSet(RefCounted):
         ras_result = self
         if applied_att_set and applied_att_set.size != ras_result.size:
             ras_result = applied_att_set
-            ras_result.basetrait_to_attr = None
+            ras_result.base_trait_to_attributes = None
             ras_result.attribute_context = self.attribute_context
 
         return ras_result
@@ -269,22 +336,22 @@ class ResolvedAttributeSet(RefCounted):
 
         # If the map isn't in place, make one now. Assumption is that this is called as part of a usage pattern where it
         # will get called again.
-        if not self.basetrait_to_attr:
-            self.basetrait_to_attr = {}
+        if not self.base_trait_to_attributes:
+            self.base_trait_to_attributes = {}
             for res_att in self.set:
                 # Create a map from the name of every trait found in this whole set of attributes to the attributes that
                 # have the trait (included base classes of traits).
                 trait_names = res_att.resolved_traits.collect_trait_names()
                 for t_name in trait_names:
-                    if not t_name in self.basetrait_to_attr:
-                        self.basetrait_to_attr[t_name] = set()
-                    self.basetrait_to_attr[t_name].add(res_att)
+                    if not t_name in self.base_trait_to_attributes:
+                        self.base_trait_to_attributes[t_name] = set()
+                    self.base_trait_to_attributes[t_name].add(res_att)
 
         # For every trait in the query, get the set of attributes. Intersect these sets to get the final answer.
         final_set = set()  # type: Set[ResolvedAttribute]
         for q in query:
-            if q.trait_base_name in self.basetrait_to_attr:
-                sub_set = self.basetrait_to_attr[q.trait_base_name]
+            if q.trait_base_name in self.base_trait_to_attributes:
+                sub_set = self.base_trait_to_attributes[q.trait_base_name]
                 if q.parameters:
                     # Need to check param values, so copy the subset to something we can modify.
                     filtered_sub_set = set()
@@ -320,8 +387,8 @@ class ResolvedAttributeSet(RefCounted):
     def get(self, name: str) -> Optional['ResolvedAttribute']:
         from cdm.objectmodel import CdmAttribute
 
-        if name in self.rname_to_rattr:
-            return self.rname_to_rattr[name]
+        if name in self.resolved_name_to_resolved_attribute:
+            return self.resolved_name_to_resolved_attribute[name]
 
         if self.set:
             # Deeper look. First see if there are any groups held in this group.

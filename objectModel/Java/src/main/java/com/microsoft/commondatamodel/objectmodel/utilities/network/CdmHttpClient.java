@@ -1,15 +1,16 @@
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -48,7 +49,7 @@ public class CdmHttpClient {
     }
 
     public CdmHttpClient(final String apiEndpoint, final HttpClient httpClientHandler) {
-        this.headers = new HashMap<>();
+        this.headers = new LinkedHashMap<>();
 
         if (apiEndpoint != null) {
             this.apiEndpoint = apiEndpoint;
@@ -130,7 +131,7 @@ public class CdmHttpClient {
 
         // Some requests might not have any content, so check for it.
         if (cdmHttpRequest.getContent() != null) {
-            final StringEntity stringEntity = new StringEntity(cdmHttpRequest.getContent(), "UTF-8");
+            final StringEntity stringEntity = new StringEntity(cdmHttpRequest.getContent(), StandardCharsets.UTF_8);
             stringEntity.setContentType(cdmHttpRequest.getContentType());
             if (httpRequest instanceof HttpPost) {
                 ((HttpPost) httpRequest).setEntity(stringEntity);
@@ -147,20 +148,14 @@ public class CdmHttpClient {
             try {
                 final HttpResponse response = client.execute(httpRequest);
                 if (response != null) {
-                    final BufferedReader in = new BufferedReader(
-                            new InputStreamReader(response.getEntity().getContent()));
-                    final StringBuilder content = new StringBuilder();
-                    String inputLine;
-
-                    // Parse the input stream to fetch the content.
-                    while (null != (inputLine = in.readLine())) {
-                        content.append(inputLine);
+                    cdmHttpResponse = new CdmHttpResponse(response.getStatusLine().getStatusCode());
+                    final HttpEntity responseEntity = response.getEntity();
+                    if (responseEntity != null && responseEntity.getContent() != null) {
+                        cdmHttpResponse.setContent(IOUtils.toString(
+                            responseEntity.getContent(),
+                            StandardCharsets.UTF_8));
                     }
 
-                    // Close the stream.
-                    in.close();
-                    cdmHttpResponse = new CdmHttpResponse(response.getStatusLine().getStatusCode());
-                    cdmHttpResponse.setContent(content.toString());
                     cdmHttpResponse.setReason(response.getStatusLine().getReasonPhrase());
 
                     // If the HTTP response code is in the 2xx format, it is successful.

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class DataPartitionPersistence:
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', data: DataPartition) -> CdmDataPartitionDefinition:
-        data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF)  # type: CdmDataPartitionDefinition
+        data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.get('name'))  # type: CdmDataPartitionDefinition
         data_partition.location = data.get('location')
 
         if data.get('specializedSchema'):
@@ -35,16 +35,23 @@ class DataPartitionPersistence:
 
         if data.get('arguments'):
             for argument in data.arguments:
-                if len(argument) != 1:
-                    ctx.logger.warning('invalid set of arguments provided for data partition corresponding to location: %s', data.location)
-                key = argument.keys()[0]
-                data_partition.arguments = {}
-                if key in data_partition.arguments:
-                    arg_list = data_partition.arguments.get(key)
-                    arg_list.push(argument[key])
-                    data_partition.arguments[key] = arg_list
+                key = None
+                value = None
+
+                if len(argument) == 1:
+                    key, value = list(argument.items())[0]
                 else:
-                    data_partition.arguments[key] = [argument[key]]
+                    key = argument.get('key') or argument.get('name')
+                    value = argument.get('value')
+
+                if key is None or value is None:
+                    ctx.logger.warning('invalid set of arguments provided for data partition corresponding to location: %s', data.location)
+                    continue
+
+                if key in data_partition.arguments:
+                    data_partition.arguments[key].append(value)
+                else:
+                    data_partition.arguments[key] = [value]
 
         return data_partition
 

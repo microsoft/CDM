@@ -12,7 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -34,7 +34,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     super(ctx);
     this.setName(name);
     this.setObjectType(CdmObjectType.DataPartitionDef);
-    this.setArguments(new HashMap<>());
+    this.setArguments(new LinkedHashMap<>());
     this.setInferred(false);
   }
 
@@ -59,8 +59,19 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmDataPartitionDefinition copy = new CdmDataPartitionDefinition(getCtx(), getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    CdmDataPartitionDefinition copy;
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    if (host == null) {
+      copy = new CdmDataPartitionDefinition(getCtx(), getName());
+    } else {
+      copy = (CdmDataPartitionDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     copy.setDescription(getDescription());
     copy.setLocation(getLocation());
@@ -84,12 +95,40 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
-  public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
+  public boolean visit(
+      final String pathFrom,
+      final VisitCallback preChildren,
+      final VisitCallback postChildren) {
+    String path = "";
+    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+      if (path == null) {
+        String thisName = this.getName();
+        if (thisName == null) {
+          thisName = "UNNAMED";
+        }
+        path = pathFrom + thisName;
+        this.setDeclaredPath(path);
+      }
+    }
+
+    if (preChildren != null && preChildren.invoke(this, path)) {
+      return false;
+    }
+
+    if (this.visitDef(path, preChildren, postChildren)) {
+      return true;
+    }
+
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return false;
+    }
+
     return false;
   }
 
@@ -212,9 +251,14 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     final String nameSpace = getInDocument().getNamespace();
-    final String fullPath = getLocation().contains(":") ? getLocation() : nameSpace + ":" + getLocation();
+    final String fullPath =
+        this.getCtx()
+            .getCorpus()
+            .getStorage()
+            .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
 
-    final OffsetDateTime modifiedTime = getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
+    final OffsetDateTime modifiedTime =
+        this.getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
 
     // update modified times
     setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));

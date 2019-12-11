@@ -46,7 +46,7 @@
             manifest.IsDirty = false;
 
             folder.Documents.Insert(2, document);
-            Assert.AreEqual(true, manifest.IsDirty);
+            Assert.IsTrue(manifest.IsDirty);
             Assert.AreEqual(3, folder.Documents.Count);
             Assert.AreEqual(doc1, folder.Documents[0]);
             Assert.AreEqual(doc2, folder.Documents[1]);
@@ -140,7 +140,7 @@
             Assert.IsTrue(removed);
             Assert.AreEqual(1, folder.Documents.Count);
             Assert.AreEqual(document2, folder.Documents[0]);
-            Assert.AreEqual(null, document.Owner);
+            Assert.IsNull(document.Owner);
 
             removed = folder.Documents.Remove(document);
             Assert.IsFalse(removed);
@@ -153,7 +153,7 @@
             removed = folder.Documents.Remove(document.Name);
             Assert.AreEqual(1, folder.Documents.Count);
             Assert.AreEqual(document2, folder.Documents[0]);
-            Assert.AreEqual(null, document.Owner);
+            Assert.IsNull(document.Owner);
         }
 
         [TestMethod]

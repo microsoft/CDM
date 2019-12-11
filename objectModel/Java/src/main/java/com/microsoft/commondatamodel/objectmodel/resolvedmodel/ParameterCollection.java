@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +23,16 @@ public class ParameterCollection {
       final com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection prior) {
     if (prior == null) {
       this.setSequence(new ArrayList<>());
-      this.setLookup(new HashMap<>());
-      this.setOrdinals(new HashMap<>());
+      this.setLookup(new LinkedHashMap<>());
+      this.setOrdinals(new LinkedHashMap<>());
     } else {
       this.setSequence(
           prior.getSequence() != null ? new ArrayList<>(prior.getSequence()) : new ArrayList<>());
       this.setLookup(
-          prior.getLookup() != null ? new HashMap<>(prior.getLookup()) : new HashMap<>()
+          prior.getLookup() != null ? new LinkedHashMap<>(prior.getLookup()) : new LinkedHashMap<>()
       );
       this.setOrdinals(
-          prior.getOrdinals() != null ? new HashMap<>(prior.getOrdinals()) : new HashMap<>()
+          prior.getOrdinals() != null ? new LinkedHashMap<>(prior.getOrdinals()) : new LinkedHashMap<>()
       );
     }
   }

@@ -11,7 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpReques
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,8 +20,8 @@ import java.util.concurrent.CompletableFuture;
 public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
   static final String TYPE = "remote";
 
-  private final Map<String, String> sources = new HashMap<>();
-  private final Map<String, Map<String, String>> sourcesById = new HashMap<>();
+  private final Map<String, String> sources = new LinkedHashMap<>();
+  private final Map<String, Map<String, String>> sourcesById = new LinkedHashMap<>();
 
   private Map<String, String> hosts;
   private String locationHint;
@@ -121,12 +121,12 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
 
       final String path = createAdapterPath(corpusPath);
 
-      final Map<String, String> headers = new HashMap<>();
+      final Map<String, String> headers = new LinkedHashMap<>();
       headers.put("User-Agent", "CDM");
 
       final CdmHttpRequest cdmHttpRequest = this.setUpCdmRequest(path, headers, "GET");
       try {
-        final CdmHttpResponse res = this.readOrWrite(cdmHttpRequest).get();
+        final CdmHttpResponse res = this.executeRequest(cdmHttpRequest).get();
         return (res != null) ? res.getContent() : null;
       } catch (final Exception e) {
         throw new StorageAdapterException("Could not read remote content at path: " + corpusPath, e);
@@ -168,14 +168,14 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
       final String guid = key != null ? key : getGuid();
       sources.put(fullHost, guid);
 
-      final Map<String, String> sourceId = new HashMap<>();
+      final Map<String, String> sourceId = new LinkedHashMap<>();
       sourceId.put("protocol", protocol);
       sourceId.put("host", host);
 
       sourcesById.put(guid, sourceId);
     }
 
-    final Map<String, String> result = new HashMap<>();
+    final Map<String, String> result = new LinkedHashMap<>();
     result.put("key", sources.get(fullHost));
     result.put("protocol", protocol);
     result.put("host", host);
@@ -197,7 +197,7 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     if (configsJson.has("hosts") && configsJson.get("hosts").isArray()) {
       final ArrayNode hosts = (ArrayNode) configsJson.get("hosts");
       // Create a temporary dictionary.
-      final Map<String, String> hostsDict = new HashMap<>();
+      final Map<String, String> hostsDict = new LinkedHashMap<>();
       // Iterate through all of the items in the hosts array.
       for (final JsonNode host : hosts) {
         // Get the property's key and value and save it to the dictionary.
@@ -230,7 +230,7 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     final String path = corpusPath.substring(hostKeyIndex);
     final Map<String, String> config = sourcesById.get(hostKey);
 
-    final Map<String, String> result = new HashMap<>();
+    final Map<String, String> result = new LinkedHashMap<>();
     result.put("protocol", config.get("protocol"));
     result.put("host", config.get("host"));
     result.put("path", path);
@@ -246,5 +246,13 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
   @Override
   public void setLocationHint(final String locationHint) {
     this.locationHint = locationHint;
+  }
+
+  public Map<String, String> getHosts() {
+    return hosts;
+  }
+
+  public void setHosts(Map<String, String> hosts) {
+    this.hosts = hosts;
   }
 }

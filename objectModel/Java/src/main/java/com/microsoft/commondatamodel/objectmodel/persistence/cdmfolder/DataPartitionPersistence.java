@@ -21,6 +21,10 @@ public class DataPartitionPersistence {
 
         newPartition.setLocation(obj.getLocation());
 
+        if (obj.getName() != null) {
+            newPartition.setName(obj.getName());
+        }
+
         if (obj.getSpecializedSchema() != null) {
             newPartition.setSpecializedSchema(obj.getSpecializedSchema());
         }
@@ -42,12 +46,12 @@ public class DataPartitionPersistence {
         }
 
         for (final KeyValuePair<String, String> arg : obj.getArguments()) {
-            if (newPartition.getArguments().containsKey(arg.getKey())) {
-                newPartition.getArguments().get(arg.getKey()).add(arg.getValue());
+            if (newPartition.getArguments().containsKey(arg.getName())) {
+                newPartition.getArguments().get(arg.getName()).add(arg.getValue());
             } else {
                 final List<String> newArgList = new ArrayList<>();
                 newArgList.add(arg.getValue());
-                newPartition.getArguments().put(arg.getKey(), newArgList);
+                newPartition.getArguments().put(arg.getName(), newArgList);
             }
         }
 
@@ -65,6 +69,7 @@ public class DataPartitionPersistence {
 
         final DataPartition result = new DataPartition();
 
+        result.setName(instance.getName());
         result.setLocation(instance.getLocation());
         result.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
         result.setLastFileModifiedTime(instance.getLastFileModifiedTime());

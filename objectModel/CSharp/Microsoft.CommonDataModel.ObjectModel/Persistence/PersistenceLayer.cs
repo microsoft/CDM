@@ -77,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
         }
 
-        public static async Task<CdmDocumentDefinition> LoadDocumentFromPathAsync(CdmFolderDefinition folder, string docName)
+        public static async Task<CdmDocumentDefinition> LoadDocumentFromPathAsync(CdmFolderDefinition folder, string docName, CdmDocumentDefinition docContainer)
         {
             // This makes sure date values are consistently parsed exactly as they appear. 
             // Default behavior auto formats date values.
@@ -104,20 +104,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
             catch (Exception e)
             {
-                Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)ctx, $"Could not read '{docPath}' from the '{ctx.Corpus.Namespace}' namespace. Reason '{e.Message}'", "LoadDocumentFromPathAsync");
+                Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)ctx, $"Could not read '{docPath}' from the '{folder.Namespace}' namespace. Reason '{e.Message}'", "LoadDocumentFromPathAsync");
                 return null;
             }
 
             try
             {
                 // Check file extensions, which performs a case-insensitive ordinal string comparison
-                if (docPath.EndsWith(CdmCorpusDefinition.FetchManifestExtension(), StringComparison.OrdinalIgnoreCase)
-                    || docPath.EndsWith(CdmCorpusDefinition.FetchFolioExtension(), StringComparison.OrdinalIgnoreCase))
+                if (docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchManifestExtension()) || docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchFolioExtension()))
                 {
                     docContent = ManifestPersistence.FromData(ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<ManifestContent>(jsonData)) as CdmDocumentDefinition;
                 }
-                else if (docPath.EndsWith(CdmCorpusDefinition.FetchModelJsonExtension(), StringComparison.OrdinalIgnoreCase))
+                else if (docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchModelJsonExtension()))
                 {
+                    if (!docName.EqualsWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchModelJsonExtension()))
+                    {
+                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be model.json.", "LoadDocumentFromPathAsync");
+                        return null;
+                    }
+
                     docContent = await ModelJson.ManifestPersistence.FromData(ctx, JsonConvert.DeserializeObject<Model>(jsonData), folder);
                 }
                 else
@@ -133,7 +138,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
             // Add document to the folder, this sets all the folder/path things, caches name to content association and may trigger indexing on content
             if (docContent != null)
-            {            
+            {
+                if (docContainer != null) 
+                {
+                    // there are situations where a previously loaded document must be re-loaded.
+                    // the end of that chain of work is here where the old version of the document has been removed from
+                    // the corpus and we have created a new document and loaded it from storage and after this call we will probably
+                    // add it to the corpus and index it, etc.
+                    // it would be really rude to just kill that old object and replace it with this replicant, especially because
+                    // the caller has no idea this happened. so... sigh ... instead of returning the new object return the one that
+                    // was just killed off but make it contain everything the new document loaded.
+                    docContent = docContent.Copy(new ResolveOptions(docContainer), docContainer) as CdmDocumentDefinition;
+                }
+
                 folder.Documents.Add(docContent, docName);
 
                 docContent._fileSystemModifiedTime = fsModifiedTime;

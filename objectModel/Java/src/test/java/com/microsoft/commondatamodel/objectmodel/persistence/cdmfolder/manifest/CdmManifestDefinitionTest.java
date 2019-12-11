@@ -125,9 +125,9 @@ public class CdmManifestDefinitionTest {
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
     cdmCorpus.getStorage().mount("someNamespace", new LocalAdapter(inputPath));
     cdmCorpus.getStorage().mount(LOCAL, new LocalAdapter(inputPath));
+    cdmCorpus.getStorage().unmount(CDM_NAMESPACE);
     cdmCorpus.getStorage().setDefaultNamespace(LOCAL);
 
-//    cdmCorpus.fetchObjectAsync("someNamespace:/default.manifest.cdm.json").get();
     final CdmManifestDefinition cdmManifest = (CdmManifestDefinition) cdmCorpus.fetchObjectAsync("someNamespace:/default.manifest.cdm.json").get();
     final OffsetDateTime statusTimeAtLoad = cdmManifest.getLastFileStatusCheckTime();
 
@@ -141,13 +141,13 @@ public class CdmManifestDefinitionTest {
     assertTrue(cdmManifest.getLastFileStatusCheckTime().isAfter(timeBeforeLoad));
     assertTrue(cdmManifest.getLastFileStatusCheckTime().isAfter(statusTimeAtLoad));
     assertEquals(cdmManifest.getSubManifests().getCount(), 1);
-    assertTrue(cdmManifest.getSubManifests().getAllItems().get(0).getLastFileStatusCheckTime().isAfter(timeBeforeLoad));
+    assertTrue(cdmManifest.getSubManifests().get(0).getLastFileStatusCheckTime().isAfter(timeBeforeLoad));
     assertEquals(cdmManifest.getEntities().getCount(), 1);
 
-    final CdmEntityDeclarationDefinition entity = cdmManifest.getEntities().getAllItems().get(0);
+    final CdmEntityDeclarationDefinition entity = cdmManifest.getEntities().get(0);
     assertEquals(entity.getDataPartitions().getCount(), 1);
 
-    final CdmManifestDeclarationDefinition subManifest = cdmManifest.getSubManifests().getAllItems().get(0);
+    final CdmManifestDeclarationDefinition subManifest = cdmManifest.getSubManifests().get(0);
     final OffsetDateTime maxTime = TimeUtils.maxTime(entity.getLastFileModifiedTime(), subManifest.getLastFileModifiedTime());
     assertEquals(TimeUtils.formatDateStringIfNotNull(cdmManifest.getLastChildFileModifiedTime()), TimeUtils.formatDateStringIfNotNull(maxTime));
   }
@@ -181,19 +181,18 @@ public class CdmManifestDefinitionTest {
     int totalExpectedPartitionsFound = 0;
     for (final CdmDataPartitionDefinition partition : partitionEntity.getDataPartitions().getAllItems()) {
       switch (partition.getLocation()) {
-        case "/partitions/existingPartition.csv":
+        case "partitions/existingPartition.csv":
           totalExpectedPartitionsFound++;
           break;
 
-        case "/partitions/someSubFolder/someSubPartition.csv":
+        case "partitions/someSubFolder/someSubPartition.csv":
           totalExpectedPartitionsFound++;
           assertEquals(partition.getSpecializedSchema(), "test special schema");
-          assertTrue((partition.getLastFileModifiedTime().toInstant().toEpochMilli() - actualLastModTime.toInstant().toEpochMilli()) < 10);
           assertTrue(partition.getLastFileStatusCheckTime().isAfter(timeBeforeLoad));
 
           // inherits the exhibited traits from pattern
           assertEquals(partition.getExhibitsTraits().getCount(), 1);
-          assertEquals(partition.getExhibitsTraits().getAllItems().get(0).getNamedReference(), "is");
+          assertEquals(partition.getExhibitsTraits().get(0).getNamedReference(), "is");
 
           assertEquals(partition.getArguments().size(), 1);
           assertTrue(partition.getArguments().containsKey("testParam1"));
@@ -201,25 +200,41 @@ public class CdmManifestDefinitionTest {
           assertEquals(argArray.size(), 1);
           assertEquals(argArray.get(0), "/someSubFolder/someSub");
           break;
-        case "/partitions/newPartition.csv":
+        case "partitions/newPartition.csv":
           totalExpectedPartitionsFound++;
           assertEquals(partition.getArguments().size(), 1);
           break;
-        case "/partitions/2018/folderCapture.csv":
+        case "partitions/2018/folderCapture.csv":
           totalExpectedPartitionsFound++;
           assertEquals(partition.getArguments().size(), 1);
           assertTrue(partition.getArguments().containsKey("year"));
           assertEquals(partition.getArguments().get("year").get(0), "2018");
           break;
-        case "/partitions/testTooFew.csv":
-        case "/partitions/testTooMany.csv":
+        case "partitions/2018/8/15/folderCapture.csv":
+          totalExpectedPartitionsFound++;
+          assertEquals(partition.getArguments().size(), 3);
+          assertTrue(partition.getArguments().containsKey("year"));
+          assertEquals(partition.getArguments().get("year").get(0), "2018");
+          assertTrue(partition.getArguments().containsKey("month"));
+          assertEquals(partition.getArguments().get("month").get(0), "8");
+          assertTrue(partition.getArguments().containsKey("day"));
+          assertEquals(partition.getArguments().get("day").get(0), "15");
+          break;
+        case "partitions/2018/8/15/folderCaptureRepeatedGroup.csv":
+          totalExpectedPartitionsFound++;
+          assertEquals(partition.getArguments().size(), 1);
+          assertTrue(partition.getArguments().containsKey("day"));
+          assertEquals(partition.getArguments().get("day").get(0), "15");
+          break;
+        case "partitions/testTooFew.csv":
+        case "partitions/testTooMany.csv":
           totalExpectedPartitionsFound++;
           assertEquals(partition.getArguments().size(), 0);
           break;
       }
     }
 
-    assertEquals(totalExpectedPartitionsFound, 6);
+    assertEquals(totalExpectedPartitionsFound, 8);
   }
 
   /**

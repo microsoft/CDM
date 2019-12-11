@@ -28,5 +28,5 @@ public interface CdmObjectDefinition extends CdmObject {
    * Returns true if the object (or the referenced object) is an extension
    * from the specified symbol name in some way.
    */
-  boolean isDerivedFrom(ResolveOptions resOpt, String baseDef);
+  boolean isDerivedFrom(String baseDef, ResolveOptions resOpt);
 }

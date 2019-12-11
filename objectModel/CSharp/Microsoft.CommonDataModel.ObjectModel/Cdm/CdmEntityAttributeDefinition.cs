@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -17,10 +18,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmEntityAttributeDefinition : CdmAttribute
     {
         /// <summary>
-        /// Gets or sets the entity attribute entity reference.
+        /// Gets or sets the entity attribute's entity reference.
         /// </summary>
         public CdmEntityReference Entity { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmEntityAttributeDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The name.</param>
         public CdmEntityAttributeDefinition(CdmCorpusContext ctx, string name)
             : base(ctx, name)
         {
@@ -33,6 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.EntityAttributeDef;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -49,21 +56,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmEntityAttributeDefinition>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmEntityAttributeDefinition copy = new CdmEntityAttributeDefinition(this.Ctx, this.Name)
+            CdmEntityAttributeDefinition copy;
+            if (host == null)
             {
-                Entity = (CdmEntityReference)this.Entity.Copy(resOpt)
-            };
+                copy = new CdmEntityAttributeDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmEntityAttributeDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
+
+            copy.Entity = (CdmEntityReference)this.Entity.Copy(resOpt);
+
             this.CopyAtt(resOpt, copy);
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.Name) && this.Entity != null;
@@ -72,11 +91,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.Name;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.Name;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 
@@ -216,7 +239,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // that seems like a disaster waiting to happen given endless looping, etc.
                     // for now, just insist that only the top level entity attributes declared in the ref entity will work
                     CdmEntityDefinition entPickFrom = (this.Entity as CdmEntityReference).FetchObjectDefinition<CdmEntityDefinition>(resOpt) as CdmEntityDefinition;
-                    CdmCollection<CdmAttributeItem> attsPick = entPickFrom?.GetAttributeDefinitions();
+                    CdmCollection<CdmAttributeItem> attsPick = entPickFrom?.Attributes;
                     if (entPickFrom != null && attsPick != null)
                     {
                         for (int i = 0; i < attsPick.Count; i++)
@@ -264,7 +287,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 ResolveOptions resLink = CopyResolveOptions(resOpt);
                 resLink.SymbolRefSet = resOpt.SymbolRefSet;
                 resLink.RelationshipDepth = relInfo.NextDepth;
-                rasb.MergeAttributes((this.Entity as CdmEntityReference).FetchResolvedAttributes(resLink, acpEnt));
+                rasb.MergeAttributes(this.Entity.FetchResolvedAttributes(resLink, acpEnt));
             }
 
             // from the traits of purpose and applied here, see if new attributes get generated
@@ -279,64 +302,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 foreach (var att in rasb.ResolvedAttributeSet.Set)
                 {
-                    var reqdTrait = att.ResolvedTraits.Find(resOpt, "is.linkedEntity.identifier");
-                    if (reqdTrait == null)
+                    if (att.ResolvedTraits != null)
                     {
-                        continue;
-                    }
-
-                    if (reqdTrait.ParameterValues == null || reqdTrait.ParameterValues.Length == 0)
-                    {
-                        Logger.Warning(nameof(CdmEntityAttributeDefinition), this.Ctx as ResolveContext, "is.linkedEntity.identifier does not support arguments");
-                        continue;
-                    }
-
-                    var entReferences = new List<string>();
-                    var attReferences = new List<string>();
-                    Action<CdmEntityReference, string> addEntityReference = (CdmEntityReference entRef, string nameSpace) =>
+                        var reqdTrait = att.ResolvedTraits.Find(resOpt, "is.linkedEntity.identifier");
+                        if (reqdTrait == null)
                         {
-                            var entDef = entRef.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
-                            var identifyingTrait = entRef.FetchResolvedTraits(resOpt).Find(resOpt, "is.identifiedBy");
-                            if (identifyingTrait != null && entDef != null)
+                            continue;
+                        }
+
+                        if (reqdTrait.ParameterValues == null || reqdTrait.ParameterValues.Length == 0)
+                        {
+                            Logger.Warning(nameof(CdmEntityAttributeDefinition), this.Ctx as ResolveContext, "is.linkedEntity.identifier does not support arguments");
+                            continue;
+                        }
+
+                        var entReferences = new List<string>();
+                        var attReferences = new List<string>();
+                        Action<CdmEntityReference, string> addEntityReference = (CdmEntityReference entRef, string nameSpace) =>
                             {
-                                var attRef = identifyingTrait.ParameterValues.FetchParameterValueByName("attribute").Value;
-                                string attNamePath = ((CdmObjectReferenceBase)attRef).NamedReference;
-                                string attName = attNamePath.Split('/').Last();                                // path should be absolute and without a namespace
-                                string relativeEntPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
-                                if (relativeEntPath.StartsWith($"{nameSpace}:"))
+                                var entDef = entRef.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
+                                if (entDef != null)
                                 {
-                                    relativeEntPath = relativeEntPath.Substring(nameSpace.Length + 1);
+                                    var otherResTraits = entRef.FetchResolvedTraits(resOpt);
+                                    ResolvedTrait identifyingTrait;
+                                    if (otherResTraits != null && (identifyingTrait = otherResTraits.Find(resOpt, "is.identifiedBy")) != null)
+                                    {
+                                        var attRef = identifyingTrait.ParameterValues.FetchParameterValueByName("attribute").Value;
+                                        string attNamePath = ((CdmObjectReferenceBase)attRef).NamedReference;
+                                        string attName = attNamePath.Split('/').Last();                                // path should be absolute and without a namespace
+                                        string relativeEntPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
+                                        if (relativeEntPath.StartsWith($"{nameSpace}:"))
+                                        {
+                                            relativeEntPath = relativeEntPath.Substring(nameSpace.Length + 1);
+                                        }
+                                        entReferences.Add(relativeEntPath);
+                                        attReferences.Add(attName);
+                                    }
                                 }
-                                entReferences.Add(relativeEntPath);
-                                attReferences.Add(attName);
-                            }
-                        };
-                    if (relInfo.SelectsOne)
-                    {
-                        var entPickFrom = (this.Entity as CdmEntityReference).FetchObjectDefinition<CdmEntityDefinition>(resOpt) as CdmEntityDefinition;
-                        var attsPick = entPickFrom?.GetAttributeDefinitions()?.Cast<CdmObject>().ToList();
-                        if (entPickFrom != null && attsPick != null)
+                            };
+                        if (relInfo.SelectsOne)
                         {
-                            for (int i = 0; i < attsPick.Count; i++)
+                            var entPickFrom = (this.Entity as CdmEntityReference).FetchObjectDefinition<CdmEntityDefinition>(resOpt) as CdmEntityDefinition;
+                            var attsPick = entPickFrom?.Attributes.Cast<CdmObject>().ToList();
+                            if (entPickFrom != null && attsPick != null)
                             {
-                                if (attsPick[i].ObjectType == CdmObjectType.EntityAttributeDef)
+                                for (int i = 0; i < attsPick.Count; i++)
                                 {
-                                    var entAtt = attsPick[i] as CdmEntityAttributeDefinition;
-                                    addEntityReference(entAtt.Entity, this.InDocument.Namespace);
+                                    if (attsPick[i].ObjectType == CdmObjectType.EntityAttributeDef)
+                                    {
+                                        var entAtt = attsPick[i] as CdmEntityAttributeDefinition;
+                                        addEntityReference(entAtt.Entity, this.InDocument.Namespace);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        addEntityReference(this.Entity, this.InDocument.Namespace);
-                    }
+                        else
+                        {
+                            addEntityReference(this.Entity, this.InDocument.Namespace);
+                        }
 
-                    var constantEntity = this.Ctx.Corpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef);
-                    constantEntity.EntityShape = this.Ctx.Corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entityGroupSet", true);
-                    constantEntity.ConstantValues = entReferences.Select((entRef, idx) => new List<string> { entRef, attReferences[idx] }).ToList();
-                    var traitParam = this.Ctx.Corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, constantEntity, false);
-                    reqdTrait.ParameterValues.SetParameterValue(resOpt, "entityReferences", traitParam);
+                        var constantEntity = this.Ctx.Corpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef);
+                        constantEntity.EntityShape = this.Ctx.Corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entityGroupSet", true);
+                        constantEntity.ConstantValues = entReferences.Select((entRef, idx) => new List<string> { entRef, attReferences[idx] }).ToList();
+                        var traitParam = this.Ctx.Corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, constantEntity, false);
+                        reqdTrait.ParameterValues.SetParameterValue(resOpt, "entityReferences", traitParam);
+                    }
                 }
             }
 
@@ -419,7 +449,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if ((this.Entity as CdmEntityReference).ExplicitReference != null)
                     {
                         CdmEntityDefinition entPickFrom = (this.Entity as CdmEntityReference).FetchObjectDefinition<CdmEntityDefinition>(resOpt);
-                        CdmCollection<CdmAttributeItem> attsPick = entPickFrom.GetAttributeDefinitions();
+                        CdmCollection<CdmAttributeItem> attsPick = entPickFrom.Attributes;
                         if (attsPick != null && attsPick != null)
                         {
                             for (int i = 0; i < attsPick.Count; i++)

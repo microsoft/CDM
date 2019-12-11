@@ -16,7 +16,7 @@
             var import = new CdmImport(document.Ctx, "corpusPath", "moniker");
             var addedImport = document.Imports.Add(import);
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(1, document.Imports.Count);
             Assert.AreEqual(import, addedImport);
             Assert.AreEqual(import, document.Imports[0]);
@@ -32,11 +32,11 @@
             document.IsDirty = false;
             var import = document.Imports.Add("corpusPath");
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(1, document.Imports.Count);
             Assert.AreEqual(import, document.Imports[0]);
             Assert.AreEqual("corpusPath", import.CorpusPath);
-            Assert.AreEqual(null, import.Moniker);
+            Assert.IsNull(import.Moniker);
             Assert.AreEqual(document.Ctx, import.Ctx);
         }
 
@@ -47,7 +47,7 @@
             document.IsDirty = false;
             var import = document.Imports.Add("corpusPath", "moniker");
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(1, document.Imports.Count);
             Assert.AreEqual(import, document.Imports[0]);
             Assert.AreEqual("corpusPath", import.CorpusPath);
@@ -67,7 +67,7 @@
             };
             document.Imports.AddRange(importList);
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(2, document.Imports.Count);
             Assert.AreEqual(importList[0], document.Imports[0]);
             Assert.AreEqual(importList[1], document.Imports[1]);

@@ -69,8 +69,6 @@ public class LocalEntityDeclarationPersistence {
     result.setLastChildFileModifiedTime(instance.getLastChildFileModifiedTime());
     result.setEntityPath(instance.getEntityPath());
 
-    // TODO-BQ: Might be better to let TraitRefPersistence do conversion from proper object instead
-    // of having exhibitsTraits be an ArrayNode?
     result.setExhibitsTraits(
             Utils.listCopyDataAsArrayNode(instance.getExhibitsTraits(), resOpt, options));
 

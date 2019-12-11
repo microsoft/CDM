@@ -42,8 +42,9 @@ class CdmObjectDefinition(CdmObject):
     def _copy_def(self, res_opt: 'ResolveOptions', copy: 'CdmObjectDefinition') -> None:
         copy._declared_path = self._declared_path
         copy.explanation = self.explanation
+        copy.exhibits_traits.clear()
         for trait in self.exhibits_traits:
-            copy.exhibits_traits.append(trait.copy(res_opt))
+            copy.exhibits_traits.append(trait)
 
     def create_simple_reference(self, res_opt: 'ResolveOptions') -> 'CdmObjectReference':
         from .cdm_corpus_def import CdmCorpusDefinition
@@ -52,7 +53,7 @@ class CdmObjectDefinition(CdmObject):
         if res_opt._save_resolutions_on_copy:
             # Used to localize references between documents.
             ref.explicit_reference = self
-            ref._doc_created_in = self._doc_created_in
+            ref.in_document = self.in_document
 
         return ref
 

@@ -3,6 +3,8 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
+import java.util.List;
+
 public class SelectsSubAttribute {
     private String selects;
     private JsonNode selectedTypeAttribute;

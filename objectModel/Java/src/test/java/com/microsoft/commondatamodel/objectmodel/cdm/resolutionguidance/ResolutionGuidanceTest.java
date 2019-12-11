@@ -1,9 +1,13 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.resolutionguidance;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.EntityByReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.Expansion;
+import com.microsoft.commondatamodel.objectmodel.cdm.SelectsSubAttribute;
 import com.microsoft.commondatamodel.objectmodel.storage.GithubAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
@@ -13,6 +17,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -90,7 +95,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -109,7 +114,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -128,7 +133,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -147,7 +152,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -166,7 +171,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -185,7 +190,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -204,7 +209,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -223,7 +228,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -242,7 +247,7 @@ public class ResolutionGuidanceTest {
             .getInDocument()
             .saveAsAsync(
                 outputEntityFileName,
-                false,
+                true,
                 new CopyOptions()).join()) {
           validateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
         }
@@ -265,11 +270,41 @@ public class ResolutionGuidanceTest {
     final String actualOutput = new String(Files.readAllBytes(
         new File(testActualOutputPath, outputEntityFileName).toPath()),
         StandardCharsets.UTF_8);
-      JSONAssert.assertEquals(expectedOutput, actualOutput, false);
+      JSONAssert.assertEquals(expectedOutput, actualOutput, true);
     } catch (final Exception e) {
       Assert.fail(e.getMessage());
     }
+  }
 
+  @Test
+  public void testResolutionGuidanceCopy() {
+    final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    final CdmAttributeResolutionGuidance resolutionGuidance = new CdmAttributeResolutionGuidance(corpus.getCtx());
+
+    resolutionGuidance.setExpansion(new Expansion());
+    resolutionGuidance.setEntityByReference(new EntityByReference());
+    resolutionGuidance.setSelectsSubAttribute(new SelectsSubAttribute());
+    resolutionGuidance.setImposedDirectives(new ArrayList<>());
+    resolutionGuidance.setRemovedDirectives(new ArrayList<>());
+
+    final CdmAttributeResolutionGuidance resolutionGuidanceCopy =
+        (CdmAttributeResolutionGuidance) resolutionGuidance.copy();
+
+    Assert.assertNotSame(
+        resolutionGuidance.getExpansion(),
+        resolutionGuidanceCopy.getExpansion());
+    Assert.assertNotSame(
+        resolutionGuidance.getEntityByReference(),
+        resolutionGuidanceCopy.getEntityByReference());
+    Assert.assertNotSame(
+        resolutionGuidance.getSelectsSubAttribute(),
+        resolutionGuidanceCopy.getSelectsSubAttribute());
+    Assert.assertNotSame(
+        resolutionGuidance.getImposedDirectives(),
+        resolutionGuidanceCopy.getImposedDirectives());
+    Assert.assertNotSame(
+        resolutionGuidance.getRemovedDirectives(),
+        resolutionGuidanceCopy.getRemovedDirectives());
   }
 
   /**

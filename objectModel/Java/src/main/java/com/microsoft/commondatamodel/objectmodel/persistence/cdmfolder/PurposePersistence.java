@@ -27,7 +27,7 @@ public class PurposePersistence {
     final Purpose purpose = new Purpose();
     purpose.setExplanation(instance.getExplanation());
     purpose.setPurposeName(instance.getPurposeName());
-    purpose.setExtendsPurpose(JMapper.MAP.valueToTree(Utils.jsonForm(instance.getExtendsPurpose(), resOpt, options)));
+    purpose.setExtendsPurpose(Utils.jsonForm(instance.getExtendsPurpose(), resOpt, options));
     purpose.setExhibitsTraits(Utils.listCopyDataAsArrayNode(instance.getExhibitsTraits(), resOpt, options));
     return purpose;
   }

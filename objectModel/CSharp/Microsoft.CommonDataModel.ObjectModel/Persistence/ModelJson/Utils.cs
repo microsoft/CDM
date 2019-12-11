@@ -49,14 +49,17 @@
                     }
                 }
 
-                var trait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
-                trait.IsFromProperty = true;
-                var annotationsArgument = new CdmArgumentDefinition(ctx, "annotations")
+                if (multiTraitAnnotations.Count > 0)
                 {
-                    Value = multiTraitAnnotations
-                };
-                trait.Arguments.Add(annotationsArgument);
-                traits.Add(trait);
+                    var trait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
+                    trait.IsFromProperty = true;
+                    var annotationsArgument = new CdmArgumentDefinition(ctx, "annotations")
+                    {
+                        Value = multiTraitAnnotations
+                    };
+                    trait.Arguments.Add(annotationsArgument);
+                    traits.Add(trait);
+                }
             }
 
             if (obj.Traits != null)

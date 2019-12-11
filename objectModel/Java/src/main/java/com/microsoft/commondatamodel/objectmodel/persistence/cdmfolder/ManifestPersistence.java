@@ -46,9 +46,6 @@ public class ManifestPersistence {
     manifest.setNamespace(nameSpace);
     manifest.setExplanation(dataObj.getExplanation());
 
-    // set this as the current doc of the context for this operation
-    ctx.updateDocumentContext(manifest);
-
     if (!Strings.isNullOrEmpty(dataObj.getSchema())) {
       manifest.setSchema(dataObj.getSchema());
     }
@@ -88,8 +85,6 @@ public class ManifestPersistence {
           manifest.getDefinitions().add(EntityPersistence.fromData(ctx, node));
       }
     }
-
-    ctx.updateDocumentContext(null);
 
     if (dataObj.getLastFileStatusCheckTime() != null) {
       manifest.setLastFileStatusCheckTime(dataObj.getLastFileStatusCheckTime());

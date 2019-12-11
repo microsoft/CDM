@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 public class RelationshipPersistence {
   private static final Logger LOGGER = LoggerFactory.getLogger(RelationshipPersistence.class);
 
-
   public static CompletableFuture<CdmE2ERelationship> fromData(
       final CdmCorpusContext ctx,
       final SingleKeyRelationship obj,
@@ -35,13 +34,13 @@ public class RelationshipPersistence {
     }*/
 
     if (!entityPathByName.containsKey(obj.getFromAttribute().getEntityName())) {
-      LOGGER.error(
+      LOGGER.warn(
           "Relationship's source entity '{}' is not defined.",
           obj.getFromAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
     }
     if (!entityPathByName.containsKey(obj.getToAttribute().getEntityName())) {
-      LOGGER.error(
+      LOGGER.warn(
           "Relationship's source entity '{}' is not defined.",
           obj.getToAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
@@ -64,9 +63,9 @@ public class RelationshipPersistence {
   }
 
   public static CompletableFuture<SingleKeyRelationship> toData(
-          final CdmE2ERelationship instance,
-          final ResolveOptions resOpt,
-          final CopyOptions options) {
+      final CdmE2ERelationship instance,
+      final ResolveOptions resOpt,
+      final CopyOptions options) {
     final AttributeReference fromAttribute = new AttributeReference();
     fromAttribute.setEntityName(getEntityName(instance.getFromEntity()));
     fromAttribute.setAttributeName(instance.getFromEntityAttribute());

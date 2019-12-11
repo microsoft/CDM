@@ -9,7 +9,7 @@ import json
 import asyncio
 
 from cdm.objectmodel import CdmCorpusDefinition
-from cdm.storage import LocalAdapter, RemoteAdapter
+from cdm.storage import LocalAdapter, RemoteAdapter, ResourceAdapter
 
 
 def async_test(f):
@@ -21,10 +21,13 @@ def async_test(f):
     return wrapper
 
 
+INPUT_FOLDER_NAME = 'input'
+
+
 class TestHelper:
     @staticmethod
     def get_input_folder_path(test_subpath: str, test_name: str):
-        return TestHelper.get_test_folder_path(test_subpath, test_name, 'input')
+        return TestHelper.get_test_folder_path(test_subpath, test_name, INPUT_FOLDER_NAME)
 
     @staticmethod
     def get_expected_output_folder_path(test_subpath: str, test_name: str):
@@ -32,11 +35,7 @@ class TestHelper:
 
     @staticmethod
     def get_data(test_subpath: str, test_name: str, folder_name: str, file_name: str):
-        folder_path = TestHelper.get_test_folder_path(test_subpath, test_name, folder_name)
-        file_path = os.path.join(folder_path, file_name)
-        with open(file_path, 'r') as expected_file:
-            data = json.loads(expected_file.read())
-        return data
+        return json.loads(TestHelper.get_file_content(test_subpath, test_name, folder_name, file_name))
 
     @staticmethod
     def get_expected_output_data(test_subpath: str, test_name: str, file_name: str):
@@ -44,7 +43,18 @@ class TestHelper:
 
     @staticmethod
     def get_input_data(test_subpath: str, test_name: str, file_name: str):
-        return TestHelper.get_data(test_subpath, test_name, 'input', file_name)
+        return TestHelper.get_data(test_subpath, test_name, INPUT_FOLDER_NAME, file_name)
+
+    @staticmethod
+    def get_input_file_content(test_subpath: str, test_name: str, file_name: str):
+        return TestHelper.get_file_content(test_subpath, test_name, INPUT_FOLDER_NAME, file_name)
+
+    @staticmethod
+    def get_file_content(test_subpath: str, test_name: str, folder_name: str, file_name: str):
+        folder_path = TestHelper.get_test_folder_path(test_subpath, test_name, folder_name)
+        file_path = os.path.join(folder_path, file_name)
+        with open(file_path, 'r') as input_file:
+            return input_file.read()
 
     @staticmethod
     def get_actual_output_folder_path(test_subpath: str, test_name: str):
@@ -52,7 +62,6 @@ class TestHelper:
 
     @staticmethod
     def get_local_corpus(test_subpath: str, test_name: str, test_input_dir: Optional[str] = None):
-        schema_docs_root_dir = '../CDM.SchemaDocuments'
         test_input_dir = test_input_dir or TestHelper.get_input_folder_path(test_subpath, test_name)
         test_output_dir = TestHelper.get_actual_output_folder_path(test_subpath, test_name)
 
@@ -61,7 +70,8 @@ class TestHelper:
 
         cdm_corpus.storage.mount('local', LocalAdapter(root=test_input_dir))
         cdm_corpus.storage.mount('output', LocalAdapter(root=test_output_dir))
-        cdm_corpus.storage.mount('cdm', LocalAdapter(root=schema_docs_root_dir))
+
+        cdm_corpus.storage.mount('cdm', LocalAdapter('../CDM.SchemaDocuments'))
         cdm_corpus.storage.mount('remote', RemoteAdapter(hosts={'contoso': 'http://contoso.com'}))
 
         return cdm_corpus

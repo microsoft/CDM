@@ -14,8 +14,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,8 +37,11 @@ public class ParameterValue {
     this.ctx = ctx;
   }
 
-  public static Object fetchReplacementValue(final ResolveOptions resOpt, final Object oldValue, final Object newValue,
-                                             final boolean wasSet) {
+  public static Object fetchReplacementValue(
+      final ResolveOptions resOpt,
+      final Object oldValue,
+      final Object newValue,
+      final boolean wasSet) {
     if (oldValue == null) {
       return newValue;
     }
@@ -57,8 +60,8 @@ public class ParameterValue {
     final CdmObject ov = (CdmObject) oldValue;
 
     // replace an old table with a new table? actually just mash them together
-    if (ov != null && ov.getObjectType() == CdmObjectType.EntityRef &&
-            newValue != null && newValue instanceof CdmObject
+    if (ov.getObjectType() == CdmObjectType.EntityRef
+            && newValue instanceof CdmObject
             && ((CdmObject) newValue).getObjectType() == CdmObjectType.EntityRef) {
 
       final CdmObject nv = (CdmObject) newValue;
@@ -91,7 +94,7 @@ public class ParameterValue {
 
       // make a set of rows in the old one and add the new ones. this will union the two
       // find rows in the new one that are not in the old one. slow, but these are small usually
-      final Map<String, List<String>> unionedRows = new HashMap<>();
+      final Map<String, List<String>> unionedRows = new LinkedHashMap<>();
 
       for (int i = 0; i < oldCv.size(); i++) {
         final List<String> row = oldCv.get(i);

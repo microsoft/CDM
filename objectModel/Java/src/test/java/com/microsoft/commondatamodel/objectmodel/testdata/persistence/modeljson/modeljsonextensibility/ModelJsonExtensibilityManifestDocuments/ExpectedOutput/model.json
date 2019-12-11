@@ -3,7 +3,7 @@
   "explanation": "sample description",
   "exhibitsTraits": [
     {
-      "traitReference": "means.measurement.version",
+      "traitReference": "is.modelConversion.modelVersion",
       "arguments": [
         {
           "name": "version",
@@ -60,6 +60,15 @@
           "value": "Pacific Standard Time"
         }
       ]
+    },
+    {
+      "traitReference": "is.extension.manifest:extension",
+      "arguments": [
+        {
+          "name": "is.extension.manifest:extension",
+          "value": true
+        }
+      ]
     }
   ],
   "entities": [
@@ -72,8 +81,13 @@
           "traitReference": "is.modelConversion.otherAnnotations",
           "arguments": [
             {
-              "name": "pbi:EntityTypeDisplayHint",
-              "value": "LinkedEntity"
+              "name": "annotations",
+              "value": [
+                {
+                  "name": "pbi:EntityTypeDisplayHint",
+                  "value": "LinkedEntity"
+                }
+              ]
             }
           ]
         },
@@ -83,15 +97,6 @@
             {
               "name": "modelId",
               "value": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612"
-            }
-          ]
-        },
-        {
-          "traitReference": "is.extension.extensions",
-          "arguments": [
-            {
-              "name": "is.extension.extensions",
-              "value": "something"
             }
           ]
         }
@@ -106,6 +111,7 @@
       "dataPartitions": [
         {
           "location": "remote:/contoso/data-partition.csv",
+          "name": "Sample Partition",
           "exhibitsTraits": [
             {
               "traitReference": "is.extension.pbi:partitionDataQuery",
@@ -159,10 +165,10 @@
   "jsonSchemaSemanticVersion": "0.9.0",
   "imports": [
     {
-      "corpusPath": "cdm:/extensions/pbi.extension.cdm.json"
+      "corpusPath": "custom.extension.cdm.json"
     },
     {
-      "corpusPath": "local.extension.cdm.json"
+      "corpusPath": "cdm:/extensions/pbi.extension.cdm.json"
     }
   ]
 }

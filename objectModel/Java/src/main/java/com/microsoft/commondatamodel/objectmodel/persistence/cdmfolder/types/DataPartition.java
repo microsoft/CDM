@@ -7,10 +7,29 @@ import java.util.List;
  * The representation of data partition in CDM Folders format.
  */
 public class DataPartition extends FileStatus {
+    private String name;
     private String location;
     private ArrayNode exhibitsTraits;
     private List<KeyValuePair<String, String>> arguments;
     private String specializedSchema;
+
+    /**
+     * Sets new name.
+     *
+     * @param name New value of name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets name.
+     *
+     * @return Value of name.
+     */
+    public String getName() {
+        return name;
+    }
 
     /**
      * Gets the corpus path for the data file location.

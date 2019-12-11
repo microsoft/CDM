@@ -1,0 +1,400 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "salutation",
+          "firstName",
+          "nickName",
+          "middleName",
+          "lastName",
+          "suffix",
+          "fullName",
+          "birthdayDay",
+          "birthdayMonth",
+          "birthdayYear",
+          "birthDate",
+          "genderCode"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personSalutation",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 5,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personFirstName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personNickName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personMiddleName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personLastName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personSuffix",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personFullName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 11,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personBirthdayDay",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 12,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personBirthdayMonth",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 13,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personBirthdayYear",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 14,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personBirthDate",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 15,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personGenderCode",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 16,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__Person",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:Person"
+              },
+              {
+                "@id": "this:Person",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:personSalutation",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The salutation of the person to make sure the person is addressed correctly in sales calls, email messages, and marketing campaigns.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:salutation",
+                    "olm:title": "Salutation"
+                  },
+                  {
+                    "@id": "this:personFirstName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's first name to make sure the person is addressed correctly in sales calls, email, and marketing campaigns.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:firstName",
+                    "olm:title": "First Name"
+                  },
+                  {
+                    "@id": "this:personNickName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's nickname.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:nickName",
+                    "olm:title": "Nickname"
+                  },
+                  {
+                    "@id": "this:personMiddleName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's middle name or initial to make sure the person is addressed correctly.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:middleName",
+                    "olm:title": "Middle Name"
+                  },
+                  {
+                    "@id": "this:personLastName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's last name to make sure the person is addressed correctly in sales calls, email, and marketing campaigns.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:lastName",
+                    "olm:title": "Last Name"
+                  },
+                  {
+                    "@id": "this:personSuffix",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The suffix used in the person's name, such as Jr. or Sr. to make sure the person is addressed correctly in sales calls, email, and marketing campaigns.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:suffix",
+                    "olm:title": "Suffix"
+                  },
+                  {
+                    "@id": "this:personFullName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "Combines and shows the person's first and last names so that the full name can be displayed in views and reports.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:fullName",
+                    "olm:title": "Full Name"
+                  },
+                  {
+                    "@id": "this:personBirthdayDay",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The person's birthday day of the month",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:birthdayDay",
+                    "olm:title": "Birthday Day"
+                  },
+                  {
+                    "@id": "this:personBirthdayMonth",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The person's birthday month",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:birthdayMonth",
+                    "olm:title": "Birthday Month"
+                  },
+                  {
+                    "@id": "this:personBirthdayYear",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The person's birthday year.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:birthdayYear",
+                    "olm:title": "Birthday Year"
+                  },
+                  {
+                    "@id": "this:personBirthDate",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The person's birthday for use in customer gift programs or other communications.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:birthDate",
+                    "olm:title": "Birthday Date"
+                  },
+                  {
+                    "@id": "this:personGenderCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's gender",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:genderCode",
+                    "olm:title": "Gender"
+                  }
+                ],
+                "olm:description": "Person with whom a business has a relationship, such as customer, supplier, and colleague.",
+                "olm:sameAs": "odic:Person",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Person"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

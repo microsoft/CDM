@@ -5,7 +5,7 @@
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
-    using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -13,16 +13,18 @@
     /// </summary>
     class DataPartitionPersistence
     {
-        public static async Task<CdmDataPartitionDefinition> FromData(CdmCorpusContext ctx, Partition obj, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmDataPartitionDefinition> FromData(CdmCorpusContext ctx, Partition obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList, CdmFolderDefinition documentFolder)
         {
             var partition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, obj.Name);
 
             partition.Description = obj.Description;
-            partition.Location = ctx.Corpus.Storage.AdapterPathToCorpusPath(obj.Location);
+            partition.Location = ctx.Corpus.Storage.CreateRelativeCorpusPath(
+                ctx.Corpus.Storage.AdapterPathToCorpusPath(obj.Location),
+                documentFolder);
             partition.RefreshTime = obj.RefreshTime;
             partition.LastFileModifiedTime = obj.LastFileModifiedTime;
             partition.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
-            
+
             if (obj.IsHidden == true)
             {
                 var isHiddenTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.hidden", true);
@@ -35,7 +37,8 @@
             {
                 var csvFormatTrait = Utils.CreateCsvTrait(obj.FileFormatSettings, ctx);
 
-                if (csvFormatTrait == null) {
+                if (csvFormatTrait == null)
+                {
                     Logger.Error(typeof(DataPartitionPersistence).ToString(), ctx as ResolveContext, "There was a problem while processing csv format settings inside data partition.");
 
                     return null;
@@ -43,7 +46,7 @@
 
                 partition.ExhibitsTraits.Add(csvFormatTrait);
             }
-            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, partition.ExhibitsTraits, extensionTraitDefList);
+            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, partition.ExhibitsTraits, extensionTraitDefList, localExtensionTraitDefList);
 
             return partition;
         }
@@ -54,7 +57,9 @@
             {
                 Name = instance.Name,
                 Description = instance.Description,
-                Location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(instance.Location),
+                Location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(
+                    instance.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(
+                        instance.Location, instance.InDocument)),
                 RefreshTime = instance.RefreshTime,
                 FileFormatSettings = null,
                 LastFileModifiedTime = instance.LastFileModifiedTime,
@@ -66,7 +71,7 @@
             var t2pm = new TraitToPropertyMap(instance);
 
             var isHiddenTrait = t2pm.FetchTraitReference("is.hidden");
-            if(isHiddenTrait != null)
+            if (isHiddenTrait != null)
             {
                 result.IsHidden = true;
             }

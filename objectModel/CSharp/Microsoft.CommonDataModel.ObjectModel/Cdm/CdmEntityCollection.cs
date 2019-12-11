@@ -1,15 +1,21 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Cdm
+﻿//-----------------------------------------------------------------------
+// <copyright file="CdmEntityCollection.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using System.Collections.Generic;
 
     /// <summary>
-    /// It extends <see cref="CdmCollection"/> and adds additional behaviors specific to entity collections.    
+    /// Extends <see cref="CdmCollection"/> and adds additional behaviors specific to entity collections.    
     /// </summary>
     public class CdmEntityCollection : CdmCollection<CdmEntityDeclarationDefinition>
     {
         /// <summary>
-        /// Constructs a CdmEntityCollection by using parent constructor and LocalEntityDeclarationDef as defaultObjectType
+        /// Constructs a CdmEntityCollection by using the parent constructor and LocalEntityDeclarationDef as the default type.
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <param name="owner">The object this collection is a member of.</param>
@@ -19,18 +25,22 @@
         }
 
         /// <summary>
-        /// Creates an entityDeclaration based on an EntityDefinition and adds it to the list.
+        /// Creates an Entity Declaration based on an Entity Definition and adds it to the list.
         /// </summary>
         /// <param name="entity">The entity definition used to create the entity declaration.</param>
         /// <param name="simpleRef">Parameter is unused for this collection. Kept for consistency with other CdmCollections.</param>
-        /// <returns>The Entity Declaration Definition that was added to the Cdm Collection.</returns>
+        /// <returns>The entity declaration that was added to the collection.</returns>
         public CdmEntityDeclarationDefinition Add(CdmEntityDefinition entity, bool simpleRef = false)
         {
-            var cdmCorpus = this.Ctx.Corpus;            
+            var cdmCorpus = this.Ctx.Corpus;
 
             if (entity.Owner == null)
             {
-                throw new System.ArgumentException("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.");
+                entity.Owner = this.Owner;
+                if (entity.Owner == null)
+                {
+                    throw new System.ArgumentException("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.");
+                }
             }
 
             var entityDeclaration = (this.Ctx.Corpus as CdmCorpusDefinition).MakeObject<CdmEntityDeclarationDefinition>(this.DefaultType, entity.EntityName, simpleRef);
@@ -46,7 +56,7 @@
         /// <param name="name">The name of the entity.</param>
         /// <param name="entityPath">The address the entity can be retrieved from.</param>
         /// <param name="simpleRef">Parameter is unused for this collection. Kept for consistency with other CdmCollections.</param>
-        /// <returns>The Entity Declaration Definition that was added to the Cdm Collection.</returns>
+        /// <returns>The entity declaration that was added to the collection.</returns>
         public CdmEntityDeclarationDefinition Add(string name, string entityPath, bool simpleRef = false)
         {
             var entityDefinition = this.Add(name, simpleRef);
@@ -55,9 +65,9 @@
         }
 
         /// <summary>
-        /// Remove the <see cref="CdmEntityReference"/> that points to the provided <see cref="CdmEntityDefinition"/>
+        /// Removes the <see cref="CdmEntityReference"/> that points to the provided <see cref="CdmEntityDefinition"/>.
         /// </summary>
-        /// <param name="entityDefToRemove"><see cref="CdmEntityDefinition"/> whose reference needs to be removed from the collection.</param>
+        /// <param name="entityDefToRemove"><see cref="CdmEntityDefinition"/> whose reference to remove from the collection.</param>
         /// <returns>Whether the operation completed successfully.</returns>
         public bool Remove(CdmEntityDefinition entityDefToRemove)
         {

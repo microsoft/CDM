@@ -9,6 +9,8 @@
     using Assert = AssertExtension;
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using System.Collections.Generic;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
 
     /// <summary>
     /// The model json tests.
@@ -85,7 +87,7 @@
             var cdmCorpus = this.GetLocalCorpus(testInputPath);
 
             var watch = Stopwatch.StartNew();
-            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("result.manifest.model.json", cdmCorpus.Storage.FetchRootFolder("local"));
+            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
             watch.Stop();
             Assert.Performance(1000, watch.ElapsedMilliseconds, "Loading from data");
 
@@ -150,6 +152,41 @@
         }
 
         /// <summary>
+        /// Test if the imports location are relative to the root level file.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Test]
+        public async Task TestImportsRelativePath()
+        {
+            // the corpus path in the imports are relative to the document where it was defined.
+            // when saving in model.json the documents are flattened to the manifest level
+            // so it is necessary to recalculate the path to be relative to the manifest.
+            var corpus = this.GetLocalCorpus("notImportantLocation");
+            var folder = corpus.Storage.FetchRootFolder("local");
+
+            var manifest = new CdmManifestDefinition(corpus.Ctx, "manifest");
+            var entityDeclaration = manifest.Entities.Add("EntityName", "EntityName/EntityName.cdm.json/EntityName");
+            folder.Documents.Add(manifest);
+
+            var entityFolder = folder.ChildFolders.Add("EntityName");
+
+            var document = new CdmDocumentDefinition(corpus.Ctx, "EntityName.cdm.json");
+            document.Imports.Add("subfolder/EntityName.cdm.json");
+            document.Definitions.Add("EntityName");
+            entityFolder.Documents.Add(document);
+
+            var subFolder = entityFolder.ChildFolders.Add("subfolder");
+            subFolder.Documents.Add("EntityName.cdm.json");
+
+            var data = await ManifestPersistence.ToData(manifest, null, null);
+
+            Assert.AreEqual(1, data.Entities.Count);
+            var imports = data.Entities[0]["cdm:imports"].ToObject<List<Import>>();
+            Assert.AreEqual(1, imports.Count);
+            Assert.AreEqual("EntityName/subfolder/EntityName.cdm.json", imports[0].CorpusPath);
+        }
+
+        /// <summary>
         /// Tests loading Model.json and converting to a CdmFolder.
         /// </summary>
         [Test]
@@ -157,7 +194,7 @@
         {
             var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestExtensibilityLoadingModelJsonAndSavingCdmFolder");
             var cdmCorpus = this.GetLocalCorpus(testInputPath);
-            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("SerializerTesting-model.json", cdmCorpus.Storage.FetchRootFolder("local"));
+            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
 
             var obtainedCdmFolder = CdmFolderPersistence.ManifestPersistence.ToData(cdmManifest, null, null);
 

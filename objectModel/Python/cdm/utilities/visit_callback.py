@@ -3,9 +3,9 @@
 # All rights reserved.
 # ----------------------------------------------------------------------
 
-from typing import Callable, NewType, TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmObject
 
-VisitCallback = NewType('VisitCallback', Callable[['CdmObject', str], bool])
+VisitCallback = Callable[['CdmObject', str], bool]

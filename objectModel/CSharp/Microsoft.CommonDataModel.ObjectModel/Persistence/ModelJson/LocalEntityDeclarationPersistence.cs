@@ -6,7 +6,6 @@
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -14,11 +13,13 @@
     /// </summary>
     class LocalEntityDeclarationPersistence
     {
-        public static async Task<CdmLocalEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, CdmFolderDefinition documentFolder, LocalEntity obj, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmLocalEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, CdmFolderDefinition documentFolder, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList)
         {
             var localEntity = ctx.Corpus.MakeObject<CdmLocalEntityDeclarationDefinition>(CdmObjectType.LocalEntityDeclarationDef, obj.Name);
 
-            var entityDoc = await DocumentPersistence.FromData(ctx, obj, extensionTraitDefList);
+            var localExtensionTraitDefList = new List<CdmTraitDefinition>();
+
+            var entityDoc = await DocumentPersistence.FromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList);
 
             if (entityDoc == null)
             {
@@ -52,11 +53,11 @@
             // Data partitions are part of the local entity, add them here.
             if (obj.Partitions != null)
             {
-                foreach(var element in obj.Partitions)
+                foreach (var element in obj.Partitions)
                 {
-                    var cdmPartition = await DataPartitionPersistence.FromData(ctx, element, extensionTraitDefList);
+                    var cdmPartition = await DataPartitionPersistence.FromData(ctx, element, extensionTraitDefList, localExtensionTraitDefList, documentFolder);
 
-                    if(cdmPartition != null)
+                    if (cdmPartition != null)
                     {
                         localEntity.DataPartitions.Add(cdmPartition);
                     }
@@ -68,18 +69,21 @@
                 }
             }
 
+            List<CdmImport> importDocs = await ExtensionHelper.StandardImportDetection(ctx, extensionTraitDefList, localExtensionTraitDefList);
+            ExtensionHelper.AddImportDocsToManifest(ctx, importDocs, entityDoc);
+
             return localEntity;
         }
 
-        public static async Task<LocalEntity> ToData(CdmLocalEntityDeclarationDefinition instance, ResolveOptions resOpt, CopyOptions options)
+        public static async Task<LocalEntity> ToData(CdmLocalEntityDeclarationDefinition instance, CdmManifestDefinition manifest, ResolveOptions resOpt, CopyOptions options)
         {
-            var localEntity = await DocumentPersistence.ToData(instance.EntityPath, resOpt, options, instance.Ctx);
+            var localEntity = await DocumentPersistence.ToData(instance.EntityPath, manifest, resOpt, options, instance.Ctx);
 
             if (localEntity != null)
             {
                 var t2pm = new TraitToPropertyMap(instance);
                 var isHiddenTrait = t2pm.FetchTraitReference("is.hidden");
-                
+
                 localEntity.Description = instance.Explanation;
                 localEntity.LastChildFileModifiedTime = instance.LastChildFileModifiedTime;
                 localEntity.LastFileModifiedTime = instance.LastFileModifiedTime;

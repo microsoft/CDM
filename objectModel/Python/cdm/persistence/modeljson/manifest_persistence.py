@@ -21,16 +21,8 @@ class ManifestPersistence:
     @staticmethod
     async def from_data(ctx: 'CdmCorpusContext', obj: 'Model', folder: 'CdmFolderDefinition') -> Optional['CdmManifestDefinition']:
         extension_trait_def_list = []
-        extension_doc = ctx.corpus.make_object(
-            CdmObjectType.DOCUMENT_DEF,
-            '{}.extension.cdm.json'.format(folder.name or folder.namespace))
 
         manifest = ctx.corpus.make_object(CdmObjectType.MANIFEST_DEF, obj.name)
-
-        # We need to set up folder path and namespace of a manifest to be able to retrieve that object.
-        manifest.folder_path = folder.folder_path
-        manifest.namespace = folder.namespace
-        manifest.explanation = obj.description
 
         if obj.get('modifiedTime'):
             manifest.last_file_modified_time = dateutil.parser.parse(obj.get('modifiedTime'))
@@ -49,7 +41,7 @@ class ManifestPersistence:
             manifest.exhibits_traits.append(application_trait)
 
         if obj.get('version'):
-            version_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'means.measurement.version', False)
+            version_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.modelConversion.modelVersion', False)
             arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'version')
             arg.value = obj.version
             version_trait.arguments.append(arg)
@@ -96,14 +88,12 @@ class ManifestPersistence:
                     ctx.logger.error('Model Id %s from %s not found in reference_models.', reference_entity.modelId, reference_entity.name)
                     return
 
-                entity = await ReferencedEntityDeclarationPersistence.from_data(ctx, reference_entity, location, extension_trait_def_list)
+                entity = await ReferencedEntityDeclarationPersistence.from_data(ctx, reference_entity, location)
             else:
                 ctx.logger.error('There was an error while trying to parse entity type.')
                 return
 
             if entity:
-                # make path relative for entities created here
-                entity.entity_path = ctx.corpus.storage.create_relative_corpus_path(entity.entity_path, manifest)
                 manifest.entities.append(entity)
                 entity_schema_by_name[entity.entity_name] = entity.entity_path
             else:
@@ -127,11 +117,17 @@ class ManifestPersistence:
                 manifest.imports.append(import_obj)
 
         await utils.process_annotations_from_data(ctx, obj, manifest.exhibits_traits)
-        await extension_helper.process_extension_from_json(ctx, obj, manifest.exhibits_traits, extension_trait_def_list)
 
-        import_docs = await extension_helper.standard_import_detection(ctx, extension_trait_def_list)  # type: List[CdmImport]
-        ManifestPersistence.create_extension_doc_and_add_to_folder_and_imports(ctx, extension_doc, extension_trait_def_list, folder, import_docs)
-        await ManifestPersistence.add_import_docs_to_manifest(ctx, import_docs, manifest)
+        local_extension_trait_def_list = []  # type: List['CdmTraitDefinition']
+        extension_helper.process_extension_from_json(ctx, obj, manifest.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
+
+        import_docs = await extension_helper.standard_import_detection(ctx, extension_trait_def_list, local_extension_trait_def_list)  # type: List[CdmImport]
+        extension_helper.add_import_docs_to_manifest(ctx, import_docs, manifest)
+
+        ManifestPersistence.create_extension_doc_and_add_to_folder_and_imports(ctx, extension_trait_def_list, folder)
+
+        # we need to set up folder path and namespace of a folio to be able to retrieve that object.
+        folder.documents.append(manifest, manifest.name)
 
         return manifest
 
@@ -156,7 +152,7 @@ class ManifestPersistence:
         if application_trait:
             result.application = application_trait.arguments[0].value
 
-        version_trait = t2pm.fetch_trait_reference('means.measurement.version')
+        version_trait = t2pm.fetch_trait_reference('is.modelConversion.modelVersion')
         if version_trait:
             result.version = version_trait.arguments[0].value
         else:
@@ -184,7 +180,7 @@ class ManifestPersistence:
             for entity in instance.entities:
                 element = None
                 if entity.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                    element = await LocalEntityDeclarationPersistence.to_data(entity, res_opt, options, instance.ctx)
+                    element = await LocalEntityDeclarationPersistence.to_data(entity, instance, res_opt, options, instance.ctx)
                 elif entity.object_type == CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF:
                     element = await ReferencedEntityDeclarationPersistence.to_data(entity, res_opt, options)
 
@@ -237,39 +233,15 @@ class ManifestPersistence:
     @staticmethod
     def create_extension_doc_and_add_to_folder_and_imports(
             ctx: 'CdmCorpusContext',
-            extension_doc: 'CdmDocumentDefinition',
             extension_trait_def_list: List['CdmTraitDefinition'],
-            folder: 'CdmFolderDefinition',
-            import_docs: List['CdmImport']):
+            folder: 'CdmFolderDefinition'):
 
         if extension_trait_def_list:
+            extension_doc = ctx.corpus.make_object(CdmObjectType.DOCUMENT_DEF, extension_helper.EXTENSION_DOC_NAME)
+            # pull out the extension trait definitions into a new custom extension document
             extension_doc.definitions.extend(extension_trait_def_list)
-            extension_doc.folder = folder
 
-            base_extension_import = ctx.corpus.make_object(CdmObjectType.IMPORT)
-            base_extension_import.corpus_path = 'cdm:/extensions/base.extension.cdm.json'
-            extension_doc.imports.append(base_extension_import)
+            extension_doc.imports.append('cdm:/extensions/base.extension.cdm.json')
 
-            extension_doc.json_schema_semantic_version = '0.9.0'  # TODO: Hard-coded everywhere??
-            extension_doc.folder_path = folder.folder_path
-            extension_doc.namespace = folder.namespace
+            # add the extension doc to the folder, will wire everything together as needed
             folder.documents.append(extension_doc)
-
-            extension_import = ctx.corpus.make_object(CdmObjectType.IMPORT)
-            extension_import.corpus_path = ctx.corpus.storage.create_relative_corpus_path(extension_doc.at_corpus_path, extension_doc)
-            import_docs.append(extension_import)
-
-    @staticmethod
-    async def add_import_docs_to_manifest(ctx: 'CdmCorpusContext', import_docs: List['CdmImport'], manifest: 'CdmManifestDefinition'):
-        for import_doc in import_docs:
-            for entity_def in manifest.entities:
-                if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                    entity_path = entity_def.entity_path
-                    doc_path = entity_path[:entity_path.rfind('/')]
-                    cdm_document = await ctx.corpus.fetch_object_async(doc_path)
-
-                    if not list(filter(lambda import_present: import_present.corpus_path == import_doc.corpus_path, cdm_document.imports)):
-                        cdm_document.imports.append(import_doc)
-
-            if not list(filter(lambda importPresent: importPresent.corpus_path == import_doc.corpus_path, manifest.imports)):
-                manifest.imports.append(import_doc)

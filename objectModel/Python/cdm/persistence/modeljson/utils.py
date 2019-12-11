@@ -12,12 +12,15 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentDefinition, CdmCorpusContext, CdmCollection, CdmTraitCollection, CdmTraitReference
     from .types import MetadataObject
 
-annotation_to_trait_map = {}
+annotation_to_trait_map = {
+    'version': 'is.CDM.entityVersion'
+}
 
 ignored_traits = (
     'is.modelConversion.otherAnnotations',
     'is.propertyContent.multiTrait',
     'is.modelConversion.referenceModelMap',
+    'is.modelConversion.modelVersion',
     'means.measurement.version',
     'is.partition.format.CSV'
 )
@@ -50,7 +53,7 @@ def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext') -> 'CdmT
 
     if obj.get('columnHeaders') is not None:
         column_headers_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'columnHeaders')
-        column_headers_arg.value = True if obj.get('columnHeaders') else False
+        column_headers_arg.value = str(obj.get('columnHeaders')).lower()
         csv_format_trait.arguments.append(column_headers_arg)
 
     if obj.get('csvStyle') is not None:
@@ -81,7 +84,7 @@ def create_csv_format_settings(csv_format_trait: 'CdmTraitReference') -> 'CsvFor
 
     for argument in csv_format_trait.arguments:
         if argument.name == 'columnHeaders':
-            result.columnHeaders = argument.value  # === 'true'; TODO: Check this
+            result.columnHeaders = argument.value if isinstance(argument.value, bool) else argument.value == 'true'
 
         if argument.name == 'csvStyle':
             result.csvStyle = argument.value

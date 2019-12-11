@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -25,10 +26,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmEntityReference EntityShape { get; set; }
 
         /// <summary>
-        /// Gets or sets the constant entity constant values.
+        /// Gets or sets the constant entity's constant values.
         /// </summary>
         public List<List<string>> ConstantValues { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmConstantEntityDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
         public CdmConstantEntityDefinition(CdmCorpusContext ctx)
                    : base(ctx)
         {
@@ -41,14 +46,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmConstantEntityDefinition>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmConstantEntityDefinition copy = new CdmConstantEntityDefinition(this.Ctx);
+            CdmConstantEntityDefinition copy;
+            if (host == null)
+            {
+                copy = new CdmConstantEntityDefinition(this.Ctx);
+            }
+            else
+            {
+                copy = host as CdmConstantEntityDefinition;
+                copy.Ctx = this.Ctx;
+            }
+
             copy.ConstantEntityName = this.ConstantEntityName;
             copy.EntityShape = (CdmEntityReference)this.EntityShape.Copy(resOpt);
             copy.ConstantValues = this.ConstantValues; // is a deep copy needed? 
@@ -56,6 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             if (this.ConstantValues == null)
@@ -67,13 +84,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.EntityShape != null;
         }
 
-
         [Obsolete]
         public override CdmObjectType GetObjectType()
         {
             return CdmObjectType.ConstantEntityDef;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -84,6 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.ConstantEntityName;
@@ -114,11 +132,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 

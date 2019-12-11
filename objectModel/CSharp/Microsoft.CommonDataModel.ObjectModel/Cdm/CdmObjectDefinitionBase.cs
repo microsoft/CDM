@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -13,11 +14,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public abstract class CdmObjectDefinitionBase : CdmObjectBase, CdmObjectDefinition
     {
         /// <summary>
-        /// Gets or sets the parameter explanation.
+        /// Gets or sets the object's explanation.
         /// </summary>
         public string Explanation { get; set; }
+
+        /// <inheritdoc />
         public abstract string GetName();
 
+        /// <inheritdoc />
         public CdmTraitCollection ExhibitsTraits { get; }
 
         public CdmObjectDefinitionBase(CdmCorpusContext ctx)
@@ -31,21 +35,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.AtCorpusPath;
         }
 
+        /// <inheritdoc />
         public abstract override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null);
 
         internal void CopyDef(ResolveOptions resOpt, CdmObjectDefinitionBase copy)
         {
             copy.DeclaredPath = this.DeclaredPath;
             copy.Explanation = this.Explanation;
+            copy.ExhibitsTraits.Clear();
             foreach (var trait in this.ExhibitsTraits)
                 copy.ExhibitsTraits.Add(trait);
         }
 
+        /// <inheritdoc />
         public override string FetchObjectDefinitionName()
         {
             return this.GetName();
         }
 
+        /// <inheritdoc />
         public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -94,6 +102,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <inheritdoc />
         public override CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -112,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 // used to localize references between documents
                 cdmObjectRef.ExplicitReference = this;
-                cdmObjectRef.DocCreatedIn = this.DocCreatedIn;
+                cdmObjectRef.InDocument = this.InDocument;
             }
             return cdmObjectRef;
         }

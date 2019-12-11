@@ -1,12 +1,12 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.common;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class InterfaceToImpl {
 
-  public static final Map<Class, Class> persistenceClasses = new HashMap<>();
+  public static final Map<Class, Class> persistenceClasses = new LinkedHashMap<>();
 
   public <T extends CdmObject> void register(final Class<T> interfaze, final Class clazz) {
     persistenceClasses.put(interfaze, clazz);

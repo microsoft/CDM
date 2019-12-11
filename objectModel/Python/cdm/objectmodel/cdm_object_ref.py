@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from typing import Optional, Union, TYPE_CHECKING
+from typing import cast, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 
@@ -27,7 +27,7 @@ class CdmObjectReference(CdmObject):
             if isinstance(reference_to, str):
                 self.named_reference = reference_to
             else:
-                self.explicit_reference = reference_to
+                self.explicit_reference = cast('CdmObjectDefinition', reference_to)
 
         self.simple_named_reference = simple_named_reference
 
@@ -42,6 +42,22 @@ class CdmObjectReference(CdmObject):
     @staticmethod
     def offset_attribute_promise(ref: Optional[str] = None) -> int:
         return ref.find(RES_ATT_TOKEN) if ref else -1
+
+    def _copy_to_host(self, ctx: 'CdmCorpusContext', ref_to: Union[str, 'CdmObjectDefinition'], simple_reference: bool) -> 'CdmObjectReference':
+        self.ctx = ctx
+        self.explicit_reference = None
+        self.named_reference = None
+
+        if ref_to:
+            if isinstance(ref_to, 'CdmObject'):
+                self.explicit_reference = ref_to  # CdmObjectDefinition
+            else:
+                self.named_reference = ref_to
+        self.simple_named_reference = simple_reference
+
+        self.applied_traits.clear()
+
+        return self
 
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext']) -> 'ResolvedAttributeSetBuilder':
         # find and cache the complete set of attributes
@@ -97,7 +113,7 @@ class CdmObjectReference(CdmObject):
             ent_name = self.named_reference[:seek_res_att]
             att_name = self.named_reference[seek_res_att + len(RES_ATT_TOKEN):]
             # get the entity
-            ent = self.ctx.corpus._resolve_symbol_reference(res_opt, self._doc_created_in, ent_name, CdmObjectType.ENTITY_DEF, True)
+            ent = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, ent_name, CdmObjectType.ENTITY_DEF, True)
 
             if not ent:
                 ctx.logger.warning('Unable to resolve an entity named \'%s\' from the reference \'%s\'', ent_name, self.named_reference)
@@ -111,30 +127,38 @@ class CdmObjectReference(CdmObject):
                 ctx.logger.warning('Could not resolve the attribute promise for \'%s\' | %s', self.named_reference,
                                    res_opt.wrt_doc.at_corpus_path)
         else:
-            # normal symbolic reference, look up from the Corpus, it knows where everything is
-            res = self.ctx.corpus._resolve_symbol_reference(res_opt, self._doc_created_in, self.named_reference, self.object_type, True)
+            # normal symbolic reference, look up from the corpus, it knows where everything is
+            res = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, self.named_reference, self.object_type, True)
 
         return res
 
-    def create_simple_reference(self, res_opt: 'ResolveOptions') -> 'CdmObjectReference':
+    def create_simple_reference(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectReference':
+        if not res_opt:
+            res_opt = ResolveOptions(self)
         if self.named_reference:
             return self._copy_ref_object(res_opt, self.named_reference, True)
         return self._copy_ref_object(res_opt, self._declared_path + self.explicit_reference.get_name(), True)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
-        copy = self._copy_ref_object(res_opt, self.named_reference if self.named_reference else self.explicit_reference, self.simple_named_reference)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
+        if not res_opt:
+            res_opt = ResolveOptions(self)
+
+        copy = self._copy_ref_object(res_opt, self.named_reference if self.named_reference else self.explicit_reference, self.simple_named_reference, host)
 
         if res_opt._save_resolutions_on_copy:
             copy.explicit_reference = self.explicit_reference
-            copy._doc_created_in = self._doc_created_in
 
-        for trait in self.applied_traits:
-            copy.applied_traits.append(trait)
+        copy.in_document = self.in_document
+
+        copy.applied_traits.clear()
+        if self.applied_traits:
+            for trait in self.applied_traits:
+                copy.applied_traits.append(trait)
 
         return copy
 
     @abstractmethod
-    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmObjectDefinition'], simple_reference: bool) -> 'CdmObjectReference':
+    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmObjectDefinition'], simple_reference: bool, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
         raise NotImplementedError()
 
     def fetch_object_definition_name(self) -> Optional[str]:
@@ -150,7 +174,14 @@ class CdmObjectReference(CdmObject):
     def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
         return self._fetch_resolved_reference(res_opt)
 
-    def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
+    def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
+        was_previously_resolving = self.ctx.corpus.is_currently_resolving
+        self.ctx.corpus.is_currently_resolving = True
+        ret = self._fetch_resolved_traits_internal(res_opt)
+        self.ctx.corpus.is_currently_resolving = was_previously_resolving
+        return ret
+
+    def _fetch_resolved_traits_internal(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
         from cdm.utilities import SymbolSet
         from .cdm_corpus_def import CdmCorpusDefinition
 
@@ -204,16 +235,14 @@ class CdmObjectReference(CdmObject):
         return bool(self.named_reference or self.explicit_reference)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        # if not path:
-        if self.named_reference:
-            path = path_from + self.named_reference
-        else:
-            path = path_from
-
-        self._declared_path = path
-
-        # track_visits(path)
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if self.named_reference:
+                path = path_from + self.named_reference
+            else:
+                path = path_from
+            self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

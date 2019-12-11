@@ -21,8 +21,11 @@ public class ParameterValueSet {
   private CdmCorpusContext ctx;
   private List<Boolean> wasSet;
 
-  ParameterValueSet(final CdmCorpusContext ctx, final ParameterCollection pc, final List<Object> values,
-                    final List<Boolean> wasSet) {
+  ParameterValueSet(
+      final CdmCorpusContext ctx,
+      final ParameterCollection pc,
+      final List<Object> values,
+      final List<Boolean> wasSet) {
     this.pc = pc;
     this.values = values;
     this.wasSet = wasSet;

@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string TraitName { get; set; }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.TraitName;
@@ -28,20 +30,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmTraitReference ExtendsTrait { get; set; }
 
-        /// <summary>
-        /// Gets the trait parameters.
-        /// </summary>
         public CdmCollection<CdmParameterDefinition> _hasParameters { get; set; }
         ParameterCollection AllParameters { get; set; }
         private bool HasSetFlags;
 
         /// <summary>
-        /// Gets or sets the trait elevated.
+        /// Gets or sets whether the trait is elevated.
         /// </summary>
         public bool? Elevated { get; set; }
 
         /// <summary>
-        /// Gets or sets if trait is user facing or not.
+        /// Gets or sets whether trait is user facing or not.
         /// </summary>
         public bool? Ugly { get; set; }
 
@@ -54,6 +53,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal bool? ThisIsKnownToHaveParameters { get; set; }
 
+        /// <summary>
+        /// Gets the trait parameters.
+        /// </summary>
         public CdmCollection<CdmParameterDefinition> Parameters
         {
             get
@@ -72,6 +74,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Constructs a CdmTraitDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The trait name.</param>
+        /// <param name="extendsTrait">The trait extended by this trait.</param>
         public CdmTraitDefinition(CdmCorpusContext ctx, string name, CdmTraitReference extendsTrait = null)
             : base(ctx)
         {
@@ -81,21 +89,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.ExtendsTrait = extendsTrait;
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmTraitDefinition copy = new CdmTraitDefinition(this.Ctx, this.TraitName, null)
+            CdmTraitDefinition copy;
+            if (host == null)
             {
-                ExtendsTrait = (CdmTraitReference)this.ExtendsTrait?.Copy(resOpt),
-                AllParameters = null,
-                Elevated = this.Elevated,
-                Ugly = this.Ugly,
-                AssociatedProperties = this.AssociatedProperties
-            };
+                copy = new CdmTraitDefinition(this.Ctx, this.TraitName, null);
+            }
+            else
+            {
+                copy = host as CdmTraitDefinition;
+                copy.Ctx = this.Ctx;
+                copy.TraitName = this.TraitName;
+            }
+
+            copy.ExtendsTrait = (CdmTraitReference)this.ExtendsTrait?.Copy(resOpt);
+            copy.AllParameters = null;
+            copy.Elevated = this.Elevated;
+            copy.Ugly = this.Ugly;
+            copy.AssociatedProperties = this.AssociatedProperties;
+
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -132,6 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.TraitDef;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -144,6 +164,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.IsDerivedFromDef(resOpt, this.ExtendsTrait, this.TraitName, baseDef);
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.TraitName);
@@ -152,11 +173,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.TraitName;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.TraitName;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 

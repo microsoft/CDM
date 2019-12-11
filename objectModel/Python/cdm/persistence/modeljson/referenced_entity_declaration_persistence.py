@@ -2,6 +2,7 @@
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
+from cdm.objectmodel import CdmTraitCollection
 from cdm.utilities import TraitToPropertyMap
 
 from . import utils, extension_helper
@@ -14,8 +15,7 @@ if TYPE_CHECKING:
 
 class ReferencedEntityDeclarationPersistence:
     @staticmethod
-    async def from_data(ctx: 'CdmCorpusContext', data_obj: 'ReferenceEntity', location: str,
-                        extension_trait_def_list: List['CdmTraitDefinition']) -> 'CdmReferencedEntityDeclarationDefinition':
+    async def from_data(ctx: 'CdmCorpusContext', data_obj: 'ReferenceEntity', location: str) -> 'CdmReferencedEntityDeclarationDefinition':
         referenced_entity = ctx.corpus.make_object(
             CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF,
             data_obj.name)
@@ -46,8 +46,13 @@ class ReferencedEntityDeclarationPersistence:
         properties_trait.arguments.append(argument)
         referenced_entity.exhibits_traits.append(properties_trait)
 
-        await extension_helper.process_extension_from_json(ctx, data_obj, referenced_entity.exhibits_traits,
-                                                           extension_trait_def_list)
+        extension_trait_def_list = [] # type: List[CdmTraitDefinition]
+        extension_traits = CdmTraitCollection(ctx, referenced_entity)
+
+        extension_helper.process_extension_from_json(ctx, data_obj, extension_traits, extension_trait_def_list)
+
+        if extension_trait_def_list:
+            ctx.logger.warning('Custom extensions are not supported in referenced entity.')
 
         return referenced_entity
 

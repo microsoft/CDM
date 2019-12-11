@@ -23,6 +23,28 @@
         /// </summary>
         private static string testsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
 
+        [TestMethod]
+        public async Task TestResolutionGuidanceCopy()
+        {
+            var corpus = new CdmCorpusDefinition();
+            var resolutionGuidance = new CdmAttributeResolutionGuidance(corpus.Ctx)
+            {
+                expansion = new CdmAttributeResolutionGuidance.Expansion(),
+                entityByReference = new CdmAttributeResolutionGuidance.CdmAttributeResolutionGuidance_EntityByReference(),
+                selectsSubAttribute = new CdmAttributeResolutionGuidance.CdmAttributeResolutionGuidance_SelectsSubAttribute(),
+                imposedDirectives = new List<string>(),
+                removedDirectives = new List<string>()
+            };
+
+            var resolutionGuidanceCopy = resolutionGuidance.Copy() as CdmAttributeResolutionGuidance;
+
+            Assert.IsFalse(Object.ReferenceEquals(resolutionGuidance.expansion, resolutionGuidanceCopy.expansion));
+            Assert.IsFalse(Object.ReferenceEquals(resolutionGuidance.entityByReference, resolutionGuidanceCopy.entityByReference));
+            Assert.IsFalse(Object.ReferenceEquals(resolutionGuidance.selectsSubAttribute, resolutionGuidanceCopy.selectsSubAttribute));
+            Assert.IsFalse(Object.ReferenceEquals(resolutionGuidance.imposedDirectives, resolutionGuidanceCopy.imposedDirectives));
+            Assert.IsFalse(Object.ReferenceEquals(resolutionGuidance.removedDirectives, resolutionGuidanceCopy.removedDirectives));
+        }
+
         /// <summary>
         /// Resolution Guidance Test 01 - Resolve entity by name
         /// </summary>
@@ -161,7 +183,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -170,7 +192,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -179,7 +201,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -188,7 +210,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "structured" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -197,16 +219,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
-                {
-                    ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
-                }
-
-                entityFileName = "referenceOnly_normalized";
-                resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized" });
-                outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
-                resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -215,7 +228,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "structured" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -224,7 +237,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "structured" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }
@@ -233,7 +246,7 @@
                 resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized", "structured" });
                 outputEntityFileName = $"{sourceEntityName}_Resolved_{entityFileName}.cdm.json";
                 resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityFileName, resOpt, actualOutputFolder);
-                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, false, new CopyOptions()))
+                if (await resolvedEntityDef.InDocument.SaveAsAsync(outputEntityFileName, true, new CopyOptions()))
                 {
                     ValidateOutput(outputEntityFileName, testExpectedOutputPath, testActualOutputPath);
                 }

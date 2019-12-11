@@ -15,9 +15,6 @@
             doc.FolderPath = path;
             doc.Namespace = nameSpace;
 
-            // set this as the current doc of the context for this operation
-            ctx.UpdateDocumentContext(doc);
-
             if (!string.IsNullOrEmpty(obj.Schema))
                 doc.Schema = obj.Schema;
             if (DynamicObjectExtensions.HasProperty(obj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
@@ -49,8 +46,6 @@
                         doc.Definitions.Add(EntityPersistence.FromData(ctx, d));
                 }
             }
-
-            ctx.UpdateDocumentContext(null);
 
             return doc;
         }

@@ -1,8 +1,8 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -11,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Par
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +19,18 @@ import org.slf4j.LoggerFactory;
 public class DataPartitionPersistence {
   private static final Logger LOGGER = LoggerFactory.getLogger(DataPartitionPersistence.class);
 
-
-  public static CompletableFuture<CdmDataPartitionDefinition> fromData(final CdmCorpusContext ctx, final Partition obj,
-                                                                       final CdmCollection<CdmTraitDefinition> extensionTraitDefList) {
+  public static CompletableFuture<CdmDataPartitionDefinition> fromData(
+      final CdmCorpusContext ctx,
+      final Partition obj,
+      final List<CdmTraitDefinition> extensionTraitDefList,
+      final List<CdmTraitDefinition> localExtensionTraitDefList,
+      final CdmFolderDefinition documentFolder) {
     final CdmDataPartitionDefinition partition = ctx.getCorpus().makeObject(CdmObjectType.DataPartitionDef, obj.getName());
     partition.setDescription(obj.getDescription());
-    partition.setLocation(ctx.getCorpus().getStorage().adapterPathToCorpusPath(obj.getLocation()));
+    partition.setLocation(
+        ctx.getCorpus().getStorage().createRelativeCorpusPath(
+            ctx.getCorpus().getStorage().adapterPathToCorpusPath(obj.getLocation()),
+            documentFolder));
     partition.setRefreshTime(obj.getRefreshTime());
     partition.setLastFileModifiedTime(obj.getLastFileModifiedTime());
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
@@ -44,17 +51,28 @@ public class DataPartitionPersistence {
         partition.getExhibitsTraits().add(csvFormatTrait);
       }
 
-      ExtensionHelper.processExtensionFromJson(ctx, obj, partition.getExhibitsTraits(), extensionTraitDefList);
+      ExtensionHelper.processExtensionFromJson(
+          ctx,
+          obj,
+          partition.getExhibitsTraits(),
+          extensionTraitDefList,
+          localExtensionTraitDefList);
       return CompletableFuture.completedFuture(partition);
     });
   }
 
-  public static CompletableFuture<Partition> toData(final CdmDataPartitionDefinition instance, final ResolveOptions resOpt,
-                                                    final CopyOptions options) {
+  public static CompletableFuture<Partition> toData(
+      final CdmDataPartitionDefinition instance,
+      final ResolveOptions resOpt,
+      final CopyOptions options) {
     final Partition result = new Partition();
     result.setName(instance.getName());
     result.setDescription(instance.getDescription());
-    result.setLocation(instance.getCtx().getCorpus().getStorage().corpusPathToAdapterPath(instance.getLocation()));
+    result.setLocation(
+        instance.getCtx().getCorpus().getStorage().corpusPathToAdapterPath(
+            instance.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(
+                instance.getLocation(),
+                instance.getInDocument())));
     result.setRefreshTime(instance.getRefreshTime());
     result.setFileFormatSettings(null);
     result.setLastFileModifiedTime(instance.getLastFileModifiedTime());
@@ -63,7 +81,7 @@ public class DataPartitionPersistence {
     return Utils.processAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenCompose(v -> {
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-      if(t2pm.fetchTraitReferenceName("is.hidden") != null) {
+      if (t2pm.fetchTraitReferenceName("is.hidden") != null) {
         result.setHidden(true);
       }
 

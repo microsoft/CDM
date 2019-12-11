@@ -7,7 +7,7 @@ from cdm.persistence.cdmfolder.import_persistence import ImportPersistence as Cd
 from .entity_persistence import EntityPersistence
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition, CdmTraitDefinition
     from cdm.utilities import CopyOptions, ResolveOptions
 
     from .types import LocalEntity
@@ -15,15 +15,14 @@ if TYPE_CHECKING:
 
 class DocumentPersistence:
     @staticmethod
-    async def from_data(ctx: 'CdmCorpusContext', data_obj: 'LocalEntity', extension_trait_def_list: List['CdmTraitDefinition']) -> Optional['CdmDocumentDefinition']:
+    async def from_data(ctx: 'CdmCorpusContext', data_obj: 'LocalEntity', extension_trait_def_list: List['CdmTraitDefinition'],
+                        local_extension_trait_def_list: List['CdmTraitDefinition']) -> Optional['CdmDocumentDefinition']:
         doc = ctx.corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(data_obj.name))
 
         # import at least foundations
-        foundations_import = ctx.corpus.make_object(CdmObjectType.IMPORT)  # type: CdmImport
-        foundations_import.corpus_path = 'cdm:/foundations.cdm.json'
-        doc.imports.append(foundations_import)
+        doc.imports.append('cdm:/foundations.cdm.json')
 
-        entity_dec = await EntityPersistence.from_data(ctx, data_obj, extension_trait_def_list)
+        entity_dec = await EntityPersistence.from_data(ctx, data_obj, extension_trait_def_list, local_extension_trait_def_list)
 
         if not entity_dec:
             ctx.logger.error('There was an error while trying to convert a model.json entity to the CDM entity.')
@@ -42,7 +41,7 @@ class DocumentPersistence:
         return doc
 
     @staticmethod
-    async def to_data(document_object_or_path: Union[CdmDocumentDefinition, str], res_opt: 'ResolveOptions', options: 'CopyOptions',
+    async def to_data(document_object_or_path: Union[CdmDocumentDefinition, str], manifest: 'CdmManifestDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions',
                       ctx: 'CdmCorpusContext') -> Optional['LocalEntity']:
         if isinstance(document_object_or_path, str):
             # Fetch the document from entity schema.
@@ -57,8 +56,12 @@ class DocumentPersistence:
                 document = cdm_entity.owner  # type: CdmDocumentDefinition
                 for element in document.imports:
                     imp = CdmImportPersistence.to_data(element, res_opt, options)
-                    if imp:
-                        entity.imports.append(imp)
+                    # the corpus path in the imports are relative to the document where it was defined.
+                    # when saving in model.json the documents are flattened to the manifest level
+                    # so it is necessary to recalculate the path to be relative to the manifest.
+                    absolute_path = ctx.corpus.storage.create_absolute_corpus_path(imp.corpusPath, document)
+                    imp.corpusPath = ctx.corpus.storage.create_relative_corpus_path(absolute_path, manifest)
+                    entity.imports.append(imp)
             else:
                 ctx.logger.warning('Entity {} is not inside a document or its owner is not a document.'.format(cdm_entity.get_name()))
             return entity

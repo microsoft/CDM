@@ -1,6 +1,4 @@
-﻿from typing import Union, TYPE_CHECKING
-
-from cdm.enums import CdmObjectType
+﻿from typing import TYPE_CHECKING
 
 from .cdm_attribute_item import CdmAttributeItem
 from .cdm_trait_collection import CdmTraitCollection
@@ -34,12 +32,8 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
         return self._applied_traits
 
     def _add_resolved_traits_applied(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
-        def add_applied_traits(ats: 'CdmTraitCollection') -> None:
-            if ats:
-                for trait in ats:
-                    rtsb.merge_traits(trait._fetch_resolved_traits(res_opt))
-
-        add_applied_traits(self.applied_traits)
+        for trait in self.applied_traits:
+            rtsb.merge_traits(trait._fetch_resolved_traits(res_opt))
 
         # any applied on use
         return rtsb.resolved_trait_set
@@ -47,6 +41,7 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
     def _copy_att(self, res_opt: 'ResolveOptions', copy: 'CdmAttribute') -> 'CdmAttribute':
         copy.purpose = self.purpose.copy(res_opt) if self.purpose else None
         copy.resolution_guidance = self.resolution_guidance.copy(res_opt) if self.resolution_guidance else None
+        copy.applied_traits.clear()
         for trait in self.applied_traits:
             copy.applied_traits.append(trait.copy(res_opt))
 

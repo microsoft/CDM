@@ -4,7 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -14,15 +13,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmAttributeContextReference : CdmObjectReferenceBase
     {
+        /// <summary>
+        /// Constructs a CdmAttributeContextReference.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The name.</param>
         public CdmAttributeContextReference(CdmCorpusContext ctx, string name)
             : base(ctx, name, true)
         {
             this.ObjectType = CdmObjectType.AttributeContextRef;
         }
 
-        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference)
+        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
-            return new CdmAttributeContextReference(this.Ctx, refTo);
+            if (host == null)
+                return new CdmAttributeContextReference(this.Ctx, refTo);
+            else
+                return host.CopyToHost(this.Ctx, refTo, simpleReference);
         }
 
         [Obsolete("InstanceFromData is deprecated. Please use the Persistence Layer instead.")]

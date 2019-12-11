@@ -16,6 +16,12 @@
         {
             var newPartition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
             newPartition.Location = (string)obj["location"];
+
+            if (obj["name"] != null)
+            {
+                newPartition.Name = (string)obj["name"];
+            }
+
             if (obj["specializedSchema"] != null)
             {
                 newPartition.SpecializedSchema = (string)obj["specializedSchema"];
@@ -44,13 +50,26 @@
             foreach (var argToken in obj["arguments"])
             {
                 var arg = (JObject)argToken;
-                if (arg.Properties().Count() != 1)
+                string key = null;
+                string value = null;
+                if (arg.Properties().Count() == 1)
                 {
-                    Logger.Warning(nameof(DataPartitionPatternPersistence), (ResolveContext)ctx, $"invalid set of arguments provided for data partition corresponding to location: {obj["location"]}");
+                    key = arg.Properties().First().Name;
+                    value = (string)arg[key];
+                }
+                else
+                {
+                    key = (string)(arg["key"] != null ? arg["key"]: arg["name"]);
+                    value = (string)arg["value"];
                 }
 
-                var key = arg.Properties().First().Name;
-                var value = (string)arg[key];
+                if (key == null || value == null)
+                {
+                    Logger.Warning(nameof(DataPartitionPatternPersistence), (ResolveContext)ctx, $"invalid set of arguments provided for data partition corresponding to location: {obj["location"]}");
+                    continue;
+                }
+
+                
                 if (newPartition.Arguments.ContainsKey(key))
                 {
                     newPartition.Arguments[key].Add(value);
@@ -66,17 +85,23 @@
 
         public static DataPartition ToData(CdmDataPartitionDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
-            var argumentsCopy = new List<KeyValuePair<string, string>>();
+            var argumentsCopy = new List<Argument>();
             foreach (var argumentList in instance.Arguments)
             {
                 foreach (var argumentValue in argumentList.Value)
                 {
-                    argumentsCopy.Add(new KeyValuePair<string, string>(argumentList.Key, argumentValue));
+                    argumentsCopy.Add(new Argument()
+                        {
+                            Name = argumentList.Key,
+                            Value = argumentValue
+                        }
+                    );
                 }
             }
 
             var result = new DataPartition
             {
+                Name = instance.Name,
                 Location = instance.Location,
                 LastFileStatusCheckTime = TimeUtils.GetFormattedDateString(instance.LastFileStatusCheckTime),
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),

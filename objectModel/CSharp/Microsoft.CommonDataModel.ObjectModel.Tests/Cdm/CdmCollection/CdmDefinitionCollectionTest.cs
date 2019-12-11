@@ -22,7 +22,7 @@
             var addedFolder = document.Definitions.Add(folder);
             var addedTrait = document.Definitions.Add(trait);
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(3, document.Definitions.Count);
             Assert.AreEqual(attribute, addedAttribute);
             Assert.AreEqual(folder, addedFolder);
@@ -30,9 +30,8 @@
             Assert.AreEqual(attribute, document.Definitions[0]);
             Assert.AreEqual(folder, document.Definitions[1]);
             Assert.AreEqual(trait, document.Definitions[2]);
-            Assert.AreEqual(document, attribute.DocCreatedIn);
-            Assert.AreEqual(document, folder.DocCreatedIn);
-            Assert.AreEqual(document, trait.DocCreatedIn);
+            Assert.AreEqual(document, attribute.InDocument);
+            Assert.AreEqual(document, trait.InDocument);
             Assert.AreEqual(document, attribute.Owner);
             Assert.AreEqual(document, folder.Owner);
             Assert.AreEqual(document, trait.Owner);
@@ -53,9 +52,9 @@
             document.Definitions.Insert(0, attribute);
 
             Assert.AreEqual(3, document.Definitions.Count);
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(attribute, document.Definitions[0]);
-            Assert.AreEqual(document, attribute.DocCreatedIn);
+            Assert.AreEqual(document, attribute.InDocument);
             Assert.AreEqual(document, attribute.Owner);
             Assert.AreEqual(ent1, document.Definitions[1]);
             Assert.AreEqual(ent2, document.Definitions[2]);
@@ -68,9 +67,9 @@
             document.IsDirty = false;
 
             var entity = document.Definitions.Add("theNameOfTheEntity");
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(entity, document.Definitions[0]);
-            Assert.AreEqual(document, entity.DocCreatedIn);
+            Assert.AreEqual(document, entity.InDocument);
             Assert.AreEqual(document, entity.Owner);
             Assert.AreEqual("theNameOfTheEntity", entity.EntityName);
         }
@@ -84,12 +83,12 @@
             var attribute = document.Definitions.Add(CdmObjectType.AttributeContextDef, "Name of attribute");
             var trait = document.Definitions.Add(CdmObjectType.TraitDef, "Name of trait");
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(attribute, document.Definitions[0]);
             Assert.AreEqual(trait, document.Definitions[1]);
-            Assert.AreEqual(document, ((CdmObjectBase)attribute).DocCreatedIn);
+            Assert.AreEqual(document, ((CdmObjectBase)attribute).InDocument);
             Assert.AreEqual(document, attribute.Owner);
-            Assert.AreEqual(document, ((CdmObjectBase)trait).DocCreatedIn);
+            Assert.AreEqual(document, ((CdmObjectBase)trait).InDocument);
             Assert.AreEqual(document, trait.Owner);
         }
 
@@ -104,21 +103,20 @@
             var trait = new CdmTraitDefinition(document.Ctx, "The trait");
 
             var definitionsList = new List<CdmObjectDefinition>()
-                {
+            {
                 attribute,
                 folder,
                 trait
             };
             document.Definitions.AddRange(definitionsList);
 
-            Assert.AreEqual(true, document.IsDirty);
+            Assert.IsTrue(document.IsDirty);
             Assert.AreEqual(3, document.Definitions.Count);
             Assert.AreEqual(attribute, document.Definitions[0]);
             Assert.AreEqual(folder, document.Definitions[1]);
             Assert.AreEqual(trait, document.Definitions[2]);
-            Assert.AreEqual(document, attribute.DocCreatedIn);
-            Assert.AreEqual(document, folder.DocCreatedIn);
-            Assert.AreEqual(document, trait.DocCreatedIn);
+            Assert.AreEqual(document, attribute.InDocument);
+            Assert.AreEqual(document, trait.InDocument);
             Assert.AreEqual(document, attribute.Owner);
             Assert.AreEqual(document, folder.Owner);
             Assert.AreEqual(document, trait.Owner);

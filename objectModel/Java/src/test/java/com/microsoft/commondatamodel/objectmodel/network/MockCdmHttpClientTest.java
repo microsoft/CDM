@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -76,7 +76,7 @@ public class MockCdmHttpClientTest {
         final CdmHttpClient cdmHttpClient = new CdmHttpClient("https://www.example.com", httpClient);
 
         final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest("/example2.json");
-        final Map<String, String> headers = new HashMap<>();
+        final Map<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "CDM");
         cdmHttpRequest.setHeaders(headers);
         cdmHttpRequest.setMethod("GET");
@@ -122,7 +122,7 @@ public class MockCdmHttpClientTest {
         final CdmHttpClient cdmHttpClient = new CdmHttpClient("https://www.example.com", httpClient);
 
         final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest("/example2.json");
-        final Map<String, String> headers = new HashMap<>();
+        final Map<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "CDM");
         cdmHttpRequest.setHeaders(headers);
         cdmHttpRequest.setMethod("GET");
@@ -145,7 +145,7 @@ public class MockCdmHttpClientTest {
         final CdmHttpClient cdmHttpClient = new CdmHttpClient("https://www.example.com", httpClient);
 
         final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest("/example2.json");
-        final Map<String, String> headers = new HashMap<>();
+        final Map<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "CDM");
         cdmHttpRequest.setHeaders(headers);
         cdmHttpRequest.setMethod("GET");
@@ -175,7 +175,7 @@ public class MockCdmHttpClientTest {
         final CdmHttpClient cdmHttpClient = new CdmHttpClient("https://www.example.com", ht);
 
         final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest("/example2.json");
-        final Map<String, String> headers = new HashMap<>();
+        final Map<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "CDM");
         cdmHttpRequest.setHeaders(headers);
         cdmHttpRequest.setMethod("GET");

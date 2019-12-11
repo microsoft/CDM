@@ -3,7 +3,6 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
@@ -61,8 +60,6 @@ public class AttributeContextPersistence {
     Utils.addListToCdmCollection(attributeContext.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getAppliedTraits()));
 
     if (obj.getContents() != null) {
-      attributeContext.setContents(new CdmCollection<>(ctx, ctx.getCorpus().getOwner(), ctx.getCorpus().getObjectType()));
-
       for (final JsonNode node : obj.getContents()) {
         if (node.isValueNode()) {
           attributeContext.getContents().add(AttributeReferencePersistence.fromData(ctx, node));

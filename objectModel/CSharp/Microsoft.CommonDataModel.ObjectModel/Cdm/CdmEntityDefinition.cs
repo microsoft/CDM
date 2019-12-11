@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -16,7 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmEntityDefinition : CdmObjectDefinitionBase, CdmReferencesEntities
     {
         /// <summary>
-        /// Gets or sets the entity entity name.
+        /// Gets or sets the entity name.
         /// </summary>
         public string EntityName { get; set; }
 
@@ -31,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmAttributeResolutionGuidance ExtendsEntityResolutionGuidance { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity attribute Context.
+        /// Gets or sets the entity attribute context.
         /// </summary>
         public CdmAttributeContext AttributeContext { get; set; }
         internal ResolveContext CtxDefault { get; set; }
@@ -43,6 +44,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmCollection<CdmAttributeItem> Attributes { get; }
 
+        /// <summary>
+        /// Gets or sets the entity source name.
+        /// </summary>
         public string SourceName
         {
             get
@@ -85,6 +89,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the entity version.
+        /// </summary>
         public string Version
         {
             get
@@ -112,6 +119,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets the entity primary key.
+        /// </summary>
         public string PrimaryKey
         {
             get
@@ -136,11 +146,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.EntityName;
         }
 
+        /// <summary>
+        /// Constructs a CdmEntityDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="entityName">The entity name.</param>
+        /// <param name="extendsEntity">The entity extended by this entity.</param>
         public CdmEntityDefinition(CdmCorpusContext ctx, string entityName, CdmEntityReference extendsEntity = null)
             : base(ctx)
         {
@@ -153,20 +170,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.TraitToPropertyMap = new TraitToPropertyMap(this);
         }
 
-        internal dynamic AddAttributeDef(dynamic attributeDef)
+        internal CdmAttributeItem AddAttributeDef(CdmAttributeItem attributeDef)
         {
-            this.Attributes.Add(attributeDef as dynamic);
+            this.Attributes.Add(attributeDef);
             return attributeDef;
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmEntityDefinition copy = new CdmEntityDefinition(this.Ctx, this.EntityName, null);
+            CdmEntityDefinition copy;
+            if (host == null)
+            {
+                copy = new CdmEntityDefinition(this.Ctx, this.EntityName, null);
+            }
+            else
+            {
+                copy = host as CdmEntityDefinition;
+                copy.Ctx = this.Ctx;
+                copy.EntityName = this.EntityName;
+                copy.Attributes.Clear();
+            }
+
             copy.ExtendsEntity = copy.ExtendsEntity != null ? (CdmEntityReference)this.ExtendsEntity.Copy(resOpt) : null;
             copy.ExtendsEntityResolutionGuidance = this.ExtendsEntityResolutionGuidance != null ? (CdmAttributeResolutionGuidance)this.ExtendsEntityResolutionGuidance.Copy(resOpt) : null;
             copy.AttributeContext = copy.AttributeContext != null ? (CdmAttributeContext)this.AttributeContext.Copy(resOpt) : null;
@@ -197,11 +227,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.FetchResolvedAttributes(resOpt).FetchAttributesWithTraits(resOpt, queryFor);
         }
 
-        internal CdmCollection<CdmAttributeItem> GetAttributeDefinitions()
-        {
-            return this.Attributes;
-        }
-
         [Obsolete]
         public override CdmObjectType GetObjectType()
         {
@@ -210,6 +235,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
+            bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
+            this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
@@ -269,9 +296,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.resolvingEntityReferences = false;
                 }
             }
+            this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return entRefSetCache;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -282,6 +311,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.IsDerivedFromDef(resOpt, this.ExtendsEntityRef, this.GetName(), baseDef);
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.EntityName);
@@ -290,11 +320,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.EntityName;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.EntityName;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 
@@ -338,11 +372,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.ConstructResolvedTraitsDef(null, rtsb, resOpt);
         }
 
-        /// Query the entity for a set of attributes that match an input query
-        /// a JSON object (or a string that can be parsed into one) of the form {"attributeName":"", "attributeOrdinal": -1, "traits":[see next]} 
-        /// matched attributes have each of the traits in the array
-        /// the trait object is specified as {"traitName": queried trait name or base trait name, (optional) "arguments":[{"argumentName": queried argument, "value": queried value}]} 
-        /// returns null for 0 results or an array of json objects, each matching the shape of the input query, with attribute names filled in
+        /// Query the entity for a set of attributes that match an input query.
+        /// A JSON object (or a string that can be parsed into one) of the form {"attributeName":"", "attributeOrdinal": -1, "traits":[see next]}. 
+        /// Matched attributes have each of the traits in the array.
+        /// The trait object is specified as {"traitName": queried trait name or base trait name, (optional) "arguments":[{"argumentName": queried argument, "value": queried value}]}.
+        /// Returns null for 0 results or an array of json objects, each matching the shape of the input query, with attribute names filled in.
         private Task<List<object>> QueryOnTraitsAsync(dynamic querySpec)
         {
             // TODO: This is part of a planned work and currently not used (marked 3 Oct 2019)
@@ -489,11 +523,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // make the top level attribute context for this entity
+            // for this whole section where we generate the attribute context tree and get resolved attributes
+            // set the flag that keeps all of the parent changes and document dirty from from happening 
+            bool wasResolving = this.Ctx.Corpus.isCurrentlyResolving;
+            this.Ctx.Corpus.isCurrentlyResolving = true;
             string entName = newEntName;
             ResolveContext ctx = this.Ctx as ResolveContext;
             CdmAttributeContext attCtxEnt = ctx.Corpus.MakeObject<CdmAttributeContext>(CdmObjectType.AttributeContextDef, entName, true);
             attCtxEnt.Ctx = ctx;
-            attCtxEnt.DocCreatedIn = this.DocCreatedIn;
+            attCtxEnt.InDocument = this.InDocument;
 
             // cheating a bit to put the paths in the right place
             AttributeContextParameters acp = new AttributeContextParameters
@@ -524,6 +562,39 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext newNode = attCtxEnt.CopyNode(resOpt) as CdmAttributeContext;
             attCtxEnt = attCtxEnt.CopyAttributeContextTree(resOpt, newNode, ras, allAttCtx, "resolvedFrom");
             CdmAttributeContext attCtx = (attCtxEnt.Contents[0] as CdmAttributeContext).Contents[0] as CdmAttributeContext;
+
+            this.Ctx.Corpus.isCurrentlyResolving = wasResolving;
+
+            // make a new document in given folder if provided or the same folder as the source entity
+            folder.Documents.Remove(fileName);
+            CdmDocumentDefinition docRes = folder.Documents.Add(fileName);
+            // add a import of the source document 
+            origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
+            docRes.Imports.Add(origDoc, "resolvedFrom");
+
+            // make the empty entity
+            CdmEntityDefinition entResolved = docRes.Definitions.Add(entName);
+            // set the context to the copy of the tree. fix the docs on the context nodes
+            entResolved.AttributeContext = attCtx;
+            attCtx.Visit($"{entName}/attributeContext/",
+                new VisitCallback
+                {
+                    Invoke = (obj, path) =>
+                    {
+                        obj.InDocument = docRes;
+                        return false;
+                    }
+                },
+                null);
+
+            // add the traits of the entity
+            ResolvedTraitSet rtsEnt = this.FetchResolvedTraits(resOpt);
+            rtsEnt.Set.ForEach(rt =>
+            {
+                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                (entResolved as CdmObjectDefinition).ExhibitsTraits.Add(traitRef);
+            });
+            
 
             // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
             // make each attribute context level point at these final versions of attributes
@@ -699,25 +770,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             orderContents((CdmAttributeContext)attCtx);
 
-            // make a new document in given folder if provided or the same folder as the source entity
-            folder.Documents.Remove(fileName);
-            CdmDocumentDefinition docRes = folder.Documents.Add(fileName);
-            // add a import of the source document 
-            origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
-            docRes.Imports.Add(origDoc, "resolvedFrom");
-
-            // make the empty entity
-            CdmEntityDefinition entResolved = docRes.Definitions.Add(entName);
-            entResolved.AttributeContext = attCtx;
-
-            // add the traits of the entity
-            ResolvedTraitSet rtsEnt = this.FetchResolvedTraits(resOpt);
-            rtsEnt.Set.ForEach(rt =>
-            {
-                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
-                (entResolved as CdmObjectDefinition).ExhibitsTraits.Add(traitRef);
-            });
-
             // resolved attributes can gain traits that are applied to an entity when referenced
             // since these traits are described in the context, it is redundant and messy to list them in the attribute
             // so, remove them. create and cache a set of names to look for per context 
@@ -770,7 +822,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
 
-                    if ((ra.Target as ResolvedAttributeSet)?.Set != null)
+                    if (ra.Target is ResolvedAttributeSet)
                     {
                         // this is a set of attributes.
                         // make an attribute group to hold them
@@ -895,7 +947,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         };
             fixContextTraits(attCtx, newEntName);
             // and the attribute traits
-            var entAttributes = entResolved.GetAttributeDefinitions();
+            var entAttributes = entResolved.Attributes;
             if (entAttributes != null)
             {
                 foreach (var entAtt in entAttributes)

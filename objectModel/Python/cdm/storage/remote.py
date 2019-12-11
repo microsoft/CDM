@@ -4,7 +4,8 @@
 # ----------------------------------------------------------------------
 
 import datetime
-from typing import Any, Dict, List, Optional
+import json
+from typing import Dict, List, Optional
 import uuid
 
 from cdm.storage.network import NetworkAdapter
@@ -16,15 +17,31 @@ from .base import StorageAdapterBase
 class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
     """Remote file system storage adapter"""
 
-    def __init__(self, hosts: Dict[str, str], **kwargs) -> None:
-        super().__init__(kwargs.get('http_config', {}))
+    def __init__(self, hosts: Optional[Dict[str, str]] = None) -> None:
+        super().__init__()
+
+        self.location_hint = None  # type: Optional[str]
+
+        # --- internal ---
+        self._hosts = {}  # type: Dict[str, str]
         self._sources = {}  # type: Dict[str, str]
         self._sources_by_id = {}  # type: Dict[str, Dict[str, str]]
+        self._type = 'remote'
 
+        self._http_client = CdmHttpClient()  # type: CdmHttpClient
+
+        if hosts:
+            self.hosts = hosts
+
+    @property
+    def hosts(self) -> Dict[str, str]:
+        return self._hosts
+
+    @hosts.setter
+    def hosts(self, hosts: Dict[str, str]) -> None:
+        self._hosts = hosts
         for key, value in hosts.items():
             self._fetch_or_register_host_info(value, key)
-
-        self.http_client = CdmHttpClient()  # type: CdmHttpClient
 
     def can_read(self) -> bool:
         return True
@@ -34,9 +51,9 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
 
     async def read_async(self, corpus_path: str) -> str:
         url = self.create_adapter_path(corpus_path)
-        request = self.set_up_cdm_request(url, {'User-Agent': 'CDM'}, 'GET')
+        request = self._set_up_cdm_request(url, {'User-Agent': 'CDM'}, 'GET')
 
-        return await super().read(request)
+        return await super()._read(request)
 
     async def write_async(self, corpus_path: str, data: str) -> None:
         raise NotImplementedError()
@@ -76,7 +93,51 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
         # TODO: implement
-        return []
+        return None
+
+    def fetch_config(self) -> str:
+        result_config = {'type': self._type}
+        config_object = {}
+
+        # Go through the hosts dictionary and build a dictionary for each item.
+        hosts_array = [{key: value} for key, value in self.hosts.items()]
+
+        config_object['hosts'] = hosts_array
+
+        # Try constructing network configs.
+        config_object.update(self.fetch_network_config())
+
+        if self.location_hint:
+            config_object['locationHint'] = self.location_hint
+
+        result_config['config'] = config_object
+
+        return json.dumps(result_config)
+
+    def update_config(self, config: str) -> None:
+        if not config:
+            raise Exception('Remote adapter needs a config.')
+
+        self.update_network_config(config)
+
+        config_json = json.loads(config)
+
+        if config_json.get('locationHint'):
+            self.location_hint = config_json['locationHint']
+
+        hosts = config_json['hosts']
+
+        # Create a temporary dictionary.
+        hosts_dict = {}
+
+        # Iterate through all of the items in the hosts array.
+        for host in hosts:
+            # Get the property's key and value and save it to the dictionary.
+            for key, value in host.items():
+                hosts_dict[key] = value
+
+        # Assign the temporary dictionary to the hosts dictionary.
+        self.hosts = hosts_dict
 
     def _fetch_or_register_host_info(self, adapter_path: str, key: Optional[str] = None) -> Dict[str, str]:
         protocol_index = adapter_path.find('://')

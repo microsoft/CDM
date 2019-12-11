@@ -59,7 +59,7 @@ public class ResolvedAttribute {
     resolvedTraits.spew(resOpt, to, indent + '-', nameSort);
   }
 
-  public void completeContext(final ResolveOptions resOpt) {
+  void completeContext(final ResolveOptions resOpt) {
     if (attCtx != null && attCtx.getName() == null) {
       attCtx.setName(_resolvedName);
       if (target instanceof CdmAttribute) {
@@ -150,7 +150,7 @@ public class ResolvedAttribute {
     return previousResolvedName;
   }
 
-  public void setPreviousResolvedName(final String previousResolvedName) {
+  void setPreviousResolvedName(final String previousResolvedName) {
     this.previousResolvedName = previousResolvedName;
   }
 

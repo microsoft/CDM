@@ -6,7 +6,7 @@
 from datetime import datetime
 import json
 import os
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from .base import StorageAdapterBase
 
@@ -14,8 +14,13 @@ from .base import StorageAdapterBase
 class LocalAdapter(StorageAdapterBase):
     """Local file system storage adapter"""
 
-    def __init__(self, root: str = '') -> None:
-        self._root = os.path.abspath(root)  # type: str
+    def __init__(self, root: Optional[str] = '') -> None:
+        self.root = root  # type: str
+        self.location_hint = None  # type: Optional[str]
+
+        # --- internal ---
+        self._full_root = os.path.abspath(self.root)
+        self._type = 'local'
 
     def can_read(self) -> bool:
         return True
@@ -39,17 +44,17 @@ class LocalAdapter(StorageAdapterBase):
 
     def create_adapter_path(self, corpus_path: str) -> str:
         corpus_path = corpus_path[(corpus_path.find(':') + 1):].lstrip('\\/')
-        return os.path.normpath(os.path.join(self._root, corpus_path))
+        return os.path.normpath(os.path.join(self._full_root, corpus_path))
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        if not adapter_path.startswith("http"):
+        if not adapter_path.startswith('http'):
             normalized_adapter_path = os.path.abspath(adapter_path).replace('\\', '/')
-            normalized_root = self._root.replace('\\', '/')
+            normalized_root = self._full_root.replace('\\', '/')
 
             if normalized_adapter_path.startswith(normalized_root):
                 return normalized_adapter_path[len(normalized_root):]
 
-        # Signal that we did not recognize path as one for this adapter.
+        # Signal that we did not recognize path as one for self adapter.
         return None
 
     def clear_cache(self) -> None:
@@ -64,3 +69,31 @@ class LocalAdapter(StorageAdapterBase):
         adapter_folder = self.create_adapter_path(folder_corpus_path)
         adapter_files = [os.path.join(dp, fn) for dp, dn, fns in os.walk(adapter_folder) for fn in fns]
         return [self.create_corpus_path(file) for file in adapter_files]
+
+    def fetch_config(self) -> str:
+        result_config = {'type': self._type}
+
+        config_object = {'root': self.root}
+
+        if self.location_hint:
+            config_object['locationHint'] = self.location_hint
+
+        result_config['config'] = config_object
+
+        return json.dumps(result_config)
+
+    def update_config(self, config: str) -> None:
+        if not config:
+            raise Exception('Local adapter needs a config.')
+
+        config_json = json.loads(config)
+
+        if not config_json.get('root'):
+            raise Exception('The root has to be specified and cannot be null.')
+
+        self.root = config_json['root']
+
+        if config_json.get('locationHint'):
+            self.location_hint = config_json['locationHint']
+
+        self._full_root = os.path.abspath(self.root)

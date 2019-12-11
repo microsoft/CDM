@@ -40,10 +40,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         # Internal
         self._file_system_modified_time = None  # type: Optional[datetime]
-        self._entities = CdmEntityCollection(self.ctx, self)  # type: CdmCollection[CdmEntityDeclarationDefinition]
-        self._exhibits_traits = CdmTraitCollection(self.ctx, self)  # type: CdmTraitCollection
-        self._relationships = CdmCollection(self.ctx, self, CdmObjectType.E2E_RELATIONSHIP_DEF)  # type: CdmCollection[CdmE2ERelationship]
-        self._sub_manifests = CdmCollection(self.ctx, self, CdmObjectType.MANIFEST_DECLARATION_DEF)  # type: CdmCollection[CdmManifestDeclarationDefinition]
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -51,19 +47,57 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
     @property
     def entities(self) -> 'CdmCollection[CdmEntityDeclarationDefinition]':
+        if not hasattr(self, '_entities'):
+            self._entities = CdmEntityCollection(self.ctx, self)  # type: CdmCollection[CdmEntityDeclarationDefinition]
         return self._entities
 
     @property
     def exhibits_traits(self) -> 'CdmTraitCollection':
+        if not hasattr(self, '_exhibits_traits'):
+            self._exhibits_traits = CdmTraitCollection(self.ctx, self)  # type: CdmTraitCollection
         return self._exhibits_traits
 
     @property
     def relationships(self) -> 'CdmCollection[CdmE2ERelationship]':
+        if not hasattr(self, '_relationships'):
+            self._relationships = CdmCollection(self.ctx, self, CdmObjectType.E2E_RELATIONSHIP_DEF)  # type: CdmCollection[CdmE2ERelationship]
         return self._relationships
 
     @property
     def sub_manifests(self) -> 'CdmCollection[CdmManifestDeclarationDefinition]':
+        if not hasattr(self, '_sub_manifests'):
+            self._sub_manifests = CdmCollection(self.ctx, self, CdmObjectType.MANIFEST_DECLARATION_DEF)  # type: CdmCollection[CdmManifestDeclarationDefinition]
         return self._sub_manifests
+
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmManifestDefinition'] = None) -> 'CdmManifestDefinition':
+        # since we need to call the base copy which will only return a document when there is no host, make a fake host here
+        if not host:
+            host = CdmManifestDefinition(self.ctx, self.manifest_name)
+
+        copy = super().copy(res_opt, host)  # type: CdmManifestDefinition
+        copy.manifest_name = self.manifest_name
+        copy.explanation = self.explanation
+        copy.last_file_status_check_time = self.last_file_status_check_time
+        copy.last_file_modified_time = self.last_file_modified_time
+        copy.last_child_file_modified_time = self.last_child_file_modified_time
+
+        copy.entities.clear()
+        for ent in self.entities:
+            copy.entities.append(ent)
+
+        copy.relationships.clear()
+        for rel in self.relationships:
+            copy.relationships.append(rel)
+
+        copy.sub_manifests.clear()
+        for man in self.sub_manifests:
+            copy.sub_manifests.append(man)
+
+        copy.exhibits_traits.clear()
+        for et in self.exhibits_traits:
+            copy.exhibits_traits.append(et)
+
+        return copy
 
     async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str) -> Optional['CdmManifestDefinition']:
         """Creates a resolved copy of the manifest.
@@ -77,10 +111,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             return None
 
         if new_entity_document_name_format is None:
-            new_entity_document_name_format = 'resolved/{n}.cdm.json'
+            new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
         elif new_entity_document_name_format == '':  # for back compat
             new_entity_document_name_format = '{n}.cdm.json'
-        elif '{n}' in new_entity_document_name_format:  # for back compat
+        elif '{n}' not in new_entity_document_name_format:  # for back compat
             new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
 
         source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
@@ -153,12 +187,14 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
             result = entity.copy(res_opt)
             if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                result.at_corpus_path = resolved_entity.at_corpus_path
-                relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(result.at_corpus_path, resolved_manifest)
+                relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
                 result.entity_path = relative_entity_path or result.at_corpus_path
 
             resolved_manifest.entities.append(result)
-            res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = result.entity_path
+
+            # absolute path is needed for generating relationships
+            absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(result.entity_path, resolved_manifest)
+            res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
 
         self.ctx.logger.debug('    calculating relationships')
         # Calculate the entity graph for just this manifest.
@@ -191,22 +227,19 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             self._file_system_modified_time = self.last_file_modified_time
 
     async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
-        current_file = cast('CdmObject', manifest)
-        while isinstance(entity, CdmReferencedEntityDeclarationDefinition) and entity.entity_path is not None:
-            entity = await self.ctx.corpus.fetch_object_async(entity.entity_path, current_file)
-            current_file = entity
-
-        result = await self.ctx.corpus.fetch_object_async(entity.entity_path, current_file)  # type: CdmEntityDefinition
+        entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', manifest))
+        result = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
         if result is None:
-            corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(entity.entity_path, current_file)
-            self.ctx.logger.error('failed to resolve entity %s', corpus_path)
+            self.ctx.logger.error('failed to resolve entity %s', entity_path)
 
         return result
 
     async def _get_entity_path_from_declaration(self, entity_dec: 'CdmEntityDeclarationDefinition', obj: Optional['CdmObject'] = None):
         while isinstance(entity_dec, CdmReferencedEntityDeclarationDefinition):
             entity_dec = await self.ctx.corpus.fetch_object_async(entity_dec.entity_path, obj)
+            if not entity_dec:
+                return None
             obj = entity_dec.in_document
 
         return self.ctx.corpus.storage.create_absolute_corpus_path(entity_dec.entity_path, obj)
@@ -221,12 +254,12 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             absolute_from_ent_string = self.ctx.corpus.storage.create_absolute_corpus_path(rel.from_entity, self)
 
             #  only true if from and to entities are both found in the entities list of self folio
-            from_ent_in_manifest = bool(filter(lambda x: self.ctx.corpus.storage.create_absolute_corpus_path(x.entity_path, self) == absolute_from_ent_string,
-                                               self.entities))
+            from_ent_in_manifest = bool(list(filter(lambda x: self.ctx.corpus.storage.create_absolute_corpus_path(x.entity_path, self) == absolute_from_ent_string,
+                                                    self.entities)))
 
             absolute_to_ent_string = self.ctx.corpus.storage.create_absolute_corpus_path(rel.to_entity, self)
-            to_ent_in_manifest = bool(filter(lambda x: self.ctx.corpus.storage.create_absolute_corpus_path(x.entity_path) == absolute_to_ent_string,
-                                             self.entities))
+            to_ent_in_manifest = bool(list(filter(lambda x: self.ctx.corpus.storage.create_absolute_corpus_path(x.entity_path, self) == absolute_to_ent_string,
+                                                  self.entities)))
 
             return bool(from_ent_in_manifest and to_ent_in_manifest)
         return True
@@ -248,6 +281,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
             curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: CdmEntityDefinition
 
+            if curr_entity is None:
+                continue
+
             # handle the outgoing relationships
             outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
             if outgoing_rels:
@@ -262,8 +298,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if incoming_rels:
                 for in_rel in incoming_rels:
                     # get entity object for current toEntity
-                    to_entity_path = self.ctx.corpus.storage.create_absolute_corpus_path(in_rel.to_entity)
-                    current_in_base = await self.ctx.corpus.fetch_object_async(to_entity_path)  # type: CdmEntityDefinition
+                    current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: CdmEntityDefinition
+
+                    if not current_in_base:
+                        continue
 
                     # create graph of inheritance for to current_in_base
                     # graph represented by an array where entity at i extends entity at i+1
@@ -286,7 +324,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                         if incoming_rels_for_base:
                             for in_rel_base in incoming_rels_for_base:
-                                new_rel = CdmE2ERelationship(self.ctx, "")
+                                new_rel = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, '')
                                 new_rel.from_entity = in_rel_base.from_entity
                                 new_rel.from_entity_attribute = in_rel_base.from_entity_attribute
                                 new_rel.to_entity = in_rel.to_entity
@@ -382,14 +420,16 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         if pre_children and pre_children(self, path_from):
             return False
 
-        if self.definitions and self._definitions._visit_array(path_from, pre_children, post_children):
+        if self.definitions and self.definitions._visit_array(path_from, pre_children, post_children):
             return True
 
-        if self.entities:
-            if self._entities._visit_array(path_from, pre_children, post_children):
-                return True
+        if self.entities and self.entities._visit_array(path_from, pre_children, post_children):
+            return True
 
-        if self.sub_manifests and self._sub_manifests._visit_array(path_from, pre_children, post_children):
+        if self.relationships and self.relationships._visit_array('{}/relationships/'.format(path_from), pre_children, post_children):
+            return True
+
+        if self.sub_manifests and self.sub_manifests._visit_array('{}/subManifests/'.format(path_from), pre_children, post_children):
             return True
 
         if post_children and post_children(self, path_from):

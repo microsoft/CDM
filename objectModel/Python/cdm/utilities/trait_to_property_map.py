@@ -59,7 +59,7 @@ class TraitToPropertyMap:
     def update_property_value(self, property_name: str, new_value: Any) -> None:
         trait_name = self._map_trait_name(property_name)
         list_of_props = trait_to_list_of_properties.get(trait_name, [])
-        has_multiple_props = len(list_of_props)
+        has_multiple_props = len(list_of_props) > 1
 
         # if a trait has multiple arguments it should remove only the argument not the full trait.
         # this is done in _update_trait_argument.
@@ -134,9 +134,9 @@ class TraitToPropertyMap:
         elif property_name == 'defaultValue':
             return self._fetch_default_value(only_from_property)
 
-        return self._fetch_default_value(only_from_property)
+        return None
 
-    def fetch_trait_reference(self, trait: Any, only_from_property: bool = False) -> 'CdmTraitReference':
+    def fetch_trait_reference(self, trait: str, only_from_property: bool = False) -> 'CdmTraitReference':
         """Fetch a trait based on name from the array of traits."""
 
         resultant_trait = trait
@@ -237,6 +237,8 @@ class TraitToPropertyMap:
         is_big = False
         is_small = False
         is_integer = False
+        probably_json = False
+
         base_type = CdmDataFormat.UNKNOWN
 
         for trait in self._traits:
@@ -275,9 +277,12 @@ class TraitToPropertyMap:
                 base_type = CdmDataFormat.GUID
             elif trait_name == 'means.content.text.JSON':
                 base_type = CdmDataFormat.JSON if is_array else CdmDataFormat.UNKNOWN
+                probably_json = True
 
         if is_array:
-            if base_type == CdmDataFormat.CHAR:
+            if probably_json:
+                base_type = CdmDataFormat.JSON
+            elif base_type == CdmDataFormat.CHAR:
                 base_type = CdmDataFormat.STRING
             elif base_type == CdmDataFormat.BYTE:
                 base_type = CdmDataFormat.BINARY
@@ -293,7 +298,7 @@ class TraitToPropertyMap:
         if is_integer:
             base_type = CdmDataFormat.INT32
 
-        return None if base_type == CdmDataFormat.UNKNOWN else base_type
+        return base_type
 
     def _fetch_or_create_trait(self, trait: Any, simple_ref: bool = False) -> 'CdmTraitReference':
 
@@ -311,13 +316,10 @@ class TraitToPropertyMap:
         resultant_trait.is_from_property = True
         return resultant_trait
 
-    def _update_trait_argument(self, input_trait: Any, arg_name: str, value: Any) -> None:
+    def _update_trait_argument(self, trait_name: str, arg_name: str, value: Any) -> None:
         """sets the value of a trait argument where the argument name matches the passed name"""
 
-        trait = input_trait
-
-        if isinstance(trait, str):
-            trait = self._fetch_or_create_trait(trait, False)
+        trait = self._fetch_or_create_trait(trait_name, False)
 
         args = trait.arguments
 

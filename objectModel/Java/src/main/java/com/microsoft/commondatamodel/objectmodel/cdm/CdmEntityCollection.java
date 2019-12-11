@@ -42,9 +42,12 @@ public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
     final CdmCorpusDefinition cdmCorpus = this.getCtx().getCorpus();
 
     if (entity.getOwner() == null) {
-      throw new IllegalArgumentException(
-          "Expected entity to have an \"Owner\" document set. "
-              + "Cannot create entity declaration to add to manifest.");
+      entity.setOwner(this.getOwner());
+      if (entity.getOwner() == null) {
+        throw new IllegalArgumentException(
+            "Expected entity to have an \"Owner\" document set. "
+                + "Cannot create entity declaration to add to manifest.");
+      }
     }
 
     final CdmEntityDeclarationDefinition entityDeclaration = cdmCorpus.makeObject(

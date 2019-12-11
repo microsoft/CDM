@@ -26,9 +26,6 @@
             manifest.Namespace = nameSpace;
             manifest.Explanation = dataObj.Explanation;
 
-            // set this as the current doc of the context for this operation
-            ctx.UpdateDocumentContext(manifest);
-
             if (!string.IsNullOrEmpty(dataObj.Schema))
                 manifest.Schema = dataObj.Schema;
             if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(dataObj.JsonSchemaSemanticVersion))
@@ -69,8 +66,6 @@
                         manifest.Definitions.Add(EntityPersistence.FromData(ctx, d));
                 }
             }
-
-            ctx.UpdateDocumentContext(null);
 
             if (dataObj.LastFileStatusCheckTime != null)
             {

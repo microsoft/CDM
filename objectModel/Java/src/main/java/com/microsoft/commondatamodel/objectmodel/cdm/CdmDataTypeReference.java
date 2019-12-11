@@ -16,18 +16,35 @@ public class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmO
   }
 
   /**
-   *
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Override
+  @Deprecated
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference) {
+    return copyRefObject(resOpt, refTo, simpleReference, null);
+  }
+
+
+  /**
    * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
-  public CdmObjectReferenceBase copyRefObject(final ResolveOptions resOpt, final Object refTo, final boolean simpleReference) {
-    return new CdmDataTypeReference(this.getCtx(), refTo, simpleReference);
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference, CdmObjectReferenceBase host) {
+    if (host == null) {
+      return new CdmDataTypeReference(this.getCtx(), refTo, simpleReference);
+    } else {
+      return host.copyToHost(this.getCtx(), refTo, simpleReference);
+    }
   }
 
   /**
