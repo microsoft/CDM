@@ -22,9 +22,6 @@ class DocumentPersistence:
         document.folder_path = path
         document.namespace = namespace
 
-        # Set this as the current document of the context for this operation
-        ctx.update_document_context(document)
-
         if data:
             if data.get('schema'):
                 document.schema = data.schema
@@ -58,8 +55,6 @@ class DocumentPersistence:
                         document.definitions.append(ConstantEntityPersistence.from_data(ctx, definition))
                     elif definition.get('entityName'):
                         document.definitions.append(EntityPersistence.from_data(ctx, definition))
-
-        ctx.update_document_context(None)
 
         return document
 

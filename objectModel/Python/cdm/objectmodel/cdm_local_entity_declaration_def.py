@@ -61,7 +61,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._fetch_last_modified_time_async(self.entity_path)
+        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
+        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         for partition in self.data_partitions:
             await partition.file_status_check_async()
@@ -80,10 +81,18 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmLocalEntityDeclarationDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmLocalEntityDeclarationDefinition'] = None) -> 'CdmLocalEntityDeclarationDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
+        if not host:
+            copy = CdmLocalEntityDeclarationDefinition(self.ctx, self.entity_name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.entity_name = self.entity_name
+            copy.data_partition_patterns.clear()
+            copy.data_partitions.clear()
 
-        copy = CdmLocalEntityDeclarationDefinition(self.ctx, self.entity_name)
         copy.entity_path = self.entity_path
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
@@ -111,15 +120,26 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return bool(self.entity_name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = '{}{}'.format(path_from, self.entity_name)
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = '{}{}'.format(path_from, self.entity_name)
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False
 
-        if self.data_partitions and self.data_partitions._visit_array('{}/'.format(path), pre_children, post_children):
+        if self.data_partitions and self.data_partitions._visit_array('{}/dataPartitions/'.format(path), pre_children, post_children):
             return True
+
+        if self.data_partition_patterns and self.data_partition_patterns._visit_array('{}/dataPartitionPatterns/'.format(path), pre_children, post_children):
+            return True
+
+        if self._visit_def(path, pre_children, post_children):
+            return True
+
+        if post_children and post_children(self, path):
+            return False
 
         return False

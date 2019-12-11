@@ -22,7 +22,7 @@
 
             cdmCorpus.Storage.Mount("local", new LocalAdapter(localRootPath));
 
-            // add cdm namespace
+            // Add CDM namespace.
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(localRootPath));
 
             var manifest = new CdmManifestDefinition(cdmCorpus.Ctx, "manifest");

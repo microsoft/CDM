@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -133,7 +133,7 @@ public class PerformanceTest {
     cdmCorpus.getStorage().setDefaultNamespace("local");
     final List<ImmutablePair<CdmEntityDefinition, CdmDocumentDefinition>> entities =
         this.getAllEntities(cdmCorpus);
-    final Map<CdmEntityDefinition, List<CdmEntityDefinition>> incomingReferences = new HashMap<>();
+    final Map<CdmEntityDefinition, List<CdmEntityDefinition>> incomingReferences = new LinkedHashMap<>();
     entities.forEach(data -> {
       final CdmEntityDefinition entity = data.getLeft();
       incomingReferences.put(entity, new ArrayList<>());

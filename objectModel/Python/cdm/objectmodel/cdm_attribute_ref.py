@@ -1,4 +1,4 @@
-from typing import Union, TYPE_CHECKING
+from typing import Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 
@@ -13,8 +13,11 @@ class CdmAttributeReference(CdmObjectReference):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.ATTRIBUTE_REF
 
-    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmAttributeReference'], simple_reference: bool) -> 'CdmObjectReference':
-        return CdmAttributeReference(self.ctx, ref_to, simple_reference)
+    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmAttribute'], simple_reference: bool, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
+        if not host:
+            return CdmAttributeReference(self.ctx, ref_to, simple_reference)
+
+        return host._copy_to_host(self.ctx, ref_to, simple_reference)
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         return False

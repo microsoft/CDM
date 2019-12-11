@@ -25,14 +25,21 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
 
   @Override
   public void add(int index, CdmDocumentDefinition document) {
-    super.add(index, document);
     this.addItemModifications(document);
+    // Why is this collection unlike all other collections?
+    // Because documents are in folders. Folders are not in documents.
+    document.setOwner(this.getOwner());
+    this.getAllItems().add(index, document);
   }
 
   @Override
   public CdmDocumentDefinition add(final CdmDocumentDefinition document) {
     this.addItemModifications(document);
-    return super.add(document);
+    // Why is this collection unlike all other collections?
+    // Because documents are in folders. folders are not in documents.
+    document.setOwner(this.getOwner());
+    allItems.add(document);
+    return document;
   }
 
   /**
@@ -78,7 +85,12 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
       this.removeItemModifications(name);
       for (int i = 0; i < this.getAllItems().size(); i++) {
         if (Objects.equals(this.getAllItems().get(i).getName(), name)) {
+          // setting this currentlyResolving flag will keep the base collection code from setting the inDocument to null
+          // this makes sense because a document is "in" itself. always.
+          boolean save = this.getCtx().getCorpus().isCurrentlyResolving;
+          this.getCtx().getCorpus().isCurrentlyResolving = true;
           super.removeAt(i);
+          this.getCtx().getCorpus().isCurrentlyResolving = save;
           return true;
         }
       }
@@ -106,10 +118,22 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
    * @param document The item that needs to be changed.
    */
   private void addItemModifications(CdmDocumentDefinition document) {
+    if (document.getOwner() != null && document.getOwner() != this.getOwner()) {
+      // This is fun! The document is moving from one folder to another.
+      // It must be removed from the old folder for sure, but also now there will be a problem with
+      // any corpus paths that are relative to that old folder location.
+      // So, whip through the document and change any corpus paths to be relative to this folder.
+      document.localizeCorpusPaths(this.getOwner());
+      // Returns false if it fails, but ... who cares? We tried.
+      ((CdmFolderDefinition) document.getOwner()).getDocuments().remove(document.getName());
+    }
+
     document.setFolderPath(this.getOwner().getFolderPath());
     document.setFolder(this.getOwner());
     document.setNamespace(this.getOwner().getNamespace());
     document.setNeedsIndexing(true);
+    // Set the document to dirty so it will get saved in the new folder location if saved.
+    makeDocumentDirty();
     this.getOwner().getCorpus().addDocumentObjects(this.getOwner(), document);
     this.getOwner().getDocumentLookup().put(document.getName(), document);
   }

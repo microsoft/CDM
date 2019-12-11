@@ -43,18 +43,6 @@
         }
 
         /// <summary>
-        /// Tests whether Manifest.Entities.Add() throws an exception when the associated docutment is not added.
-        /// </summary>
-        [TestMethod]
-        public void TestManifestCannotAddEntityWithoutDoc()
-        {
-            var manifest = GenerateManifest("C:\\Root\\Path");
-            var entity = new CdmEntityDefinition(manifest.Ctx, "entityName", null);
-
-            Assert.ThrowsException<System.ArgumentException>(() => manifest.Entities.Add(entity));
-        }
-
-        /// <summary>
         /// Tests whether the EntityDefinition can be passed directly to Manifest.Entities.Add().
         /// </summary>
         [TestMethod]
@@ -126,12 +114,12 @@
 
             bool removed = manifest.Entities.Remove(entity);
 
-            Assert.AreEqual(true, removed);
+            Assert.IsTrue(removed);
             Assert.AreEqual(1, manifest.Entities.AllItems.Count);
             Assert.AreEqual(otherEntity.EntityName, manifest.Entities.AllItems[0].EntityName);
 
             removed = manifest.Entities.Remove(entity);
-            Assert.AreEqual(false, removed);
+            Assert.IsFalse(removed);
             Assert.AreEqual(1, manifest.Entities.AllItems.Count);
         }
 

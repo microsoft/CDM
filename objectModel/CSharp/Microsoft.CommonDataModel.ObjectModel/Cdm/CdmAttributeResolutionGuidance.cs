@@ -1,8 +1,9 @@
-//-----------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CdmAttributeResolutionGuidance.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-//-----------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -12,31 +13,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmAttributeResolutionGuidance : CdmObjectSimple
     {
-        // default get/set implementations of the data interface
+        /// <summary>
+        /// If true, this attribute definition will be removed from the entity's final resolved attribute list.
+        /// </summary>
         public bool? removeAttribute { get; set; }
 
         /// <summary>
-        /// A list of strings, one for each 'directive' that should be always imposed at this attribute definition
+        /// A list of strings, one for each 'directive' that should be always imposed at this attribute definition.
         /// </summary>
         public List<string> imposedDirectives { get; set; }
 
         /// <summary>
-        /// A list of strings, one for each 'directive' that should be removed if previously imposed
+        /// A list of strings, one for each 'directive' that should be removed if previously imposed.
         /// </summary>
         public List<string> removedDirectives { get; set; }
 
         /// <summary>
-        /// The supplied attribute definition will be added to the Entity after this attribute definition with a trait indicating its supporting role on this.
+        /// A guidance that this attribute definition should be added to the final set of attributes and should be marked as 'supporting' the attribute that has the guidance set on it.
         /// </summary>
         public CdmTypeAttributeDefinition addSupportingAttribute { get; set; }
 
         /// <summary>
-        /// If 'one' then there is a single instance of the attribute or entity used. 'many' indicates multiple instances and the 'expansion' properties will describe array enumeration to use when needed.
+        /// If 'one', then there is a single instance of the attribute or entity used. If 'many', there are multiple instances used, in which case the 'expansion' properties will describe array enumeration to use when needed.
         /// </summary>
         public string cardinality { get; set; }
 
         /// <summary>
-        /// Format specifier for generated attribute names. May contain a single occurence of ('{a} or 'A'), ('{m}' or '{M}') and '{o}' for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city', '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name portions.
+        /// Format specifier for generated attribute names. May contain a single occurence of ('{a} or 'A'), ('{m}' or '{M}'), and '{o}', for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city', '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name portions.
         /// </summary>
         public string renameFormat { get; set; }
 
@@ -45,10 +48,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public class Expansion
         {
+            /// <summary>
+            /// The index to start counting from when an array is being expanded for a repeating set of attributes. 
+            /// </summary>
             public int? startingOrdinal { get; set; }
 
             /// <summary>
-            /// the greatest number of time that the attribute pattern should be repeated.
+            /// The maximum number of times that the attribute pattern should be repeated.
             /// </summary>
             public int? maximumExpansion { get; set; }
 
@@ -64,17 +70,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Parameters that control the use of foreign keys to reference entity instances instead of imbedding the entity in a nested way.
+        /// Parameters that control the use of foreign keys to reference entity instances instead of embedding the entity in a nested way.
         /// </summary>
         public class CdmAttributeResolutionGuidance_EntityByReference
         {
             /// <summary>
-            /// explicitly, is a reference allowed?
+            /// Whether a reference to an entity is allowed through the use of a foreign key to the entity.
             /// </summary>
             public bool? allowReference { get; set; }
 
             /// <summary>
-            /// if true, a foreign key attribute will be added to the entity even when the entity attribute is imbedded in a nested way.
+            /// If true, a foreign key attribute will be added to the entity even when the entity attribute is embedded in a nested way.
             /// </summary>
             public bool? alwaysIncludeForeignKey { get; set; }
 
@@ -95,12 +101,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// used to indicate that this attribute select either 'one' or 'all' of the sub-attributes from an entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list.
+        /// Used to indicate that this attribute select either 'one' or 'all' of the sub-attributes from an entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list.
         /// </summary>
         public class CdmAttributeResolutionGuidance_SelectsSubAttribute
         {
             /// <summary>
-            /// used to indicate either 'one' or 'all' sub-attributes selected. 
+            /// Used to indicate either 'one' or 'all' sub-attributes selected. 
             /// </summary>
             public string selects { get; set; }
 
@@ -108,7 +114,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             /// The supplied attribute definition will be added to the Entity to hold a description of the single attribute that was selected from the sub-entity when selects is 'one'
             /// </summary>
             public CdmTypeAttributeDefinition selectedTypeAttribute { get; set; }
+
+            /// <summary>
+            /// The list of sub-attributes from an entity that should be added.
+            /// </summary>
             public List<string> selectsSomeTakeNames { get; set; }
+
+            /// <summary>
+            /// The list of sub-attributes from an entity that should not be added.
+            /// </summary>
             public List<string> selectsSomeAvoidNames { get; set; }
         }
         public CdmAttributeResolutionGuidance_SelectsSubAttribute selectsSubAttribute { get; set; }
@@ -130,23 +144,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.AttributeResolutionGuidanceDef;
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmAttributeResolutionGuidance c = new CdmAttributeResolutionGuidance(this.Ctx)
+            CdmAttributeResolutionGuidance c;
+            if (host == null)
             {
-                Ctx = this.Ctx,
-                removeAttribute = this.removeAttribute,
-                imposedDirectives = this.imposedDirectives,
-                removedDirectives = this.removedDirectives,
-                addSupportingAttribute = this.addSupportingAttribute,
-                cardinality = this.cardinality,
-                renameFormat = this.renameFormat
-            };
+                c = new CdmAttributeResolutionGuidance(this.Ctx);
+            }
+            else
+            {
+                c = host as CdmAttributeResolutionGuidance;
+                c.Ctx = this.Ctx;
+                c.expansion = null;
+                c.entityByReference = null;
+                c.selectsSubAttribute = null;
+            }
+
+            c.removeAttribute = this.removeAttribute;
+            if (this.imposedDirectives != null)
+            {
+                c.imposedDirectives = new List<string>(this.imposedDirectives);
+            }
+
+            if (this.removedDirectives != null)
+            {
+                c.removedDirectives = new List<string>(this.removedDirectives);
+            }
+
+            c.addSupportingAttribute = this.addSupportingAttribute;
+            c.cardinality = this.cardinality;
+            c.renameFormat = this.renameFormat;
+
             if (this.expansion != null)
             {
                 c.expansion = new Expansion()
@@ -185,6 +219,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmAttributeResolutionGuidance>(this, resOpt, options);
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return true;

@@ -42,15 +42,22 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.DATA_PARTITION_PATTERN_DEF
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDataPartitionPatternDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionPatternDefinition'] = None) -> 'CdmDataPartitionPatternDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmDataPartitionPatternDefinition(self.ctx, self.name)
+        if not host:
+            copy = CdmDataPartitionPatternDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
+
         copy.root_location = self.root_location
         copy.regular_expression = self.regular_expression
+        copy.parameters = self.parameters
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
-        copy.parameters = self.parameters
         if self.specialized_schema:
             copy.specialized_schema = self.specialized_schema
         self._copy_def(res_opt, copy)
@@ -62,35 +69,48 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         namespace = self.in_document.namespace
         adapter = self.ctx.corpus.storage.fetch_adapter(namespace)
 
-        # Make sure the root is a good full corpus path.
+        if adapter is None:
+            self.ctx.logger.error('Adapter not found for the document %s', self.in_document.name)
+
+        # make sure the root is a good full corpus path.
         root_cleaned = (self.root_location or '').rstrip('/')
         root_corpus = self.ctx.corpus.storage.create_absolute_corpus_path(root_cleaned, self.in_document)
 
-        # Get a list of all corpus_paths under the root.
+        # get a list of all corpus_paths under the root.
         file_info_list = await adapter.fetch_all_files_async(root_corpus)
 
-        # Remove root of the search from the beginning of all paths so anything in the root is not found by regex.
+        # remove root of the search from the beginning of all paths so anything in the root is not found by regex.
         file_info_list = [(namespace + ':' + fi)[len(root_corpus):] for fi in file_info_list]
 
         reg = regex.compile(self.regular_expression)
 
         if isinstance(self.owner, CdmLocalEntityDeclarationDefinition):
             for fi in file_info_list:
-                if reg.fullmatch(fi):
-                    # Create a map of arguments out of capture groups.
+                m = reg.fullmatch(fi)
+                if m:
+                    # create a map of arguments out of capture groups.
                     args = defaultdict(list)  # type: Dict[str, List[str]]
-                    if reg.groups >= 1:
-                        captures = reg.match(fi).captures(1)
-                        for par, cap in zip(self.parameters, captures):
-                            args[par].append(cap)
+                    i_param = 0
+                    for i in range(1, reg.groups + 1):
+                        captures = m.captures(i)
+                        if captures and self.parameters and i_param < len(self.parameters):
+                            # to be consistent with other languages, if a capture group captures
+                            # multiple things, only use the last thing that was captured
+                            single_capture = captures[-1]
 
-                    # Put the original but cleaned up root back onto the matched doc as the location stored in the partition.
+                            current_param = self.parameters[i_param]
+                            args[current_param].append(single_capture)
+                            i_param += 1
+                        else:
+                            break
+
+                    # put the original but cleaned up root back onto the matched doc as the location stored in the partition.
                     location_corpus_path = root_cleaned + fi
                     last_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(location_corpus_path))
                     cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
                         location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
 
-        # Update modified times.
+        # update modified times.
         self.last_file_status_check_time = datetime.now(timezone.utc)
 
     def get_name(self) -> str:
@@ -108,4 +128,20 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         return bool(self.name) and bool(self.root_location)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.get_name() or 'UNNAMED'
+                self._declared_path = path
+
+        if pre_children and pre_children(self, path):
+            return False
+
+        if self._visit_def(path, pre_children, post_children):
+            return True
+
+        if post_children and post_children(self, path):
+            return False
+
         return False

@@ -31,6 +31,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal dynamic UnResolvedValue { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmArgumentDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The argument name.</param>
         public CdmArgumentDefinition(CdmCorpusContext ctx, string name)
             : base(ctx)
         {
@@ -49,14 +54,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             return CdmObjectBase.CopyData<CdmArgumentDefinition>(this, resOpt, options);
         }
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmArgumentDefinition copy = new CdmArgumentDefinition(this.Ctx, this.Name);
+            CdmArgumentDefinition copy;
+            if (host == null)
+            {
+                copy = new CdmArgumentDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmArgumentDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
+
             if (this.Value != null)
             {
                 if (this.Value is CdmObject)
@@ -71,6 +89,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.Explanation = this.Explanation;
             return copy;
         }
+
+        /// <inheritdoc />
         public override bool Validate()
         {
             return this.Value != null ? true : false;
@@ -84,11 +104,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + (this.Value != null ? "value/" : "");
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + (this.Value != null ? "value/" : "");
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 

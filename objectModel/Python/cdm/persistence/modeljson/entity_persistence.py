@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 class EntityPersistence:
     @staticmethod
-    async def from_data(ctx: 'CdmCorpusContext', data: 'LocalEntity', extension_trait_def_list: List['CdmTraitDefinition']) \
-            -> Optional['CdmEntityDefinition']:
+    async def from_data(ctx: 'CdmCorpusContext', data: 'LocalEntity', extension_trait_def_list: List['CdmTraitDefinition'],
+                        local_extension_trait_def_list: List['CdmTraitDefinition']) -> Optional['CdmEntityDefinition']:
         entity = ctx.corpus.make_object(CdmObjectType.ENTITY_DEF, data.name)
 
         if data.get('description'):
@@ -23,14 +23,14 @@ class EntityPersistence:
         await utils.process_annotations_from_data(ctx, data, entity.exhibits_traits)
 
         for element in (data.get('attributes') or []):
-            type_attribute = await TypeAttributePersistence.from_data(ctx, element, extension_trait_def_list)
+            type_attribute = await TypeAttributePersistence.from_data(ctx, element, extension_trait_def_list, local_extension_trait_def_list)
             if type_attribute is not None:
                 entity.attributes.append(type_attribute)
             else:
                 ctx.logger.error('There was an error while trying to convert model.json attribute to cdm attribute.')
                 return
 
-        await extension_helper.process_extension_from_json(ctx, data, entity.exhibits_traits, extension_trait_def_list)
+        extension_helper.process_extension_from_json(ctx, data, entity.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
 
         return entity
 

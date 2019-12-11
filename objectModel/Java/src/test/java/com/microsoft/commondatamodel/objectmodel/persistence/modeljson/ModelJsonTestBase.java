@@ -92,6 +92,10 @@ public class ModelJsonTestBase {
     final LocalAdapter cdmAdapter = new LocalAdapter(SCHEMA_DOCS_ROOT);
     cdmCorpus.getStorage().mount(CDM, cdmAdapter);
 
+    // Un-mounts the default cdm and mounts the resource adapter. This will
+    // also implicitly test the resource adapter functionality.
+    cdmCorpus.getStorage().unmount(CDM);
+
     final RemoteAdapter remoteAdapter = new RemoteAdapter();
     remoteAdapter.setTimeout(Duration.ofMillis(5000));
     remoteAdapter.setMaximumTimeout(Duration.ofMillis(10000));

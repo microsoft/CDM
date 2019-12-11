@@ -2,9 +2,6 @@
 // <copyright file="CdmDataPartitionPatternDefinition.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-// <summary>
-//   The object model implementation for Data Partition Pattern.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -27,8 +24,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmDataPartitionPatternDefinition"/> class.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
-        /// <param name="name"> The name. </param>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The name.</param>
         public CdmDataPartitionPatternDefinition(CdmCorpusContext ctx, string name) : base(ctx)
         {
             this.ObjectType = CdmObjectType.DataPartitionPatternDef;
@@ -41,30 +38,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the starting location corpus path for searching for inferred data partitions.
+        /// Gets or sets the starting location corpus path to use to search for inferred data partitions.
         /// </summary>
         public string RootLocation { get; set; }
 
         /// <summary>
-        /// Gets or sets the regular expression string to use for searching partitions.
+        /// Gets or sets the regular expression string to use to search for partitions.
         /// </summary>
         public string RegularExpression { get; set; }
 
         /// <summary>
-        /// Gets or sets the names for replacement values from regular expression.
+        /// Gets or sets the names for replacement values from the regular expression.
         /// </summary>
         public List<string> Parameters { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the corpus path for the specialized schema to use for matched pattern partitions.
+        /// </summary>
         public string SpecializedSchema { get; set; }
 
         /// <summary>
-        /// Gets or sets the corpus path for specialized schema to use for matched pattern partitions.
+        /// Gets or sets the last file status check time.
         /// </summary>
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets or sets the last file modified time.
+        /// </summary>
         public DateTimeOffset? LastFileModifiedTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last child file modified time.
+        /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <inheritdoc />
@@ -81,21 +86,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            var copy = new CdmDataPartitionPatternDefinition(this.Ctx, this.Name)
+            CdmDataPartitionPatternDefinition copy;
+            if (host == null)
             {
-                RootLocation = this.RootLocation,
-                RegularExpression = this.RegularExpression,
-                Parameters = this.Parameters,
-                LastFileStatusCheckTime = this.LastFileStatusCheckTime,
-                LastFileModifiedTime = this.LastFileModifiedTime
-            };
+                copy = new CdmDataPartitionPatternDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmDataPartitionPatternDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
+
+            copy.RootLocation = this.RootLocation;
+            copy.RegularExpression = this.RegularExpression;
+            copy.Parameters = this.Parameters;
+            copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
+            copy.LastFileModifiedTime = this.LastFileModifiedTime;
+
             if (this.SpecializedSchema != null)
             {
                 copy.SpecializedSchema = this.SpecializedSchema;
@@ -121,6 +136,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
+            {
+                path = this.DeclaredPath;
+                if (path == null)
+                {
+                    string thisName = this.GetName();
+                    if (thisName == null)
+                        thisName = "UNNAMED";
+                    path = pathFrom + thisName;
+                    this.DeclaredPath = path;
+                }
+            }
+
+            if (preChildren != null && preChildren.Invoke(this, path))
+            {
+                return false;
+            }
+
+            if (this.VisitDef(path, preChildren, postChildren))
+                return true;
+
+            if (postChildren != null && postChildren.Invoke(this, path))
+            {
+                return false;
+            }
             return false;
         }
 
@@ -139,7 +180,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public async Task FileStatusCheckAsync()
         {
             string nameSpace = this.InDocument.Namespace;
-            StorageAdapter adapter = (this.Ctx.Corpus as CdmCorpusDefinition).Storage.FetchAdapter(nameSpace);
+            StorageAdapter adapter = this.Ctx.Corpus.Storage.FetchAdapter(nameSpace);
 
             if (adapter == null)
             {
@@ -180,22 +221,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // create a map of arguments out of capture groups
                         Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
-                        // since we match the entire string, we should only have one group
-                        // captures start after the string match at m[0]
-                        CaptureCollection captures = m.Groups[1].Captures;
-                        for (int i = 0; i < captures.Count; i++)
+                        int iParam = 0;
+                        // captures start after the string match at m.Groups[0]
+                        for (int i = 1; i < m.Groups.Count; i++)
                         {
-                            if (i < this.Parameters.Count)
+                            CaptureCollection captures = m.Groups[i].Captures;
+                            if (captures.Count > 0 && iParam < this.Parameters?.Count)
                             {
-                                string currentParam = this.Parameters[i];
+                                // to be consistent with other languages, if a capture group captures
+                                // multiple things, only use the last thing that was captured
+                                var singleCapture = captures[captures.Count - 1];
+
+                                string currentParam = this.Parameters[iParam];
                                 if (!args.ContainsKey(currentParam))
                                     args[currentParam] = new List<string>();
-                                args[currentParam].Add(captures[i].ToString());
+                                args[currentParam].Add(singleCapture.ToString());
+                                iParam++;
+                            }
+                            else
+                            {
+                                break;
                             }
                         }
                         // put the original but cleaned up root back onto the matched doc as the location stored in the partition
                         string locationCorpusPath = $"{rootCleaned}{fi}";
-                        DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(locationCorpusPath);
+                        string fullPath = $"{rootCorpus}{fi}";
+                        DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(fullPath);
                         (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                     }
                 }

@@ -1,0 +1,129 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "is.format.integer"
+        },
+        {
+            "traitName": "is.format.string"
+        },
+        {
+            "traitName": "is.constrainted"
+        },
+        {
+            "traitName": "means.personName"
+        },
+        {
+            "traitName": "is.constrained.length",
+            "extendsTrait": "is.constrainted",
+            "hasParameters": [
+                {
+                    "name": "maxLength",
+                    "defaultValue": "255",
+                    "required": false,
+                    "direction": "in",
+                    "dataType": "int"
+                }
+            ]
+        },
+        {
+            "dataTypeName": "int",
+            "exhibitsTraits": [
+                "is.format.integer"
+            ]
+        },
+        {
+            "dataTypeName": "str",
+            "exhibitsTraits": [
+                "is.format.string"
+            ]
+        },
+        {
+            "dataTypeName": "name",
+            "extendsDataType": "str",
+            "exhibitsTraits": [
+                "means.personName",
+                "is.constrained.length"
+            ]
+        },
+        {
+            "entityName": "address",
+            "hasAttributes": [
+                {
+                    "dataType": "int",
+                    "name": "cid"
+                },
+                {
+                    "dataType": "str",
+                    "name": "street"
+                },
+                {
+                    "dataType": "name",
+                    "name": "cityName"
+                }
+            ]
+        },
+        {
+            "entityName": "simpleCust",
+            "hasAttributes": [
+                {
+                    "dataType": "int",
+                    "name": "id"
+                },
+                {
+                    "dataType": "name",
+                    "name": "fullName",
+                    "appliedTraits": [
+                        {
+                            "traitReference": "is.constrained.length",
+                            "arguments": [
+                                {
+                                    "name": "maxLength",
+                                    "value": "130"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "homeAddress",
+                    "entity": {
+                        "entityReference": "address",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "address/(resolvedAttributes)/cid"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "dataType": "entityId",
+                                "name": "foreignKey",
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier"
+                                ]
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "all"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

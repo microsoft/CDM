@@ -2,9 +2,6 @@
 // <copyright file="CdmLocalEntityDeclarationDefinition.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-// <summary>
-//   The object model implementation for local entity declaration.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -23,12 +20,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmLocalEntityDeclarationDefinition"/> class.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
-        /// <param name="entityName"> The entity name. </param>
+        /// <param name="ctx">The context.</param>
+        /// <param name="entityName">The entity name.</param>
         public CdmLocalEntityDeclarationDefinition(CdmCorpusContext ctx, string entityName) : base(ctx)
         {
             this.ObjectType = CdmObjectType.LocalEntityDeclarationDef;
             this.EntityName = entityName;
+            this.DataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
+            this.DataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
         }
 
         /// <summary>
@@ -42,49 +41,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string EntityPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the data partitions.
-        /// </summary>
-        internal CdmCollection<CdmDataPartitionDefinition> _dataPartitions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data partition patterns.
-        /// </summary>
-        internal CdmCollection<CdmDataPartitionPatternDefinition> _dataPartitionPatterns { get; set; }
-
-        /// <summary>
-        /// The last file status check time.
+        /// Gets or sets the last file status check time.
         /// </summary>
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
         /// <summary>
-        /// The last file modified time.
+        /// Gets or sets the last file modified time.
         /// </summary>
         public DateTimeOffset? LastFileModifiedTime { get; set; }
 
         /// <summary>
-        /// The last child file modified time.
+        /// Gets or sets the last child file modified time.
         /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
-        public CdmCollection<CdmDataPartitionDefinition> DataPartitions
-        {
-            get
-            {
-                if (this._dataPartitions == null)
-                    this._dataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
-                return this._dataPartitions;
-            }
-        }
+        /// <summary>
+        /// Gets the data partitions.
+        /// </summary>
+        public CdmCollection<CdmDataPartitionDefinition> DataPartitions { get; }
 
-        public CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns
-        {
-            get
-            {
-                if (this._dataPartitionPatterns == null)
-                    this._dataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
-                return this._dataPartitionPatterns;
-            }
-        }
+        /// <summary>
+        /// Gets the data partition patterns.
+        /// </summary>
+        public CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns { get; }
 
         /// <inheritdoc />
         [Obsolete]
@@ -100,20 +79,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            var copy = new CdmLocalEntityDeclarationDefinition(this.Ctx, this.EntityName)
+            CdmLocalEntityDeclarationDefinition copy;
+            if (host == null)
             {
-                EntityPath = this.EntityPath,
-                LastFileStatusCheckTime = this.LastFileStatusCheckTime,
-                LastFileModifiedTime = this.LastFileModifiedTime,
-                LastChildFileModifiedTime = this.LastChildFileModifiedTime
-            };
+                copy = new CdmLocalEntityDeclarationDefinition(this.Ctx, this.EntityName);
+            }
+            else
+            {
+                copy = host as CdmLocalEntityDeclarationDefinition;
+                copy.Ctx = this.Ctx;
+                copy.EntityName = this.EntityName;
+                copy.DataPartitionPatterns.Clear();
+                copy.DataPartitions.Clear();
+            }
+
+            copy.EntityPath = this.EntityPath;
+            copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
+            copy.LastFileModifiedTime = this.LastFileModifiedTime;
+            copy.LastChildFileModifiedTime = this.LastChildFileModifiedTime;
+
             foreach (var partition in this.DataPartitions)
                 copy.DataPartitions.Add(partition);
             foreach (var pattern in this.DataPartitionPatterns)
@@ -138,11 +129,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (path == null)
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.EntityName;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (path == null)
+                {
+                    path = pathFrom + this.EntityName;
+                    this.DeclaredPath = path;
+                }
             }
 
             if (preChildren != null && preChildren.Invoke(this, path))
@@ -152,8 +147,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.DataPartitions != null)
             {
-                if (this._dataPartitions.VisitList(path + "/", preChildren, postChildren))
+                if (this.DataPartitions.VisitList(path + "/dataPartitions/", preChildren, postChildren))
                     return true;
+            }
+
+            if (this.DataPartitionPatterns != null)
+            {
+                if (this.DataPartitionPatterns.VisitList(path + "/dataPartitionPatterns/", preChildren, postChildren))
+                    return true;
+            }
+
+            if (this.VisitDef(path, preChildren, postChildren))
+                return true;
+
+            if (postChildren != null && postChildren.Invoke(this, path))
+            {
+                return false;
             }
             return false;
         }
@@ -172,7 +181,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(this.EntityPath);
+            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
+            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath, this);
 
             foreach (var partition in this.DataPartitions)
                 await partition.FileStatusCheckAsync();
@@ -201,7 +211,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Creates a data partition object using the input, should be called by DataPartitionPattern object
+        /// Creates a data partition object using the input. Should be called by a DataPartitionPattern object.
         /// </summary>
         internal void CreateDataPartitionFromPattern(string filePath, CdmTraitCollection exhibitsTraits, Dictionary<string, List<string>> args, string schema, DateTimeOffset? modifiedTime)
         {
@@ -220,7 +230,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 foreach (KeyValuePair<string, List<string>> entry in args)
                     newPartition.Arguments[entry.Key] = entry.Value;
 
-                this._dataPartitions.Add(newPartition);
+                this.DataPartitions.Add(newPartition);
             }
         }
     }

@@ -15,13 +15,10 @@ from cdm.storage.github import GithubAdapter
 class GithubStorageAdapterTestCase(unittest.TestCase):
 
     def test_make_corpus_path(self):
-        http_config = {
-            'timeout': 2000,
-            'maximumTimeout': 5000,
-            'numberOfRetries': 0
-        }
-
-        adapter = GithubAdapter(http_config=http_config)
+        adapter = GithubAdapter()
+        adapter.timeout = 2000
+        adapter.maximum_timeout = 5000
+        adapter.number_of_retries = 0
 
         # Valid path.
         self.assertEqual(adapter.create_corpus_path(
@@ -33,12 +30,9 @@ class GithubStorageAdapterTestCase(unittest.TestCase):
     @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open, read_data=json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'}).encode())
     @async_test
     async def test_read(self, mock_urlopen):
-        http_config = {
-            'timeout': 2000,
-            'maximum_timeout': 5000
-        }
-
-        adapter = GithubAdapter(http_config=http_config)
+        adapter = GithubAdapter()
+        adapter.timeout = 2000
+        adapter.maximum_timeout = 5000
         raw_data = await adapter.read_async('/dir1/dir2/file.json')
         data = json.loads(raw_data)
 

@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -18,35 +19,58 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.Id = CdmCorpusDefinition.NextId();
             this.Ctx = ctx;
-            if (ctx != null)
-                this.DocCreatedIn = (ctx as ResolveContext).CurrentDoc;
         }
 
+        /// <inheritdoc />
         public int Id { get; set; }
-        public abstract CdmObject Copy(ResolveOptions resOpt = null);
+
+        /// <inheritdoc />
+        public abstract CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null);
+
+        /// <inheritdoc />
         public abstract bool Validate();
 
+        /// <inheritdoc />
         public abstract bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null);
 
+        /// <inheritdoc />
         public CdmObjectType ObjectType { get; set; }
+
+        /// <inheritdoc />
         public CdmCorpusContext Ctx { get; set; }
-        internal CdmDocumentDefinition DocCreatedIn { get; set; }
+
         internal IDictionary<string, ResolvedTraitSetBuilder> TraitCache { get; set; }
+
         internal string DeclaredPath { get; set; }
+
+        /// <inheritdoc />
         public CdmObject Owner { get; set; }
 
         [Obsolete]
         public abstract CdmObjectType GetObjectType();
-        public abstract string FetchObjectDefinitionName();
-        public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
-        public virtual string AtCorpusPath { get; set; }
 
-        public virtual CdmDocumentDefinition InDocument
-        {
-            get { return this.DocCreatedIn; }
-            set { this.DocCreatedIn = (CdmDocumentDefinition)value; }
+        /// <inheritdoc />
+        public abstract string FetchObjectDefinitionName();
+
+        /// <inheritdoc />
+        public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
+
+        /// <inheritdoc />
+        public virtual string AtCorpusPath { 
+            get {
+                if (this.InDocument == null)
+                {
+                    return $"NULL:/NULL/{this.DeclaredPath}";
+                }
+                else
+                {
+                    return $"{this.InDocument.AtCorpusPath}/{this.DeclaredPath}";
+                }
+            }
         }
 
+        /// <inheritdoc />
+        public virtual CdmDocumentDefinition InDocument { get; set; }
         internal virtual void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
             return;
@@ -62,6 +86,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         [Obsolete()]
         internal virtual ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
+            bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
+            this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
@@ -126,6 +152,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             currDocRefSet.Merge(resOpt.SymbolRefSet);
             resOpt.SymbolRefSet = currDocRefSet;
 
+            this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return rtsbAll.ResolvedTraitSet;
         }
 
@@ -134,6 +161,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         [Obsolete()]
         internal ResolvedAttributeSet FetchResolvedAttributes(ResolveOptions resOpt = null, AttributeContextParameters acpInContext = null)
         {
+            bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
+            this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
@@ -166,6 +195,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (this.resolvingAttributes)
                 {
                     // re-entered this attribute through some kind of self or looping reference.
+                    this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
                     return new ResolvedAttributeSet();
                 }
                 this.resolvingAttributes = true;
@@ -190,7 +220,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (!string.IsNullOrWhiteSpace(cacheTag))
                         ctx.Cache[cacheTag] = rasbCache;
 
-                    if (!string.IsNullOrWhiteSpace(fromMoniker) && acpInContext != null && (this as CdmObjectReferenceBase).NamedReference != null)
+                    if (!string.IsNullOrWhiteSpace(fromMoniker) && acpInContext != null &&
+                        (this is CdmObjectReferenceBase) && (this as CdmObjectReferenceBase).NamedReference != null)
                     {
                         // create a fresh context
                         CdmAttributeContext oldContext = acpInContext.under.Contents[acpInContext.under.Contents.Count - 1] as CdmAttributeContext;
@@ -227,6 +258,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             currDocRefSet.Merge(resOpt.SymbolRefSet);
             resOpt.SymbolRefSet = currDocRefSet;
 
+            this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return rasbCache?.ResolvedAttributeSet;
         }
 
@@ -280,7 +312,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public abstract bool Visit(string path, VisitCallback preChildren, VisitCallback postChildren);
 
         /// <summary>
-        /// Calls the Visit function on all objects in the collection
+        /// Calls the Visit function on all objects in the collection.
         /// </summary>
         internal static bool VisitList(IEnumerable<dynamic> items, string path, VisitCallback preChildren, VisitCallback postChildren)
         {
@@ -337,8 +369,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 // used to localize references between documents
                 traitRef.ExplicitReference = rt.Trait as CdmTraitDefinition;
-                traitRef.DocCreatedIn = (rt.Trait as CdmTraitDefinition).DocCreatedIn;
+                traitRef.InDocument = (rt.Trait as CdmTraitDefinition).InDocument;
             }
+            // always make it a property when you can, however the dataFormat traits should be left alone
+            if (rt.Trait.AssociatedProperties != null && !rt.Trait.IsDerivedFrom("is.dataFormat", resOpt))
+                traitRef.IsFromProperty = true;
             return traitRef;
         }
 
@@ -353,6 +388,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOptCopy.IndexingDoc = resOpt.IndexingDoc;
             return resOptCopy;
         }
+
+        /// <inheritdoc />
         public abstract CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null);
     }
 }

@@ -13,7 +13,5 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         CdmCorpusDefinition Corpus { get; set; }
 
         EventCallback StatusEvent { get; }
-
-        void UpdateDocumentContext(CdmDocumentDefinition currentDoc, string corpusPathRoot = null);
     }
 }

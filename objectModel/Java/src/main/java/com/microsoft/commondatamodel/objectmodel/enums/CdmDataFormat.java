@@ -22,6 +22,8 @@ public enum CdmDataFormat {
   Decimal,
   Guid,
   Json,
+  PK,
+  Int,
   Unknown;
 
   private static final Map<String, CdmDataFormat> LOWERCASE_ENUM_MAP;

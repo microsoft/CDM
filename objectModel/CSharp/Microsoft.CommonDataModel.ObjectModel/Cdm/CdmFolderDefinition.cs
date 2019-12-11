@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -30,8 +31,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmFolderDefinition"/> class.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
-        /// <param name="name"> The name. </param>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The name.</param>
         public CdmFolderDefinition(CdmCorpusContext ctx, string name)
             : base(ctx)
         {
@@ -76,9 +77,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Creates a folder instance from data.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
-        /// <param name="obj"> The object to read data from. </param>
-        /// <returns> The <see cref="CdmFolderDefinition"/>. </returns>
+        /// <param name="ctx">The context.</param>
+        /// <param name="obj">The object to read data from.</param>
+        /// <returns>The <see cref="CdmFolderDefinition"/>.</returns>
         [Obsolete("InstanceFromData is deprecated. Please use the Persistence Layer instead.")]
         public static CdmFolderDefinition InstanceFromData(CdmCorpusContext ctx, Folder obj)
         {
@@ -108,16 +109,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <inheritdoc />
         public override string AtCorpusPath
         {
             get
             {
-                if (this.Namespace != null && this.FolderPath != null)
+                if (this.Namespace == null)
+                {
+                    // We're not under any adapter (not in a corpus), so return special indicator.                    
+                    return $"NULL:{this.FolderPath}";
+                }
+                else
                 {
                     return $"{this.Namespace}:{this.FolderPath}";
                 }
-                // no namespace ... for now return the default
-                return this.FolderPath;
             }
         }
 
@@ -128,7 +133,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
@@ -140,12 +145,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
 
         /// <summary>
-        /// Fetches the document from folder path.
+        /// Fetches the document from the folder path.
         /// </summary>
-        /// <param name="path"> The path. </param>
-        /// <param name="adapter"> The storage adapter where the document can be found. </param>
-        /// <param name="forceReload"> If true, reload the object from file and replace the current object with it. </param>
-        /// <returns> The <see cref="CdmDocumentDefinition"/>. </returns>
+        /// <param name="path">The path.</param>
+        /// <param name="adapter">The storage adapter where the document can be found.</param>
+        /// <param name="forceReload">If true, reload the object from file and replace the current object with it.</param>
+        /// <returns>The <see cref="CdmDocumentDefinition"/>.</returns>
         internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false)
         {
             string docName;
@@ -180,7 +185,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // go get the doc
-            doc = await PersistenceLayer.LoadDocumentFromPathAsync(this, docName);
+            doc = await PersistenceLayer.LoadDocumentFromPathAsync(this, docName, doc);
 
             return doc;
         }
@@ -215,12 +220,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Fethes the child folder from corpus path.
+        /// Fetches the child folder from the corpus path.
         /// </summary>
-        /// <param name="path"> The path. </param>
-        /// <param name="adapter"> The storage adapter where the folder can be found. </param>
-        /// <param name="makeFolder"> Create the folder if it doesn't exist. </param>
-        /// <returns> The <see cref="ICdmFolderDef"/>. </returns>
+        /// <param name="path">The path.</param>
+        /// <param name="adapter">The storage adapter where the folder can be found.</param>
+        /// <param name="makeFolder">Create the folder if it doesn't exist.</param>
+        /// <returns>The <see cref="CdmFolderDefinition"/>.</returns>
         internal async Task<CdmFolderDefinition> FetchChildFolderFromPathAsync(string path, bool makeFolder = false)
         {
             string name;
@@ -265,7 +270,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var childPath = await this.ChildFolders.Add(name).FetchChildFolderFromPathAsync(remainingPath, makeFolder);
                     if (childPath == null)
                     {
-                        Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Cannot find remain path '{remainingPath}' from folder '{name}'", "FetchChildFolderFromPathAsync");
+                        Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", "FetchChildFolderFromPathAsync");
                     }
                     return childPath;
                 }

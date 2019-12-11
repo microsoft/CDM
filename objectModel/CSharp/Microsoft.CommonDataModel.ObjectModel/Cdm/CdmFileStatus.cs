@@ -1,38 +1,38 @@
 ﻿//-----------------------------------------------------------------------
-// <copyrightfile="CdmFileStatus.cs"company="Microsoft">
+// <copyright file="CdmFileStatus.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
-using System.Threading.Tasks;
-
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using System;
+    using System.Threading.Tasks;
+
     public interface CdmFileStatus : CdmObject
     {
         /// <summary>
-        /// Last time the modified times were updated
+        /// Gets or sets the last time the modified times were updated.
         /// </summary>
         DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
         /// <summary>
-        /// Last time this file was modified according to the OM
+        /// Gets or sets the last time this file was modified according to the OM.
         /// </summary>
         DateTimeOffset? LastFileModifiedTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the attribute context content list.
+        /// Gets or sets the greatest last time reported by any of the children objects about their file status check times.
         /// </summary>
         DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
         /// <summary>
-        /// Updates the object and any children with changes made in the document file where it came from
+        /// Updates the object and any children with changes made in the document file where it came from.
         /// </summary>
         Task FileStatusCheckAsync();
 
         /// <summary>
-        /// Report most recent modified time (of current or children objects) to the parent object
+        /// Reports the most recent modified time (of current or children objects) to the parent object.
         /// </summary>
         Task ReportMostRecentTimeAsync(DateTimeOffset? childTime);
     }

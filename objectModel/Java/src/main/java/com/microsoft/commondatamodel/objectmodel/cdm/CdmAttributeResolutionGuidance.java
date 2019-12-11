@@ -315,13 +315,30 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmAttributeResolutionGuidance result = new CdmAttributeResolutionGuidance(this.getCtx());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
 
-    result.setCtx(this.getCtx());
+    CdmAttributeResolutionGuidance result;
+    if (host == null) {
+      result = new CdmAttributeResolutionGuidance(this.getCtx());
+    } else {
+      result = (CdmAttributeResolutionGuidance) host;
+      result.setCtx(this.getCtx());
+      result.setExpansion(null);
+      result.setEntityByReference(null);
+      result.setSelectsSubAttribute(null);
+    }
+
     result.setRemoveAttribute(this.getRemoveAttribute());
-    result.setImposedDirectives(this.getImposedDirectives());
-    result.setRemovedDirectives(this.getRemovedDirectives());
+    if (this.getImposedDirectives() != null) {
+      result.setImposedDirectives(new ArrayList<>(this.getImposedDirectives()));
+    }
+    if (this.getRemovedDirectives() != null) {
+      result.setRemovedDirectives(new ArrayList<>(this.getRemovedDirectives()));
+    }
+
     result.setAddSupportingAttribute(this.getAddSupportingAttribute());
     result.setCardinality(this.getCardinality());
     result.setRenameFormat(this.getRenameFormat());

@@ -15,12 +15,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         internal Stack<ResolveContextScope> ScopeStack;
         internal ResolveContextScope CurrentScope;
         internal CdmStatusLevel ReportAtLevel;
-        internal CdmDocumentDefinition CurrentDoc { get; set; }
         public CdmCorpusDefinition Corpus { get; set; }
         public EventCallback StatusEvent { get; set; }
 
         internal string RelativePath;
-        internal string CorpusPathRoot;
         internal int Errors;
         internal IDictionary<string, dynamic> Cache;
 
@@ -30,15 +28,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             this.StatusEvent = statusEvent;
             this.Cache = new ConcurrentDictionary<string, object>();
             this.Corpus = corpus;
-        }
-
-        public void UpdateDocumentContext(CdmDocumentDefinition currentDoc, string corpusPathRoot)
-        {
-            if (currentDoc != null)
-                this.CurrentDoc = (CdmDocumentDefinition)currentDoc;
-
-            if (!string.IsNullOrEmpty(corpusPathRoot))
-                this.CorpusPathRoot = corpusPathRoot;
         }
 
         internal void PushScope(CdmTraitDefinition currentTrait)

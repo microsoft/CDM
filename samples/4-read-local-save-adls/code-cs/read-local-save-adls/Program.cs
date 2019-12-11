@@ -8,7 +8,7 @@
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
-    /**
+    /*
      * --------------------------------------------------------------------------------------------------------------------
      * This sample demonstrates CDM Object Model use case in which a model.json file is loaded from a local file-system,
      * its content explored and then changed, and finally saved to an ADLSg2 destination.
@@ -17,8 +17,11 @@
      *  1. The OM library is added to the assembly lookup path
      *  2. The modelJsonRoot constant points to the location of the example.model.json file
      *  3. ADLSg2 adapter configuration is updated according to your env setup
+     *  4. The partition location in model.json file is specifying the same ADLSg2 account and file-system settings
+     *  5. Ensure the Azure user object is assigned "Storage Blob Data Contributor" role in the ADLSg2 access management page
      *  -------------------------------------------------------------------------------------------------------------------
      */
+
     class Program
     {
         const string modelJsonRoot = @"../../../../../";
@@ -56,7 +59,7 @@
             // ------------------------------------------------------------------------------------------------------------
             // Load a model.json file from local FS
 
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/example.model.json");
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/model.json");
 
             // ------------------------------------------------------------------------------------------------------------
             // Explore entities and partitions defined in the model
@@ -104,7 +107,7 @@
 
             CdmFolderDefinition adlsFolder = cdmCorpus.Storage.FetchRootFolder("adls");
             adlsFolder.Documents.Add(manifest);
-            await manifest.SaveAsAsync("example.model.json", true);
+            await manifest.SaveAsAsync("model.json", true);
         }
     }
 }

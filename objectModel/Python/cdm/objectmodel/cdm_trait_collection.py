@@ -11,54 +11,66 @@ if TYPE_CHECKING:
     CdmTraitDefOrRef = Union[str, CdmTraitDefinition, CdmTraitReference]
 
 
-def _get_trait_ref_name(trait_def_or_ref: 'CdmTraitDefOrRef') -> str:
-    if isinstance(trait_def_or_ref, str):
-        return trait_def_or_ref
-    if trait_def_or_ref.object_type == CdmObjectType.TRAIT_DEF:
-        return trait_def_or_ref.get_name()
-    if trait_def_or_ref.object_type == CdmObjectType.TRAIT_REF:
-        return trait_def_or_ref.fetch_object_definition_name()
-
-    return None
-
-
 class CdmTraitCollection(CdmCollection):
     def __init__(self, ctx: 'CdmCorpusContext', owner: 'CdmObject'):
         super().__init__(ctx, owner, CdmObjectType.TRAIT_REF)
 
     def append(self, obj: Union[str, 'CdmTraitDefOrRef'], simple_ref: bool = False) -> 'CdmTraitReference':
+        self._clear_cache()
         if not isinstance(obj, str):
             if obj.object_type == CdmObjectType.TRAIT_DEF:
                 from .cdm_trait_ref import CdmTraitReference
                 obj = CdmTraitReference(self.ctx, obj, simple_ref)
-        self._clear_cache()
+        # when the obj is a trait name or a trait reference
         return super().append(obj, simple_ref)
 
     def clear(self) -> None:
         self._clear_cache()
         super().clear()
 
-    def index(self, obj: 'CdmTraitDefOrRef', only_from_property: bool = False):
-        trait_name = _get_trait_ref_name(obj)
-        trait_index = -1
+    def index(self, obj: Union[str, 'CdmTraitDefOrRef'], only_from_property: bool = False):
+        if not isinstance(obj, str):
+            if obj.object_type == CdmObjectType.TRAIT_DEF:
+                return self.index(obj.trait_name, only_from_property)
+            return self.index(obj.fetch_object_definition_name(), only_from_property)
+        # when obj is a trait name
+        index_of_trait_not_from_property = -1
 
         for index, trait in enumerate(self):
-            if _get_trait_ref_name(trait) == trait_name:
-                trait_index = index
+            if self._corresponds(trait, obj):
                 if trait.is_from_property:
                     return index
+                index_of_trait_not_from_property = index
 
-        return -1 if only_from_property else trait_index
+        return -1 if only_from_property else index_of_trait_not_from_property
 
     def insert(self, index: int, obj: 'CdmTraitReference'):
         self._clear_cache()
         super().insert(index, obj)
 
-    def remove(self, obj: 'CdmTraitDefOrRef', only_from_property: bool = False):
-        index = self.index(obj, only_from_property)
-        if index >= 0:
-            self.pop(index)
-            self._clear_cache()
+    def remove(self, obj: Union[str, 'CdmTraitDefOrRef'], only_from_property: bool = False) -> None:
+        if not isinstance(obj, str):
+            if obj.object_type == CdmObjectType.TRAIT_DEF:
+                super()._propagate_in_document(obj, None)
+                return self.remove(obj.trait_name, only_from_property)
+            return self.remove(obj.fetch_object_definition_name(), only_from_property)
+        # when obj is a trait name
+        super()._make_document_dirty()
+        found_trait_not_from_property = None
+        self._clear_cache()
+        for trait in self:
+            if self._corresponds(trait, obj):
+                if trait.is_from_property:
+                    return super().remove(trait)
+                found_trait_not_from_property = trait
+
+        if not only_from_property and found_trait_not_from_property:
+            super()._propagate_in_document(found_trait_not_from_property, None)
+            return super().remove(found_trait_not_from_property)
+
+    def _corresponds(self, obj: 'CdmTraitDefOrRef', trait_name: str) -> bool:
+        return obj.fetch_object_definition_name() == trait_name
 
     def _clear_cache(self):
+        # if isinstance(self.owner, 'CdmObject'):
         self.owner._clear_trait_cache()

@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -20,9 +21,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets the traits this object definition exhibits.
         /// </summary>
         CdmTraitCollection ExhibitsTraits { get; }
-        
+
         /// <summary>
-        /// All objectDefs have some kind of name, this method returns the name independent of the name of the name property.
+        /// All object definitions have some kind of name, this method returns the name independent of the name property.
         /// </summary>
         string GetName();
 

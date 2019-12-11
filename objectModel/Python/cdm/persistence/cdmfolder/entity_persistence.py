@@ -4,6 +4,7 @@ from cdm.utilities import ResolveOptions, CopyOptions
 
 from . import utils
 from .attribute_context_persistence import AttributeContextPersistence
+from .attribute_resolution_guidance_persistence import AttributeResolutionGuidancePersistence
 from .entity_reference_persistence import EntityReferencePersistence
 from .types import Entity
 
@@ -16,6 +17,7 @@ class EntityPersistence:
 
         entity = ctx.corpus.make_object(CdmObjectType.ENTITY_DEF, data.entityName)
         entity.extends_entity = EntityReferencePersistence.from_data(ctx, data.get('extendsEntity'))
+        entity.extends_entity_resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('extendsEntityResolutionGuidance'))
 
         if data.get('explanation'):
             entity.explanation = data.explanation
@@ -54,6 +56,8 @@ class EntityPersistence:
         data.explanation = instance.explanation
         data.entityName = instance.entity_name
         data.extendsEntity = EntityReferencePersistence.to_data(instance.extends_entity, res_opt, options) if instance.extends_entity else None
+        data.ExtendsEntityResolutionGuidance = AttributeResolutionGuidancePersistence.to_data(
+            instance.extends_entity_resolution_guidance, res_opt, options) if instance.extends_entity_resolution_guidance else None
         data.exhibitsTraits = utils.array_copy_data(res_opt, exhibits_traits, options)
         data.sourceName = instance.fetch_property('sourceName')
         data.displayName = instance.fetch_property('displayName')

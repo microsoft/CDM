@@ -9,12 +9,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpReques
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * Network adapter is an abstract class that contains logic for adapters dealing with data across network.
@@ -46,19 +46,43 @@ public abstract class NetworkAdapter implements StorageAdapter {
   protected NetworkAdapter(final String configs) throws IOException {
   }
 
-  public void setTimeout(final Duration timeout) {
+  public CdmHttpClient getHttpClient() {
+    return httpClient;
+  }
+
+  public void setHttpClient(CdmHttpClient httpClient) {
+    this.httpClient = httpClient;
+  }
+
+  public Duration getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(Duration timeout) {
     this.timeout = timeout;
   }
 
-  public void setMaximumTimeout(final Duration maximumTimeout) {
+  public Duration getMaximumTimeout() {
+    return maximumTimeout;
+  }
+
+  public void setMaximumTimeout(Duration maximumTimeout) {
     this.maximumTimeout = maximumTimeout;
   }
 
-  public void setNumberOfRetries(final int numberOfRetries) {
+  public int getNumberOfRetries() {
+    return numberOfRetries;
+  }
+
+  public void setNumberOfRetries(int numberOfRetries) {
     this.numberOfRetries = numberOfRetries;
   }
 
-  public void setWaitTimeCallback(final CdmHttpClient.Callback waitTimeCallback) {
+  public CdmHttpClient.Callback getWaitTimeCallback() {
+    return waitTimeCallback;
+  }
+
+  public void setWaitTimeCallback(CdmHttpClient.Callback waitTimeCallback) {
     this.waitTimeCallback = waitTimeCallback;
   }
 
@@ -70,7 +94,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
    * @param method  The method.
    * @return A CdmHttpRequest object, representing the CDM Http request.
    */
-  protected CdmHttpRequest setUpCdmRequest(final String path, final Map<String, String> headers, final String method) {
+  CdmHttpRequest setUpCdmRequest(final String path, final Map<String, String> headers, final String method) {
     final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest(path, numberOfRetries);
     cdmHttpRequest.setHeaders(headers);
     cdmHttpRequest.setTimeout(this.timeout);
@@ -80,7 +104,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
     return cdmHttpRequest;
   }
 
-  protected CompletableFuture<CdmHttpResponse> readOrWrite(final CdmHttpRequest request) {
+  CompletableFuture<CdmHttpResponse> executeRequest(final CdmHttpRequest request) {
     return CompletableFuture.supplyAsync(() -> {
       try {
         final CdmHttpResponse response = this.httpClient.sendAsync(request, this.waitTimeCallback).get();
@@ -88,7 +112,18 @@ public abstract class NetworkAdapter implements StorageAdapter {
           return null;
         }
         if (!response.isSuccessful()) {
-          throw new CdmHttpRequestException("The response was not successful, the HTTP code " + response.getStatusCode() + " returned.");
+          throw new CdmHttpRequestException(
+              String.format("HTTP %d - %s. Response headers: %s. URL: %s",
+                  response.getStatusCode(),
+                  response.getReason(),
+                  response.getResponseHeaders()
+                      .entrySet()
+                      .stream()
+                      .map(entry -> entry + entry.getKey() + ":" + entry.getValue())
+                      .collect(Collectors.joining(",")),
+                  request.getRequestedUrl()
+              )
+          );
         }
         return response;
       } catch (final InterruptedException | ExecutionException ex) {
@@ -139,7 +174,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
   /// </summary>
   /// <returns>A Map of String and JsonNode containing the network specific properties.</returns>
   protected Map<String, JsonNode> fetchNetworkConfig() {
-      final Map<String, JsonNode> config = new HashMap<>();
+      final Map<String, JsonNode> config = new LinkedHashMap<>();
       config.put("timeout", JsonNodeFactory.instance.numberNode(this.timeout.toMillis()));
       config.put("maximumTimeout", JsonNodeFactory.instance.numberNode(this.maximumTimeout.toMillis()));
       config.put("numberOfRetries", JsonNodeFactory.instance.numberNode(this.numberOfRetries));

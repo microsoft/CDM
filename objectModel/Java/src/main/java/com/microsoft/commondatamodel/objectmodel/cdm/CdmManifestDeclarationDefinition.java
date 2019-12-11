@@ -6,7 +6,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.time.OffsetDateTime;
@@ -75,9 +74,13 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
-      final String manifestPath = getManifestPath();
 
-    return getCtx().getCorpus().computeLastModifiedTimeAsync(manifestPath)
+    final String fullPath =
+        this.getCtx()
+            .getCorpus()
+            .getStorage()
+            .createAbsoluteCorpusPath(this.getDefinition(), this.getInDocument());
+    return getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath, this)
       .thenCompose((modifiedTime) -> {
         // update modified times
         setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
@@ -85,15 +88,6 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
         return reportMostRecentTimeAsync(getLastFileModifiedTime());
       });
-  }
-
-  /**
-   * Returns the absolute path to the manifest file that this manifest declaration points to
-   */
-  private String getManifestPath() {
-      final String nameSpace = getInDocument().getNamespace();
-      final String prefixPath = getInDocument().getFolderPath();
-      return nameSpace + ":" + prefixPath + (getDefinition().startsWith("/") ? StringUtils.slice(getDefinition(), 1) : getDefinition());
   }
 
   @Override
@@ -110,12 +104,36 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
-  public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
+  public boolean visit(
+      final String pathFrom,
+      final VisitCallback preChildren,
+      final VisitCallback postChildren) {
+    String path = "";
+    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+      if (path == null) {
+        path = pathFrom + this.getName();
+        this.setDeclaredPath(path);
+      }
+    }
+
+    if (preChildren != null && preChildren.invoke(this, path)) {
+      return false;
+    }
+
+    if (this.visitDef(path, preChildren, postChildren)) {
+      return true;
+    }
+
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return false;
+    }
+
     return false;
   }
 
@@ -139,8 +157,19 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
    */
   @Override
   @Deprecated
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmManifestDeclarationDefinition copy = new CdmManifestDeclarationDefinition(this.getCtx(), this.getManifestName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmManifestDeclarationDefinition copy;
+    if (host == null) {
+      copy = new CdmManifestDeclarationDefinition(this.getCtx(), this.getManifestName());
+    } else {
+      copy = (CdmManifestDeclarationDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setManifestName(this.getManifestName());
+    }
 
     copy.setDefinition(this.getDefinition());
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());

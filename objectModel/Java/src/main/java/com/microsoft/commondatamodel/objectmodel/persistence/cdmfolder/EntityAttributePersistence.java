@@ -35,8 +35,8 @@ public class EntityAttributePersistence {
 
     result.setExplanation(instance.getExplanation());
     result.setName(instance.getName());
-    result.setEntity(JMapper.MAP.valueToTree(Utils.jsonForm(instance.getEntity(), resOpt, options)));
-    result.setPurpose(JMapper.MAP.valueToTree(Utils.jsonForm(instance.getPurpose(), resOpt, options)));
+    result.setEntity(Utils.jsonForm(instance.getEntity(), resOpt, options));
+    result.setPurpose(Utils.jsonForm(instance.getPurpose(), resOpt, options));
     result.setAppliedTraits(Utils.listCopyDataAsArrayNode(instance.getAppliedTraits(), resOpt, options));
     result.setResolutionGuidance(
             JMapper.MAP.valueToTree(Utils.jsonForm(instance.getResolutionGuidance(), resOpt, options)));

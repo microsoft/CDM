@@ -33,19 +33,24 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return this.isDerivedFromDef(resOpt, this.getExtendsPurpose(), this.getName(), baseDef);
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path))
-    {
-      path = pathFrom + this.getPurposeName();
-      this.setDeclaredPath(path);
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (Strings.isNullOrEmpty(path)) {
+        path = pathFrom + this.getPurposeName();
+        this.setDeclaredPath(path);
+      }
     }
-    //trackVisits(path);
 
     if (preChildren != null && preChildren.invoke(this, path)){
       return false;
@@ -107,8 +112,20 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmPurposeDefinition copy = new CdmPurposeDefinition(this.getCtx(), this.getPurposeName(), null);
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmPurposeDefinition copy;
+    if (host == null) {
+      copy = new CdmPurposeDefinition(this.getCtx(), this.getPurposeName(), null);
+    } else {
+      copy = (CdmPurposeDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setPurposeName(this.getPurposeName());
+    }
+
     if (this.getExtendsPurpose() != null) {
       copy.setExtendsPurpose((CdmPurposeReference) this.getExtendsPurpose().copy(resOpt));
     }

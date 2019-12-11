@@ -55,8 +55,8 @@ public class StorageConfigTest {
     String config = cdmCorpus.getStorage().getNamespaceAdapters().get("local").readAsync("/config.json").get();
     CdmCorpusDefinition differentCorpus = new CdmCorpusDefinition();
     differentCorpus.getStorage().mount(config);
-    ;
-    String resultConfig = differentCorpus.getStorage().fetchAdaptersConfig();
+
+    String resultConfig = differentCorpus.getStorage().fetchConfig();
     String outputConfig = cdmCorpus.getStorage().getNamespaceAdapters().get("target").readAsync("/config.json").get();
     JSONAssert.assertEquals(outputConfig, resultConfig, false);
   }
@@ -78,5 +78,34 @@ public class StorageConfigTest {
     CdmManifestDefinition cdmManifest = differentCorpus.<CdmManifestDefinition>fetchObjectAsync("model.json", cdmCorpus.getStorage().fetchRootFolder("local")).get();
     AssertJUnit.assertNotNull(cdmManifest);
     Assert.assertEquals(1, unrecognizedAdapters.size());
+  }
+
+  /**
+   * Testing loading and saving resource and system defined adapters.
+   */
+  @Test
+  public void testSystemAndResourceAdapters() throws InterruptedException, JSONException {
+    final String testInputPath =
+        TestHelper.getExpectedOutputFolderPath(testsSubpath, "TestSystemAndResourceAdapters");
+    final String testOutputPath =
+        TestHelper.getExpectedOutputFolderPath(testsSubpath, "TestSystemAndResourceAdapters");
+
+    // Create a corpus to load the config.
+    final CdmCorpusDefinition cdmCorpus = this.getLocalCorpus(testInputPath, testOutputPath);
+
+    final CdmCorpusDefinition differentCorpus = new CdmCorpusDefinition();
+
+    differentCorpus.getStorage().mount("cdm", new ResourceAdapter());
+    differentCorpus.getStorage().setDefaultNamespace("local");
+
+    final String resultConfig = differentCorpus.getStorage().fetchConfig();
+
+    final String outputConfig =
+        cdmCorpus.getStorage()
+            .getNamespaceAdapters()
+            .get("local")
+            .readAsync("/config.json").join();
+
+    JSONAssert.assertEquals(outputConfig, resultConfig, false);
   }
 }

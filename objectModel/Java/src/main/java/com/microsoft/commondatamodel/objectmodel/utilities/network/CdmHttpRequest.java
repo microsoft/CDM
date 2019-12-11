@@ -1,7 +1,7 @@
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CdmHttpRequest {
@@ -53,7 +53,7 @@ public class CdmHttpRequest {
     }
 
     public CdmHttpRequest(final String url, final int numberOfRetries, final String method) {
-        this.headers = new HashMap<>();
+        this.headers = new LinkedHashMap<>();
         this.requestedUrl = url;
         this.numberOfRetries = numberOfRetries;
 

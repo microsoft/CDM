@@ -25,6 +25,8 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     copy.setResolutionGuidance(
         this.getResolutionGuidance() != null ? (CdmAttributeResolutionGuidance) this
             .getResolutionGuidance().copy(resOpt) : null);
+
+    copy.getAppliedTraits().clear();
     for (final CdmTraitReference appliedTrait : this.getAppliedTraits()) {
       copy.getAppliedTraits().add(appliedTrait);
     }
@@ -82,20 +84,9 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   ResolvedTraitSet addResolvedTraitsApplied(
       final ResolvedTraitSetBuilder rtsb,
       final ResolveOptions resOpt) {
-    addAppliedTraits(this.getAppliedTraits(), rtsb, resOpt);
+    this.getAppliedTraits()
+        .forEach(appliedTraits -> rtsb.mergeTraits(appliedTraits.fetchResolvedTraits(resOpt)));
     // dynamic applied on use
     return rtsb.getResolvedTraitSet();
-  }
-
-  private void addAppliedTraits(
-      final CdmTraitCollection ats,
-      final ResolvedTraitSetBuilder rtsb,
-      final ResolveOptions resOpt) {
-    if (ats != null) {
-      final int l = ats.getCount();
-      for (int i = 0; i < l; i++) {
-        rtsb.mergeTraits(ats.getAllItems().get(i).fetchResolvedTraits(resOpt));
-      }
-    }
   }
 }

@@ -95,7 +95,6 @@ public class Program {
       System.out.println("persist corpus");
       final Set<String> LinkedHashSet = new LinkedHashSet<>(Arrays.asList("normalized", "xstructured", "referenceOnly"));
       final AttributeResolutionDirectiveSet directives = new AttributeResolutionDirectiveSet(LinkedHashSet);
-      CommonDataModelLoader.persistCorpus(cdmCorpus, directives);
     }
 
     //listAllTraits(cdmCorpus);
@@ -218,9 +217,5 @@ public class Program {
         }
       }
     });
-  }
-
-  public static void listAllTraits(final CdmCorpusDefinition cdmCorpus, final AttributeResolutionDirectiveSet directives) {
-    seekTraits(cdmCorpus, directives);
   }
 }

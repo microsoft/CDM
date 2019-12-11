@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -48,6 +49,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             this.AppliedTraits = new CdmTraitCollection(this.Ctx, this);
         }
+        internal CdmObjectReferenceBase CopyToHost(CdmCorpusContext ctx, dynamic refTo, bool simpleReference)
+        {
+            this.Ctx = ctx;
+            this.ExplicitReference = null;
+            this.NamedReference = null;
+
+            if (refTo != null)
+            {
+                if (refTo is CdmObject)
+                {
+                    this.ExplicitReference = refTo as CdmObjectDefinitionBase;
+                }
+                else
+                {
+                    // NamedReference is a string or JValue
+                    this.NamedReference = refTo;
+                }    
+            }
+            this.SimpleNamedReference = simpleReference;
+
+            this.AppliedTraits.Clear();
+
+            return this;
+        }
 
         internal static int offsetAttributePromise(string reff)
         {
@@ -80,7 +105,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string entName = this.NamedReference.Substring(0, seekResAtt);
                 string attName = this.NamedReference.Slice(seekResAtt + resAttToken.Length);
                 // get the entity
-                CdmObjectDefinition ent = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.DocCreatedIn, entName, CdmObjectType.EntityDef, retry: true);
+                CdmObjectDefinition ent = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
                 if (ent == null)
                 {
                     Logger.Warning(nameof(CdmObjectReferenceBase), ctx, $"unable to resolve an entity named '{entName}' from the reference '{this.NamedReference}");
@@ -99,12 +124,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
-                res = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.DocCreatedIn, this.NamedReference, this.ObjectType, retry: true);
+                res = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.InDocument, this.NamedReference, this.ObjectType, retry: true);
             }
 
             return res;
         }
 
+        /// <inheritdoc />
         public override CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -117,7 +143,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.CopyRefObject(resOpt, this.DeclaredPath + this.ExplicitReference.GetName(), true);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
@@ -127,19 +154,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             dynamic copy;
             if (!string.IsNullOrEmpty(this.NamedReference))
             {
-                copy = this.CopyRefObject(resOpt, this.NamedReference, this.SimpleNamedReference);
+                copy = this.CopyRefObject(resOpt, this.NamedReference, this.SimpleNamedReference, host as CdmObjectReferenceBase);
             }
             else
             {
-                copy = this.CopyRefObject(resOpt, this.ExplicitReference, this.SimpleNamedReference);
+                copy = this.CopyRefObject(resOpt, this.ExplicitReference, this.SimpleNamedReference, host as CdmObjectReferenceBase);
             }
 
             if (resOpt.SaveResolutionsOnCopy)
             {
                 copy.ExplicitReference = this.ExplicitReference;
-                copy.DocCreatedIn = this.DocCreatedIn;
             }
+            copy.InDocument = this.InDocument;
 
+            copy.AppliedTraits.Clear();
             if (this.AppliedTraits != null)
             {
                 foreach (var trait in this.AppliedTraits)
@@ -147,8 +175,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             return copy;
         }
-        internal abstract CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference);
+        internal abstract CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null);
 
+        /// <inheritdoc />
         public override string FetchObjectDefinitionName()
         {
             if (!string.IsNullOrEmpty(this.NamedReference))
@@ -170,6 +199,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return null;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt)
         {
             var def = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
@@ -181,6 +211,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <inheritdoc />
         public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -194,6 +225,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return default(T);
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return (!string.IsNullOrEmpty(this.NamedReference) || this.ExplicitReference != null) ? true : false;
@@ -202,12 +234,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (!string.IsNullOrEmpty(this.NamedReference))
-                path = pathFrom + this.NamedReference;
-            else
-                path = pathFrom;
-            this.DeclaredPath = path;
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
+            {
+                path = this.DeclaredPath;
+                if (!string.IsNullOrEmpty(this.NamedReference))
+                    path = pathFrom + this.NamedReference;
+                else
+                    path = pathFrom;
+                this.DeclaredPath = path;
+            }
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -263,6 +299,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
+        {
+            bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
+            this.Ctx.Corpus.isCurrentlyResolving = true;
+            var ret = this._fetchResolvedTraits(resOpt);
+            this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
+            return ret;
+        }
+
+        internal ResolvedTraitSet _fetchResolvedTraits(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {

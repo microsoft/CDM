@@ -5,17 +5,24 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Model;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ModelJsonTest extends ModelJsonTestBase {
@@ -61,7 +68,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
 
     final CdmManifestDefinition manifest =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/model.json").get();
-    final Model obtainedModelJson = ManifestPersistence.toData(manifest, null, null).join();
+    final Model obtainedModelJson = ManifestPersistence.toData(manifest, null, null).get();
 
     this.handleOutput("testLoadingModelJsonWithInvalidPath", MODEL_JSON, obtainedModelJson);
   }
@@ -85,7 +92,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
     final CdmCorpusDefinition cdmCorpus = this.getLocalCorpus(testInputPath);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "result.manifest.model.json",
+        "model.json",
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
     final ManifestContent obtainedCdmFolder = com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence.toData(cdmManifest, null, null);
@@ -110,7 +117,8 @@ public class ModelJsonTest extends ModelJsonTestBase {
    Test loading CDM folder result files and save as model.json.
    */
   @Test
-  public void testLoadingCdmFolderResultAndSavingModelJson() throws IOException, InterruptedException, JSONException {
+  public void testLoadingCdmFolderResultAndSavingModelJson()
+      throws IOException, InterruptedException, JSONException, ExecutionException {
     final String testInputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH,
             "testLoadingCdmFolderResultAndSavingModelJson");
     final CdmCorpusDefinition cdmCorpus = this.getLocalCorpus(testInputPath);
@@ -119,7 +127,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
 
-    final Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
+    final Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).get();
 
     // remove empty description from entities as they interfere with test.
     obtainedModelJson.getEntities().forEach(entity -> removeDescriptionFromEntityIfEmpty(JMapper.MAP.valueToTree(entity)));
@@ -128,19 +136,55 @@ public class ModelJsonTest extends ModelJsonTestBase {
     this.handleOutput("testLoadingCdmFolderResultAndSavingModelJson", "model.json", obtainedModelJson);
   }
 
+  /**
+   * Test if the imports location are relative to the root level file.
+   */
+  @Test
+  public void testImportsRelativePath() throws ExecutionException, InterruptedException {
+    // The corpus path in the imports are relative to the document where it was defined.
+    // When saving in model.json the documents are flattened to the manifest level
+    // so it is necessary to recalculate the path to be relative to the manifest.
+    final CdmCorpusDefinition corpus = this.getLocalCorpus("notImportantLocation");
+    final CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder(LOCAL);
+
+    final CdmManifestDefinition manifest = new CdmManifestDefinition(corpus.getCtx(), "manifest");
+    final CdmEntityDeclarationDefinition entityDeclaration =
+        manifest.getEntities().add("EntityName", "EntityName/EntityName.cdm.json/EntityName");
+    folder.getDocuments().add(manifest);
+
+    final CdmFolderDefinition entityFolder = folder.getChildFolders().add("EntityName");
+
+    final CdmDocumentDefinition document =
+        new CdmDocumentDefinition(corpus.getCtx(), "EntityName.cdm.json");
+    document.getImports().add("subfolder/EntityName.cdm.json");
+    document.getDefinitions().add("EntityName");
+    entityFolder.getDocuments().add(document);
+
+    final CdmFolderDefinition subFolder = entityFolder.getChildFolders().add("subfolder");
+    subFolder.getDocuments().add("EntityName.cdm.json");
+
+    final Model data = ManifestPersistence.toData(manifest, null, null).get();
+
+    Assert.assertEquals(1, data.getEntities().size());
+    final List<Import> imports = ((LocalEntity) data.getEntities().get(0)).getImports();
+    Assert.assertEquals(1, imports.size());
+    Assert.assertEquals("EntityName/subfolder/EntityName.cdm.json", imports.get(0).getCorpusPath());
+  }
+
   /*
   Tests loading Model.json and converting to a CdmFolder.
    */
   @Test
-  public void testExtensibilityLoadingModelJsonAndSavingCdmFolder() throws InterruptedException, IOException, JSONException {
+  public void testExtensibilityLoadingModelJsonAndSavingCdmFolder()
+      throws InterruptedException, IOException, JSONException, ExecutionException {
     final String testInputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH,
             "testExtensibilityLoadingModelJsonAndSavingCdmFolder");
     final CdmCorpusDefinition cdmCorpus = this.getLocalCorpus(testInputPath);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "SerializerTesting-model.json",
+        "model.json",
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
-        .join();
+        .get();
 
     final ManifestContent obtainedCdmFolder =
             com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence
@@ -155,7 +199,11 @@ public class ModelJsonTest extends ModelJsonTestBase {
         obtainedCdmFolder);
   }
 
-  private void handleOutput(final String testName, final String outputFileName, final Object actualOutput) throws IOException, InterruptedException, JSONException {
+  private void handleOutput(
+      final String testName,
+      final String outputFileName,
+      final Object actualOutput)
+      throws IOException, InterruptedException, JSONException {
     final String data = JMapper.MAP.valueToTree(actualOutput).toString();
     if (this.doesWriteTestDebuggingFiles) {
       TestHelper.writeActualOutputFileContent(TESTS_SUBPATH, testName, outputFileName, data);

@@ -1,7 +1,7 @@
 {
-  "$schema": "CdmManifest.cdm.json",
+  "$schema": "CdmManifestDefinition.cdm.json",
   "jsonSchemaSemanticVersion": "0.9.0",
-  "manifestName": "patternmanifest",
+  "manifestName": "patternManifest",
   "explanation": "test cdm folder for cdm version 0.9+",
   "imports": [],
   "exhibitsTraits": [
@@ -17,14 +17,14 @@
       ],
       "dataPartitions": [
         {
-          "location": "/partitions/existingPartition.csv"
+          "location": "partitions/existingPartition.csv"
         }
       ],
       "dataPartitionPatterns": [
         {
           "name": "testPattern",
           "explanation": "test explanation",
-          "rootLocation": "/partitions",
+          "rootLocation": "partitions",
           "regularExpression": "(.*)Partition.csv",
           "parameters": [
             "testParam1"
@@ -37,8 +37,8 @@
         {
           "name": "folderCapture",
           "explanation": "test explanation",
-          "rootLocation": "/partitions",
-          "regularExpression": "/(.*)/folderCapture.csv",
+          "rootLocation": "partitions",
+          "regularExpression": "/(\\w*)/folderCapture.csv",
           "parameters": [
             "year"
           ],
@@ -48,17 +48,54 @@
           ]
         },
         {
+          "name": "folderMultipleCaptures",
+          "explanation": "test explanation",
+          "rootLocation": "partitions",
+          "regularExpression": "/(.*)/(.*)/(.*)/folderCapture.csv",
+          "parameters": [
+            "year",
+            "month",
+            "day"
+          ],
+          "specializedSchema": "test special schema",
+          "exhibitsTraits": [
+            "is"
+          ]
+        },
+        {
+          "name": "folderMultipleCapturesInSingleRepeatedGroup",
+          "explanation": "test explanation",
+          "rootLocation": "partitions",
+          "regularExpression": "/(?:(\\d+)/)+folderCaptureRepeatedGroup.csv",
+          "parameters": [
+            "day",
+            "notUsed",
+            "notUsed2"
+          ],
+          "specializedSchema": "test special schema",
+          "exhibitsTraits": [
+            "is"
+          ]
+        },
+        {
           "name": "tooFewParameterPattern",
           "explanation": "test explanation",
-          "rootLocation": "/partitions",
+          "rootLocation": "partitions",
           "regularExpression": "(.*)TooFew.csv",
           "parameters": [],
           "specializedSchema": "test special schema"
         },
         {
+          "name": "parametersMissing",
+          "explanation": "test explanation",
+          "rootLocation": "partitions",
+          "regularExpression": "(.*)TooFew.csv",
+          "specializedSchema": "test special schema"
+        },
+        {
           "name": "tooManyParameterPattern",
           "explanation": "test explanation",
-          "rootLocation": "/partitions",
+          "rootLocation": "partitions",
           "regularExpression": ".*TooMany.csv",
           "parameters": [
             "shouldNotAdd"

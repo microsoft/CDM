@@ -1,10 +1,9 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmImport;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -14,6 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Loc
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -25,7 +25,8 @@ public class DocumentPersistence {
   public static CompletableFuture<CdmDocumentDefinition> fromData(
       final CdmCorpusContext ctx,
       final LocalEntity obj,
-      final CdmCollection<CdmTraitDefinition> extensionTraitDefList) {
+      final List<CdmTraitDefinition> extensionTraitDefList,
+      final List<CdmTraitDefinition> localExtensionTraitDefList) {
     return CompletableFuture.supplyAsync(() -> {
       final String docName = obj.getName() + ".cdm.json";
       final CdmDocumentDefinition document = ctx.getCorpus()
@@ -34,13 +35,15 @@ public class DocumentPersistence {
               docName);
 
       // Import at least foundations.
-      final CdmImport foundationsImport = ctx.getCorpus().makeObject(CdmObjectType.Import);
-      foundationsImport.setCorpusPath("cdm:/foundations.cdm.json");
-
-      document.getImports().add(foundationsImport);
+      document.getImports().add("cdm:/foundations.cdm.json");
 
       final CdmEntityDefinition entity =
-          EntityPersistence.fromData(ctx, obj, extensionTraitDefList).join();
+          EntityPersistence.fromData(
+              ctx,
+              obj,
+              extensionTraitDefList,
+              localExtensionTraitDefList)
+              .join();
       if (entity == null) {
         LOGGER.error(
             "There was an error while trying to convert a model.json entity to the CDM entity."
@@ -67,6 +70,7 @@ public class DocumentPersistence {
 
   public static CompletableFuture<LocalEntity> toData(
       final Object documentObjectOrPath,
+      final CdmManifestDefinition manifest,
       final CdmCorpusContext ctx,
       final ResolveOptions resOpt,
       final CopyOptions options) {
@@ -82,12 +86,23 @@ public class DocumentPersistence {
                   options
               ).join();
               final CdmObject owner = cdmEntity.getOwner();
-              if (owner != null && owner instanceof CdmDocumentDefinition) {
+              if (owner instanceof CdmDocumentDefinition) {
                 final CdmDocumentDefinition documentDefinition = (CdmDocumentDefinition) owner;
                 if (documentDefinition.getImports().getCount() > 0) {
                   entity.setImports(new ArrayList<>());
-                  documentDefinition.getImports().forEach(element ->
-                      entity.getImports().add(ImportPersistence.toData(element, resOpt, options)));
+                  documentDefinition.getImports().forEach(element -> {
+                    final Import cdmImport = ImportPersistence.toData(element, resOpt, options);
+                    // the corpus path in the imports are relative to the document where it was defined.
+                    // when saving in model.json the documents are flattened to the manifest level
+                    // so it is necessary to recalculate the path to be relative to the manifest.
+                    final String absolutePath = ctx.getCorpus()
+                        .getStorage()
+                        .createAbsoluteCorpusPath(cdmImport.getCorpusPath(), documentDefinition);
+                    cdmImport.setCorpusPath(ctx.getCorpus()
+                        .getStorage()
+                        .createRelativeCorpusPath(absolutePath, manifest));
+                    entity.getImports().add(cdmImport);
+                  });
                 }
               } else {
                 LOGGER.warn(

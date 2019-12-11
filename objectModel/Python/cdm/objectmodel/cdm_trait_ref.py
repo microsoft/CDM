@@ -39,8 +39,13 @@ class CdmTraitReference(CdmObjectReference):
         # traits don't have traits.
         pass
 
-    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmTraitDefinition'], simple_reference: bool) -> 'CdmObjectReference':
-        copy = CdmTraitReference(self.ctx, ref_to, simple_reference)
+    def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmTraitDefinition'], simple_reference: bool, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
+        if not host:
+            copy = CdmTraitReference(self.ctx, ref_to, bool(self.arguments))
+        else:
+            copy = host._copy_to_host(self.ctx, ref_to, simple_reference)
+            copy.arguments.clear()
+
         if not simple_reference:
             copy.arguments.extend(self.arguments)
             copy._resolved_arguments = self._resolved_arguments
@@ -123,7 +128,7 @@ class CdmTraitReference(CdmObjectReference):
                         param_found = params.resolve_parameter(index, argument.get_name())
                         argument.resolved_parameter = param_found
                         a_value = argument.value
-                        a_value = ctx.corpus._const_type_check(res_opt, param_found, a_value)
+                        a_value = ctx.corpus._const_type_check(res_opt, self.in_document, param_found, a_value)
                         argument.value = a_value
 
                 for argument in self.arguments:

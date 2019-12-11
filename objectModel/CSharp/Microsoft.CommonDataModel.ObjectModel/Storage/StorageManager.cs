@@ -4,23 +4,23 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using Microsoft.CommonDataModel.ObjectModel.Cdm;
-using Microsoft.CommonDataModel.ObjectModel.Utilities;
-using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+
     public class StorageManager
     {
         internal CdmCorpusDefinition Corpus { get; }
         internal CdmCorpusContext Ctx => this.Corpus.Ctx;
-
 
         /// <summary>
         /// The dictionary of registered namespace <-> adapters.
@@ -29,20 +29,75 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         internal IDictionary<string, CdmFolderDefinition> NamespaceFolders { get; set; }
 
+        internal IDictionary<string, Type> RegisteredAdapterTypes { get; }
+
         /// <summary>
-        /// The namespace that will be used when one is not explicitly provided
+        /// The namespaces that have default adapters defined by the program and not by a user.
+        /// </summary>
+        private ISet<string> systemDefinedNamespaces;
+
+        /// <summary>
+        /// The namespace that will be used when one is not explicitly provided.
         /// </summary>
         public string DefaultNamespace { get; set; }
 
+        /// <summary>
+        /// Constructs a StorageManager.
+        /// </summary>
+        /// <param name="corpus">The corpus that owns this storage manager.</param>
         public StorageManager(CdmCorpusDefinition corpus)
         {
             this.Corpus = corpus;
             this.NamespaceAdapters = new Dictionary<string, StorageAdapter>();
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
+            this.systemDefinedNamespaces = new HashSet<string>();
+            
+            // If an adapter (such as ADLSAdapter) is not present in the current assembly
+            // we will register it as null for the given key name
+            this.RegisteredAdapterTypes = new Dictionary<string, Type>()
+            {
+                { "local", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.LocalAdapter") },
+                { "adls", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.ADLSAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Adls") },
+                { "remote", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.RemoteAdapter") },
+                { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") }
+            };
 
             // Set up default adapters.
             this.Mount("local", new LocalAdapter(Directory.GetCurrentDirectory()));
             this.Mount("cdm", new GithubAdapter());
+
+            systemDefinedNamespaces.Add("local");
+            systemDefinedNamespaces.Add("cdm");
+        }
+
+        /// <summary>
+        /// Returns type from the executing assembly that matches the given name.
+        /// </summary>
+        /// <param name="typeName">Type name</param>
+        /// <returns>Type that matches the given name, or null if not found</returns>
+        private Type FetchType(string typeName)
+        {
+            return Assembly.GetExecutingAssembly().GetType(typeName);
+        }
+
+        /// <summary>
+        /// Returns type from an assembly that matches the given name.
+        /// </summary>
+        /// <param name="typeName">Type name</param>
+        /// <param name="assemblyName">Assembly name</param>
+        /// <returns>Type that matches the given name, or null if not found</returns>
+        private Type FetchType(string typeName, string assemblyName)
+        {
+            try
+            {
+                return Assembly.Load(assemblyName)?.GetType(typeName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(nameof(StorageManager), this.Ctx,
+                    $"Unable to load type '{typeName}' from assembly '{assemblyName}. Exception: {ex.Message}", "FetchType");
+                return null;
+            }
         }
 
         /// <summary>
@@ -56,7 +111,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 CdmFolderDefinition fd = new CdmFolderDefinition(this.Ctx, "");
                 fd.Corpus = this.Corpus as CdmCorpusDefinition;
                 fd.Namespace = nameSpace;
+                fd.FolderPath = "/";
                 this.NamespaceFolders[nameSpace] = fd;
+                this.systemDefinedNamespaces.Remove(nameSpace);
             }
             else
             {
@@ -73,6 +130,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 this.NamespaceAdapters.Remove(nameSpace);
                 this.NamespaceFolders.Remove(nameSpace);
+                this.systemDefinedNamespaces.Remove(nameSpace);
+
+                // The special case, use Resource adapter.
+                if (nameSpace == "cdm")
+                {
+                    this.Mount(nameSpace, new ResourceAdapter());
+                }
+
                 return true;
             }
             else
@@ -128,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// Given the namespace of a registered storage adapter, return the root folder containing the sub-folders and documents.
+        /// Given the namespace of a registered storage adapter, returns the root folder containing the sub-folders and documents.
         /// </summary>
         public CdmFolderDefinition FetchRootFolder(string nameSpace)
         {
@@ -147,7 +212,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// Takes a storage adapter domain path, figures out the right adapter to use and then return a corpus path.
+        /// Takes a storage adapter domain path, figures out the right adapter to use and then returns a corpus path.
         /// </summary>
         public string AdapterPathToCorpusPath(string adapterPath)
         {
@@ -177,7 +242,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// Takes a corpus path, figures out the right adapter to use and then return an adapter domain path.
+        /// Takes a corpus path, figures out the right adapter to use and then returns an adapter domain path.
         /// </summary>
         public string CorpusPathToAdapterPath(string corpusPath)
         {
@@ -277,7 +342,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Fetches the config.
         /// </summary>
-        /// <returns>The JObject, representing the config.</returns>
+        /// <returns>The JSON string representing the config.</returns>
         public string FetchConfig()
         {
             var adaptersArray = new JArray();
@@ -285,6 +350,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             // Construct the JObject for each adapter.
             foreach (var namespaceAdapterTuple in this.NamespaceAdapters)
             {
+                // Skip system-defined adapters and resource adapters.
+                if (this.systemDefinedNamespaces.Contains(namespaceAdapterTuple.Key) || namespaceAdapterTuple.Value is ResourceAdapter)
+                {
+                    continue;
+                }
+
                 var config = namespaceAdapterTuple.Value.FetchConfig();
                 if (string.IsNullOrWhiteSpace(config))
                 {
@@ -384,29 +455,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     continue;
                 }
 
-                StorageAdapter adapter = null;
+                Type adapterType = null;
 
-                switch (item["type"].ToString())
+                this.RegisteredAdapterTypes.TryGetValue(item["type"].ToString(), out adapterType);
+
+                if (adapterType == null)
                 {
-                    case LocalAdapter.Type:
-                        adapter = new LocalAdapter();
-                        break;
-                    case GithubAdapter.Type:
-                        adapter = new GithubAdapter();
-                        break;
-                    case RemoteAdapter.Type:
-                        adapter = new RemoteAdapter();
-                        break;
-                    case ADLSAdapter.Type:
-                        adapter = new ADLSAdapter();
-                        break;
-                    default:
-                        unrecognizedAdapters.Add(item.ToString());
-                        break;
+                    unrecognizedAdapters.Add(item.ToString());
                 }
-
-                if (adapter != null)
+                else
                 {
+                    var adapter = Activator.CreateInstance(adapterType) as StorageAdapter;
                     adapter.UpdateConfig(configs.ToString());
                     this.Mount(nameSpace, adapter);
                 }

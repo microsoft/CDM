@@ -24,15 +24,21 @@ class CdmE2ERelationship(CdmObjectDefinition):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.E2E_RELATIONSHIP_DEF
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmE2ERelationship':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmE2ERelationship'] = None) -> 'CdmE2ERelationship':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmE2ERelationship(self.ctx, self.get_name())
+        if not host:
+            copy = CdmE2ERelationship(self.ctx, self.get_name())
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.relationship_name = self.get_name()
+
         copy.from_entity = self.from_entity
         copy.from_entity_attribute = self.from_entity_attribute
         copy.to_entity = self.to_entity
         copy.to_entity_attribute = self.to_entity_attribute
-        copy.relationship_name = self.relationship_name
         self._copy_def(res_opt, copy)
 
         return copy
@@ -47,10 +53,12 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return bool(self.from_entity and self.from_entity_attribute and self.to_entity and self.to_entity_attribute)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        if not self._declared_path:
-            self._declared_path = path_from + self.relationship_name
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            if not self._declared_path:
+                self._declared_path = '{}{}'.format(path_from, self.get_name())
 
-        path = self._declared_path
+            path = self._declared_path
 
         if pre_children and pre_children(self, path):
             return False

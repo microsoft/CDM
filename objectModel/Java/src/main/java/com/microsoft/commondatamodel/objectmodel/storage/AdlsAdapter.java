@@ -5,81 +5,64 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequestException;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.utils.DateUtils;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   static final String TYPE = "adls";
-  private static final String HMAC_SHA256 = "HmacSHA256";
-  // The authorization header key, used during shared key auth.
-  private static final String HTTP_AUTHORIZATION = "Authorization";
-  // The MS date header key, used during shared key auth.
-  private static final String HTTP_XMS_DATE = "x-ms-date";
-  // The MS version key, used during shared key auth.
-  private static final String HTTP_XMS_VERSION = "x-ms-version";
-  private AuthenticationContext context;
+  private final static Logger LOGGER = LoggerFactory.getLogger(AdlsAdapter.class);
+
   private String root;
   private String hostname;
-  private String tenant;
-  private String clientId;
-  private String resource = "https://storage.azure.com";
-  private String secret;
-  private String sharedKey;
   private String locationHint;
 
-  public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) throws MalformedURLException {
+  /**
+   * The file-system name.
+   */
+  private String fileSystem = "";
+
+  /**
+   * The sub-path.
+   */
+  private String subPath = "";
+  private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
+
+
+  public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) {
     this.root = root;
     this.hostname = hostname;
-    this.tenant = tenant;
-    this.clientId = clientId;
-    this.secret = secret;
-    final ExecutorService execService = Executors.newFixedThreadPool(10);
-    this.context = new AuthenticationContext("https://login.windows.net/" + this.tenant,
-        true, execService);
     this.httpClient = new CdmHttpClient();
-
-    this.sharedKey = null;
+    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tenant, clientId, secret);
   }
 
   public AdlsAdapter(final String hostname, final String root, final String sharedKey) {
     this.root = root;
     this.hostname = hostname;
-    this.sharedKey = sharedKey;
     this.httpClient = new CdmHttpClient();
-
-    this.tenant = null;
-    this.clientId = null;
-    this.secret = null;
-    this.context = null;
+    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(sharedKey);
   }
 
   public AdlsAdapter() {
@@ -94,14 +77,9 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     return CompletableFuture.supplyAsync(() -> {
       final CdmHttpRequest cdmHttpRequest;
       final String url = this.createAdapterPath(corpusPath);
+      cdmHttpRequest = this.buildRequest(url, "GET");
       try {
-        cdmHttpRequest = this.buildRequest(url, "GET");
-      } catch (final InterruptedException | ExecutionException e) {
-        throw new StorageAdapterException("Could not read ADLS content at path, an issue with headers: "
-                + corpusPath, e);
-      }
-      try {
-        final CdmHttpResponse res = this.readOrWrite(cdmHttpRequest).get();
+        final CdmHttpResponse res = this.executeRequest(cdmHttpRequest).get();
         return (res != null) ? res.getContent() : null;
       } catch (final Exception e) {
         throw new StorageAdapterException("Could not read ADLS content at path: " + corpusPath, e);
@@ -121,14 +99,14 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
       final String url = this.createAdapterPath(corpusPath);
       try {
         CdmHttpRequest request = this.buildRequest(url + "?resource=file", "PUT");
-        this.readOrWrite(request).get();
+        this.executeRequest(request).get();
 
         request = this.buildRequest(url + "?action=append&position=0", "PATCH", data, "application/json; charset=utf-8");
-        this.readOrWrite(request).get();
+        this.executeRequest(request).get();
 
         request = this.buildRequest(url + "?action=flush&position=" +
             (new StringEntity(data, "UTF-8").getContentLength()), "PATCH");
-        this.readOrWrite(request).get();
+        this.executeRequest(request).get();
       } catch (final InterruptedException | ExecutionException e) {
         throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
       }
@@ -136,7 +114,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   }
 
   public String createAdapterPath(final String corpusPath) {
-    return "https://" + hostname + root + corpusPath;
+    return "https://" + hostname + root + this.formatCorpusPath(corpusPath);
   }
 
   public String createCorpusPath(final String adapterPath) {
@@ -151,76 +129,119 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   }
 
   public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-    return CompletableFuture.completedFuture(null);
+    return CompletableFuture.supplyAsync(() -> {
+      final String url = this.createAdapterPath(corpusPath);
+
+      try {
+        final CdmHttpRequest request = this.buildRequest(url, "HEAD");
+        CdmHttpResponse cdmResponse = executeRequest(request).join();
+
+        if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+          return DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Date"))
+              .toInstant()
+              .atOffset(ZoneOffset.UTC);
+        }
+      } catch (CdmHttpRequestException ex) {
+        LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex);
+      }
+
+
+      return null;
+    });
   }
 
   public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
-    return CompletableFuture.completedFuture(null);
-  }
+    return CompletableFuture.supplyAsync(() -> {
+      final Pair<String, String> values =
+          this.createFetchAllFilesUrl(this.formatCorpusPath(folderCorpusPath));
+      final String url = values.getLeft();
+      final String directory = values.getRight();
 
-  private Future<AuthenticationResult> generateBearerToken() {
-    final ClientCredential clientCredentials = new ClientCredential(clientId, secret);
-    return context.acquireToken(resource, clientCredentials, null);
+      final CdmHttpRequest request =
+          this.buildRequest(
+              url + "?directory=" + directory + "&recursive=True&resource=filesystem",
+              "GET");
+      final CdmHttpResponse cdmResponse = executeRequest(request).join();
+
+      if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+        final String json = cdmResponse.getContent();
+        final JsonNode jObject1 = JMapper.MAP.valueToTree(json);
+        final JsonNode paths = jObject1.get("paths");
+
+        List<String> result = new ArrayList<>();
+
+        for (final JsonNode path : paths) {
+          final JsonNode isDirectory = path.get("isDirectory");
+          if (isDirectory == null || !isDirectory.asBoolean()) {
+            if (path.has("name")) {
+              String name = path.get("name").asText();
+              String nameWithoutSubPath = this.subPath.length() > 0 && name.startsWith(this.subPath)
+                  ? name.substring(this.subPath.length() + 1)
+                  : name;
+              result.add(this.formatCorpusPath(nameWithoutSubPath));
+            }
+          }
+        }
+
+        return result;
+      }
+
+      return null;
+    });
   }
 
   /**
-   * Returns the headers with the applied shared key.
-   * @param sharedKey The account/shared key.
-   * @param url The URL.
-   * @param method The HTTP method.
-   * @param content The string content.
-   * @param contentType The content type.
-   * @return
+   * Create the url to fetch all files async.
+   * @param currFullPath Current full path.
+   * @return A {@link ImmutablePair} of the url and the directory.
    */
-  private Map<String, String> applySharedKey(final String sharedKey, final String url, final String method, final String content, final String contentType) throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
-    final Map<String, String> headers = new LinkedHashMap<>();
+  private Pair<String, String> createFetchAllFilesUrl(final String currFullPath) {
+    return ImmutablePair.of("https://" + this.hostname + "/" + this.fileSystem, subPath + "/" + currFullPath);
+  }
 
-    // Add UTC now time and new version.
-    headers.put(AdlsAdapter.HTTP_XMS_DATE, DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneOffset.ofHours(0))));
-    headers.put(AdlsAdapter.HTTP_XMS_VERSION, "2018-06-17");
-    int contentLength = 0;
-    if (content != null) {
-      contentLength = content.getBytes().length;
-    }
-    final URI uri = new URI(url);
-    final StringBuilder builder = new StringBuilder();
-    builder.append(method).append("\n"); // Verb.yi
-    builder.append("\n"); // Content-Encoding.
-    builder.append("\n"); // Content-Language.
-    builder.append((contentLength != 0) ? contentLength : "").append("\n"); // Content length.
-    builder.append("\n"); // Content-md5.
-    builder.append(contentType != null ? contentType : "").append("\n");//$"{contentType}; charset=utf-8\n" :"\n"); // Content-type.
-    builder.append("\n"); // Date.
-    builder.append("\n"); // If-modified-since.
-    builder.append("\n"); // If-match.
-    builder.append("\n"); // If-none-match.
-    builder.append("\n"); // If-unmodified-since.
-    builder.append("\n"); // Range.
-    for (final Map.Entry<String, String> header : headers.entrySet()) {
-      builder.append(header.getKey()).append(":").append(header.getValue()).append("\n");
-    }
-    // Append canonicalized resource.
-    final String accountName = uri.getHost().split("\\.")[0];
-    builder.append("/").append(accountName);
-    builder.append(uri.getPath());
-    // Append canonicalized queries.
-    if (!Strings.isNullOrEmpty(uri.getQuery())) {
-      final String queryParameters = uri.getQuery();
-      final String[] queryParts = queryParameters.split("&");
-      for(final String item : queryParts) {
-        final String[] keyValuePair = item.split("=");
-        builder.append("\n").append(keyValuePair[0]).append(":").append(keyValuePair[1]);
-      }
+  /**
+   * Extracts the filesystem and sub-path from the given root value.
+   * @param root The root
+   * @return A {@link Pair} of extracted filesystem name (left), the extracted sub-path (right)
+   */
+  private static Pair<String, String> extractFilesystemAndSubPath(String root) {
+    // No root value was set)
+    if (Strings.isNullOrEmpty(root)) {
+      return ImmutablePair.of("", "");
     }
 
-    final Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256);
-    final SecretKeySpec secret_key = new SecretKeySpec(Base64.decodeBase64(sharedKey.getBytes()), HMAC_SHA256);
-    sha256_HMAC.init(secret_key);
+    // Remove leading /
+    String prepRoot = root.charAt(0) == '/' ? root.substring(1) : root;
 
-    final String hash = Base64.encodeBase64String(sha256_HMAC.doFinal(builder.toString().getBytes(StandardCharsets.UTF_8)));
+    // Root contains only the file-system name, e.g. "fs-name"
+    if (prepRoot.indexOf('/') == -1) {
+      return ImmutablePair.of(prepRoot, "");
+    }
 
-    headers.put(HTTP_AUTHORIZATION, "SharedKey " + accountName + ":" + hash);
-    return headers;
+    // Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
+    String[] prepRootArray = prepRoot.split("/");
+    return ImmutablePair.of(
+        prepRootArray[0],
+        Arrays.stream(prepRootArray)
+            .skip(1)
+            .collect(Collectors.joining("/"))
+    );
+  }
+
+  /**
+   * Format corpus path.
+   * @param corpusPath The corpusPath.
+   * @return The formatted corpus path.
+   */
+  private String formatCorpusPath(String corpusPath) {
+    final String adls = "adls:";
+    if (corpusPath.startsWith(adls)) {
+      corpusPath = corpusPath.substring(adls.length());
+    } else if (corpusPath.length() > 0 && !corpusPath.startsWith("/")) {
+      corpusPath = "/" + corpusPath;
+    }
+
+    return corpusPath;
   }
 
   /**
@@ -234,20 +255,13 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    * @throws InterruptedException
    * @throws ExecutionException
    */
-  private CdmHttpRequest buildRequest(final String url, final String method, final String content, final String contentType) throws ExecutionException, InterruptedException {
+  private CdmHttpRequest buildRequest(final String url, final String method, final String content, final String contentType) {
     final CdmHttpRequest request;
-    // Check whether we support shared key or clientId/secret auth.
-    if (this.sharedKey != null) {
-      try {
-        request = this.setUpCdmRequest(url, applySharedKey(this.sharedKey, url, method, content, contentType), method);
-      } catch (final NoSuchAlgorithmException | InvalidKeyException | URISyntaxException e) {
-        throw new StorageAdapterException(e.getLocalizedMessage());
-      }
-    } else {
-      final AuthenticationResult token = this.generateBearerToken().get();
-      final Map<String, String> header = new HashMap<>();
-      header.put("authorization", token.getAccessTokenType() + " " + token.getAccessToken());
-      request = this.setUpCdmRequest(url, header, method);
+    try {
+      Map<String, String> authenticationHeader = adlsAdapterAuthenticator.buildAuthenticationHeader(url, method, content, contentType);
+      request = this.setUpCdmRequest(url, authenticationHeader, method);
+    } catch (NoSuchAlgorithmException | InvalidKeyException | URISyntaxException e) {
+      throw new StorageAdapterException("Failed to build request", e);
     }
     if (content != null) {
       request.setContent(content);
@@ -266,8 +280,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    * @throws InterruptedException
    * @throws ExecutionException
    */
-  private CdmHttpRequest buildRequest(final String url, final String method, final String content)
-      throws InterruptedException, ExecutionException {
+  private CdmHttpRequest buildRequest(final String url, final String method, final String content) {
     return this.buildRequest(url, method, content, null);
   }
 
@@ -280,8 +293,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    * @throws InterruptedException
    * @throws ExecutionException
    */
-  private CdmHttpRequest buildRequest(final String url, final String method)
-      throws InterruptedException, ExecutionException {
+  private CdmHttpRequest buildRequest(final String url, final String method) {
     return this.buildRequest(url, method, null);
   }
 
@@ -309,17 +321,16 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     configObject.put("root", this.root);
 
     // Check for clientId auth, we won't write shared key or secrets to JSON.
-    if (this.clientId != null && this.tenant != null) {
-      configObject.put("tenant", this.tenant);
-      configObject.put("clientId", this.clientId);
+    if (this.adlsAdapterAuthenticator.getClientId() != null && this.adlsAdapterAuthenticator.getTenant() != null) {
+      configObject.put("tenant", this.adlsAdapterAuthenticator.getTenant());
+      configObject.put("clientId", this.adlsAdapterAuthenticator.getClientId());
     }
     // Try constructing network configs.
     for (final Map.Entry<String, JsonNode> stringJsonNodeEntry : this.fetchNetworkConfig().entrySet()) {
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }
 
-    if (this.locationHint != null)
-    {
+    if (this.locationHint != null) {
       configObject.put("locationHint", this.locationHint);
     }
     resultConfig.set("config", configObject);
@@ -347,20 +358,47 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     } else {
       throw new RuntimeException("Hostname has to be set for ADLS adapter.");
     }
-    // Check first for clientId/secret auth.
-    if (configsJson.has("tenant") && configsJson.has("clientId")) {
-      this.tenant = configsJson.get("tenant").asText();
-      this.clientId = configsJson.get("clientId").asText();
-      // Check for a secret, we don't really care is it there, but it is nice if it is.
-      this.secret = configsJson.has("secret") ? configsJson.get("secret").asText() : null;
+    if (configsJson.has("sharedKey")) {
+      // Then it is shared key auth.
+      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(configsJson.get("sharedKey").asText());
+    } else {
+      // Check first for clientId/secret auth.
+      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(
+          configsJson.get("tenant").asText(),
+          configsJson.get("clientId").asText(),
+          configsJson.has("secret") ? configsJson.get("secret").asText() : null);
     }
-    // Check then for shared key auth.
-    this.sharedKey = configsJson.has("sharedKey") ? configsJson.get("sharedKey").asText() : null;
     this.locationHint = configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null;
-    this.context = this.tenant != null
-        ? new AuthenticationContext("https://login.windows.net/" + this.tenant,
-        true,
-        Executors.newFixedThreadPool(10))
-        : null;
+  }
+
+  private void updateRoot(String value) {
+    this.root = value;
+    Pair<String, String> out = this.extractFilesystemAndSubPath(this.root);
+    this.fileSystem = out.getLeft();
+    this.subPath = out.getRight();
+  }
+
+  public String getRoot() {
+    return root;
+  }
+
+  public String getHostname() {
+    return hostname;
+  }
+
+  public String getTenant() {
+    return this.adlsAdapterAuthenticator.getTenant();
+  }
+
+  public String getClientId() {
+    return this.adlsAdapterAuthenticator.getClientId();
+  }
+
+  public String getSecret() {
+    return this.adlsAdapterAuthenticator.getSecret();
+  }
+
+  public String getSharedKey() {
+    return this.adlsAdapterAuthenticator.getSharedKey();
   }
 }

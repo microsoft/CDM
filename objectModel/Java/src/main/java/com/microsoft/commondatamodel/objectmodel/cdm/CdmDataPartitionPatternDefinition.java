@@ -11,7 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -56,8 +56,19 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmDataPartitionPatternDefinition copy = new CdmDataPartitionPatternDefinition(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    CdmDataPartitionPatternDefinition copy;
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    if (host == null) {
+      copy = new CdmDataPartitionPatternDefinition(getCtx(), getName());
+    } else {
+      copy = (CdmDataPartitionPatternDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     copy.setRootLocation(this.getRootLocation());
     copy.setRegularExpression(this.getRegularExpression());
@@ -75,12 +86,40 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
-  public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
+  public boolean visit(
+      final String pathFrom,
+      final VisitCallback preChildren,
+      final VisitCallback postChildren) {
+    String path = "";
+    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+      if (path == null) {
+        String thisName = this.getName();
+        if (thisName == null) {
+          thisName = "UNNAMED";
+        }
+        path = pathFrom + thisName;
+        this.setDeclaredPath(path);
+      }
+    }
+
+    if (preChildren != null && preChildren.invoke(this, path)) {
+      return false;
+    }
+
+    if (this.visitDef(path, preChildren, postChildren)) {
+      return true;
+    }
+
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return false;
+    }
+
     return false;
   }
 
@@ -215,13 +254,12 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
           if (m.matches() && m.group().equals(fi)) {
             // create a map of arguments out of capture groups
-            final Map<String, List<String>> args = new HashMap<>();
+            final Map<String, List<String>> args = new LinkedHashMap<>();
 
-            // For each capture group, save the matching substring
-            // into the parameter
+            // For each capture group, save the matching substring into the parameter.
             for (int i = 0; i < m.groupCount(); i++) {
-              if (i < getParameters().size()) {
-                final String currentParam = getParameters().get(i);
+              if (this.getParameters() != null && i < this.getParameters().size()) {
+                final String currentParam = this.getParameters().get(i);
 
                 if (!args.containsKey(currentParam)) {
                   args.put(currentParam, new ArrayList<>());
@@ -233,8 +271,9 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
             // put the original but cleaned up root back onto the matched doc as the location stored in the partition
             final String locationCorpusPath = rootCleaned + fi;
+            final String fullPath = rootCorpus + fi;
             final OffsetDateTime lastModifiedTime =
-                adapter.computeLastModifiedTimeAsync(locationCorpusPath).join();
+                adapter.computeLastModifiedTimeAsync(fullPath).join();
             ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
                     locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
           }

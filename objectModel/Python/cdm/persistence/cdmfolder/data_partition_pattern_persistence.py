@@ -15,7 +15,7 @@ class DataPartitionPatternPersistence:
 
         pattern.root_location = data.rootLocation
         pattern.regular_expression = data.regularExpression
-        pattern.parameters = data.parameters
+        pattern.parameters = data.get('parameters')
         pattern.explanation = data.explanation
         pattern.specialized_schema = data.specializedSchema
 

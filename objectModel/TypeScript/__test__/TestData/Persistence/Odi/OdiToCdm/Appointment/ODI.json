@@ -1,0 +1,327 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "appointmentInteractionEventId",
+          "appointmentActualDateTimeEnd",
+          "appointmentActualDateTimeBegin",
+          "appointmentBody",
+          "location",
+          "appointmentSubject",
+          "organizerId"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:appointmentInteractionEvent",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnInstance": "appointmentInteractionEvent0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:InteractionEvent",
+              "opm:columnIndex": 5,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:appointmentActualDateTimeEnd",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:appointmentActualDateTimeBegin",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:appointmentBody",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:appointmentLocation",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:appointmentSubject",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:organizer",
+            "opm:columnEntity": "this:Appointment",
+            "opm:columnInstance": "organizer0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Person",
+              "opm:columnIndex": 11,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__Appointment",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:Appointment"
+              },
+              {
+                "@id": "this:Appointment",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:appointmentInteractionEvent",
+                    "olm:dataType": "this:InteractionEvent",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:appointmentActualDateTimeEnd",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The actual date and time for when the interaction was completed",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:appointmentActualDateTimeEnd",
+                    "olm:title": "Actual Date Time End"
+                  },
+                  {
+                    "@id": "this:appointmentActualDateTimeBegin",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The actual date and time for when the interaction was started",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:appointmentActualDateTimeBegin",
+                    "olm:title": "Actual Date Time Begin"
+                  },
+                  {
+                    "@id": "this:appointmentBody",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "A description about the objective or primary topic of the interaction.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:appointmentBody",
+                    "olm:title": "Body"
+                  },
+                  {
+                    "@id": "this:appointmentLocation",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The location of the interaction.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:location",
+                    "olm:title": "Location"
+                  },
+                  {
+                    "@id": "this:appointmentSubject",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The subject of the interaction.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:appointmentSubject"
+                  },
+                  {
+                    "@id": "this:appointmentOrganizer",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  }
+                ],
+                "olm:description": "An appointment type of interaction.",
+                "olm:sameAs": "odic:Appointment",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Appointment"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

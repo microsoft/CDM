@@ -1,8 +1,10 @@
 ﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -10,8 +12,6 @@
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     using Newtonsoft.Json.Linq;
-    using System.Collections.Concurrent;
-    using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
 
@@ -23,9 +23,7 @@
         public static async Task<CdmManifestDefinition> FromData(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
         {
             #region Prepare extenisonDoc
-            var extensionDoc = ctx.Corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef,
-                (string.IsNullOrEmpty(folder.Name) ? folder.Namespace : folder.Name) + ".extension.cdm.json");
-            CdmCollection<CdmTraitDefinition> extensionTraitDefList = new CdmCollection<CdmTraitDefinition>(ctx, extensionDoc, CdmObjectType.TraitDef);
+            List<CdmTraitDefinition> extensionTraitDefList = new List<CdmTraitDefinition>();
             #endregion
 
             #region Set manifest fields
@@ -116,7 +114,7 @@
 
                             return null;
                         }
-                        entity = await ReferencedEntityDeclarationPersistence.FromData(ctx, referenceEntity, referenceModels[referenceEntity.ModelId], extensionTraitDefList);
+                        entity = await ReferencedEntityDeclarationPersistence.FromData(ctx, referenceEntity, referenceModels[referenceEntity.ModelId]);
                     }
                     else
                     {
@@ -126,14 +124,7 @@
                     if (entity != null)
                     {
                         manifest.Entities.Add(entity);
-                        if (entity is CdmLocalEntityDeclarationDefinition localEntity)
-                        {
-                            entitySchemaByName.Add(entity.EntityName, localEntity.EntityPath);
-                        }
-                        else if (entity is CdmReferencedEntityDeclarationDefinition referenceEntity)
-                        {
-                            entitySchemaByName.Add(entity.EntityName, referenceEntity.EntityPath);
-                        }
+                        entitySchemaByName.Add(entity.EntityName, entity.EntityPath);
                     }
                     else
                     {
@@ -154,7 +145,7 @@
                     }
                     else
                     {
-                        Logger.Error(nameof(ManifestPersistence), ctx, "There was an error while trying to convert model.json local entity to cdm local entity declaration.");
+                        Logger.Warning(nameof(ManifestPersistence), ctx, "There was an issue while trying to read relationships from the model.json file.");
                     }
                 }
             }
@@ -167,15 +158,19 @@
                 }
             }
 
+
             await Utils.ProcessAnnotationsFromData(ctx, obj, manifest.ExhibitsTraits);
-            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, manifest.ExhibitsTraits, extensionTraitDefList);
+
+            var localExtensionTraitDefList = new List<CdmTraitDefinition>();
+            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, manifest.ExhibitsTraits, extensionTraitDefList, localExtensionTraitDefList);
             #endregion
 
             #region Use extensionDoc, finalize importDocs
 
-            List<CdmImport> importDocs = await ExtensionHelper.StandardImportDetection(ctx, extensionTraitDefList);
-            CreateExtensionDocAndAddToFolderAndImports(ctx, extensionDoc, extensionTraitDefList, folder, importDocs);
-            await AddImportDocsToManifest(ctx, importDocs, manifest);
+            List<CdmImport> importDocs = await ExtensionHelper.StandardImportDetection(ctx, extensionTraitDefList, localExtensionTraitDefList);
+            ExtensionHelper.AddImportDocsToManifest(ctx, importDocs, manifest);
+
+            CreateExtensionDocAndAddToFolderAndImports(ctx, extensionTraitDefList, folder);
             #endregion
 
             // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
@@ -190,67 +185,25 @@
         /// adds it's path to the list of imports
         /// </summary>
         /// <param name="ctx">The context</param>
-        /// <param name="extensionDoc">The document where the definitions will be added. This document will be added to folder and it's path to importDocs</param>
         /// <param name="extensionTraitDefList">The list of definitions to be added to schema.</param>
         /// <param name="folder">The folder that contains the manifest and where the document containing the schema will be placed.</param>
-        /// <param name="importDocs">The list of paths of documents containing schemas for the manifest.</param>
-        private static void CreateExtensionDocAndAddToFolderAndImports(CdmCorpusContext ctx, CdmDocumentDefinition extensionDoc, CdmCollection<CdmTraitDefinition> extensionTraitDefList, CdmFolderDefinition folder, List<CdmImport> importDocs)
+        private static void CreateExtensionDocAndAddToFolderAndImports(CdmCorpusContext ctx, List<CdmTraitDefinition> extensionTraitDefList, CdmFolderDefinition folder)
         {
             if (extensionTraitDefList.Count > 0)
             {
+                var extensionDoc = ctx.Corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, ExtensionHelper.ExtensionDocName);
+
                 // pull out the extension trait definitions into a new custom extension document
                 extensionTraitDefList.Select((CdmTraitDefinition cdmTraitDef) => (CdmObjectDefinition)cdmTraitDef).ToList().ForEach((CdmObjectDefinition cdmObjectDef) =>
                 {
                     extensionDoc.Definitions.Add(cdmObjectDef);
                 });
-                extensionDoc.Folder = folder;
 
                 // import the cdm extensions into this new document that has the custom extensions
-                CdmImport baseExtensionImport = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
-                baseExtensionImport.CorpusPath = "cdm:/extensions/base.extension.cdm.json";
-                extensionDoc.Imports.Add(baseExtensionImport);
+                extensionDoc.Imports.Add("cdm:/extensions/base.extension.cdm.json");
 
                 // add the extension doc to the folder, will wire everything together as needed
                 folder.Documents.Add(extensionDoc);
-
-                // import this new customer extension doc into the list of imports for the origial doc
-                CdmImport extensionImport = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
-                extensionImport.CorpusPath = ctx.Corpus.Storage.CreateRelativeCorpusPath(extensionDoc.AtCorpusPath, extensionDoc);
-                importDocs.Add(extensionImport);
-            }
-        }
-
-        /// <summary>
-        /// Adds the list of documents with extensions schema definitions to the manifest.
-        /// </summary>
-        /// <param name="ctx">the context</param>
-        /// <param name="importDocs">The list of paths of documents with relevant schema definitions.</param>
-        /// <param name="manifest">The manifest that needs to import the docs.</param>
-        /// <returns></returns>
-        private static async Task AddImportDocsToManifest(CdmCorpusContext ctx, List<CdmImport> importDocs, CdmManifestDefinition manifest)
-        {
-            foreach (var importDoc in importDocs)
-            {
-                foreach (var entityDef in manifest.Entities)
-                {
-                    if (entityDef.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
-                    {
-                        // get the document for the entity being pointed at
-                        string entityPath = (entityDef as CdmLocalEntityDeclarationDefinition).EntityPath;
-
-                        var objectFromCorpusPath = await ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
-                        var cdmDocument = objectFromCorpusPath.InDocument as CdmDocumentDefinition;
-
-                        if (!cdmDocument.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == importDoc.CorpusPath))
-                        {
-                            cdmDocument.Imports.Add(importDoc);
-                        }
-                    }
-                }
-                if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == importDoc.CorpusPath))
-                {
-                    manifest.Imports.Add(importDoc);
-                }
             }
         }
 
@@ -302,7 +255,7 @@
             CdmTraitReference referenceModelsTrait = t2pm.FetchTraitReference("is.modelConversion.referenceModelMap");
             if (referenceModelsTrait != null)
             {
-                JArray refModels = referenceModelsTrait.Arguments.AllItems[0].Value as JArray;
+                JArray refModels = referenceModelsTrait.Arguments[0].Value as JArray;
 
                 foreach (JObject referenceModel in refModels)
                 {
@@ -329,17 +282,18 @@
                         if (entity.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
                         {
                             element = await LocalEntityDeclarationPersistence.ToData(
-                                entity as CdmLocalEntityDeclarationDefinition,
-                                resOpt,
-                                options
+                                    entity as CdmLocalEntityDeclarationDefinition,
+                                    instance,
+                                    resOpt,
+                                    options
                                 );
                         }
                         else if (entity.ObjectType == CdmObjectType.ReferencedEntityDeclarationDef)
                         {
                             element = await ReferencedEntityDeclarationPersistence.ToData(
-                                entity as CdmReferencedEntityDeclarationDefinition,
-                                resOpt,
-                                options
+                                    entity as CdmReferencedEntityDeclarationDefinition,
+                                    resOpt,
+                                    options
                                );
 
                             ReferenceEntity referenceEntity = element as ReferenceEntity;

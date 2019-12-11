@@ -37,7 +37,6 @@ public class TypeAttributePersistence {
     typeAttribute.updateSourceName(obj.has("sourceName") ? obj.get("sourceName").asText() : null);
     typeAttribute.updateSourceOrderingToTrait(obj.has("sourceOrdering") ? obj.get("sourceOrdering").asInt() : null);
     typeAttribute.setDisplayName(obj.has("displayName") ? obj.get("displayName").asText() : null);
-    typeAttribute.updateDescription(obj.has("description") ? obj.get("description").asText() : null);
     typeAttribute.updateValueConstrainedToList(obj.has("valueConstrainedToList") ? obj.get("valueConstrainedToList").asBoolean() : null);
 
     if (obj.has("maximumLength")) {
@@ -63,8 +62,8 @@ public class TypeAttributePersistence {
     obj.setExplanation(instance.getExplanation());
     obj.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
     obj.setName(instance.getName());
-    obj.setPurpose(JMapper.MAP.valueToTree(Utils.jsonForm(instance.getPurpose(), resOpt, options)));
-    obj.setDataType(JMapper.MAP.valueToTree(Utils.jsonForm(instance.getDataType(), resOpt, options)));
+    obj.setPurpose(Utils.jsonForm(instance.getPurpose(), resOpt, options));
+    obj.setDataType(Utils.jsonForm(instance.getDataType(), resOpt, options));
     obj.setAppliedTraits(Utils.listCopyDataAsArrayNode(
         instance.getAppliedTraits().getAllItems()
             .stream()
@@ -87,11 +86,11 @@ public class TypeAttributePersistence {
     }
     if (instance.fetchProperty(CdmPropertyName.VALUE_CONSTRAINED_TO_LIST) instanceof Boolean
         && (Boolean) instance.fetchProperty(CdmPropertyName.VALUE_CONSTRAINED_TO_LIST)) {
-      obj.setIsNullable((Boolean) instance.fetchProperty(CdmPropertyName.VALUE_CONSTRAINED_TO_LIST));
+      obj.setValueConstrainedToList((Boolean) instance.fetchProperty(CdmPropertyName.VALUE_CONSTRAINED_TO_LIST));
     }
     if (instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY) instanceof Boolean
         && (Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY)) {
-      obj.setIsNullable((Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY));
+      obj.setIsPrimaryKey((Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY));
     }
 
     final Integer sourceOrdering = instance.fetchProperty(CdmPropertyName.SOURCE_ORDERING) == null

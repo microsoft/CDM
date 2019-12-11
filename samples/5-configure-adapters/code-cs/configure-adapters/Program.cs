@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace configure_adapters
+﻿namespace configure_adapters
 {
+    using System;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using System.Collections.Generic;
 
@@ -10,6 +9,7 @@ namespace configure_adapters
      * and input values for each parameter that is required in order to create that storage adapter. The storage adapter is 
      * then created with those parameter values, and all of the configured adapter's properties are listed.
      */
+
     class Program
     {
         static void Main(string[] args)

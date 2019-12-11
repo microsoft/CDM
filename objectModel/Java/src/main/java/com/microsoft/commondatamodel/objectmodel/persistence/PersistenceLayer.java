@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 // TODO-BQ: This class will need a revisit, it is dealing with way too much reflection.
 public class PersistenceLayer {
-  private static final Map<String, PersistenceType> persistenceTypeMap = new HashMap<>();
+  private static final Map<String, PersistenceType> persistenceTypeMap = new LinkedHashMap<>();
   private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceLayer.class);
 
   static {
@@ -95,9 +95,12 @@ public class PersistenceLayer {
     }
   }
 
-  public static CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(final CdmFolderDefinition folder, final String docName) {
+  public static CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
+      final CdmFolderDefinition folder,
+      final String docName,
+      final CdmDocumentDefinition docContainer) {
     return CompletableFuture.supplyAsync(() -> {
-      CdmDocumentDefinition doc = null;
+      CdmDocumentDefinition doc;
       String jsonData = null;
       OffsetDateTime fsModifiedTime = null;
       final CdmCorpusContext ctx = folder.getCtx();
@@ -110,40 +113,67 @@ public class PersistenceLayer {
           LOGGER.info("read file: '{}'", docPath);
         }
       } catch (final Exception e) {
-        LOGGER.error("Could not read '{}' from the '{}' namespace. Reason '{}'", docPath, ctx.getCorpus().getNamespace(), e.getLocalizedMessage());
+        LOGGER.error(
+            "Could not read '{}' from the '{}' namespace. Reason '{}'",
+            docPath,
+            folder.getNamespace(),
+            e.getLocalizedMessage());
         return null;
       }
 
       try {
+        // Check file extensions, which performs a case-insensitive ordinal string comparison
         if (StringUtils.endsWithIgnoreCase(docPath, CdmConstants.MANIFEST_EXTENSION)
             || StringUtils.endsWithIgnoreCase(docPath, CdmConstants.FOLIO_EXTENSION)) {
           doc = ManifestPersistence.fromData(
-              ctx, docName, folder.getNamespace(),
+              ctx,
+              docName,
+              folder.getNamespace(),
               folder.getFolderPath(),
               JMapper.MAP.readValue(jsonData, ManifestContent.class));
         } else if (StringUtils.endsWithIgnoreCase(docPath, CdmConstants.MODEL_JSON_EXTENSION)) {
+          if (!StringUtils.equalsIgnoreCase(docName, CdmConstants.MODEL_JSON_EXTENSION)) {
+            LOGGER.error("Failed to load '{}', as it's not an acceptable file name. It must be model.json.", docName);
+            return null;
+          }
           doc = com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence
               .fromData(
                   ctx,
                   JMapper.MAP.readValue(jsonData, Model.class),
                   folder).join();
-        } else{
-          doc = DocumentPersistence.fromData(
-              ctx,
-              docName,
-              folder.getNamespace(),
-              folder.getFolderPath(),
-              JMapper.MAP.readValue(jsonData, DocumentContent.class));
+        } else {
+          doc =
+              DocumentPersistence.fromData(
+                  ctx,
+                  docName,
+                  folder.getNamespace(),
+                  folder.getFolderPath(),
+                  JMapper.MAP.readValue(jsonData, DocumentContent.class));
         }
       } catch (final IOException e) {
         LOGGER.error("Could not covert '{}'. Reason '{}'", jsonData, e.getLocalizedMessage());
         return null;
       }
 
-      folder.getDocuments().add(doc, docName);
+      if (doc != null) {
+        if (docContainer != null) {
+          // There are situations where a previously loaded document must be re-loaded.
+          // The end of that chain of work is here where the old version of the document has been
+          // removed from the corpus and we have created a new document and loaded it from storage
+          // and after this call we will probably add it to the corpus and index it, etc.
+          // It would be really rude to just kill that old object and replace it with this replica,
+          // especially because the caller has no idea this happened. So... sigh ... instead of
+          // returning the new object return the one that was just killed off but make it contain
+          // everything the new document loaded.
+          doc = (CdmDocumentDefinition) doc.copy(new ResolveOptions(docContainer), docContainer);
+        }
 
-      doc.setFileSystemModifiedTime(fsModifiedTime);
-      doc.setDirty(false);
+        folder.getDocuments().add(doc, docName);
+
+        doc.setFileSystemModifiedTime(fsModifiedTime);
+        doc.setDirty(false);
+      }
+
       return doc;
     });
   }

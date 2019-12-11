@@ -2,12 +2,10 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -19,21 +17,12 @@ public class ResolveContext implements CdmCorpusContext {
   int errors;
   private Stack<ResolveContextScope> scopeStack;
   private ResolveContextScope currentScope;
-  private CdmDocumentDefinition currentDoc;
   private CdmCorpusDefinition corpus;
   private String relativePath;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;
-  }
-
-  public CdmDocumentDefinition getCurrentDoc() {
-    return this.currentDoc;
-  }
-
-  public void setCurrentDoc(final CdmDocumentDefinition value) {
-    this.currentDoc = value;
   }
 
   @Override
@@ -44,22 +33,6 @@ public class ResolveContext implements CdmCorpusContext {
   @Override
   public void setCorpus(final CdmCorpusDefinition value) {
     this.corpus = value;
-  }
-
-  @Override
-  public void updateDocumentContext(final CdmDocumentDefinition currentDoc) {
-    updateDocumentContext(currentDoc, null);
-  }
-
-  @Override
-  public void updateDocumentContext(final CdmDocumentDefinition currentDoc, final String corpusPathRoot) {
-    if (currentDoc != null) {
-      this.currentDoc = currentDoc;
-    }
-
-    if (!StringUtils.isNullOrTrimEmpty(corpusPathRoot)) {
-      this.corpusPathRoot = corpusPathRoot;
-    }
   }
 
   public void pushScope(CdmTraitDefinition currentTrait) {

@@ -113,4 +113,11 @@ public class LocalAdapterTest {
           throws ExecutionException, InterruptedException {
     assertFalse(localAdapter.dirExists("/m&l.form").get());
   }
+
+  @Test
+  public void convertPathToAbsolutePath_whenPathIsRelative_returnFalse() {
+    final LocalAdapter adapter = new LocalAdapter("../");
+    // adapter.getFullRoot() should not contain "../".
+    assertFalse(adapter.getFullRoot().contains("."));
+  }
 }

@@ -5,7 +5,6 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -31,7 +30,7 @@ public class CdmDefinitionCollectionTest {
     final CdmObjectDefinition addedFolder = document.getDefinitions().add(folder);
     final CdmObjectDefinition addedTrait = document.getDefinitions().add(trait);
 
-    Assert.assertEquals(true, document.isDirty());
+    Assert.assertTrue(document.isDirty());
     Assert.assertEquals(3, document.getDefinitions().getCount());
     Assert.assertEquals(attribute, addedAttribute);
     Assert.assertEquals(folder, addedFolder);
@@ -39,9 +38,8 @@ public class CdmDefinitionCollectionTest {
     Assert.assertEquals(attribute, document.getDefinitions().get(0));
     Assert.assertEquals(folder, document.getDefinitions().get(1));
     Assert.assertEquals(trait, document.getDefinitions().get(2));
-    Assert.assertEquals(document, attribute.getDocCreatedIn());
-    Assert.assertEquals(document, folder.getDocCreatedIn());
-    Assert.assertEquals(document, trait.getDocCreatedIn());
+    Assert.assertEquals(document, attribute.getInDocument());
+    Assert.assertEquals(document, trait.getInDocument());
     Assert.assertEquals(document, attribute.getOwner());
     Assert.assertEquals(document, folder.getOwner());
     Assert.assertEquals(document, trait.getOwner());
@@ -65,7 +63,7 @@ public class CdmDefinitionCollectionTest {
     Assert.assertEquals(3, document.getDefinitions().getCount());
     Assert.assertTrue(document.isDirty());
     Assert.assertEquals(attribute, document.getDefinitions().get(0));
-    Assert.assertEquals(document, attribute.getDocCreatedIn());
+    Assert.assertEquals(document, attribute.getInDocument());
     Assert.assertEquals(document, attribute.getOwner());
     Assert.assertEquals(ent1, document.getDefinitions().get(1));
     Assert.assertEquals(ent2, document.getDefinitions().get(2));
@@ -80,7 +78,7 @@ public class CdmDefinitionCollectionTest {
     final CdmEntityDefinition entity = document.getDefinitions().add("theNameOfTheEntity");
     Assert.assertTrue(document.isDirty());
     Assert.assertEquals(entity, document.getDefinitions().get(0));
-    Assert.assertEquals(document, entity.getDocCreatedIn());
+    Assert.assertEquals(document, entity.getInDocument());
     Assert.assertEquals(document, entity.getOwner());
     Assert.assertEquals("theNameOfTheEntity", entity.getEntityName());
   }
@@ -99,9 +97,9 @@ public class CdmDefinitionCollectionTest {
     Assert.assertTrue(document.isDirty());
     Assert.assertEquals(attribute, document.getDefinitions().get(0));
     Assert.assertEquals(trait, document.getDefinitions().get(1));
-    Assert.assertEquals(document, ((CdmObjectBase) attribute).getDocCreatedIn());
+    Assert.assertEquals(document, attribute.getInDocument());
     Assert.assertEquals(document, attribute.getOwner());
-    Assert.assertEquals(document, ((CdmObjectBase) trait).getDocCreatedIn());
+    Assert.assertEquals(document, trait.getInDocument());
     Assert.assertEquals(document, trait.getOwner());
   }
 
@@ -124,9 +122,8 @@ public class CdmDefinitionCollectionTest {
     Assert.assertEquals(attribute, document.getDefinitions().get(0));
     Assert.assertEquals(folder, document.getDefinitions().get(1));
     Assert.assertEquals(trait, document.getDefinitions().get(2));
-    Assert.assertEquals(document, attribute.getDocCreatedIn());
-    Assert.assertEquals(document, folder.getDocCreatedIn());
-    Assert.assertEquals(document, trait.getDocCreatedIn());
+    Assert.assertEquals(document, attribute.getInDocument());
+    Assert.assertEquals(document, trait.getInDocument());
     Assert.assertEquals(document, attribute.getOwner());
     Assert.assertEquals(document, folder.getOwner());
     Assert.assertEquals(document, trait.getOwner());

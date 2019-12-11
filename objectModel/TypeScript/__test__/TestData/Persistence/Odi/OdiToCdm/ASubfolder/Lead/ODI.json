@@ -1,0 +1,465 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../../Customer"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "leadPartyId",
+          "leadPartyIdType",
+          "leadIsDecisionMaker",
+          "leadDescription",
+          "leadEstimatedAmount",
+          "leadEstimatedCloseDate",
+          "leadIsInitialCommunication",
+          "leadQuality",
+          "leadPriorityCode",
+          "leadQualificationComments",
+          "qualifyingOpportunityId",
+          "revenue",
+          "leadValidFrom",
+          "leadValidTo",
+          "leadStateCode",
+          "currencyCode"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadParty",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnInstance": "leadParty0",
+            "opm:columns": [
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 5,
+                "opm:traits": {
+                  "olm:idScope": "@value"
+                }
+              },
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 6,
+                "opm:traits": {
+                  "olm:identifier": "@value"
+                }
+              }
+            ]
+          },
+          {
+            "opm:columnAttribute": "this:leadIsDecisionMaker",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadDescription",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadEstimatedAmount",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadEstimatedCloseDate",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadIsInitialCommunication",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 11,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadQuality",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 12,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadPriorityCode",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 13,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadQualificationComments",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 14,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:qualifyingOpportunity",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnInstance": "qualifyingOpportunity0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Opportunity",
+              "opm:columnIndex": 15,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:leadRevenue",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 16,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadValidFrom",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 17,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadValidTo",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 18,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadStateCode",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 19,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:leadCurrencyCode",
+            "opm:columnEntity": "this:Lead",
+            "opm:columnIndex": 20,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__Lead",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:Lead"
+              },
+              {
+                "@id": "this:Lead",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:leadParty",
+                    "olm:dataType": [
+                      "this:Person",
+                      "this:Organization"
+                    ],
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:leadIsDecisionMaker",
+                    "olm:dataType": "olm:Boolean",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadIsDecisionMaker",
+                    "olm:title": "Is Decision Maker"
+                  },
+                  {
+                    "@id": "this:leadDescription",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "Additional information to describe the Lead, such as an excerpt from the company's website.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadDescription",
+                    "olm:title": "Description"
+                  },
+                  {
+                    "@id": "this:leadEstimatedAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The estimated revenue value that this lead will generate to assist in sales forecasting and planning.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadEstimatedAmount",
+                    "olm:title": "Estimated Amount"
+                  },
+                  {
+                    "@id": "this:leadEstimatedCloseDate",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The expected close date for the lead.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadEstimatedCloseDate",
+                    "olm:title": "Estimated Close Date"
+                  },
+                  {
+                    "@id": "this:leadIsInitialCommunication",
+                    "olm:dataType": "olm:Boolean",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadIsInitialCommunication",
+                    "olm:title": "Is Initial Communication"
+                  },
+                  {
+                    "@id": "this:leadQuality",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadQuality",
+                    "olm:title": "Lead Quality"
+                  },
+                  {
+                    "@id": "this:leadPriorityCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadPriorityCode",
+                    "olm:title": "Priority Code"
+                  },
+                  {
+                    "@id": "this:leadQualificationComments",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadQualificationComments",
+                    "olm:title": "Qualification Comments"
+                  },
+                  {
+                    "@id": "this:leadQualifyingOpportunity",
+                    "olm:dataType": "this:Opportunity",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:leadRevenue",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The revenue value that this lead generated.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:revenue",
+                    "olm:title": "Revenue Amount"
+                  },
+                  {
+                    "@id": "this:leadValidFrom",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "Starting date time for the range during which the association is valid",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:leadValidFrom",
+                    "olm:title": "Valid From"
+                  },
+                  {
+                    "@id": "this:leadValidTo",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "Ending date time for the range during which the association is valid",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leadValidTo",
+                    "olm:title": "Valid To"
+                  },
+                  {
+                    "@id": "this:leadStateCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "whether the lead is open, qualified, or disqualified. Qualified and disqualified leads are read-only and can't be edited unless they are reactivated.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:leadStateCode",
+                    "olm:title": "State Code"
+                  },
+                  {
+                    "@id": "this:leadCurrencyCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The ISO 4217 currency code for currency values given in this lead",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:currencyCode",
+                    "olm:title": "Currency Code"
+                  }
+                ],
+                "olm:description": "Prospect or potential sales opportunity. Leads are converted into accounts, contacts, or opportunities when they are qualified. Otherwise, they are deleted or archived..",
+                "olm:sameAs": "odic:Lead",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Lead"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

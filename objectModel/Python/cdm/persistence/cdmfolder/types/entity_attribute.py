@@ -1,11 +1,11 @@
 from typing import Union, List
 
+from cdm.utilities import JObject
+
 from .entity_reference import EntityReference
 from .purpose_reference import PurposeReference
 from .trait_reference import TraitReference
 from .attribute_resolution_guidance import AttributeResolutionGuidance
-
-from cdm.utilities import JObject
 
 
 class EntityAttribute(JObject):

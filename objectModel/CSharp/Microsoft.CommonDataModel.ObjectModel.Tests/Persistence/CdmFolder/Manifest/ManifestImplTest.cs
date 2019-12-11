@@ -82,10 +82,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual("docName", cdmManifest.ManifestName);
         }
 
-    /// <summary>
-    /// Test for copy data.
-    /// </summary>
-    [TestMethod]
+        /// <summary>
+        /// Test for copy data.
+        /// </summary>
+        [TestMethod]
         public void TestManifestForCopyData()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestForCopyData", "complete.manifest.cdm.json");
@@ -118,6 +118,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
             cdmCorpus.Storage.Mount("someNamespace", new LocalAdapter(inputPath));
             cdmCorpus.Storage.Mount("local", new LocalAdapter(inputPath));
+            cdmCorpus.Storage.Unmount("cdm");
             cdmCorpus.Storage.DefaultNamespace = "local";
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("someNamespace:/default.manifest.cdm.json");
             var statusTimeAtLoad = cdmManifest.LastFileStatusCheckTime;
@@ -173,11 +174,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             {
                 switch (partition.Location)
                 {
-                    case "/partitions/existingPartition.csv":
+                    case "partitions/existingPartition.csv":
                         totalExpectedPartitionsFound++;
                         break;
 
-                    case "/partitions/someSubFolder/someSubPartition.csv":
+                    case "partitions/someSubFolder/someSubPartition.csv":
                         totalExpectedPartitionsFound++;
                         Assert.AreEqual(partition.SpecializedSchema, "test special schema");
                         Assert.IsTrue(partition.LastFileStatusCheckTime > timeBeforeLoad);
@@ -192,28 +193,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                         Assert.AreEqual(argArray.Count, 1);
                         Assert.AreEqual(argArray[0], "/someSubFolder/someSub");
                         break;
-                    case "/partitions/newPartition.csv":
+                    case "partitions/newPartition.csv":
                         totalExpectedPartitionsFound++;
                         Assert.AreEqual(partition.Arguments.Count, 1);
                         break;
-                    case "/partitions/2018/folderCapture.csv":
+                    case "partitions/2018/folderCapture.csv":
                         totalExpectedPartitionsFound++;
                         Assert.AreEqual(partition.Arguments.Count, 1);
                         Assert.AreEqual(partition.Arguments.ContainsKey("year"), true);
                         Assert.AreEqual(partition.Arguments["year"][0], "2018");
                         break;
-                    case "/partitions/testTooFew.csv":
+                    case "partitions/2018/8/15/folderCapture.csv":
+                        totalExpectedPartitionsFound++;
+                        Assert.AreEqual(partition.Arguments.Count, 3);
+                        Assert.AreEqual(partition.Arguments.ContainsKey("year"), true);
+                        Assert.AreEqual(partition.Arguments["year"][0], "2018");
+                        Assert.AreEqual(partition.Arguments.ContainsKey("month"), true);
+                        Assert.AreEqual(partition.Arguments["month"][0], "8");
+                        Assert.AreEqual(partition.Arguments.ContainsKey("day"), true);
+                        Assert.AreEqual(partition.Arguments["day"][0], "15");
+                        break;
+                    case "partitions/2018/8/15/folderCaptureRepeatedGroup.csv":
+                        totalExpectedPartitionsFound++;
+                        Assert.AreEqual(partition.Arguments.Count, 1);
+                        Assert.AreEqual(partition.Arguments.ContainsKey("day"), true);
+                        Assert.AreEqual(partition.Arguments["day"][0], "15");
+                        break;
+                    case "partitions/testTooFew.csv":
                         totalExpectedPartitionsFound++;
                         Assert.AreEqual(partition.Arguments.Count, 0);
                         break;
-                    case "/partitions/testTooMany.csv":
+                    case "partitions/testTooMany.csv":
                         totalExpectedPartitionsFound++;
                         Assert.AreEqual(partition.Arguments.Count, 0);
                         break;
                 }
             }
 
-            Assert.AreEqual(totalExpectedPartitionsFound, 6);
+            Assert.AreEqual(totalExpectedPartitionsFound, 8);
         }
 
         /// <summary>
@@ -266,8 +283,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            var cdmCorpusContext = new ResolveContext(corpus, callback);
-            corpus.Ctx = cdmCorpusContext;
+            corpus.SetEventCallback(callback);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp" });
@@ -296,8 +312,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            var cdmCorpusContext = new ResolveContext(corpus, callback);
-            corpus.Ctx = cdmCorpusContext;
+            corpus.SetEventCallback(callback);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("./Abc");
             Assert.IsTrue(functionWasCalled);
@@ -347,8 +362,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            var cdmCorpusContext = new ResolveContext(corpus, callback);
-            corpus.Ctx = cdmCorpusContext;
+            corpus.SetEventCallback(callback);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "./Mnp" });

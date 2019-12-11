@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -248,10 +247,7 @@ public class LocalAdapter implements StorageAdapter {
    */
   private String convertPathToAbsolutePath(final String path) {
     try {
-      return FileSystems.getDefault()
-          .getPath(path)
-          .normalize().toAbsolutePath()
-          .toString();
+      return new File(path).getCanonicalPath();
     } catch (Exception E) {
       LOGGER.error("Unable to parse path '{}'.", path);
       return null;
@@ -270,6 +266,10 @@ public class LocalAdapter implements StorageAdapter {
 
   public String getFullRoot() {
     return fullRoot;
+  }
+
+  public String getRoot() {
+    return root;
   }
 
   @Override

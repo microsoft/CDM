@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -15,11 +16,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         }
 
+        /// <inheritdoc />
         public override string FetchObjectDefinitionName()
         {
             return null;
         }
 
+        /// <inheritdoc />
         public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null) 
         {
             if (resOpt == null)
@@ -30,6 +33,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return default(T);
         }
 
+        /// <inheritdoc />
         public override CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -40,6 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return null;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt)
         {
             return false;

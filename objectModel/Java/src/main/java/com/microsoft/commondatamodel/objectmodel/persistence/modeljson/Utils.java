@@ -14,7 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Csv
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class Utils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-  private static final Map<String, String> annotationToTraitMap = new HashMap<String, String>() {
+  private static final Map<String, String> annotationToTraitMap = new LinkedHashMap<String, String>() {
     private static final long serialVersionUID = 1863481726936L;
 
     {
@@ -72,16 +72,18 @@ public class Utils {
           }
         }
 
-        final CdmTraitReference trait = ctx.getCorpus()
-                .makeRef(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
-        trait.setFromProperty(true);
+        if (multiTraitAnnotations.size() > 0) {
+          final CdmTraitReference trait = ctx.getCorpus()
+              .makeRef(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
+          trait.setFromProperty(true);
 
-        final CdmArgumentDefinition annotationsArgument =
-            new CdmArgumentDefinition(ctx, "annotations");
-        annotationsArgument.setValue(multiTraitAnnotations);
+          final CdmArgumentDefinition annotationsArgument =
+              new CdmArgumentDefinition(ctx, "annotations");
+          annotationsArgument.setValue(multiTraitAnnotations);
 
-        trait.getArguments().add(annotationsArgument);
-        traits.add(trait);
+          trait.getArguments().add(annotationsArgument);
+          traits.add(trait);
+        }
       }
 
       if (obj.getTraits() != null) {

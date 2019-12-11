@@ -2,16 +2,12 @@
 // <copyright file="CdmDataPartitionDefinition.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-// <summary>
-//   The object model implementation for Data Partition.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -22,7 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmDataPartitionDefinition : CdmObjectDefinitionBase, CdmFileStatus
     {
         /// <summary>
-        /// Gets or sets the description of a data partition.
+        /// Gets or sets the description of the data partition.
         /// </summary>
         public string Description
         {
@@ -41,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmDataPartitionDefinition"/> class.
         /// </summary>
-        /// <param name="ctx"> The context. </param>
+        /// <param name="ctx">The context.</param>
         public CdmDataPartitionDefinition(CdmCorpusContext ctx, string name) : base(ctx)
         {
             this.Name = name;
@@ -57,7 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Location { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether inferred.
+        /// Gets or sets whether the data partition is inferred.
         /// </summary>
         public bool Inferred { get; set; }
 
@@ -71,21 +67,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string SpecializedSchema { get; set; }
 
-        /// <inheritdoc />
+        /// Gets or sets the last file status check time.
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
-        /// <inheritdoc />
+        /// Gets or sets the last file modified time.
         public DateTimeOffset? LastFileModifiedTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of a data partition.
+        /// Gets or sets the name of the data partition.
         /// </summary>
         public string Name { get; set; }
 
-        /// <inheritdoc />
+        /// Gets or sets the data partition's refresh time.
         public DateTime? RefreshTime { get; set; }
 
-        /// <inheritdoc />
+        /// Gets or sets the last child file modified time.
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
         /// <inheritdoc />
@@ -103,23 +99,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
  
         /// <inheritdoc />
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            var copy = new CdmDataPartitionDefinition(this.Ctx, this.Name)
+            CdmDataPartitionDefinition copy;
+            if (host == null)
             {
-                Description = this.Description,
-                Location = this.Location,
-                LastFileStatusCheckTime = this.LastFileStatusCheckTime,
-                LastFileModifiedTime = this.LastFileModifiedTime,
-                Inferred = this.Inferred,
-                Arguments = this.Arguments,
-                SpecializedSchema = this.SpecializedSchema
-            };
+                copy = new CdmDataPartitionDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmDataPartitionDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
+
+            copy.Description = this.Description;
+            copy.Location = this.Location;
+            copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
+            copy.LastFileModifiedTime = this.LastFileModifiedTime;
+            copy.Inferred = this.Inferred;
+            copy.Arguments = this.Arguments;
+            copy.SpecializedSchema = this.SpecializedSchema;
+
             this.CopyDef(resOpt, copy);
 
             return copy;
@@ -128,7 +134,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override string GetName()
         {
-            return null;
+            return this.Name;
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
@@ -140,6 +146,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
+            {
+                path = this.DeclaredPath;
+                if (path == null)
+                {
+                    string thisName = this.GetName();
+                    if (thisName == null)
+                        thisName = "UNNAMED";
+                    path = pathFrom + thisName;
+                    this.DeclaredPath = path;
+                }
+            }
+
+            if (preChildren != null && preChildren.Invoke(this, path))
+            {
+                return false;
+            }
+
+            if (this.VisitDef(path, preChildren, postChildren))
+                return true;
+
+            if (postChildren != null && postChildren.Invoke(this, path))
+            {
+                return false;
+            }
             return false;
         }
 
@@ -157,10 +189,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string nameSpace = this.InDocument.Namespace;
-            string fullPath = this.Location.Contains(":") ? this.Location : $"{nameSpace}:{this.Location}";
-
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
+            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
+            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
 
             // update modified times
             this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;

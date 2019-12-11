@@ -1,0 +1,123 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/CDMSource_resolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": {
+      "dls:entity": "this:Device",
+      "dls:folderReference": "../Device"
+    },
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "firstName"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:personIdentifier",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personFirstName",
+            "opm:columnEntity": "this:Person",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:personOwnedDevice",
+            "opm:columnEntity": "this:Person",
+            "opm:columnInstance": "personDevice0",
+            "opm:columns": [
+              {
+                "opm:columnAttribute": "this:deviceIdentifier",
+                "opm:columnEntity": "this:Device",
+                "opm:columnIndex": 2
+              },
+              {
+                "opm:columnAttribute": "this:deviceName",
+                "opm:columnEntity": "this:Device",
+                "opm:columnIndex": 3
+              }
+            ]
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__Person",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:Person"
+              },
+              {
+                "@id": "this:Person",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:personIdentifier",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:personFirstName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The person's first name to make sure the person is addressed correctly in sales calls, email, and marketing campaigns.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:title": "First Name"
+                  },
+                  {
+                    "@id": "this:personOwnedDevice",
+                    "olm:dataType": "this:Device",
+                    "olm:description": "The device that is owned by this person.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:title": "Owned Device"
+                  }
+                ],
+                "olm:description": "Person with whom a business has a relationship, such as customer, supplier, and colleague.",
+                "olm:subClassOf": "olm:Entity",
+                "olm:title": "Person"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

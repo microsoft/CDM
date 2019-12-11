@@ -1,6 +1,7 @@
 ﻿namespace read_manifest
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -8,10 +9,11 @@
     /**
      * --------------------------------------------------------------------------------------------------------------------
      * This sample reads the content of a manifest document and lists all the entities that it knows about.
-     * For a given entity, the sample will get the corresponding schema defintion document for that entity
+     * For a given entity, the sample will get the corresponding schema definition document for that entity
      * and allow the user to list its attributes, traits, properties, data partition file locations, and relationships.
      * --------------------------------------------------------------------------------------------------------------------
      */
+
     class Program
     {
         static async Task Main(string[] args)
@@ -54,31 +56,60 @@
             // ------------------------------------------------------------------------------------------------------------
             // Open the default manifest file at the root.
 
-            var manifestFile = "default.manifest.cdm.json";
-            // This method turns relative corpus paths into absolute paths in case we are in some sub-folders 
-            // and don't know it.
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(manifestFile);
+            await ExploreManifest(cdmCorpus, "default.manifest.cdm.json");
+        }
+
+        static async Task ExploreManifest(CdmCorpusDefinition cdmCorpus, string manifestPath)
+        {
+            Console.WriteLine($"\nLoading manifest {manifestPath} ...");
+
+            CdmManifestDefinition manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(manifestPath);
 
             // ------------------------------------------------------------------------------------------------------------
             // List all the entities found in the manifest and allow the user to choose which entity to explore.
 
             while (true)
             {
-                Console.WriteLine($"List of all entities found in {manifestFile}:");
+                int index = 1;
 
-                // Loop over any entity declarations.
-                int iEnt = 1;
-                foreach (var entDec in manifest.Entities)
+                if (manifest.Entities.Count > 0)
                 {
-                    // Print it out.
-                    // Assume there are only local entities in this manifest for simplicity.
-                    Console.Write("  " + iEnt.ToString().PadRight(3));
-                    Console.Write("  " + entDec.EntityName.PadRight(35));
-                    Console.WriteLine("  " + entDec.EntityPath);
-                    iEnt++;
+                    Console.WriteLine("List of all entities:");
+
+                    foreach (var entDec in manifest.Entities)
+                    {
+                        // Print entity declarations.
+                        // Assume there are only local entities in this manifest for simplicity.
+                        Console.Write("  " + index.ToString().PadRight(3));
+                        Console.Write("  " + entDec.EntityName.PadRight(35));
+                        Console.WriteLine("  " + entDec.EntityPath);
+                        index++;
+                    }
                 }
 
-                Console.Write("Enter a number to show details for that Entity (press [enter] to exit): ");
+                if (manifest.SubManifests.Count > 0)
+                {
+                    Console.WriteLine("List of all sub-manifests:");
+
+                    foreach (var manifestDecl in manifest.SubManifests)
+                    {
+                        // Print sub-manifest declarations.
+                        Console.Write("  " + index.ToString().PadRight(3));
+                        Console.Write("  " + manifestDecl.ManifestName.PadRight(35));
+                        Console.WriteLine("  " + manifestDecl.Definition);
+                        index++;
+                    }
+                }
+
+                if (index == 1)
+                {
+                    Console.Write("No Entities or Sub-manifest found. Press [enter] to exit.");
+                    Console.ReadLine();
+                    break;
+                }
+
+                Console.Write("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
+
                 // Get the user's choice.
                 string input = Console.ReadLine();
                 if (string.IsNullOrEmpty(input))
@@ -86,93 +117,101 @@
 
                 // Make sure the user's input is a number.
                 int num = 0;
-                if (int.TryParse(input, out num))
-                {
-                    iEnt = 1;
-                    foreach (var entityDec in manifest.Entities)
-                    {
-                        if (iEnt == num)
-                        {
-                            Console.WriteLine("Reading the entity schema and resolving with the standard docs, first one may take a second ...");
-
-                            // From the path to the entity, get the actual schema description.
-                            // Take the local relative path in this doc and make sure it works.
-                            var entSelected = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(entityDec.EntityPath, manifest); // gets the entity object from the doc
-
-                            while (true)
-                            {
-                                // List all the metadata properties of this entity that can be explored.
-                                Console.WriteLine($"\nMetadata properties for the entity {entityDec.EntityName}:");
-                                Console.WriteLine("  1: Attributes");
-                                Console.WriteLine("  2: Traits");
-                                Console.WriteLine("  3: Properties");
-                                Console.WriteLine("  4: Data partition locations");
-                                Console.WriteLine("  5: Relationships");
-
-                                Console.Write("Enter a number to show details for that metadata property (press [enter] to explore other entities): ");
-
-                                // Get the user's choice. 
-                                input = Console.ReadLine();
-                                if (string.IsNullOrEmpty(input))
-                                {
-                                    Console.WriteLine();
-                                    break;
-                                }
-
-                                // Make sure the user's input is a number.
-                                int choice = 0;
-                                if (int.TryParse(input, out choice))
-                                {
-                                    switch (choice)
-                                    {
-                                        // List the entity's attributes.
-                                        case 1:
-                                            ListAttributes(entSelected);
-                                            break;
-                                        // List the entity's traits.
-                                        case 2:
-                                            ListTraits(entSelected);
-                                            break;
-                                        // List the entity's properties.
-                                        case 3:
-                                            ListProperties(entSelected, entityDec);
-                                            break;
-                                        // List the entity's data partition locations.
-                                        case 4:
-                                            ListDataPartitionLocations(entityDec);
-                                            break;
-                                        // List the entity's relationships.
-                                        case 5:
-                                            if (manifest.Relationships != null && manifest.Relationships.Count > 0)
-                                            {
-                                                // The manifest file contains pre-calculated entity relationships, so we can read them directly.
-                                                ListRelationshipsFromManifest(manifest, entSelected);
-                                            }
-                                            else
-                                            {
-                                                // The manifest file doesn't contain relationships, so we have to compute the relationships first.
-                                                await cdmCorpus.CalculateEntityGraphAsync(manifest);
-                                                ListRelationships(cdmCorpus, entSelected);
-                                            }
-                                            break;
-                                        default:
-                                            Console.WriteLine("\nEnter a number between 1-5.");
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("\nEnter a number.");
-                                }
-                            }
-                        }
-                        iEnt++;
-                    }
-                }
-                else
+                if (!int.TryParse(input, out num))
                 {
                     Console.WriteLine("\nEnter a number.");
                     Console.WriteLine();
+                    continue;
+                }
+
+                // User can select an entry that is a sub-manifest
+                if (num > manifest.Entities.Count)
+                {
+                    int subNum = num - manifest.Entities.Count - 1;
+                    // Re-enter this method supplying the absolute path of the submanifest definition (relative to the current manifest)
+                    await ExploreManifest(cdmCorpus, cdmCorpus.Storage.CreateAbsoluteCorpusPath(manifest.SubManifests[subNum].Definition, manifest));
+                    continue;
+                }
+
+                index = 1;
+                foreach (var entityDec in manifest.Entities)
+                {
+                    if (index == num)
+                    {
+                        Console.WriteLine("Reading the entity schema and resolving with the standard docs, first one may take a second ...");
+
+                        // From the path to the entity, get the actual schema description.
+                        // Take the local relative path in this doc and make sure it works.
+                        var entSelected = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(entityDec.EntityPath, manifest); // gets the entity object from the doc
+
+                        while (true)
+                        {
+                            // List all the metadata properties of this entity that can be explored.
+                            Console.WriteLine($"\nMetadata properties for the entity {entityDec.EntityName}:");
+                            Console.WriteLine("  1: Attributes");
+                            Console.WriteLine("  2: Traits");
+                            Console.WriteLine("  3: Properties");
+                            Console.WriteLine("  4: Data partition locations");
+                            Console.WriteLine("  5: Relationships");
+
+                            Console.Write("Enter a number to show details for that metadata property (press [enter] to explore other entities): ");
+
+                            // Get the user's choice. 
+                            input = Console.ReadLine();
+                            if (string.IsNullOrEmpty(input))
+                            {
+                                Console.WriteLine();
+                                break;
+                            }
+
+                            // Make sure the user's input is a number.
+                            int choice = 0;
+                            if (int.TryParse(input, out choice))
+                            {
+                                switch (choice)
+                                {
+                                    // List the entity's attributes.
+                                    case 1:
+                                        ListAttributes(entSelected);
+                                        break;
+                                    // List the entity's traits.
+                                    case 2:
+                                        ListTraits(entSelected);
+                                        break;
+                                    // List the entity's properties.
+                                    case 3:
+                                        ListProperties(entSelected, entityDec);
+                                        break;
+                                    // List the entity's data partition locations.
+                                    case 4:
+                                        ListDataPartitionLocations(cdmCorpus, entityDec);
+                                        break;
+                                    // List the entity's relationships.
+                                    case 5:
+                                        if (manifest.Relationships != null && manifest.Relationships.Count > 0)
+                                        {
+                                            // The manifest file contains pre-calculated entity relationships, so we can read them directly.
+                                            ListRelationshipsFromManifest(manifest, entSelected);
+                                        }
+                                        else
+                                        {
+                                            // The manifest file doesn't contain relationships, so we have to compute the relationships first.
+                                            await cdmCorpus.CalculateEntityGraphAsync(manifest);
+                                            ListRelationships(cdmCorpus, entSelected);
+                                        }
+                                        break;
+                                    default:
+                                        Console.WriteLine("\nEnter a number between 1-5.");
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nEnter a number.");
+                            }
+                        }
+                    }
+                    index++;
                 }
             }
         }
@@ -190,14 +229,10 @@
                 // Attribute's data format.
                 PrintProperty("DataFormat", attribute.DataFormat.ToString());
                 // And all the traits of this attribute.
-                Console.WriteLine("  AppliedTraits:");
+                Console.WriteLine("AppliedTraits:");
                 foreach (var trait in attribute.AppliedTraits)
                 {
-                    if (!string.IsNullOrEmpty(trait.FetchObjectDefinitionName()))
-                    {
-                        // Not getting too fancy with traits, just listing the trait name.
-                        Console.WriteLine("      " + trait.FetchObjectDefinitionName());
-                    }
+                    PrintTrait(trait);
                 }
                 Console.WriteLine();
             }
@@ -206,16 +241,12 @@
         static void ListTraits(CdmEntityDefinition entity)
         {
             Console.WriteLine($"\nList of all traits for the entity {entity.EntityName}:");
-            foreach (CdmTraitReference traitRef in entity.ExhibitsTraits)
+            foreach (CdmTraitReference trait in entity.ExhibitsTraits)
             {
-                if (!string.IsNullOrEmpty(traitRef.FetchObjectDefinitionName()))
-                {
-                    // Not getting too fancy with traits, just listing the trait name.
-                    Console.WriteLine("  " + traitRef.FetchObjectDefinitionName());
-                }
+                PrintTrait(trait);
             }
         }
-
+        
         static void ListProperties(CdmEntityDefinition entity, CdmEntityDeclarationDefinition entityDec)
         {
             Console.WriteLine($"\nList of all properties for the entity {entity.EntityName}:");
@@ -249,13 +280,18 @@
             PrintProperty("LastFileStatusCheckTime", entityDec.LastFileStatusCheckTime.ToString());
         }
 
-        static void ListDataPartitionLocations(CdmEntityDeclarationDefinition entityDec)
+        static void ListDataPartitionLocations(CdmCorpusDefinition cdmCorpus, CdmEntityDeclarationDefinition entityDec)
         {
             Console.WriteLine($"\nList of all data partition locations for the entity {entityDec.EntityName}:");
             foreach (CdmDataPartitionDefinition dataPartition in entityDec.DataPartitions)
             {
                 // The data partition location.
                 Console.WriteLine("  " + dataPartition.Location);
+
+                if (!string.IsNullOrEmpty(dataPartition.Location))
+                {
+                    Console.WriteLine("  " + cdmCorpus.Storage.CorpusPathToAdapterPath(dataPartition.Location));
+                }
             }
         }
 
@@ -284,6 +320,32 @@
                 if (relationship.FromEntity.Contains(entity.EntityName) || relationship.ToEntity.Contains(entity.EntityName))
                 {
                     PrintRelationship(relationship);
+                }
+            }
+        }
+
+        static void PrintTrait(CdmTraitReference trait)
+        {
+            if (!string.IsNullOrEmpty(trait.FetchObjectDefinitionName()))
+            {
+                Console.WriteLine("      " + trait.FetchObjectDefinitionName());
+                foreach (var argDef in trait.Arguments)
+                {
+                    if (argDef.Value is CdmEntityReference)
+                    {
+                        Console.WriteLine("         Constant: [");
+                        var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
+                        foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                        {
+                            Console.WriteLine($"             [{String.Join(", ", constantValueList.ToArray())}]");
+                        }
+                        Console.WriteLine("         ]");
+                    }
+                    else
+                    {
+                        // Default output, nothing fancy for now
+                        Console.WriteLine("         " + argDef.Value);
+                    }
                 }
             }
         }

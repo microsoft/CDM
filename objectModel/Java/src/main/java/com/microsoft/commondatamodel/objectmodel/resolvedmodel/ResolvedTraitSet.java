@@ -8,12 +8,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -30,7 +31,7 @@ public class ResolvedTraitSet {
   public ResolvedTraitSet(final ResolveOptions resOpt) {
     this.resOpt = resOpt.copy();
     this.set = new ArrayList<>();
-    this.lookupByTrait = new HashMap<>();
+    this.lookupByTrait = new LinkedHashMap<>();
     this.hasElevated = false;
   }
 
@@ -94,7 +95,7 @@ public class ResolvedTraitSet {
     return traitSetResult;
   }
 
-  public ResolvedTraitSet mergeSet(final ResolvedTraitSet toMerge) {
+  ResolvedTraitSet mergeSet(final ResolvedTraitSet toMerge) {
     return mergeSet(toMerge, false);
   }
 
@@ -132,7 +133,7 @@ public class ResolvedTraitSet {
 
   public ResolvedTrait find(final ResolveOptions resOpt, final String traitName) {
     for (final ResolvedTrait rt : set) {
-      if (rt.getTrait().isDerivedFrom(resOpt, traitName)) {
+      if (rt.getTrait().isDerivedFrom(traitName, resOpt)) {
         return rt;
       }
     }
@@ -155,7 +156,7 @@ public class ResolvedTraitSet {
     return copy;
   }
 
-  public ResolvedTraitSet shallowCopyWithException(final CdmTraitDefinition just) {
+  private ResolvedTraitSet shallowCopyWithException(final CdmTraitDefinition just) {
     final ResolvedTraitSet copy = new ResolvedTraitSet(resOpt);
     final List<ResolvedTrait> newSet = copy.getSet();
 
@@ -173,7 +174,7 @@ public class ResolvedTraitSet {
     return copy;
   }
 
-  public ResolvedTraitSet shallowCopy() {
+  ResolvedTraitSet shallowCopy() {
     final ResolvedTraitSet copy = new ResolvedTraitSet(resOpt);
 
     if (set != null) {
@@ -190,7 +191,7 @@ public class ResolvedTraitSet {
     return copy;
   }
 
-  public Set<String> collectTraitNames() {
+  Set<String> collectTraitNames() {
     final Set<String> collection = new LinkedHashSet<String>();
 
     if (set != null) {
@@ -222,14 +223,17 @@ public class ResolvedTraitSet {
     return altered;
   }
 
-  public ResolvedTraitSet replaceTraitParameterValue(final ResolveOptions resOpt, final String toTrait,
-                                                     final String paramName, final Object valueWhen, final Object valueNew) {
+  ResolvedTraitSet replaceTraitParameterValue(
+      final ResolveOptions resOpt,
+      final String toTrait,
+      final String paramName,
+      final Object valueWhen, final Object valueNew) {
     ResolvedTraitSet traitSetResult = this;
 
     for (int i = 0; i < traitSetResult.getSet().size(); i++) {
       ResolvedTrait rt = traitSetResult.getSet().get(i);
 
-      if (rt.getTrait().isDerivedFrom(resOpt, toTrait)) {
+      if (rt.getTrait().isDerivedFrom(toTrait, resOpt)) {
         if (rt.getParameterValues() != null) {
           final ParameterCollection pc = rt.getParameterValues().getPc();
           List<Object> av = rt.getParameterValues().getValues();
@@ -263,7 +267,7 @@ public class ResolvedTraitSet {
     final List<ResolvedTrait> list = new ArrayList<>(set);
 
     if (nameSort) {
-      list.sort(new CaseAgnosticTraitNameComparator());
+      list.sort((l, r) -> StringUtils.compareIgnoreCase(l.getTraitName(), r.getTraitName(), true));
     }
 
     for (final ResolvedTrait trait : list) {

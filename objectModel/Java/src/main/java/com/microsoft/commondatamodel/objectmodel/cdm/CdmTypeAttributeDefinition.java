@@ -177,13 +177,18 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.getName();
-      this.setDeclaredPath(path);
-    }
-    //trackVisits(path);
+    String path = "";
 
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (Strings.isNullOrEmpty(path)) {
+        path = pathFrom + this.getName();
+        this.setDeclaredPath(path);
+      }
+    }
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
@@ -235,6 +240,10 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     } else {
       resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
     }
+
+    // renameFormat is not currently supported for type attributes.
+    resGuideWithDefault.setRenameFormat(null);
+
     resGuideWithDefault.updateAttributeDefaults(null);
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
@@ -287,8 +296,19 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmTypeAttributeDefinition copy = new CdmTypeAttributeDefinition(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmTypeAttributeDefinition copy;
+    if (host == null) {
+      copy = new CdmTypeAttributeDefinition(this.getCtx(), this.getName());
+    } else {
+      copy = (CdmTypeAttributeDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     if (this.getDataType() != null) {
       copy.setDataType((CdmDataTypeReference) this.getDataType().copy(resOpt));
@@ -310,7 +330,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 }

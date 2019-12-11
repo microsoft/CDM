@@ -29,10 +29,10 @@ public class AttributeResolutionGuidancePersistence {
         : null);
     attributeResolution.setImposedDirectives(obj.get("imposedDirectives") == null ? null
         : JMapper.MAP.convertValue(obj.get("imposedDirectives"), new TypeReference<List<String>>() {
-    })); // TODO-BQ: Verify this implementation.
+    }));
     attributeResolution.setRemovedDirectives(obj.get("removedDirectives") == null ? null
         : JMapper.MAP.convertValue(obj.get("removedDirectives"), new TypeReference<List<String>>() {
-    })); // TODO-BQ: Verify this implementation.
+    }));
     attributeResolution.setCardinality(obj.has("cardinality")
         ? obj.get("cardinality").asText()
         : null);
@@ -58,7 +58,7 @@ public class AttributeResolutionGuidancePersistence {
       if (expansion.has("countAttribute")) {
         attributeResolution.getExpansion().setCountAttribute((CdmTypeAttributeDefinition) Utils
             .createAttribute(ctx,
-                expansion.get("countAttribute"))); // TODO-BQ: Verify this implementation
+                expansion.get("countAttribute")));
       }
     }
     if (obj.has("entityByReference")) {
@@ -90,12 +90,17 @@ public class AttributeResolutionGuidancePersistence {
       if (obj.get("selectsSubAttribute").has("selectedTypeAttribute")) {
         attributeResolution.getSelectsSubAttribute().setSelectedTypeAttribute(
             (CdmTypeAttributeDefinition) Utils.createAttribute(ctx, obj.get("selectsSubAttribute")
-                .get("selectedTypeAttribute"))); // TODO-BQ: Verify this implementation
+                .get("selectedTypeAttribute")));
       }
       if (obj.get("selectsSubAttribute").has("selectsSomeTakeNames")) {
-        attributeResolution.getSelectsSubAttribute().setSelectedTypeAttribute(
-            (CdmTypeAttributeDefinition) Utils.createAttribute(ctx, obj.get("selectsSubAttribute")
-                .get("selectsSomeTakeNames")));
+        attributeResolution.getSelectsSubAttribute().setSelectsSomeTakeNames(
+            JMapper.MAP.convertValue(obj.get("selectsSubAttribute")
+            .get("selectsSomeTakeNames"), new TypeReference<List<String>>(){}));
+      }
+      if (obj.get("selectsSubAttribute").has("selectsSomeAvoidNames")) {
+        attributeResolution.getSelectsSubAttribute().setSelectsSomeAvoidNames(
+            JMapper.MAP.convertValue(obj.get("selectsSubAttribute")
+                .get("selectsSomeAvoidNames"), new TypeReference<List<String>>(){}));
       }
     }
 
@@ -110,7 +115,7 @@ public class AttributeResolutionGuidancePersistence {
     obj.setImposedDirectives(instance.getImposedDirectives());
     obj.setRemovedDirectives(instance.getRemovedDirectives());
     obj.setAddSupportingAttribute(
-        Utils.jsonForm(instance.getAddSupportingAttribute(), resOpt, options));
+            Utils.jsonForm(instance.getAddSupportingAttribute(), resOpt, options));
     obj.setCardinality(instance.getCardinality());
     obj.setRenameFormat(instance.getRenameFormat());
 
@@ -120,8 +125,8 @@ public class AttributeResolutionGuidancePersistence {
       expansion.setStartingOrdinal(instance.getExpansion().getStartingOrdinal());
       expansion.setMaximumExpansion(instance.getExpansion().getMaximumExpansion());
       expansion
-          .setCountAttribute(
-              Utils.jsonForm(instance.getExpansion().getCountAttribute(), resOpt, options));
+              .setCountAttribute(
+                      Utils.jsonForm(instance.getExpansion().getCountAttribute(), resOpt, options));
 
       obj.setExpansion(expansion);
     }
@@ -129,14 +134,14 @@ public class AttributeResolutionGuidancePersistence {
       final EntityByReference entityByReference = new EntityByReference();
 
       entityByReference
-          .setAlwaysIncludeForeignKey(
-              instance.getEntityByReference().doesAlwaysIncludeForeignKey());
+              .setAlwaysIncludeForeignKey(
+                      instance.getEntityByReference().doesAlwaysIncludeForeignKey());
       entityByReference
-          .setReferenceOnlyAfterDepth(instance.getEntityByReference().getReferenceOnlyAfterDepth());
+              .setReferenceOnlyAfterDepth(instance.getEntityByReference().getReferenceOnlyAfterDepth());
       entityByReference.setAllowReference(instance.getEntityByReference().doesAllowReference());
       entityByReference.setForeignKeyAttribute(
-          Utils
-              .jsonForm(instance.getEntityByReference().getForeignKeyAttribute(), resOpt, options));
+              Utils
+                      .jsonForm(instance.getEntityByReference().getForeignKeyAttribute(), resOpt, options));
 
       obj.setEntityByReference(entityByReference);
     }
@@ -145,8 +150,10 @@ public class AttributeResolutionGuidancePersistence {
 
       selectsSubAttribute.setSelects(instance.getSelectsSubAttribute().getSelects());
       selectsSubAttribute.setSelectedTypeAttribute(
-          Utils.jsonForm(instance.getSelectsSubAttribute().getSelectedTypeAttribute(), resOpt,
-              options));
+              Utils.jsonForm(instance.getSelectsSubAttribute().getSelectedTypeAttribute(), resOpt,
+                      options));
+      selectsSubAttribute.setSelectsSomeTakeNames(instance.getSelectsSubAttribute().getSelectsSomeTakeNames());
+      selectsSubAttribute.setSelectsSomeAvoidNames(instance.getSelectsSubAttribute().getSelectsSomeAvoidNames());
 
       obj.setSelectsSubAttribute(selectsSubAttribute);
     }

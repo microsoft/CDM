@@ -13,48 +13,53 @@ from .types.attribute_resolution_guidance import EntityByReference, Expansion, S
 
 class AttributeResolutionGuidancePersistence:
     @staticmethod
-    def from_data(ctx: CdmCorpusContext, dataObj: AttributeResolutionGuidance) -> CdmAttributeResolutionGuidanceDefinition:
+    def from_data(ctx: CdmCorpusContext, data: AttributeResolutionGuidance) -> CdmAttributeResolutionGuidanceDefinition:
         """Creates an instance of attribute resolution guidance from data object."""
 
-        if not dataObj:
+        if not data:
             return None
 
-        new_ref = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_RESOLUTION_GUIDANCE_DEF)
+        attribute_resolution = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_RESOLUTION_GUIDANCE_DEF)
 
-        new_ref.remove_attribute = dataObj.get('removeAttribute')
-        new_ref.imposed_directives = dataObj.get('imposedDirectives')
-        new_ref.removed_directives = dataObj.get('removedDirectives')
-        new_ref.cardinality = dataObj.get('cardinality')
-        new_ref.rename_format = dataObj.get('renameFormat')
+        attribute_resolution.remove_attribute = data.get('removeAttribute')
+        attribute_resolution.imposed_directives = data.get('imposedDirectives')
+        attribute_resolution.removed_directives = data.get('removedDirectives')
+        attribute_resolution.cardinality = data.get('cardinality')
+        attribute_resolution.rename_format = data.get('renameFormat')
 
-        if dataObj.get('addSupportingAttribute'):
-            new_ref.add_supporting_attribute = utils.create_attribute(ctx, dataObj.addSupportingAttribute)
+        if data.get('addSupportingAttribute') is not None:
+            attribute_resolution.add_supporting_attribute = utils.create_attribute(ctx, data.addSupportingAttribute)
 
-        if dataObj.get('expansion'):
-            new_ref.expansion = CdmAttributeResolutionGuidance_Expansion()
-            new_ref.expansion.starting_ordinal = dataObj.expansion.get('startingOrdinal')
-            new_ref.expansion.maximum_expansion = dataObj.expansion.get('maximumExpansion')
+        if data.get('expansion') is not None:
+            attribute_resolution.expansion = CdmAttributeResolutionGuidance_Expansion()
+            attribute_resolution.expansion.starting_ordinal = data.expansion.get('startingOrdinal')
+            attribute_resolution.expansion.maximum_expansion = data.expansion.get('maximumExpansion')
 
-            if dataObj.expansion.get('countAttribute'):
-                new_ref.expansion.count_attribute = utils.create_attribute(ctx, dataObj.expansion.countAttribute)
+            if data.expansion.get('countAttribute'):
+                attribute_resolution.expansion.count_attribute = utils.create_attribute(ctx, data.expansion.countAttribute)
 
-        if dataObj.get('entityByReference'):
-            new_ref.entity_by_reference = CdmAttributeResolutionGuidance_EntityByReference()
-            new_ref.entity_by_reference.allow_reference = dataObj.entityByReference.get('allowReference')
-            new_ref.entity_by_reference.always_include_foreign_key = dataObj.entityByReference.get('alwaysIncludeForeignKey')
-            new_ref.entity_by_reference.reference_only_after_depth = dataObj.entityByReference.get('referenceOnlyAfterDepth')
+        if data.get('entityByReference') is not None:
+            attribute_resolution.entity_by_reference = CdmAttributeResolutionGuidance_EntityByReference()
+            attribute_resolution.entity_by_reference.allow_reference = data.entityByReference.get('allowReference')
+            attribute_resolution.entity_by_reference.always_include_foreign_key = data.entityByReference.get('alwaysIncludeForeignKey')
+            attribute_resolution.entity_by_reference.reference_only_after_depth = data.entityByReference.get('referenceOnlyAfterDepth')
 
-            if dataObj.entityByReference.get('foreignKeyAttribute'):
-                new_ref.entity_by_reference.foreign_key_attribute = utils.create_attribute(ctx, dataObj.entityByReference.foreignKeyAttribute)
+            if data.entityByReference.get('foreignKeyAttribute'):
+                attribute_resolution.entity_by_reference.foreign_key_attribute = utils.create_attribute(ctx, data.entityByReference.foreignKeyAttribute)
 
-        if dataObj.get('selectsSubAttribute'):
-            new_ref.selects_sub_attribute = CdmAttributeResolutionGuidance_SelectsSubAttribute()
-            new_ref.selects_sub_attribute.selects = dataObj.selectsSubAttribute.get('selects')
+        if data.get('selectsSubAttribute') is not None:
+            attribute_resolution.selects_sub_attribute = CdmAttributeResolutionGuidance_SelectsSubAttribute()
+            attribute_resolution.selects_sub_attribute.selects = data.selectsSubAttribute.get('selects')
 
-            if dataObj.selectsSubAttribute.get('selectedTypeAttribute'):
-                new_ref.selects_sub_attribute.selected_type_attribute = utils.create_attribute(ctx, dataObj.selectsSubAttribute.selectedTypeAttribute)
+            if data.selectsSubAttribute.get('selectedTypeAttribute'):
+                attribute_resolution.selects_sub_attribute.selected_type_attribute = utils.create_attribute(
+                    ctx, data.selectsSubAttribute.selectedTypeAttribute)
+            if data.selectsSubAttribute.get('selectsSomeTakeNames'):
+                attribute_resolution.selects_sub_attribute.selects_some_take_names = data.selectsSubAttribute.selectsSomeTakeNames
+            if data.selectsSubAttribute.get('selectsSomeAvoidNames'):
+                attribute_resolution.selects_sub_attribute.selects_some_avoid_names = data.selectsSubAttribute.selectsSomeAvoidNames
 
-        return new_ref
+        return attribute_resolution
 
     @staticmethod
     def to_data(instance: CdmAttributeResolutionGuidanceDefinition, res_opt: ResolveOptions, options: CopyOptions) -> Optional[AttributeResolutionGuidance]:
@@ -95,5 +100,7 @@ class AttributeResolutionGuidancePersistence:
             if instance.selects_sub_attribute.selected_type_attribute:
                 result.selectsSubAttribute.selectedTypeAttribute = persistence_layer.to_data(
                     instance.selects_sub_attribute.selected_type_attribute, res_opt, 'CdmFolder', options)
+                result.selectsSubAttribute.selectsSomeTakeNames = instance.selects_sub_attribute.selects_some_take_names
+                result.selectsSubAttribute.selectsSomeAvoidNames = instance.selects_sub_attribute.selects_some_avoid_names
 
         return result

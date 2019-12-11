@@ -24,25 +24,21 @@ class CdmObject(abc.ABC):
         # The object that owns or contains this object.
         self.owner = None  # type: Optional[CdmObject]
 
+        self.in_document = None  # type: Optional[CdmDocumentDefinition]
+
         # internal
         self._declared_path = None  # type: Optional[str]
-        self._doc_created_in = ctx.current_doc if ctx else None  # type: CdmDocumentDefinition
         self._resolving_attributes = False  # type: bool
         self._resolving_traits = False  # type: bool
         self._trait_cache = None  # type: Optional[Dict[str, ResolvedTraitSetBuilder]]
         self._at_corpus_path = None  # type: Optional[str]
 
     @property
-    def in_document(self) -> Optional['CdmDocumentDefinition']:
-        return self._doc_created_in
-
-    @property
     def at_corpus_path(self) -> Optional[str]:
-        return self._at_corpus_path
+        if self.in_document is None:
+            return 'NULL:/NULL/{}'.format(self._declared_path)
 
-    @at_corpus_path.setter
-    def at_corpus_path(self, val: Optional[str]) -> None:
-        self._at_corpus_path = val
+        return '{}/{}'.format(self.in_document.at_corpus_path, self._declared_path)
 
     @property
     @abc.abstractmethod
@@ -51,7 +47,10 @@ class CdmObject(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmObject'] = None) -> 'CdmObject':
+        """Creates a copy of this object.
+            host: For CDM internal use. Copies the object INTO the provided host instead of creating a new object instance.
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -97,6 +96,11 @@ class CdmObject(abc.ABC):
         from .cdm_attribute_context import CdmAttributeContext
         from .cdm_corpus_def import CdmCorpusDefinition
 
+        was_previously_resolving = self.ctx.corpus.is_currently_resolving
+        self.ctx.corpus.is_currently_resolving = True
+        if not res_opt:
+            res_opt = ResolveOptions(self)
+
         kind = 'rasb'
         ctx = self.ctx
         cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
@@ -108,12 +112,15 @@ class CdmObject(abc.ABC):
         curr_sym_ref_set = res_opt.symbol_ref_set or SymbolSet()
         res_opt.symbol_ref_set = SymbolSet()
 
+        # get the moniker that was found and needs to be appended to all
+        # refs in the children attribute context nodes
         from_moniker = res_opt._from_moniker
         res_opt._from_moniker = None
 
         if not rasb_cache:
             if self._resolving_attributes:
                 # re-entered self attribute through some kind of self or looping reference.
+                self.ctx.corpus.is_currently_resolving = was_previously_resolving
                 return ResolvedAttributeSet()
             self._resolving_attributes = True
 
@@ -158,11 +165,17 @@ class CdmObject(abc.ABC):
         curr_sym_ref_set.merge(res_opt.symbol_ref_set)
         res_opt.symbol_ref_set = curr_sym_ref_set
 
+        self.ctx.corpus.is_currently_resolving = was_previously_resolving
         return rasb_cache.ras
 
     def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
         from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
         from cdm.utilities import SymbolSet
+
+        was_previously_resolving = self.ctx.corpus.is_currently_resolving
+        self.ctx.corpus.is_currently_resolving = True
+        if not res_opt:
+            res_opt = ResolveOptions(self)
 
         kind = 'rtsb'
         ctx = self.ctx
@@ -213,6 +226,7 @@ class CdmObject(abc.ABC):
         curr_doc_ref_set.merge(res_opt.symbol_ref_set)
         res_opt.symbol_ref_set = curr_doc_ref_set
 
+        self.ctx.corpus.is_currently_resolving = was_previously_resolving
         return rtsb_all.resolved_trait_set
 
     @staticmethod
@@ -252,7 +266,7 @@ class CdmObject(abc.ABC):
         if res_opt._save_resolutions_on_copy:
             # used to localize references between documents.
             trait_ref.explicit_reference = rt.trait
-            trait_ref._doc_created_in = rt.trait._doc_created_in
+            trait_ref.in_document = rt.trait.in_document
 
         # always make it a property when you can, however the dataFormat traits should be left alone
         if rt.trait.associated_properties and not rt.trait.is_derived_from('is.dataFormat', res_opt):

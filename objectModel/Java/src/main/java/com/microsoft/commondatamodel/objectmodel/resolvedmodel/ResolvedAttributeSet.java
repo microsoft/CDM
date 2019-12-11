@@ -14,10 +14,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -38,9 +39,9 @@ public class ResolvedAttributeSet extends RefCounted {
   public ResolvedAttributeSet() {
     super();
 
-    resolvedName2resolvedAttribute = new HashMap<>();
-    ra2attCtxSet = new HashMap<>();
-    attCtx2ra = new HashMap<>();
+    resolvedName2resolvedAttribute = new LinkedHashMap<>();
+    ra2attCtxSet = new LinkedHashMap<>();
+    attCtx2ra = new LinkedHashMap<>();
     set = new ArrayList<>();
   }
 
@@ -143,10 +144,10 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   void alterSetOrderAndScope(final List<ResolvedAttribute> newSet) {
-    // assumption is that newSet contains only some or all attributes from the original value of Set.
-    // if not, the stored attribute context mappings are busted
+    // Assumption is that newSet contains only some or all attributes from the original value of Set.
+    // If not, the stored attribute context mappings are busted.
     this.baseTrait2Attributes = null;
-    this.resolvedName2resolvedAttribute = new HashMap<>(); // rebuild with smaller set
+    this.resolvedName2resolvedAttribute = new LinkedHashMap<>(); // rebuild with smaller set
     this.set = newSet;
     newSet.forEach(ra -> resolvedName2resolvedAttribute.put(ra.getResolvedName(), ra));
   }
@@ -312,17 +313,16 @@ public class ResolvedAttributeSet extends RefCounted {
     }
 
     for (ResolvedAttribute resAtt : this.set) {
-      final ResolvedAttributeSet subSet = resAtt.getTarget() instanceof ResolvedAttributeSet
-          ? (ResolvedAttributeSet) resAtt.getTarget()
-          : null;
       CdmAttributeContext attCtxToMerge = null;
-      if (subSet != null && subSet.getSet() != null) {
+      if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
         if (makingCopy) {
           resAtt = resAtt.copy();
         }
 
         // the set contains another set. process those
-        resAtt.setTarget(subSet.apply(traits, resGuide, actions));
+        resAtt.setTarget(
+            ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resGuide, actions)
+        );
       } else {
         final ResolvedTraitSet rtsMerge = resAtt.fetchResolvedTraits().mergeSet(traits);
         resAtt.setResolvedTraits(rtsMerge);
@@ -333,7 +333,7 @@ public class ResolvedAttributeSet extends RefCounted {
             ctx.resGuide = resGuide;
             ctx.resAttSource = resAtt;
             if (traitAction.willAttributeModify.apply(ctx)) {
-              // make a context for this new copy
+              // Make a context for this new copy.
               if (makingCopy) {
 
                 final AttributeContextParameters acp = new AttributeContextParameters();
@@ -346,14 +346,14 @@ public class ResolvedAttributeSet extends RefCounted {
                 attCtxToMerge = ctx.attCtx;
               }
 
-              // make a copy of the resolved att
+              // Make a copy of the resolved att.
               if (makingCopy) {
                 resAtt = resAtt.copy();
               }
 
               ctx.resAttSource = resAtt;
 
-              // modify it
+              // Modify it.
               traitAction.doAttributeModify.accept(ctx);
             }
           }
@@ -463,7 +463,7 @@ public class ResolvedAttributeSet extends RefCounted {
     if (appliedAttSet.size() != rasResult.size()) {
       rasResult = appliedAttSet;
       rasResult.setBaseTrait2Attributes(null);
-      rasResult.setAttributeContext(attributeContext);
+      rasResult.setAttributeContext(this.attributeContext);
     }
 
     return rasResult;
@@ -522,8 +522,8 @@ public class ResolvedAttributeSet extends RefCounted {
 
     // save the mappings to overwrite
     // maps from merge may not be correct
-    final Map<ResolvedAttribute, Set<CdmAttributeContext>> newRa2attCtxSet = new HashMap<>();
-    final Map<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new HashMap<>();
+    final Map<ResolvedAttribute, Set<CdmAttributeContext>> newRa2attCtxSet = new LinkedHashMap<>();
+    final Map<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new LinkedHashMap<>();
 
     for (final ResolvedAttribute sourceRa : set) {
       final ResolvedAttribute copyRa = sourceRa.copy();
@@ -565,7 +565,7 @@ public class ResolvedAttributeSet extends RefCounted {
         if (q instanceof String) {
           final TraitParamSpec spec = new TraitParamSpec();
           spec.setTraitBaseName((String) q);
-          spec.setParameters(new HashMap<>());
+          spec.setParameters(new LinkedHashMap<>());
           query.add(spec);
         } else {
           query.add((TraitParamSpec) q);
@@ -575,7 +575,7 @@ public class ResolvedAttributeSet extends RefCounted {
       if (queryFor instanceof String) {
         final TraitParamSpec spec = new TraitParamSpec();
         spec.setTraitBaseName((String) queryFor);
-        spec.setParameters(new HashMap<>());
+        spec.setParameters(new LinkedHashMap<>());
         query.add(spec);
       } else {
         query.add((TraitParamSpec) queryFor);
@@ -584,7 +584,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
     // if the map isn't in place, make one now. assumption is that this is called as part of a usage pattern where it will get called again.
     if (baseTrait2Attributes == null) {
-      baseTrait2Attributes = new HashMap<>();
+      baseTrait2Attributes = new LinkedHashMap<>();
 
       for (final ResolvedAttribute resAtt : set) {
         // create a map from the name of every trait found in this whole set of attributes to the attributes that have the trait (included base classes of traits)
@@ -621,7 +621,7 @@ public class ResolvedAttributeSet extends RefCounted {
             for (final Map.Entry<String, String> param : q.getParameters().entrySet()) {
               final ParameterValue pv = pvals.fetchParameterValue(param.getKey());
               // TODO-BQ: We need to handle the JSON exception somehow (or propagate?)
-              if (pv == null || pv.fetchValueString(resOpt) != param.getValue()) {
+              if (pv == null || !Objects.equals(pv.fetchValueString(resOpt), param.getValue())) {
                 break;
               }
               iParam++;

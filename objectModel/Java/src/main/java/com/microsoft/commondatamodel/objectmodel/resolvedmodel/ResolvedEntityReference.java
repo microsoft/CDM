@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -41,7 +42,11 @@ public class ResolvedEntityReference {
     final List<ResolvedEntityReferenceSide> list = new ArrayList<>(referenced);
 
     if (nameSort) {
-      list.sort(new CaseAgnosticEntityNameComparator());
+      list.sort((l, r) -> {
+        final String lName = l.getEntity() != null ? l.getEntity().getName(): "";
+        final String rName = r.getEntity() != null ? r.getEntity().getName(): "";
+        return StringUtils.compareIgnoreCase(lName, rName, true);
+      });
     }
 
     for (int i = 0; i < referenced.size(); i++) {
@@ -63,14 +68,5 @@ public class ResolvedEntityReference {
 
   public void setReferenced(final List<ResolvedEntityReferenceSide> referenced) {
     this.referenced = referenced;
-  }
-
-  public class CaseAgnosticEntityNameComparator implements Comparator<ResolvedEntityReferenceSide> {
-
-    public int compare(final ResolvedEntityReferenceSide l, final ResolvedEntityReferenceSide r) {
-      final String lName = l.getEntity() != null ? l.getEntity().getName().toLowerCase() : "";
-      final String rName = r.getEntity() != null ? r.getEntity().getName().toLowerCase() : "";
-      return lName.compareTo(rName);
-    }
   }
 }

@@ -1,11 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//-----------------------------------------------------------------------
+// <copyright file="CdmImportCollection.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
     /// <summary>
-    /// <see cref="CdmCollection"/> customized for <see cref="CdmImport"/>. The owner has to be a <see cref="CdmDocumentDefinition"/>
+    /// <see cref="CdmCollection"/> customized for <see cref="CdmImport"/>. The owner has to be a <see cref="CdmDocumentDefinition"/>.
     /// </summary>
     public class CdmImportCollection : CdmCollection<CdmImport>
     {
@@ -19,10 +25,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Constructs a CdmImportCollection
+        /// Constructs a CdmImportCollection.
         /// </summary>
         /// <param name="ctx">The context.</param>
-        /// <param name="owner">The owner of the collection. This class is customized for <see cref="CdmDocumentDefinition"/> owner.</param>
+        /// <param name="owner">The owner of the collection. This class is customized for <see cref="CdmDocumentDefinition"/>.</param>
         public CdmImportCollection(CdmCorpusContext ctx, CdmDocumentDefinition owner)
             : base(ctx, owner, Enums.CdmObjectType.Import)
         {
@@ -32,8 +38,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Creates an import with the provided corpus path and adds it to the collection.
         /// </summary>
         /// <param name="corpusPath">The corpus path to be set for the import.</param>
-        /// <param name="simpleRef">Parameter is not used for this collection. It is kept here for consistency with other <see cref="CdmCollection"/>-s.</param>
-        /// <returns>The created import which was added to the collection.</returns>
+        /// <param name="simpleRef">Parameter is not used for this collection. Kept for consistency with other CdmCollections.</param>
+        /// <returns>The created import that was added to the collection.</returns>
         public new CdmImport Add(string corpusPath, bool simpleRef = false)
         {
             var import = this.Ctx.Corpus.MakeObject<CdmImport>(this.DefaultType, corpusPath, simpleRef);
@@ -45,7 +51,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="corpusPath">The corpus path used to create the import.</param>
         /// <param name="moniker">The moniker used to create the import.</param>
-        /// <returns>The created import which was added to the collection.</returns>
+        /// <returns>The created import that was added to the collection.</returns>
         public CdmImport Add(string corpusPath, string moniker)
         {
             var import = this.Add(corpusPath);

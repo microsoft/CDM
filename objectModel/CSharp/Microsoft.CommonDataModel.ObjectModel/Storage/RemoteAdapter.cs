@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StorageAdapterFactory.cs" company="Microsoft">
+// <copyright file="RemoteAdapter.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

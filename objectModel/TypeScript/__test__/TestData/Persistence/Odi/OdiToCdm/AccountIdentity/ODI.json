@@ -1,0 +1,352 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "accountIdentityType",
+          "providerName",
+          "accountIdentityPartyId",
+          "accountIdentityPartyIdType",
+          "accountIdentityName"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:accountIdentityType",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 5,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:accountIdentityProviderName",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:accountIdentityParty",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnInstance": "accountIdentityParty0",
+            "opm:columns": [
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 7,
+                "opm:traits": {
+                  "olm:idScope": "@value"
+                }
+              },
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 8,
+                "opm:traits": {
+                  "olm:identifier": "@value"
+                }
+              }
+            ]
+          },
+          {
+            "opm:columnAttribute": "this:accountIdentityName",
+            "opm:columnEntity": "this:AccountIdentity",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__AccountIdentity",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:AccountIdentity"
+              },
+              {
+                "@id": "this:AccountIdentity",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:accountIdentityType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "the account identity type",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:accountIdentityType",
+                    "olm:title": "Account Identity Type"
+                  },
+                  {
+                    "@id": "this:accountIdentityProviderName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "name of the product or service with which the account holder has an a identity",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:providerName",
+                    "olm:title": "Provider Name"
+                  },
+                  {
+                    "@id": "this:accountIdentityParty",
+                    "olm:dataType": [
+                      "this:Person",
+                      "this:Organization"
+                    ],
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:accountIdentityName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "a unique identifier provided by the product or service for the account",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:accountIdentityName",
+                    "olm:title": "Account Identity"
+                  }
+                ],
+                "olm:description": "account identities for an organization or contact.",
+                "olm:sameAs": "odic:AccountIdentity",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Account Identity"
+              },
+              {
+                "@id": "this:ODIEntity",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:ODIEntityIdentifier",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odi:identifier"
+                  },
+                  {
+                    "@id": "this:ODIEntityCreatedOn",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The date and time when the record was created.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odi:createdOn",
+                    "olm:title": "Created On"
+                  },
+                  {
+                    "@id": "this:ODIEntityModifiedOn",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The date and time when the record was last modified.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odi:modifiedOn",
+                    "olm:title": "Modified On"
+                  },
+                  {
+                    "@id": "this:ODIEntityOriginalTimeZoneUTCOffset",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The UTC time zone offset, in minutes",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odi:originalTimeZoneUTCOffset",
+                    "olm:title": "Original TimeZone UTC Offset"
+                  },
+                  {
+                    "@id": "this:ODIEntitySourceAuthority",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The source authority for this entity",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odi:sourceAuthority",
+                    "olm:title": "Source Authority"
+                  }
+                ],
+                "olm:description": "A class of entities specific to ODI.",
+                "olm:sameAs": "odi:ODIEntity",
+                "olm:subClassOf": "olm:Entity",
+                "olm:title": "ODI Entity"
+              },
+              {
+                "@id": "this:party",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:partyPerson",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:partyOrganization",
+                    "olm:dataType": "this:Organization",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  }
+                ],
+                "olm:subClassOf": "olm:Entity"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

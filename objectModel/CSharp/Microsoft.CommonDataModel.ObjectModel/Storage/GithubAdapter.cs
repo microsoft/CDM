@@ -29,6 +29,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         internal const string Type = "github";
 
+        /// <summary>
+        /// Constructs a GithubAdapter.
+        /// </summary>
         public GithubAdapter()
         {
             this.folders = new ConcurrentDictionary<string, byte>();

@@ -1,6 +1,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.cdmcollection;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ public class CdmArgumentCollectionTest {
   public void testCdmArgumentCollectionAdd() {
     final CdmTraitReference trait = generateTrait();
 
-    final CdmArgumentDefinition argumentDefinition = new CdmArgumentDefinition(null, null);
+    final CdmArgumentDefinition argumentDefinition =
+        new CdmArgumentDefinition(trait.getCtx(), null);
 
     trait.setResolvedArguments(true);
     Assert.assertEquals(0, trait.getArguments().size());
@@ -36,7 +38,7 @@ public class CdmArgumentCollectionTest {
   public void testCdmArgumentCollectionInsert() {
     final CdmTraitReference trait = generateTrait();
 
-    final CdmArgumentDefinition toInsert = new CdmArgumentDefinition(null, null);
+    final CdmArgumentDefinition toInsert = new CdmArgumentDefinition(trait.getCtx(), null);
 
     final CdmArgumentDefinition arg1 = trait.getArguments().add("arg1");
     final CdmArgumentDefinition arg2 = trait.getArguments().add("arg2");
@@ -57,7 +59,7 @@ public class CdmArgumentCollectionTest {
     final CdmTraitReference trait = generateTrait();
     trait.setResolvedArguments(true);
     final List<CdmArgumentDefinition> argList = new ArrayList<>();
-    CdmArgumentDefinition argumentDefinition = new CdmArgumentDefinition(null, null);
+    CdmArgumentDefinition argumentDefinition = new CdmArgumentDefinition(trait.getCtx(), null);
     argumentDefinition.setName("Arg1");
     argumentDefinition.setValue(123);
 
@@ -92,7 +94,7 @@ public class CdmArgumentCollectionTest {
     // This is what is needed by current code.
     Assert.assertEquals("ValueOfTrait", value);
 
-    final CdmArgumentDefinition argumentDefinition = new CdmArgumentDefinition(null, null);
+    final CdmArgumentDefinition argumentDefinition = new CdmArgumentDefinition(trait.getCtx(), null);
 
     trait.setResolvedArguments(true);
     trait.getArguments().add(argumentDefinition);
@@ -122,8 +124,29 @@ public class CdmArgumentCollectionTest {
     Assert.assertEquals(trait, trait.getArguments().get(2).getOwner());
   }
 
+  @Test
+  public void testCdmCollectionAddPopulatesInDocumentWithVisit() {
+    final CdmManifestDefinition manifest =
+        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+
+    final CdmLocalEntityDeclarationDefinition entityReference =
+        new CdmLocalEntityDeclarationDefinition(manifest.getCtx(), "entityName");
+
+    final CdmTraitReference trait = entityReference.getExhibitsTraits().add("theTrait");
+
+    final CdmArgumentDefinition argument =
+        trait.getArguments().add("GreatArgumentName", "GreatValue");
+
+    manifest.getEntities().add(entityReference);
+
+    Assert.assertEquals(manifest, manifest.getInDocument());
+    Assert.assertEquals(manifest, entityReference.getInDocument());
+    Assert.assertEquals(manifest, trait.getInDocument());
+    Assert.assertEquals(manifest, argument.getInDocument());
+  }
+
   private CdmTraitReference generateTrait() {
-    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest("C:\\Nothing");
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
     return new CdmTraitReference(manifest.getCtx(), "traitName", false, false);
   }
 }

@@ -32,11 +32,20 @@ class CdmPurposeDefinition(CdmObjectDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         self._construct_resolved_traits_def(self.extends_purpose, rtsb, res_opt)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmPurposeDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmPurposeDefinition'] = None) -> 'CdmPurposeDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmPurposeDefinition(self.ctx, self.purpose_name, None)
-        copy.extends_purpose = self.extends_purpose.copy(res_opt) if self.extends_purpose else None
+        if not host:
+            copy = CdmPurposeDefinition(self.ctx, self.purpose_name, None)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.purpose_name = self.purpose_name
+
+        if self.extends_purpose:
+            copy.extends_purpose = self.extends_purpose.copy(res_opt)
+
         self._copy_def(res_opt, copy)
 
         return copy
@@ -51,10 +60,12 @@ class CdmPurposeDefinition(CdmObjectDefinition):
         return bool(self.purpose_name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.purpose_name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.purpose_name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

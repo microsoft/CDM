@@ -6,18 +6,18 @@ package com.microsoft.commondatamodel.objectmodel.enums;
  * Definition of validation process steps.
  */
 public enum CdmValidationStep {
-  Start,
+  Attributes,
+  Cleanup,
+  Declarations,
+  EntityReferences,
+  Error,
+  Finished,
   Imports,
   Integrity,
-  Declarations,
-  References,
-  Parameters,
-  TraitAppliers,
   MinimumForResolving,
+  Parameters,
+  References,
+  Start,
+  TraitAppliers,
   Traits,
-  Attributes,
-  EntityReferences,
-  Cleanup,
-  Finished,
-  Error
 }

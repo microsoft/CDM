@@ -3,19 +3,21 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-from .adls import AdlsAdapter
+from .adls import ADLSAdapter
 from .github import GithubAdapter
 from .base import StorageAdapterBase
 from .local import LocalAdapter
 from .remote import RemoteAdapter
+from .resource import ResourceAdapter
 from .storage_manager import StorageManager
 
 __all__ = [
-    'AdlsAdapter',
+    'ADLSAdapter',
     'GithubAdapter',
     'StorageAdapterBase',
     'LocalAdapter',
     'RemoteAdapter',
+    'ResourceAdapter',
     'StorageAdapterBase',
     'StorageManager'
 ]

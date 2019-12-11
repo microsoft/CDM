@@ -2,6 +2,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -52,12 +53,33 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     return ref.indexOf(RES_ATT_TOKEN);
   }
 
+  CdmObjectReferenceBase copyToHost(
+      final CdmCorpusContext ctx,
+      final Object refTo,
+      final boolean simpleReference) {
+    this.setCtx(ctx);
+    this.setExplicitReference(null);
+    this.setNamedReference(null);
+
+    if (refTo != null) {
+      if (refTo instanceof CdmObject) {
+        this.setExplicitReference((CdmObjectDefinitionBase) refTo);
+      } else if (refTo instanceof JsonNode) {
+        // NamedReference is a string or JsonNode.
+        this.setNamedReference(((JsonNode) refTo).asText());
+      } else {
+        this.setNamedReference((String) refTo);
+      }
+    }
+
+    this.setSimpleNamedReference(simpleReference);
+
+    this.getAppliedTraits().clear();
+
+    return this;
+  }
+
   /**
-   *
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -65,7 +87,13 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference);
 
   /**
-   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference, CdmObjectReferenceBase host);
+
+  /**
    * @param pathFrom
    * @param preChildren
    * @param postChildren
@@ -82,7 +110,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  ResolvedAttributeSetBuilder constructResolvedAttributes(
+      final ResolveOptions resOpt,
+      final CdmAttributeContext under) {
     // find and getCache() the complete set of attributes
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     rasb.getResolvedAttributeSet().setAttributeContext(under);
@@ -103,11 +133,16 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn(defName, this.getCtx(), "unable to resolve an object from the reference '" + defName + "'");
+      LOGGER.warn("Unable to resolve an object from the reference '{}'.", defName);
     }
     return rasb;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   @Override
   public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
     if (this.getNamedReference() != null && this.getAppliedTraits() == null) {
@@ -115,8 +150,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final ResolveContext ctx = (ResolveContext) this.getCtx();
       String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, "", true);
       Object rtsResultDynamic = null;
-      if (cacheTag != null)
+      if (cacheTag != null) {
         rtsResultDynamic = ctx.getCache().get(cacheTag);
+      }
       ResolvedTraitSet rtsResult = (ResolvedTraitSet) rtsResultDynamic;
 
       // store the previous document set, we will need to add it with
@@ -174,7 +210,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       rtsb.takeReference(rtsInh);
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn(defName, this.getCtx(), "unable to resolve an object from the reference '" + defName + "'");
+      LOGGER.warn("unable to resolve an object from the reference '{}'.", defName);
     }
 
     if (this.getAppliedTraits() != null) {
@@ -184,7 +220,15 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
   }
 
-  public CdmObjectDefinition fetchResolvedReference(final ResolveOptions resOpt) {
+  public CdmObjectDefinition fetchResolvedReference() {
+    return fetchResolvedReference(null);
+  }
+
+  public CdmObjectDefinition fetchResolvedReference(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
     if (this.getExplicitReference() != null) {
       return this.getExplicitReference();
     }
@@ -202,7 +246,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final String entName = this.getNamedReference().substring(0, seekResAtt);
       final String attName = this.getNamedReference().substring(seekResAtt + RES_ATT_TOKEN.length());
       // get the entity
-      final CdmObjectDefinition ent = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getDocCreatedIn(),
+      final CdmObjectDefinition ent = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getInDocument(),
           entName, CdmObjectType.EntityDef, true);
       if (ent == null) {
         LOGGER.warn("unable to resolve an entity named '{}' from the reference '{}'", entName,
@@ -220,8 +264,14 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     } else {
       // normal symbolic reference, look up from the CdmCorpusDefinition, it knows
       // where everything is
-      res = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getDocCreatedIn(), this.getNamedReference(),
-          this.getObjectType(), true);
+      res = this.getCtx()
+          .getCorpus()
+          .resolveSymbolReference(
+              resOpt,
+              this.getInDocument(),
+              this.getNamedReference(),
+              this.getObjectType(),
+              true);
     }
 
     return res;
@@ -268,11 +318,10 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     final CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
-      return def.isDerivedFrom(resOpt, baseDef);
-
+      return def.isDerivedFrom(baseDef, resOpt);
     }
     return false;
   }
@@ -303,13 +352,17 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    final String path;
-    if (!Strings.isNullOrEmpty(this.getNamedReference())) {
-      path = pathFrom + this.getNamedReference();
-    } else {
-      path = pathFrom;
+    String path = "";
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      if (!Strings.isNullOrEmpty(this.getNamedReference())) {
+        path = pathFrom + this.getNamedReference();
+      } else {
+        path = pathFrom;
+      }
+      this.setDeclaredPath(path);
     }
-    this.setDeclaredPath(path);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -329,10 +382,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
     }
 
-    if (postChildren != null && postChildren.invoke(this, path)) {
-      return true;
-    }
-    return false;
+    return postChildren != null && postChildren.invoke(this, path);
   }
 
   @Override
@@ -341,7 +391,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
+  public CdmObject copy(final ResolveOptions resOpt, CdmObject host) {
     final CdmObjectReferenceBase copy;
     if (!Strings.isNullOrEmpty(this.getNamedReference())) {
       copy = this.copyRefObject(resOpt, this.getNamedReference(), this.isSimpleNamedReference());
@@ -350,8 +400,10 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
     if (resOpt.isSaveResolutionsOnCopy()) {
       copy.setExplicitReference(this.getExplicitReference());
-      copy.setDocCreatedIn(this.getDocCreatedIn());
     }
+    copy.setInDocument(this.getInDocument());
+
+    copy.getAppliedTraits().clear();
     if (this.getAppliedTraits() != null) {
       for (final CdmTraitReference appliedTrait : this.appliedTraits) {
         copy.getAppliedTraits().add(appliedTrait);
@@ -365,7 +417,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     if (!Strings.isNullOrEmpty(this.namedReference)) {
       return this.copyRefObject(resOpt, this.namedReference, true);
     }
-    return this.copyRefObject(resOpt, this.getDeclaredPath() + this.explicitReference.fetchObjectDefinitionName(),
+    return this.copyRefObject(resOpt, this.getDeclaredPath() + this.explicitReference.getName(),
         true);
   }
 

@@ -30,6 +30,6 @@ class ManifestResolveTest(unittest.TestCase):
         resolved_manifest = await manifest.create_resolved_manifest_async('resolved_manifest', None)
 
         self.assertEqual(2, len(resolved_manifest.entities))
-        self.assertEqual('resolved/Account.cdm.json/Account',
+        self.assertEqual('core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/resolved/Account.cdm.json/Account',
                          resolved_manifest.entities[0].entity_path)
         self.assertEqual(referenced_entity_path, resolved_manifest.entities[1].entity_path)

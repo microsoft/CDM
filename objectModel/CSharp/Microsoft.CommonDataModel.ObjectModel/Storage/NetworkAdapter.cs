@@ -2,17 +2,19 @@
 // <copyright file="NetworkAdapter.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>
-
-using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+//-----------------------------------------------------------------------
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Linq;
+
     /// <summary>
     /// Network adapter is an abstract class that contains logic for adapters dealing with data across network.
     /// </summary>
@@ -37,14 +39,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The default network adapter constructor called when the object is created by a user through code.
         /// </summary>
-        internal NetworkAdapter()
+        protected NetworkAdapter()
         {
         }
 
         /// <summary>
         /// The network adapter constructor called when the object is created through a JSON config.
         /// </summary>
-        internal NetworkAdapter(string configs)
+        protected NetworkAdapter(string configs)
         {
            
         }
@@ -114,7 +116,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 if (!res.IsSuccessful)
                 {
-                    throw new HttpRequestException(res.ToString());
+                    throw new HttpRequestException(
+                        $"HTTP {res.StatusCode} - {res.Reason}. Response headers: {string.Join(", ", res.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.RequestedUrl}");
                 }
 
                 return res;
@@ -185,6 +188,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
         }
 
+        /// <summary>
+        /// Updates the network configs.
+        /// </summary>
+        /// <param name="config">The config to update with.</param>
         public void UpdateNetworkConfig(string config)
         {
             var configsJson = JsonConvert.DeserializeObject<JObject>(config);

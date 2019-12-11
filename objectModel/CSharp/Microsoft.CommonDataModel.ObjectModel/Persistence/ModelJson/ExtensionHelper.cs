@@ -4,6 +4,7 @@ using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -16,9 +17,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         private static Dictionary<string, CdmDocumentDefinition> CachedDefDocs = new Dictionary<string, CdmDocumentDefinition>();
 
         /// <summary>
+        /// Set of extensions that are officially supported and have their definitions in the extensions folder.
+        /// </summary>
+        private static readonly HashSet<string> SupportedExtensions = new HashSet<string>() { "pbi" };
+
+        /// <summary>
         /// Constant used to store the prefix that is the mark of extension traits.
         /// </summary>
         public const string ExtensionTraitNamePrefix = "is.extension.";
+
+        public const string ExtensionDocName = "custom.extension.cdm.json";
+
+        /// <summary>
+        /// Adds the list of documents with extensions schema definitions to the manifest.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="importDocs">The list of paths of documents with relevant schema definitions.</param>
+        /// <param name="manifest">The manifest that needs to import the docs.</param>
+        /// <returns></returns>
+        internal static void AddImportDocsToManifest(CdmCorpusContext ctx, List<CdmImport> importDocs, CdmDocumentDefinition document)
+        {
+            foreach (var importDoc in importDocs)
+            {
+                if (!document.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == importDoc.CorpusPath))
+                {
+                    document.Imports.Add(importDoc);
+                }
+            }
+        }
 
         /// <summary>
         /// For all the definitions (name, type) we have found for extensions, search in CDM Standard Schema for definition files.
@@ -29,15 +55,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// </summary>
         /// <param name="ctx"> The context</param>
         /// <param name="extensionTraitDefList"> The list of all definitions for all found extensions. Function modifies this list by removing definitions found in CDM Standard Schema files.</param>
+        /// <param name="localExtensionTraitDefList"> The list of all definitions for all found extensions in local scope.</param>
         /// <returns> A list of CDM Standard Schema files to import.</returns>
-        public static async Task<List<CdmImport>> StandardImportDetection(CdmCorpusContext ctx, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<List<CdmImport>> StandardImportDetection(CdmCorpusContext ctx, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             List<CdmImport> importsList = new List<CdmImport>();
+            var hasCustomExtensionImport = false;
 
             // have to go from end to start because I might remove elements
-            for (int traitIndex = extensionTraitDefList.Count - 1; traitIndex >= 0; traitIndex--)
+            for (int traitIndex = localExtensionTraitDefList.Count - 1; traitIndex >= 0; traitIndex--)
             {
-                CdmTraitDefinition extensionTraitDef = extensionTraitDefList[traitIndex];
+                CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList[traitIndex];
                 if (!TraitDefIsExtension(extensionTraitDef))
                 {
                     Logger.Error(nameof(ExtensionHelper), ctx, $"Invalid extension trait name {extensionTraitDef.TraitName}, expected prefix {ExtensionTraitNamePrefix}.");
@@ -49,6 +77,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 if (extensionBreakdown.Length > 1)
                 {
                     string extensionName = extensionBreakdown[0];
+
+                    if (!SupportedExtensions.Contains(extensionName))
+                    {
+                        if (!hasCustomExtensionImport)
+                        {
+                            CdmImport importObject = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
+                            importObject.CorpusPath = ExtensionDocName;
+                            importsList.Add(importObject);
+                            hasCustomExtensionImport = true;
+                        }
+                        continue;
+                    }
+
                     string fileName = $"{extensionName}.extension.cdm.json";
                     string fileCorpusPath = $"cdm:/extensions/{fileName}";
                     CdmDocumentDefinition extensionDoc = await FetchDefDoc(ctx, fileName);
@@ -62,7 +103,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
                     // There is a document with extensionName, now we search for the trait in the document.
                     // If we find it, we remove the trait from extensionTraitDefList and add the document to imports.
-                    CdmTraitDefinition matchingTrait = extensionDoc.Definitions.AllItems.Find(
+                    var matchingTrait = extensionDoc.Definitions.AllItems.Find(
                         (definition) => definition.ObjectType == CdmObjectType.TraitDef && definition.GetName() == extensionTraitDef.TraitName)
                         as CdmTraitDefinition;
                     if (matchingTrait != null)
@@ -73,10 +114,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                                 (CdmParameterDefinition extensionParameter) =>
                                 parameterList.Exists(
                                     (CdmParameterDefinition defParameter) => defParameter.Name == extensionParameter.Name)
-                                    )
+                                )
                             )
                         {
-                            extensionTraitDefList.Remove(extensionTraitDefList[traitIndex]);
+                            extensionTraitDefList.Remove(extensionTraitDef);
                             if (!importsList.Exists((CdmImport importDoc) => importDoc.CorpusPath == fileCorpusPath))
                             {
                                 CdmImport importObject = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
@@ -99,19 +140,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <param name="sourceObject"> The object obtained from "model.json" file.</param>
         /// <param name="traitRefSet"> The list of extensions found, in the form of (name & value).</param>
         /// <param name="extensionTraitDefList"> The list of definitions. For each extension, it's definition is added to this list (name & type).</param>
+        /// <param name="localExtensionTraitDefList"> Same as extensionTraitDefList but limited to extensions inside one document.</param>
         public static void ProcessExtensionFromJson(
             CdmCorpusContext ctx,
             MetadataObject sourceObject,
             CdmTraitCollection traitRefSet,
-            CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+            List<CdmTraitDefinition> extensionTraitDefList,
+            List<CdmTraitDefinition> localExtensionTraitDefList = null)
         {
             var extensions = sourceObject.ExtensionFields;
 
             foreach (JProperty extensionAsJProperty in extensions.Children())
             {
                 string traitName = AddExtensionTraitNamePrefix(extensionAsJProperty.Name);
-                CdmTraitReference extensionTraitRef = ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, traitName);
-                CdmTraitDefinition extensionTraitDef = extensionTraitDefList.AllItems.Find((CdmTraitDefinition trait) => trait.TraitName == traitName);
+                CdmTraitDefinition extensionTraitDef = extensionTraitDefList.Find((CdmTraitDefinition trait) => trait.TraitName == traitName);
                 bool traitExists = extensionTraitDef != null;
                 if (!traitExists)
                 {
@@ -119,6 +161,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     extensionTraitDef.ExtendsTrait = ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "is.extension", true);
                 }
 
+                CdmTraitReference extensionTraitRef = ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, traitName);
                 var extensionValue = extensionAsJProperty.Value;
                 var extensionType = extensionValue.Type;
 
@@ -186,7 +229,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                             true);
                     }
 
-                    extensionArgument.Value = extensionValue;
+                    if (extensionValue is JValue extensionValuePrimite)
+                    {
+                        extensionArgument.Value = extensionValuePrimite.Value;
+                    }
+                    else
+                    {
+                        extensionArgument.Value = extensionValue;
+                    }
+
                     extensionTraitRef.Arguments.Add(extensionArgument);
                     if (!parameterExists)
                     {
@@ -197,6 +248,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 if (!traitExists)
                 {
                     extensionTraitDefList.Add(extensionTraitDef);
+                }
+
+                if (localExtensionTraitDefList != null)
+                {
+                    localExtensionTraitDefList.Add(extensionTraitDef);
                 }
 
                 traitRefSet.Add(extensionTraitRef);
@@ -226,7 +282,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (extensionTraitRef.Arguments.Count == 1 && extensionTraitRef.Arguments[0].Name == extensionTraitRef.NamedReference)
             {
-                extensionValue = new JValue(extensionTraitRef.Arguments[0].Value);
+                extensionValue = extensionTraitRef.Arguments[0].Value;
             }
             else
             {
@@ -296,10 +352,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             string path = $"/extensions/{fileName}";
             var absPath = ctx.Corpus.Storage.CreateAbsoluteCorpusPath(path, ctx.Corpus.Storage.FetchRootFolder("cdm"));
             CdmObject document = await ctx.Corpus.FetchObjectAsync<CdmObject>(absPath);
-            CdmDocumentDefinition extensionDoc = document as CdmDocumentDefinition;
+            if (document != null)
+            {
+                CdmDocumentDefinition extensionDoc = document as CdmDocumentDefinition;
 
-            CachedDefDocs.Add(fileName, extensionDoc);
-            return extensionDoc;
+                CachedDefDocs.Add(fileName, extensionDoc);
+                return extensionDoc;
+            }
+            return null;
         }
 
         /// <summary>
@@ -313,7 +373,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// </returns>
         private static string ConvertJTokenTypeToExpectedString(JTokenType type)
         {
-            return type.ToString().ToLower();
+            var stringType = type.ToString().ToLower();
+            if (stringType.Equals("array"))
+            {
+                stringType = "object";
+            }
+            return stringType;
         }
 
         /// <summary>

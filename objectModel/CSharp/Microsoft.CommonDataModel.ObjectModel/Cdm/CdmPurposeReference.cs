@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -11,6 +12,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmPurposeReference : CdmObjectReferenceBase
     {
+        /// <summary>
+        /// Constructs a CdmPurposeReference.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="purpose">The purpose to reference.</param>
+        /// <param name="simpleReference">Whether this reference is a simple reference.</param>
         public CdmPurposeReference(CdmCorpusContext ctx, dynamic purpose, bool simpleReference)
             : base(ctx, (object)purpose, simpleReference)
         {
@@ -23,10 +30,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.PurposeRef;
         }
 
-        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference)
+        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
-            CdmPurposeReference copy = new CdmPurposeReference(this.Ctx, refTo, simpleReference);
-            return copy;
+            if (host == null)
+                return new CdmPurposeReference(this.Ctx, refTo, simpleReference);
+            else
+                return host.CopyToHost(this.Ctx, refTo, simpleReference);
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]

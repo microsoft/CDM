@@ -40,10 +40,17 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions'):
         self._construct_resolved_traits_def(None, rtsb, res_opt)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmReferencedEntityDeclarationDefinition'] = None) -> 'CdmReferencedEntityDeclarationDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmReferencedEntityDeclarationDefinition(self.ctx, self.entity_name)
+        if not host:
+            copy = CdmReferencedEntityDeclarationDefinition(self.ctx, self.entity_name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.entity_name = self.entity_name
+
         copy.entity_path = self.entity_path
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
@@ -64,10 +71,9 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        namespace = self.in_document.namespace
-        full_path = namespace + ':' + self.entity_path
+        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
 
-        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._fetch_last_modified_time_async(full_path)
+        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
         self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)

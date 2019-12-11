@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace create_manifest
+﻿namespace create_manifest
 {
     using System;
     using System.Collections.Generic;
@@ -13,6 +11,20 @@ namespace create_manifest
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json.Linq;
 
+    /*
+     * ---------------------------------------------------------------------------------------------------------------------------------------
+     * This sample is going to simulate the steps a tool would follow in order to create a new manifest document in some user storage folder 
+     * when the shapes of the entities in that folder are all taken from some public standards with no extensions or additions
+     * The steps are:
+     *      1. Create a temporary 'manifest' object at the root of the corpus that contains a list of the selected entities
+     *      2. Each selected entity points at an 'abstract' schema defintion in the public standards. These entity docs are too hard to
+     *          deal with because of abstractions and inheritence, etc. So to make things concrete, we want to make a 'resolved' version of
+     *          each entity doc in our local folder. To do this, we call CreateResolvedManifestAsync on our starting manifest
+     *          This will resolve everything and find all of the relationships between entities for us
+     *      3. Save the new documents
+     *  --------------------------------------------------------------------------------------------------------------------------------------
+     */
+
     class Program
     {
         static async Task Main(string[] args)
@@ -20,7 +32,7 @@ namespace create_manifest
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var cdmCorpus = new CdmCorpusDefinition();
 
-            Console.WriteLine("configure storage adapters");
+            Console.WriteLine("Configure storage adapters");
 
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
@@ -42,20 +54,8 @@ namespace create_manifest
             // "<CLIENT-SECRET>" // Client secret.
             // ));
 
-            // This sample is going to simulate the steps a tool would follow in order to
-            // create a new manifest document in some user storage folder when the shapes of the entities in 
-            // that folder are all taken from some public standards with no extensions or additions
-            // the steps are
-            // 1. create a temporary 'manifest' object at the root of the corpus that contains a list of the selected entities
-            // 2. each selected entity points at an 'abstract' schemaDefintion in the public standards. these entity docs are too hard to 
-            //    deal with because of abstractions and inheritence, etc. So to make things concrete, we want to make a 'resolved' version of
-            //    each entity doc in our local folder. to do this, we call
-            //    createResolvedManifest on our starting manifest. this will resolve everything and find all of the relationships between entities for us
-            // 3. save the new documents
-
-
-            Console.WriteLine("make placeholder manifest");
-            // make the temp manifest and add it to the root of the local documents in the corpus
+            Console.WriteLine("Make placeholder manifest");
+            // Make the temp manifest and add it to the root of the local documents in the corpus
             CdmManifestDefinition manifestAbstract = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "tempAbstract");
 
             // Add each declaration, this example is about medical appointments and care plans
@@ -74,33 +74,37 @@ namespace create_manifest
             var localRoot = cdmCorpus.Storage.FetchRootFolder("local");
             localRoot.Documents.Add(manifestAbstract);
 
-            // create the resolved version of everything in the root folder too
-            Console.WriteLine("resolve the placeholder");
+            // Create the resolved version of everything in the root folder too
+            Console.WriteLine("Resolve the placeholder");
             var manifestResolved = await manifestAbstract.CreateResolvedManifestAsync("default", "");
 
             // Add an import to the foundations doc so the traits about partitons will resolve nicely
             manifestResolved.Imports.Add("cdm:/foundations.cdm.json");
 
-            Console.WriteLine("save the docs");
+            Console.WriteLine("Save the docs");
             foreach(CdmEntityDeclarationDefinition eDef in manifestResolved.Entities)
             {
-                // get the entity being pointed at
+                // Get the entity being pointed at
                 var localEDef = eDef;
                 var entDef = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(localEDef.EntityPath, manifestResolved);
-                // make a fake partition, just to demo that
+                // Make a fake partition, just to demo that
                 var part = cdmCorpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, $"{entDef.EntityName}-data-description");
                 localEDef.DataPartitions.Add(part);
                 part.Explanation = "not real data, just for demo";
-                part.Location = $"local:/{entDef.EntityName}/partition-data.csv";
-                // add trait to partition for csv params
+
+                // Define the location of the partition, relative to the manifest
+                var location = $"local:/{entDef.EntityName}/partition-data.csv";
+                part.Location = cdmCorpus.Storage.CreateRelativeCorpusPath(location, manifestResolved);
+
+                // Add trait to partition for csv params
                 var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
                 csvTrait.Arguments.Add("columnHeaders", "true");
                 csvTrait.Arguments.Add("delimiter", ",");
                 
-                // get the actual location of the partition file from the corpus
-                string partPath = cdmCorpus.Storage.CorpusPathToAdapterPath(part.Location);
+                // Get the actual location of the partition file from the corpus
+                string partPath = cdmCorpus.Storage.CorpusPathToAdapterPath(location);
 
-                // make a fake file with nothing but header for columns
+                // Make a fake file with nothing but header for columns
                 string header = "";
                 foreach(CdmTypeAttributeDefinition att in entDef.Attributes)
                 {
@@ -112,6 +116,7 @@ namespace create_manifest
                 Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{ entDef.EntityName}"));
                 File.WriteAllText(partPath, header);
             }
+
             await manifestResolved.SaveAsAsync($"{manifestResolved.ManifestName}.manifest.cdm.json", true);
         }
     }

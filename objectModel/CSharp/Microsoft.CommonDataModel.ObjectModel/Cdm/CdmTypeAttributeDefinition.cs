@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -12,9 +13,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmTypeAttributeDefinition : CdmAttribute
     {
+        /// <summary>
+        /// Gets or sets the type attribute's data type.
+        /// </summary>
         public CdmDataTypeReference DataType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type attribute's attribute context.
+        /// </summary>
         public CdmAttributeContextReference AttributeContext { get; set; }
 
+        /// <summary>
+        /// Gets whether the type attribute is the primary key.
+        /// </summary>
         public bool? IsPrimaryKey
         {
             get
@@ -23,6 +34,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether the type attribute is read only.
+        /// </summary>
         public bool? IsReadOnly
         {
             get
@@ -35,6 +49,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether the type attribute can be null.
+        /// </summary>
         public bool? IsNullable
         {
             get
@@ -47,6 +64,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's data format.
+        /// </summary>
         public CdmDataFormat DataFormat
         {
             get
@@ -59,6 +79,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's source name.
+        /// </summary>
         public string SourceName
         {
             get
@@ -71,6 +94,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's source ordering.
+        /// </summary>
         public int? SourceOrdering
         {
             get
@@ -83,6 +109,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's display name.
+        /// </summary>
         public string DisplayName
         {
             get
@@ -95,6 +124,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's description.
+        /// </summary>
         public string Description
         {
             get
@@ -107,6 +139,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's maximum value.
+        /// </summary>
         public string MaximumValue
         {
             get
@@ -119,6 +154,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's minimum value.
+        /// </summary>
         public string MinimumValue
         {
             get
@@ -131,6 +169,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's maximum length.
+        /// </summary>
         public int? MaximumLength
         {
             get
@@ -143,6 +184,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether the type attribute's value is constrained to a list. 
+        /// </summary>
         public bool? ValueConstrainedToList
         {
             get
@@ -155,6 +199,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type attribute's default value.
+        /// </summary>
         public dynamic DefaultValue
         {
             get
@@ -174,6 +221,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         private TraitToPropertyMap TraitToPropertyMap { get; }
 
+        /// <summary>
+        /// Constructs a CdmTypeAttributeDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The type attribute name.</param>
         public CdmTypeAttributeDefinition(CdmCorpusContext ctx, string name)
             : base(ctx, name)
         {
@@ -193,28 +245,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmTypeAttributeDefinition>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmTypeAttributeDefinition copy = new CdmTypeAttributeDefinition(this.Ctx, this.Name)
+            CdmTypeAttributeDefinition copy;
+            if (host == null)
             {
-                DataType = (CdmDataTypeReference)this.DataType?.Copy(resOpt),
-                AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt)
-            };
+                copy = new CdmTypeAttributeDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmTypeAttributeDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.GetName();
+            }
+
+            copy.DataType = (CdmDataTypeReference)this.DataType?.Copy(resOpt);
+            copy.AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt);
+
             this.CopyAtt(resOpt, copy);
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.Name);
         }
 
-
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -239,11 +303,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.Name;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.Name;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 
@@ -264,7 +332,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             // // get from datatype
             if (this.DataType != null)
-                rtsb.TakeReference(this.GetDataTypeRef().FetchResolvedTraits(resOpt));
+                rtsb.TakeReference(this.DataType.FetchResolvedTraits(resOpt));
             // // get from purpose
             if (this.Purpose != null)
                 rtsb.MergeTraits(this.Purpose.FetchResolvedTraits(resOpt));
@@ -306,6 +374,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
             else
                 resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+
+            // renameFormat is not currently supported for type attributes
+            resGuideWithDefault.renameFormat = null;
+
             resGuideWithDefault.UpdateAttributeDefaults(null);
             AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 

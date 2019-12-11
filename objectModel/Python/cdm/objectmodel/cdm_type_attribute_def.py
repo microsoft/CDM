@@ -161,6 +161,9 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         else:
             res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
 
+        # rename_format is not currently supported for type attributes
+        res_guide_with_default.rename_format = None
+
         res_guide_with_default._update_attribute_defaults(None)
         arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
 
@@ -192,12 +195,24 @@ class CdmTypeAttributeDefinition(CdmAttribute):
             replacement.explicit_reference = self
             rtsb.replace_trait_parameter_value(res_opt, 'does.elevateAttribute', 'attribute', 'this.attribute', replacement)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmTypeAttributeDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTypeAttributeDefinition'] = None) -> 'CdmTypeAttributeDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmTypeAttributeDefinition(self.ctx, self.name)
-        copy.data_type = self.data_type.copy(res_opt) if self.data_type else None
-        copy.attribute_context = self.attribute_context.copy(res_opt) if self.attribute_context else None
+        if not host:
+            copy = CdmTypeAttributeDefinition(self.ctx, self.name)
+
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
+
+        if self.data_type:
+            copy.data_type = self.data_type.copy(res_opt)
+
+        if self.attribute_context:
+            copy.attribute_context = self.attribute_context.copy(res_opt)
+
         self._copy_att(res_opt, copy)
 
         return copy
@@ -216,10 +231,12 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         return bool(self.name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False
