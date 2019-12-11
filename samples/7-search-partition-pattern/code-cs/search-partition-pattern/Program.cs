@@ -7,6 +7,18 @@
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
 
+    /*
+    * ----------------------------------------------------------------------------------------------------------------------------------------
+    * This sample demonstrates how to perform a data partition pattern search on an existing entity.
+    * Note: A data partition pattern describes a search space over a set of files that can be used to infer or discover and list new data partition files
+    * The steps are:
+    *   1. Load an entity named 'Account' from some public standards
+    *   2. Create a data partition pattern and add it to 'Account' entity
+    *   3. Find all the associated partition files, and add them to the data partition to the entity in the manifest
+    *   4. Resolve the manifest and save the new documents
+    * ----------------------------------------------------------------------------------------------------------------------------------------
+    */
+
     class Program
     {
         static async Task Main(string[] args)
@@ -37,11 +49,6 @@
             // "<CLIENT-ID>",  // Client ID.
             // "<CLIENT-SECRET>" // Client secret.
             // ));
-
-            // This sample will add an entity named Account from some public standards and create a data partition pattern
-            // A data partition pattern describes a search space over a set of files that can be used to infer or discover and list new data partition files
-            // We will also show how to find all the associated partition files, and add them to the data partition to the entity in the manifest
-            // After resolving the manifest, the manifest will contain data partition of each data partition file
 
             Console.WriteLine("Make placeholder manifest");
             // make the temp manifest and add it to the root of the local documents in the corpus
@@ -84,7 +91,7 @@
             await manifestResolved.SaveAsAsync($"{manifestResolved.ManifestName}.manifest.cdm.json", true);
 
             // You can save the doc as a model.json format as an option
-            // await manifestResolved.SaveAsAsync($"{manifestResolved.ManifestName}.model.json", true);
+            // await manifestResolved.SaveAsAsync("model.json", true);
         }
     }
 }

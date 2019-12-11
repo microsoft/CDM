@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -19,23 +20,23 @@ import java.io.IOException;
 @JsonSerialize(using = KeyValuePairSerializer.class)
 @JsonDeserialize(using = KeyValuePairDeserializer.class)
 public class KeyValuePair<K, V> {
-    private K key;
+    private K name;
     private V value;
 
     public KeyValuePair() {
     }
 
-    public KeyValuePair(final K key, final V value) {
-        this.key = key;
+    public KeyValuePair(final K name, final V value) {
+        this.name = name;
         this.value = value;
     }
 
-    public K getKey() {
-        return this.key;
+    public K getName() {
+        return this.name;
     }
 
-    public void setKey(final K key) {
-        this.key = key;
+    public void setName(final K name) {
+        this.name = name;
     }
 
     public V getValue() {
@@ -49,7 +50,7 @@ public class KeyValuePair<K, V> {
     @Override
     public String toString() {
         return "{" +
-            " key='" + getKey() + "'" +
+            " name='" + getName() + "'" +
             ", value='" + getValue() + "'" +
             "}";
     }
@@ -61,7 +62,9 @@ class KeyValuePairSerializer extends JsonSerializer<KeyValuePair> {
                           final SerializerProvider serializerProvider) throws IOException {
 
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeFieldName(kvp.getKey().toString());
+        jsonGenerator.writeFieldName("name");
+        jsonGenerator.writeString(kvp.getName().toString());
+        jsonGenerator.writeFieldName("value");
         jsonGenerator.writeString(kvp.getValue().toString());
         jsonGenerator.writeEndObject();
     }
@@ -69,17 +72,34 @@ class KeyValuePairSerializer extends JsonSerializer<KeyValuePair> {
 
 class KeyValuePairDeserializer extends JsonDeserializer<KeyValuePair> {
     @Override
-    public KeyValuePair deserialize(final JsonParser jsonParser,
-                                    final DeserializationContext deserializationContext) throws IOException {
+    public KeyValuePair<?, ?> deserialize(
+        final JsonParser jsonParser,
+        final DeserializationContext deserializationContext) throws IOException {
 
-        String tmp = jsonParser.getText(); // {
-        jsonParser.nextToken();
-        final String key = jsonParser.getText();
-        jsonParser.nextToken();
-        final String value = jsonParser.getText();
-        jsonParser.nextToken();
-        tmp = jsonParser.getText(); // }
+        /** Input data could either be
+         *  Scenario 1:
+         * {
+         *   "test": "something"
+         * }
+         * or
+         * Scenario 2:
+         * {
+         *   "key": "test",
+         *   "value": "somethingelse"
+         * }
+         */
+        final JsonNode node = jsonParser.readValueAsTree();
 
-        return new KeyValuePair(key, value);
+        // Scenario 1:
+        if (node.size() == 1) {
+            final String name = node.fieldNames().next();
+            return new KeyValuePair<>(name, node.get(name).asText());
+        } else if (node.has("key")) {
+            return new KeyValuePair<>(node.get("key").asText(), node.get("value").asText());
+        } else if (node.has("name")) {
+            return new KeyValuePair<>(node.get("name").asText(), node.get("value").asText());
+        }
+
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -19,12 +21,6 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
   private final CdmCorpusContext ctx;
   private final CdmObjectType defaultType;
   private final CdmObject owner;
-
-  /**
-   * Outermost document containing this collection.
-   * This document is to be made "dirty" if anything is changed in the collection.
-   */
-  private CdmDocumentDefinition outermostDocument;
 
   public CdmCollection(
       final CdmCorpusContext ctx,
@@ -152,18 +148,37 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
    */
   public T add(final T currObject) {
     makeDocumentDirty();
-    currObject.setOwner(this.owner);
+    currObject.setOwner(this.getOwner());
+    this.propagateInDocument(
+        currObject,
+        this.getOwner() == null
+            ? null
+            : this.getOwner().getInDocument());
     this.allItems.add(currObject);
     return currObject;
   }
 
   public boolean remove(final T currObject) {
     final boolean wasRemoved = this.allItems.remove(currObject);
+    this.propagateInDocument(currObject, null);
     if (wasRemoved) {
       currObject.setOwner(null);
       makeDocumentDirty();
     }
     return wasRemoved;
+  }
+
+  /**
+   * Removes an item from the given index.
+   * @param index Index of the item to remove.
+   */
+  public void removeAt(int index) {
+    if (index >= 0 && index < this.getAllItems().size()) {
+      this.getAllItems().get(index).setOwner(null);
+      this.propagateInDocument(this.getAllItems().get(index), null);
+      this.makeDocumentDirty();
+      this.getAllItems().remove(index);
+    }
   }
 
   public T item(final String name) {
@@ -193,7 +208,10 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
   }
 
   public void clear() {
-    this.allItems.forEach(item -> item.setOwner(null));
+    this.allItems.forEach(item -> {
+      item.setOwner(null);
+      this.propagateInDocument(item, null);
+    });
     makeDocumentDirty();
     this.allItems.clear();
   }
@@ -206,18 +224,33 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
     return this.allItems.set(index, element);
   }
 
+  /**
+   * Inserts an {@link CdmObject} at the given index.
+   * @param index Index of the {@link CdmObject}.
+   * @param element The CdmObject to insert.
+   */
   public void add(final int index, final T element) {
     element.setOwner(this.owner);
+    this.propagateInDocument(element, this.getOwner().getInDocument());
     makeDocumentDirty();
     this.allItems.add(index, element);
   }
 
-  public void removeAt(final int index) {
-    if (index >= 0 && index < this.allItems.size()) {
-      this.allItems.get(index).setOwner(null);
-      makeDocumentDirty();
-      this.allItems.remove(index);
-    }
+  /**
+   * Creates a copy of the current CdmCollection.
+   */
+  public CdmCollection<T> copy(final ResolveOptions resOpt) {
+    return copy(resOpt, null);
+  }
+
+  /**
+   * Creates a copy of the current CdmCollection.
+   */
+  public CdmCollection<T> copy(final ResolveOptions resOpt, final CdmObject host) {
+    final CdmCollection<T> copy =
+        new CdmCollection<>(this.getCtx(), this.getOwner(), this.getDefaultType());
+    this.allItems.forEach(element -> copy.add((T) element.copy(resOpt)));
+    return copy;
   }
 
   public int indexOf(final Object o) {
@@ -253,35 +286,43 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
   }
 
   /**
-   * Calculates the outermost document containing this collection.
-   * @return The outermost document containing collection.
-   */
-  private CdmDocumentDefinition calculateOutermostDocument() {
-    CdmDocumentDefinition document;
-    if (this.owner != null && this.owner.getInDocument() != null) {
-      document = this.owner.getInDocument();
-    } else {
-      document = this.owner instanceof CdmDocumentDefinition
-          ? (CdmDocumentDefinition) this.owner
-          : null;
-    }
-    while (document != null
-        && document.getInDocument() != null
-        && document != document.getInDocument()) {
-      document = document.getInDocument();
-    }
-    return document;
-  }
-
-  /**
    * Make the outermost document containing this collection dirty because the collection was changed.
    */
   void makeDocumentDirty() {
-    if (this.outermostDocument == null) {
-      this.outermostDocument = this.calculateOutermostDocument();
+    if (!this.getCtx().getCorpus().isCurrentlyResolving) {
+      CdmDocumentDefinition document = null;
+      if (this.getOwner() != null && this.getOwner().getInDocument() != null) {
+        document = this.getOwner().getInDocument();
+      } else if (this.getOwner() instanceof CdmDocumentDefinition) {
+        document = (CdmDocumentDefinition) this.getOwner();
+      }
+
+      if (document != null) {
+        document.setDirty(true);
+        document.setNeedsIndexing(true);
+      }
     }
-    if (this.outermostDocument != null) {
-      this.outermostDocument.setDirty(true);
+  }
+
+  /**
+   * Propagate document through all objects.
+   * @param cdmObject The object.
+   * @param document The document.
+   */
+  void propagateInDocument(CdmObject cdmObject, CdmDocumentDefinition document) {
+    if (!this.getCtx().getCorpus().isCurrentlyResolving)  {
+      this.getCtx().getCorpus().blockDeclaredPathChanges = true;
+      cdmObject.visit("", (obj, path) -> {
+        // If object's document is already the same as the one we're trying to set
+        // then we're assuming that every sub-object is also set to it, so bail out.
+        if (Objects.equals(obj.getInDocument(), document)) {
+          return true;
+        }
+
+        obj.setInDocument(document);
+        return false;
+      }, null);
+      this.getCtx().getCorpus().blockDeclaredPathChanges = false;
     }
   }
 }

@@ -25,47 +25,47 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         string LocationHint { get; set; }
 
         /// <summary>
-        /// Returns true if the adapter can read data, false otherwise
+        /// Returns true if the adapter can read data, false otherwise.
         /// </summary>
         bool CanRead();
 
         /// <summary>
-        /// Returns true if the adapter can write data to its source, false otherwise
+        /// Returns true if the adapter can write data to its source, false otherwise.
         /// </summary>
         bool CanWrite();
 
         /// <summary>
-        /// Returns JSON data that exists at the path as a JSON string
+        /// Returns data that exists at the path as a JSON string.
         /// </summary>
         Task<string> ReadAsync(string corpusPath);
 
         /// <summary>
-        /// Writes the object data to the specified document path
+        /// Writes the object data to the specified document path.
         /// </summary>
         Task WriteAsync(string corpusPath, string data);
 
         /// <summary>
-        /// Converts a corpus path into a path in the domain of this adapter
+        /// Converts a corpus path into a path in the domain of this adapter.
         /// </summary>
         string CreateAdapterPath(string corpusPath);
 
         /// <summary>
-        /// Converts a path in the domain of this adapter into a corpus path
+        /// Converts a path in the domain of this adapter into a corpus path.
         /// </summary>
         string CreateCorpusPath(string adapterPath);
 
         /// <summary>
-        /// Empties the cache of files and folders if the storage adapter uses a cache
+        /// Empties the cache of files and folders if the storage adapter uses a cache.
         /// </summary>
         void ClearCache();
 
         /// <summary>
-        /// Returns the last modified time of the specified document
+        /// Returns the last modified time of the specified document.
         /// </summary>
         Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath);
 
         /// <summary>
-        /// Returns a list of corpus paths to all files and folders at or under the provided corpus path to a folder
+        /// Returns a list of corpus paths to all files and folders at or under the provided corpus path to a folder.
         /// </summary>
         Task<List<string>> FetchAllFilesAsync(string folderCorpusPath);
 
@@ -75,9 +75,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         void UpdateConfig(string config);
 
         /// <summary>
-        /// Constructs the config.
+        /// Constructs the config for the adapter and returns a JSON string representing the config.
         /// </summary>
-        /// <returns>The JObject, representing the constructed config for that adapter.</returns>
         string FetchConfig();
     }
 }

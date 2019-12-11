@@ -37,18 +37,23 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.getName();
-      this.setDeclaredPath(path);
+    String path = "";
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      this.getDeclaredPath();
+
+      if (Strings.isNullOrEmpty(path)) {
+        path = pathFrom + this.getName();
+        this.setDeclaredPath(path);
+      }
     }
-    //trackVisits(path);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -142,8 +147,20 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmEntityAttributeDefinition copy = new CdmEntityAttributeDefinition(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmEntityAttributeDefinition copy;
+    if (host == null) {
+      copy = new CdmEntityAttributeDefinition(this.getCtx(), this.getName());
+    } else {
+      copy = (CdmEntityAttributeDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
+
     copy.setEntity((CdmEntityReference) this.entity.copy(resOpt));
     this.copyAtt(resOpt, copy);
     return copy;
@@ -226,14 +243,16 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     return relationshipInfo;
   }
 
+
   @Override
   ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
-                                                          CdmAttributeContext under) {
+  ResolvedAttributeSetBuilder constructResolvedAttributes(
+      final ResolveOptions resOpt,
+      CdmAttributeContext under) {
     // find and cache the complete set of attributes
     // attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
     // the entity used as an attribute, traits applied to that entity,
@@ -344,31 +363,32 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     if (rasb.getResolvedAttributeSet() != null && rasb.getResolvedAttributeSet().getSet() != null
         && relInfo.isByRef()) {
       for (final ResolvedAttribute att : rasb.getResolvedAttributeSet().getSet()) {
-        final ResolvedTrait reqdTrait = att.fetchResolvedTraits()
-            .find(resOpt, "is.linkedEntity.identifier");
-        if (reqdTrait == null) {
-          continue;
-        }
-
-        if (reqdTrait.getParameterValues() == null
-            || reqdTrait.getParameterValues().length() == 0) {
-          LOGGER.warn("is.linkedEntity.identifier does not support arguments");
-          continue;
-        }
-
-        final List<String> entReferences = new ArrayList<>();
-        final List<String> attReferences = new ArrayList<>();
-
-        if (relInfo.doSelectsOne()) {
-          final CdmEntityDefinition entPickFrom = (((CdmEntityReference) this.getEntity())).fetchObjectDefinition(resOpt);
-
-          List<CdmObject> attsPick = null;
-          if (entPickFrom != null && entPickFrom.getAttributes() != null) {
-            attsPick = entPickFrom.getAttributes().getAllItems()
-                .stream()
-                .map(attribute -> (CdmObject) attribute)
-                .collect(Collectors.toList());
+        if (att.fetchResolvedTraits() != null) {
+          final ResolvedTrait reqdTrait = att.fetchResolvedTraits()
+              .find(resOpt, "is.linkedEntity.identifier");
+          if (reqdTrait == null) {
+            continue;
           }
+
+          if (reqdTrait.getParameterValues() == null
+              || reqdTrait.getParameterValues().length() == 0) {
+            LOGGER.warn("is.linkedEntity.identifier does not support arguments");
+            continue;
+          }
+
+          final List<String> entReferences = new ArrayList<>();
+          final List<String> attReferences = new ArrayList<>();
+
+          if (relInfo.doSelectsOne()) {
+            final CdmEntityDefinition entPickFrom = (((CdmEntityReference) this.getEntity())).fetchObjectDefinition(resOpt);
+
+            List<CdmObject> attsPick = null;
+            if (entPickFrom != null && entPickFrom.getAttributes() != null) {
+              attsPick = entPickFrom.getAttributes().getAllItems()
+                  .stream()
+                  .map(attribute -> (CdmObject) attribute)
+                  .collect(Collectors.toList());
+            }
 
           if (entPickFrom != null && attsPick != null) {
             for (int i = 0; i < attsPick.size(); i++) {
@@ -379,26 +399,34 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
             }
           }
         } else {
-          addEntityReference(this.getEntity(), resOpt, entReferences, attReferences, this.getInDocument().getNamespace());
+          addEntityReference(
+              this.getEntity(),
+              resOpt,
+              entReferences,
+              attReferences,
+              this.getInDocument() == null
+                  ? null
+                  : this.getInDocument().getNamespace());
         }
 
-        final CdmConstantEntityDefinition constantEntity = this.getCtx().getCorpus()
-            .makeObject(CdmObjectType.ConstantEntityDef);
-        constantEntity.setEntityShape(
-            this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
-        final List<List<String>> listOfStringLists = new ArrayList<>();
+          final CdmConstantEntityDefinition constantEntity = this.getCtx().getCorpus()
+              .makeObject(CdmObjectType.ConstantEntityDef);
+          constantEntity.setEntityShape(
+              this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
+          final List<List<String>> listOfStringLists = new ArrayList<>();
 
-        for (int i = 0; i < entReferences.size(); i++) {
-          final List<String> stringList = new ArrayList<>();
-          stringList.add(entReferences.get(i));
-          stringList.add(attReferences.get(i));
-          listOfStringLists.add(stringList);
+          for (int i = 0; i < entReferences.size(); i++) {
+            final List<String> stringList = new ArrayList<>();
+            stringList.add(entReferences.get(i));
+            stringList.add(attReferences.get(i));
+            listOfStringLists.add(stringList);
+          }
+
+          constantEntity.setConstantValues(listOfStringLists);
+          final CdmEntityReference traitParam = this.getCtx().getCorpus()
+              .makeRef(CdmObjectType.EntityRef, constantEntity, false);
+          reqdTrait.getParameterValues().setParameterValue(resOpt, "entityReferences", traitParam);
         }
-
-        constantEntity.setConstantValues(listOfStringLists);
-        final CdmEntityReference traitParam = this.getCtx().getCorpus()
-            .makeRef(CdmObjectType.EntityRef, constantEntity, false);
-        reqdTrait.getParameterValues().setParameterValue(resOpt, "entityReferences", traitParam);
       }
     }
 
@@ -430,24 +458,30 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
                                   final String nameSpace) {
 
     final CdmEntityDefinition entDef = entRef.fetchObjectDefinition(resOpt);
-    final ResolvedTrait identifyingTrait = entRef.fetchResolvedTraits(resOpt)
-        .find(resOpt, "is.identifiedBy");
-    if (identifyingTrait != null && entDef != null) {
-      final Object attRef = identifyingTrait.getParameterValues().fetchParameterValue("attribute")
-          .getValue();
-      final String[] bits = attRef instanceof String ? ((String) attRef).split("/")
-          : ((CdmObjectReference) attRef).getNamedReference().split("/");
-      final String attName = bits[bits.length - 1];
-      // path should be absolute and without a namespace
-      String relativeEntPath = this.getCtx()
-          .getCorpus()
-          .getStorage()
-          .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
-      if (relativeEntPath.startsWith(nameSpace + ":")) {
-        relativeEntPath = relativeEntPath.substring(nameSpace.length() + 1);
+    if (entDef != null) {
+      final ResolvedTraitSet otherResTraits = entRef.fetchResolvedTraits(resOpt);
+      ResolvedTrait identifyingTrait;
+
+      if (otherResTraits != null
+          && (identifyingTrait = otherResTraits.find(resOpt, "is.identifiedBy")) != null) {
+        final Object attRef = identifyingTrait
+            .getParameterValues()
+            .fetchParameterValue("attribute")
+            .getValue();
+        final String[] bits = attRef instanceof String ? ((String) attRef).split("/")
+            : ((CdmObjectReference) attRef).getNamedReference().split("/");
+        final String attName = bits[bits.length - 1];
+        // path should be absolute and without a namespace
+        String relativeEntPath = this.getCtx()
+            .getCorpus()
+            .getStorage()
+            .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
+        if (relativeEntPath.startsWith(nameSpace + ":")) {
+          relativeEntPath = relativeEntPath.substring(nameSpace.length() + 1);
+        }
+        entReferences.add(relativeEntPath);
+        attReferences.add(attName);
       }
-      entReferences.add(relativeEntPath);
-      attReferences.add(attName);
     }
   }
 

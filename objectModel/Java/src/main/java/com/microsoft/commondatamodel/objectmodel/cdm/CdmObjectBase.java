@@ -14,14 +14,14 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class CdmObjectBase implements CdmObject {
 
   private int id;
   private CdmCorpusContext ctx;
-  private CdmDocumentDefinition docCreatedIn;
+  private CdmDocumentDefinition inDocument;
   private String atCorpusPath;
   private CdmObjectType objectType;
   private CdmObject owner;
@@ -36,9 +36,6 @@ public abstract class CdmObjectBase implements CdmObject {
   public CdmObjectBase(final CdmCorpusContext ctx) {
     this.id = CdmCorpusDefinition.getNextId();
     this.ctx = ctx;
-    if (ctx != null) {
-      this.docCreatedIn = ((ResolveContext) ctx).getCurrentDoc();
-    }
   }
 
   /**
@@ -114,9 +111,14 @@ public abstract class CdmObjectBase implements CdmObject {
     if (resOpt.isSaveResolutionsOnCopy()) {
       // used to localize references between documents
       traitRef.setExplicitReference(rt.getTrait());
-      traitRef.setDocCreatedIn(rt.getTrait().getDocCreatedIn());
+      traitRef.setInDocument(rt.getTrait().getInDocument());
     }
 
+    // always make it a property when you can, however the dataFormat traits should be left alone
+    if (rt.getTrait().getAssociatedProperties() != null
+        && !rt.getTrait().isDerivedFrom("is.dataFormat", resOpt)) {
+      traitRef.setFromProperty(true);
+    }
     return traitRef;
   }
 
@@ -188,20 +190,6 @@ public abstract class CdmObjectBase implements CdmObject {
     this.declaredPath = declaredPath;
   }
 
-  /**
-   *
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public CdmDocumentDefinition getDocCreatedIn() {
-    return docCreatedIn;
-  }
-
-  void setDocCreatedIn(final CdmDocumentDefinition docCreatedIn) {
-    this.docCreatedIn = docCreatedIn;
-  }
-
   @Override
   public int getId() {
     return this.id;
@@ -224,22 +212,21 @@ public abstract class CdmObjectBase implements CdmObject {
 
   @Override
   public CdmDocumentDefinition getInDocument() {
-    return this.docCreatedIn;
+    return this.inDocument;
   }
 
   @Override
   public void setInDocument(final CdmDocumentDefinition value) {
-    this.docCreatedIn = value;
+    this.inDocument = value;
   }
 
   @Override
   public String getAtCorpusPath() {
-    return this.atCorpusPath;
-  }
-
-  @Override
-  public void setAtCorpusPath(final String atCorpusPath) {
-    this.atCorpusPath = atCorpusPath;
+    if (this.getInDocument() == null) {
+      return "NULL:/NULL/" + this.declaredPath;
+    } else {
+      return this.getInDocument().getAtCorpusPath() + "/" + this.declaredPath;
+    }
   }
 
   @Override
@@ -287,12 +274,15 @@ public abstract class CdmObjectBase implements CdmObject {
   @Override
   @Deprecated
   public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+    boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
+    this.getCtx().getCorpus().isCurrentlyResolving = true;
+
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     String cacheTagA = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind);
     ResolvedTraitSetBuilder rtsbAll = null;
     if (this.getTraitCache() == null) {
-      this.setTraitCache(new HashMap<>());
+      this.setTraitCache(new LinkedHashMap<>());
     } else if (!StringUtils.isNullOrTrimEmpty(cacheTagA)) {
       rtsbAll = this.getTraitCache().get(cacheTagA);
     }
@@ -343,6 +333,7 @@ public abstract class CdmObjectBase implements CdmObject {
     currDocRefSet.merge(resOpt.getSymbolRefSet());
     resOpt.setSymbolRefSet(currDocRefSet);
 
+    this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
     return rtsbAll.getResolvedTraitSet();
   }
 
@@ -371,6 +362,9 @@ public abstract class CdmObjectBase implements CdmObject {
   @Deprecated
   public ResolvedAttributeSet fetchResolvedAttributes(final ResolveOptions resOpt,
                                                       final AttributeContextParameters acpInContext) {
+    boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
+    this.getCtx().getCorpus().isCurrentlyResolving = true;
+
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     String cacheTag = ctx.getCorpus()
@@ -397,6 +391,7 @@ public abstract class CdmObjectBase implements CdmObject {
     if (rasbCache == null) {
       if (this.resolvingAttributes) {
         // re-entered this attribute through some kind of self or looping reference.
+        this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
         return new ResolvedAttributeSet();
       }
       this.resolvingAttributes = true;
@@ -426,6 +421,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
         if (!StringUtils.isNullOrTrimEmpty(fromMoniker)
             && acpInContext != null
+            && this instanceof CdmObjectReference
             && ((CdmObjectReference) this).getNamedReference() != null) {
           // create a fresh context
           final CdmAttributeContext oldContext = (CdmAttributeContext) acpInContext.getUnder()
@@ -433,10 +429,8 @@ public abstract class CdmObjectBase implements CdmObject {
               .get(acpInContext.getUnder().getContents().size() - 1);
           acpInContext.getUnder()
               .getContents()
-              .remove(acpInContext.getUnder().getContents().size() - 1);
+              .removeAt(acpInContext.getUnder().getContents().size() - 1);
           underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-
-
 
           CdmAttributeContext newContext =
               oldContext.copyAttributeContextTree(
@@ -487,10 +481,12 @@ public abstract class CdmObjectBase implements CdmObject {
     // merge child document set with current
     currDocRefSet.merge(resOpt.getSymbolRefSet());
     resOpt.setSymbolRefSet(currDocRefSet);
-    if (rasbCache != null && rasbCache instanceof ResolvedAttributeSetBuilder) {
+    if (rasbCache instanceof ResolvedAttributeSetBuilder) {
+      this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
       return ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet();
     }
 
+    this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
     return null;
   }
 

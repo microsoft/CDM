@@ -19,6 +19,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     public class DataPartition : FileStatus
     {
         /// <summary>
+        /// Gets or sets the name of the data partition.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the corpus path for the data file location.
         /// </summary>
         public string Location { get; set; }
@@ -31,7 +36,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         /// <summary>
         /// Gets or sets the list of key value pairs to give names for the replacement values from the RegEx.
         /// </summary>
-        public List<KeyValuePair<string, string>> Arguments { get; set; }
+        public List<Argument> Arguments { get; set; }
 
         /// <summary>
         /// Gets or sets the path of a specialized schema to use specifically for the partitions generated.

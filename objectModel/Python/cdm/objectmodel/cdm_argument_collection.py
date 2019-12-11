@@ -47,6 +47,7 @@ class CdmArgumentCollection(CdmCollection):
 
     def update_argument(self, name: str, value: Any):
         """Updates the value of an existing argument, or, in case no argument is found with the provided name, an argument is created and added."""
+        self._make_document_dirty()
 
         for argument in self:
             if argument.name == name:

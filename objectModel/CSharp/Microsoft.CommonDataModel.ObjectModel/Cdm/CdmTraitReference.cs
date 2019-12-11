@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -14,17 +15,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmTraitReference : CdmObjectReferenceBase
     {
         /// <summary>
-        /// Gets the trait reference argument.
+        /// Gets the trait reference's arguments.
         /// </summary>
         public CdmArgumentCollection Arguments { get; }
 
         /// <summary>
-        /// Gets or sets true if the trait was generated from a property and false it was directly loaded.
+        /// Gets or sets whether the trait was generated (true) from a property or if it was directly loaded (false).
         /// </summary>
         public bool IsFromProperty { get; set; }
 
         internal bool ResolvedArguments;
 
+        /// <summary>
+        /// Constructs a CdmTraitReference.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="trait">The trait to referemce.</param>
+        /// <param name="simpleReference">Whether this reference is a simple reference.</param>
+        /// <param name="hasArguments">Whether this reference has arguments.</param>
         public CdmTraitReference(CdmCorpusContext ctx, dynamic trait, bool simpleReference, bool hasArguments)
             : base(ctx, (object)trait, simpleReference)
         {
@@ -34,9 +42,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Arguments = new CdmArgumentCollection(this.Ctx, this);
         }
 
-        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference)
+        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
-            CdmTraitReference copy = new CdmTraitReference(this.Ctx, refTo, simpleReference, this.Arguments?.Count > 0);
+            CdmTraitReference copy;
+            if (host == null)
+                copy = new CdmTraitReference(this.Ctx, refTo, simpleReference, this.Arguments?.Count > 0);
+            else
+            {
+                copy = host.CopyToHost(this.Ctx, refTo, simpleReference);
+                copy.Arguments.Clear();
+            }
+
             if (!simpleReference)
             {
                 copy.ResolvedArguments = this.ResolvedArguments;
@@ -53,9 +69,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmTraitReference>(this, resOpt, options);
         }
 
-        /// returns a map from parameter names to the final argument values for a trait reference
-        /// values come (in this order) from base trait defaults then default overrides on inheritence
-        /// then values supplied on this reference
+        /// Returns a map from parameter names to the final argument values for a trait reference.
+        /// Values come (in this order) from base trait defaults, then default overrides on inheritence,
+        /// then values supplied on this reference.
         internal Dictionary<string, dynamic> GetFinalArgumentValues(ResolveOptions resOpt)
         {
             Dictionary<string, dynamic> finalArgs = new Dictionary<string, dynamic>();
@@ -187,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 paramFound = param.ResolveParameter(iArg, a.Name);
                                 a.ResolvedParameter = paramFound;
                                 aValue = a.Value;
-                                aValue = ((CdmCorpusDefinition)ctx.Corpus).ConstTypeCheck(resOpt, paramFound, aValue);
+                                aValue = ((CdmCorpusDefinition)ctx.Corpus).ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
                                 a.Value = aValue;
                                 iArg++;
                             }

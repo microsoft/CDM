@@ -43,19 +43,6 @@ public class ManifestTest {
   }
 
   /**
-   * Tests whether manifest.getEntities().add() throws an exception when the associated document is not added.
-   */
-  @Test (expectedExceptions = IllegalArgumentException.class)
-  public void testManifestCannotAddEntityWithoutDoc() {
-    final CdmCorpusDefinition cdmCorpus = generateCorpusImpl("C:/Root/Path");
-    final CdmCorpusContext ctx = cdmCorpus.getCtx();
-    final CdmManifestDefinition manifest = new CdmManifestDefinition(ctx, "manifest");
-    final CdmEntityDefinition entity = new CdmEntityDefinition(ctx, "entityName", null);
-
-    manifest.getEntities().add(entity);
-  }
-
-  /**
    * Tests whether the EntityDefinition can be passed directly to manifest.getEntities().add().
    */
   @Test

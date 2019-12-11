@@ -11,7 +11,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpReques
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,12 +66,12 @@ public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
 
-      final Map<String, String> headers = new HashMap<>();
+      final Map<String, String> headers = new LinkedHashMap<>();
       headers.put("User-Agent", "CDM");
 
       final CdmHttpRequest cdmHttpRequest = this.setUpCdmRequest(corpusPath, headers, "GET");
       try {
-        final CdmHttpResponse res = this.readOrWrite(cdmHttpRequest).get();
+        final CdmHttpResponse res = this.executeRequest(cdmHttpRequest).get();
         return (res != null) ? res.getContent() : null;
       } catch (final Exception e) {
         throw new StorageAdapterException("Could not read GitHub content at path: " + corpusPath, e);

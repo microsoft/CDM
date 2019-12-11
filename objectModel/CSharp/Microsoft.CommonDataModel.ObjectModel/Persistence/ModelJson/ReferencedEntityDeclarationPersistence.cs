@@ -1,20 +1,20 @@
 ﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The referenced entity declaration persistence.
     /// </summary>
     class ReferencedEntityDeclarationPersistence
     {
-        public static async Task<CdmReferencedEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, ReferenceEntity obj, string location, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmReferencedEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, ReferenceEntity obj, string location)
         {
             var referencedEntity = ctx.Corpus.MakeObject<CdmReferencedEntityDeclarationDefinition>(CdmObjectType.ReferencedEntityDeclarationDef, obj.Name);
 
@@ -43,7 +43,15 @@
             trait.Arguments.Add(argument);
             referencedEntity.ExhibitsTraits.Add(trait);
 
-            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, referencedEntity.ExhibitsTraits, extensionTraitDefList);
+            var extensionTraitDefList = new List<CdmTraitDefinition>();
+            var extensionTraits = new CdmTraitCollection(ctx, referencedEntity);
+            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
+
+            if (extensionTraitDefList.Count > 0)
+            {
+                Logger.Warning(nameof(ReferencedEntityDeclarationPersistence), ctx, "Custom extensions are not supported in referenced entity.");
+            }
+
             return referencedEntity;
         }
 

@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Dict, Optional, Union, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 
@@ -36,13 +35,15 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         # the child documents for the directory folder.
         self._documents = CdmDocumentCollection(self.ctx, self)  # type: CdmDocumentCollection
 
+        self._corpus = None  # type: CdmDocumentDefinition
+
     @property
     def at_corpus_path(self) -> str:
-        if self.namespace is not None and self.folder_path is not None:
-            return '{}:{}'.format(self.namespace, self.folder_path)
+        if self.namespace is None:
+            # We're not under any adapter (not in a corpus), so return special indicator.
+            return 'NULL:{}'.format(self.folder_path)
 
-        # No namespace. For now return the default.
-        return self.folder_path
+        return '{}:{}'.format(self.namespace, self.folder_path)
 
     @property
     def child_folders(self) -> 'CdmFolderCollection':
@@ -56,7 +57,10 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.FOLDER_DEF
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmFolderDefinition':
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmFolderDefinition'] = None) -> 'CdmFolderDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
+
         return None
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
@@ -126,7 +130,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         arguments:
         path: The path.
         adapter: The storage adapter where the document can be found."""
-        from .cdm_corpus_def import FOLIO_EXTENSION, MANIFEST_EXTENSION, MODEL_JSON_EXTENSION
+        from cdm.persistence import persistence_layer
 
         doc_name = None
         first = document_path.find('/')
@@ -136,56 +140,22 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         else:
             doc_name = document_path[0: first]
 
-        if doc_name in self._document_lookup and not force_reload:
-            return self._document_lookup[doc_name]
-
-        is_cdm_folder = doc_name.endswith(FOLIO_EXTENSION) or doc_name.endswith(MANIFEST_EXTENSION)
-        is_model_json = doc_name.endswith(MODEL_JSON_EXTENSION)
-
         # got that doc?
-        doc = None
+        doc = None  # type: Optional[CdmDocumentDefinition]
 
-        #  go get the doc
-        doc_path = '{}{}'.format(self.folder_path, doc_name)
-        json_data = None
-        fs_modified_time = None
+        if doc_name in self._document_lookup:
+            doc = self._document_lookup[doc_name]
+            if not force_reload:
+                return doc
 
-        try:
-            if adapter.can_read():
-                json_data = await adapter.read_async(doc_path)
-                fs_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(doc_path))
-        except Exception as e:
-            self.corpus.ctx.logger.exception('Could not read %s from the \'%s\' namespace.', doc_path, self.namespace)
-            return None
+            # remove them from the caches since they will be back in a moment
+            if doc._is_dirty:
+                self.ctx.logger.warn('discarding changes in document: {}'.format(doc.name))
 
-        if is_cdm_folder:
-            from cdm.persistence.cdmfolder import ManifestPersistence
-            from cdm.persistence.cdmfolder.types import ManifestContent
-            manifest = ManifestContent()
-            manifest.decode(json_data)
-            doc = await ManifestPersistence.from_data(self.ctx, doc_name, self.namespace, self.folder_path, manifest)
-            doc.folder = self
-            self.documents.append(doc)
-            self.corpus._add_document_objects(self, doc)
-            self._document_lookup[doc_name] = doc
-        elif is_model_json:
-            from cdm.persistence.modeljson import ManifestPersistence
-            from cdm.persistence.modeljson.types import Model
-            model = Model()
-            model.decode(json_data)
-            doc = await ManifestPersistence.from_data(self.ctx, model, self)
-            doc.folder = self
-            doc.folder_path = self.folder_path
-        else:
-            from cdm.persistence.cdmfolder import DocumentPersistence
-            from cdm.persistence.cdmfolder.types import DocumentContent
-            document = DocumentContent()
-            document.decode(json_data)
-            doc = self.documents.append(await DocumentPersistence.from_data(
-                self.ctx, doc_name, self.namespace, self.folder_path, document))
+            self.documents.remove(doc_name)
 
-        doc._file_system_modified_time = fs_modified_time
-        doc._is_dirty = False
+        # go get the doc
+        doc = await persistence_layer.load_document_from_path_async(self, doc_name, doc)
 
         return doc
 

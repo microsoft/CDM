@@ -42,11 +42,13 @@ class AttributeResolutionContext:
         if not res_guide:
             return
 
-        def add_applier(apl: 'AttributeResolutionApplier') -> bool:
-            if not self.applier_caps:
-                self.applier_caps = AttributeResolutionApplierCapabilities()
+        if not self.applier_caps:
+            self.applier_caps = AttributeResolutionApplierCapabilities()
 
-            # Collect the code that will perform the right action. Associate with the resolved trait and get the priority.
+        def add_applier(apl: 'AttributeResolutionApplier') -> bool:
+            # Collect the code that will perform the right action.
+            # Associate with the resolved trait and get the priority.
+
             if apl.will_attribute_modify and apl.do_attribute_modify:
                 self.actions_modify.append(apl)
                 self.applier_caps.can_attribute_modify = True
@@ -145,17 +147,51 @@ class ResolvedAttributeSetBuilder:
         if not self.ras:
             self.take_reference(ResolvedAttributeSet())
 
-        # Make sure all of the 'source' attributes know about this context.
-        if self.ras.set:
-            for ra in self.ras.set:
+        # make sure all of the 'source' attributes know about this context.
+        resolved_set = self.ras.set
+        if resolved_set is not None:
+            for ra in resolved_set:
                 ra.arc = arc
 
-        # Get the new atts and then add them one at a time into this set.
+            # the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
+            # this also can re-order the attributes
+            if arc.res_guide and arc.res_guide.selects_sub_attribute and \
+                    arc.res_guide.selects_sub_attribute.selects == 'some' and \
+                    (arc.res_guide.selects_sub_attribute.selects_some_take_names or arc.res_guide.selects_sub_attribute.selects_some_avoid_names):
+                # we will make a new resolved attribute set from the 'take' list
+                take_set = []  # type: List[ResolvedAttribute]
+                selects_some_take_names = arc.res_guide.selects_sub_attribute.selects_some_take_names  # type: List[str]
+                selects_some_avoid_names = arc.res_guide.selects_sub_attribute.selects_some_avoid_names  # type: List[str]
+
+                if selects_some_take_names and not selects_some_avoid_names:
+                    # make an index that goes from name to insertion order
+                    inverted = {}  # type: Dictionary[str, int]
+                    for index, resolved_name in enumerate(resolved_set):
+                        inverted[resolved_name] = index
+
+                    for name in selects_some_take_names:
+                        # if in the original set of attributes, take it in the new order
+                        if name in inverted:
+                            take_set.append(resolved_set[inverted[name]])
+
+                if selects_some_avoid_names:
+                    # make a quick look up of avoid names
+                    avoid = set(selects_some_avoid_names)  # type: Set[str]
+
+                    for name in resolved_set:
+                        # only take the ones not in avoid the list given
+                        if name not in avoid:
+                            take_set.append(name)
+
+                # replace the guts of the resolvedAttributeSet with this
+                self.ras.alter_set_order_and_scope(take_set)
+
+        # get the new atts and then add them one at a time into this set.
         new_atts = self._get_applier_generated_attributes(arc, True, apply_traits_to_new)
         if new_atts:
             ras = self.ras
             for new_att in new_atts:
-                # Here we want the context that was created in the appliers.
+                # here we want the context that was created in the appliers.
                 ras = ras.merge(new_att, new_att.att_ctx)
 
             self.take_reference(ras)
@@ -201,7 +237,8 @@ class ResolvedAttributeSetBuilder:
 
         mark_set(self.ras, self.inherited_mark, 0)
 
-    def _get_applier_generated_attributes(self, arc: 'AttributeResolutionContext', clear_state: bool, apply_modifiers: bool) -> Optional[List['ResolvedAttribute']]:
+    def _get_applier_generated_attributes(self, arc: 'AttributeResolutionContext', clear_state: bool, apply_modifiers: bool) \
+            -> Optional[List['ResolvedAttribute']]:
         if not self.ras or self.ras.set is None or not arc or not arc.applier_caps:
             return None
 

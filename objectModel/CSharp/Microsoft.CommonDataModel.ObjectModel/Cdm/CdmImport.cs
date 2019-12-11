@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -12,7 +13,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmImport : CdmObjectSimple
     {
-        
+        /// <summary>
+        /// Gets or sets the document that has been resolved for this import.
+        /// </summary>
         internal CdmDocumentDefinition Doc { get; set; }
 
         /// <summary>
@@ -25,6 +28,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string Moniker { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmImport.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="corpusPath">The import path.</param>
+        /// <param name="moniker">The import moniker.</param>
         public CdmImport(CdmCorpusContext ctx, string corpusPath, string moniker)
             : base(ctx)
         {
@@ -45,18 +54,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmImport>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmImport copy = new CdmImport(this.Ctx, this.CorpusPath, this.Moniker);
+            CdmImport copy;
+            if (host == null)
+            {
+                copy = new CdmImport(this.Ctx, this.CorpusPath, this.Moniker);
+            }
+            else
+            {
+                copy = host as CdmImport;
+                copy.Ctx = this.Ctx;
+                copy.CorpusPath = this.CorpusPath;
+                copy.Moniker = this.Moniker;
+            }
+
             copy.Doc = this.Doc;
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.CorpusPath);

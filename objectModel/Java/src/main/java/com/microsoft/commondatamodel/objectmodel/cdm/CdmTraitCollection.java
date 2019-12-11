@@ -136,12 +136,14 @@ public class CdmTraitCollection extends CdmCollection<CdmTraitReference> {
     for (final CdmTraitReference trait : this.getAllItems()) {
       if (this.corresponds(trait, traitName)) {
         if (trait.isFromProperty()) {
+          this.propagateInDocument(trait, null);
           return this.getAllItems().remove(trait);
         }
         foundTraitNotFromProperty = trait;
       }
     }
     if (!onlyFromProperty && foundTraitNotFromProperty != null) {
+      this.propagateInDocument(foundTraitNotFromProperty, null);
       return this.getAllItems().remove(foundTraitNotFromProperty);
     }
     return false;

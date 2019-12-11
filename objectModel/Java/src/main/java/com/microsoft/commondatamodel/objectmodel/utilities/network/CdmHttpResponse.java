@@ -1,6 +1,6 @@
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CdmHttpResponse {
@@ -32,7 +32,7 @@ public class CdmHttpResponse {
 
 
     public CdmHttpResponse() {
-        this.responseHeaders = new HashMap<>();
+        this.responseHeaders = new LinkedHashMap<>();
     }
 
     public CdmHttpResponse(final int statusCode) {

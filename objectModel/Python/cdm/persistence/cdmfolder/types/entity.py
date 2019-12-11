@@ -1,11 +1,13 @@
-from typing import Union, List
+from typing import List, Optional, Union
 
-from .entity_reference import *
+from cdm.utilities import JObject
+
 from .attribute_context import AttributeContext
+from .attribute_resolution_guidance import AttributeResolutionGuidance
+from .entity_reference import EntityReference
 from .attribute_group_reference import AttributeGroupReference
 from .type_attribute import TypeAttribute
-from .entity_attribute import *
-from cdm.utilities import JObject
+from .entity_attribute import EntityAttribute
 
 
 class Entity(JObject):
@@ -15,6 +17,7 @@ class Entity(JObject):
         self.explanation = ''  # type: str
         self.entityName = ''  # type: str
         self.extendsEntity = None  # type: Union[str, EntityReference]
+        self.ExtendsEntityResolutionGuidance = None  # type: Optional[AttributeResolutionGuidance]
         self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
         self.attributeContext = None  # type: AttributeContext
         self.hasAttributes = []  # type: List[Union[str, AttributeGroupReference, TypeAttribute, EntityAttribute]]

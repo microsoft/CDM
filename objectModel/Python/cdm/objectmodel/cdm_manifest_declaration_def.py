@@ -32,10 +32,17 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         pass
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmManifestDeclarationDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmManifestDeclarationDefinition'] = None) -> 'CdmManifestDeclarationDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmManifestDeclarationDefinition(self.ctx, self.manifest_name)
+        if not host:
+            copy = CdmManifestDeclarationDefinition(self.ctx, self.manifest_name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.manifest_name = self.get_name()
+
         copy.definition = self.definition
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
@@ -45,8 +52,8 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        manifest_path = self._fetch_manifest_path()
-        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._fetch_last_modified_time_async(manifest_path)
+        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.definition, self.in_document)
+        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
         self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
@@ -68,9 +75,20 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
         return bool(self.manifest_name) and bool(self.definition)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        return False
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = '{}{}'.format(path_from, self.get_name())
+                self._declared_path = path
 
-    def _fetch_manifest_path(self) -> str:
-        namespace = self.in_document.namespace
-        prefix_path = self.in_document.folder_path
-        return namespace + ':' + prefix_path + self.definition.lstrip('/')
+        if pre_children and pre_children(self, path):
+            return False
+
+        if self._visit_def(path, pre_children, post_children):
+            return True
+
+        if post_children and post_children(self, path):
+            return False
+
+        return False

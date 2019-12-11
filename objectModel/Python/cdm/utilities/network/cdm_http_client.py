@@ -1,9 +1,8 @@
 import asyncio
-import json
 import urllib
 import urllib.parse
-
 from typing import TYPE_CHECKING
+
 from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 from cdm.utilities.network.cdm_number_of_retries_exceeded_exception import CdmNumberOfRetriesExceededException
 from cdm.utilities.network.cdm_timed_out_exception import CdmTimedOutException
@@ -97,7 +96,9 @@ class CdmHttpClient:
 
                         if hasattr(response, 'getheaders'):
                             cdm_response.response_headers = response.getheaders()
-
+            except urllib.error.URLError:
+                has_failed = True
+                raise
             except Exception as exception:
 
                 has_failed = True

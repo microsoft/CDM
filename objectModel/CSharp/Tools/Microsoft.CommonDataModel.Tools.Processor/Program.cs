@@ -90,7 +90,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             {
                 Console.WriteLine("persist corpus");
                 AttributeResolutionDirectiveSet directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "xstructured", "referenceOnly" });
-                CommonDataModelLoader.PersistCorpus(cdmCorpus, directives);
             }
 
             //ListAllTraits(cdmCorpus);
@@ -142,66 +141,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             await seekEntities(manifest);
             if (spew != null)
                 File.WriteAllText(@"c:\temp\allResolved.txt", spew.GetContent(), Encoding.UTF8);
-        }
-
-        public static void ListAllTraits(CdmCorpusDefinition cdmCorpus, AttributeResolutionDirectiveSet directives)
-        {
-            ISet<string> seen = new HashSet<string>();
-            Action<CdmFolderDefinition> seekTraits = null;
-            seekTraits = (folder) =>
-            {
-                if (!string.IsNullOrEmpty(folder.Name) && folder.Documents != null && folder.Documents.Count > 0)
-                {
-                    if (folder.Documents != null)
-                        folder.Documents.AllItems.ForEach(doc =>
-                        {
-                            if (doc.Definitions?.Count > 0)
-                                foreach (var def in doc.Definitions)
-                                {
-                                    if (def.ObjectType == CdmObjectType.EntityDef)
-                                    {
-                                        ResolveOptions resOpt = new ResolveOptions { WrtDoc = doc, Directives = directives };
-                                        var ent = (def as CdmEntityDefinition);
-
-                                        var rtsEnt = ent.FetchResolvedTraits(resOpt);
-                                        rtsEnt.Set.ForEach(rt =>
-                                        {
-                                            string rtName = rt.TraitName;
-                                            if (!seen.Contains(rtName))
-                                            {
-                                                Console.WriteLine(rtName);
-                                                seen.Add(rtName);
-                                            }
-                                        });
-
-                                        var ras = ent.FetchResolvedAttributes(resOpt);
-                                        ras.Set.ForEach(ra =>
-                                        {
-                                            var rtsAtt = ra.ResolvedTraits;
-                                            rtsAtt.Set.ForEach(rt =>
-                                            {
-                                                string rtName = rt.TraitName;
-                                                if (!seen.Contains(rtName))
-                                                {
-                                                    Console.WriteLine(rtName);
-                                                    seen.Add(rtName);
-                                                }
-                                            });
-                                        });
-                                    }
-                                }
-                        });
-                };
-                if (folder.ChildFolders != null)
-                {
-                    folder.ChildFolders.AllItems.ForEach(f =>
-                    {
-                        if (seekTraits != null)
-                            seekTraits(f);
-                    });
-                }
-            };
-            seekTraits(cdmCorpus);
         }
     }
 }

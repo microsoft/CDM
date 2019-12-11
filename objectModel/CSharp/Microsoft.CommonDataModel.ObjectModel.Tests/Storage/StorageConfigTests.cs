@@ -1,12 +1,10 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests
+﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using System.IO;
-    using Newtonsoft.Json.Linq;
-    using Newtonsoft.Json;
 
     [TestClass]
     public class StorageConfigTests
@@ -14,7 +12,7 @@
         /// <summary>
         /// The Storage path.
         /// </summary>
-        private string testsSubpath = Path.Combine("Storage");
+        private string testsSubpath = "Storage";
 
         /// <summary>
         /// Gets local corpus.
@@ -83,6 +81,30 @@
 
             Assert.IsNotNull(cdmManifest);
             Assert.AreEqual(1, unrecognizedAdapters.Count);
+        }
+
+        /// <summary>
+        /// Testing loading and saving resource and system defined adapters.
+        /// </summary>
+        [TestMethod]
+        public async Task TestSystemAndResourceAdapters()
+        {
+            var path = TestHelper.GetExpectedOutputFolderPath(testsSubpath, "TestSystemAndResourceAdapters");
+
+            // Create a corpus to load the config.
+            var cdmCorpus = this.GetLocalCorpus(path);
+
+            var differentCorpus = new CdmCorpusDefinition();
+
+            differentCorpus.Storage.Unmount("cdm");
+
+            differentCorpus.Storage.DefaultNamespace = "local";
+
+            var resultConfig = differentCorpus.Storage.FetchConfig();
+
+            var outputConfig = await cdmCorpus.Storage.NamespaceAdapters["local"].ReadAsync("/config.json");
+
+            Assert.AreEqual(outputConfig, resultConfig);
         }
     }
 }

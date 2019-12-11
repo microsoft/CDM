@@ -247,9 +247,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             for (int i = 0; i < l; i++)
             {
                 ResolvedAttribute resAtt = this.Set[i];
-                ResolvedAttributeSet subSet = resAtt.Target as ResolvedAttributeSet;
                 CdmAttributeContext attCtxToMerge = null;
-                if (subSet?.Set != null)
+                if (resAtt.Target is ResolvedAttributeSet subSet)
                 {
                     if (makingCopy)
                         resAtt = resAtt.Copy();
@@ -483,7 +482,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<ResolvedAttribute> list = new List<ResolvedAttribute>(this.Set);
                 if (nameSort)
                 {
-                    list.Sort((l, r) => string.Compare(l.ResolvedName, r.ResolvedName, StringComparison.OrdinalIgnoreCase));
+                    list.Sort((l, r) => StringUtils.CompareWithOrdinalIgnoreCase(l.ResolvedName, r.ResolvedName));
                 }
 
                 for (int i = 0; i < this.Set.Count; i++)

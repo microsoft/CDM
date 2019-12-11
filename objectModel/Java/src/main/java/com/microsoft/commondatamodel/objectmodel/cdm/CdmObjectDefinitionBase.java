@@ -46,7 +46,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
             .makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), name, true);
     if (resOpt.isSaveResolutionsOnCopy()) {
       cdmObjectRef.setExplicitReference(this);
-      cdmObjectRef.setDocCreatedIn(this.getDocCreatedIn());
+      cdmObjectRef.setInDocument(this.getInDocument());
     }
 
     return cdmObjectRef;
@@ -74,6 +74,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   public void copyDef(final ResolveOptions resOpt, final CdmObjectDefinitionBase copy) {
     copy.setDeclaredPath(this.getDeclaredPath());
     copy.setExplanation(this.getExplanation());
+    copy.getExhibitsTraits().clear();
 
     for (final CdmTraitReference trait : this.getExhibitsTraits()) {
       copy.getExhibitsTraits().add(trait);
@@ -91,7 +92,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
       def = baseCdmObjectReference.fetchObjectDefinition(resOpt);
     }
     if (def != null) {
-      return def.isDerivedFrom(resOpt, seek);
+      return def.isDerivedFrom(seek, resOpt);
     }
     return false;
   }

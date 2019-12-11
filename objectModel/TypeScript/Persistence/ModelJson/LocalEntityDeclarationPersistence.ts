@@ -1,0 +1,182 @@
+import { DataPartitionPersistence, DocumentPersistence } from '.';
+import {
+    CdmCorpusContext,
+    CdmDataPartitionDefinition,
+    CdmDocumentDefinition,
+    CdmFolderDefinition,
+    CdmImport,
+    CdmLocalEntityDeclarationDefinition,
+    CdmManifestDefinition,
+    cdmObjectType,
+    CdmTraitDefinition,
+    CdmTraitReference,
+    copyOptions,
+    resolveOptions,
+    traitToPropertyMap
+} from '../../internal';
+import { Logger } from '../../Utilities/Logging/Logger';
+import * as timeUtils from '../../Utilities/timeUtils';
+import * as extensionHelper from './ExtensionHelper';
+import { Entity, LocalEntity, Partition } from './types';
+
+export class LocalEntityDeclarationPersistence {
+    public static async fromData(
+        ctx: CdmCorpusContext,
+        documentFolder: CdmFolderDefinition,
+        dataObj: LocalEntity,
+        extensionTraitDefList: CdmTraitDefinition[]
+    ): Promise<CdmLocalEntityDeclarationDefinition> {
+        const localEntityDec: CdmLocalEntityDeclarationDefinition =
+            ctx.corpus.MakeObject(cdmObjectType.localEntityDeclarationDef, dataObj.name);
+
+        const localExtensionTraitDefList: CdmTraitDefinition[] = [];
+        const entityDoc: CdmDocumentDefinition = await DocumentPersistence.fromData(
+            ctx,
+            dataObj,
+            extensionTraitDefList,
+            localExtensionTraitDefList
+        );
+
+        if (entityDoc === undefined) {
+            Logger.error(
+                LocalEntityDeclarationPersistence.name,
+                ctx,
+                'There was an error while trying to fetch the entity doc from local entity declaration persistence.'
+            );
+
+            return undefined;
+        }
+
+        documentFolder.documents.push(entityDoc);
+
+        // Entity schema path is the path to the doc containing the entity definition.
+        localEntityDec.entityPath = ctx.corpus.storage.createRelativeCorpusPath(`${entityDoc.atCorpusPath}/${dataObj.name}`, entityDoc);
+
+        localEntityDec.explanation = dataObj.description;
+
+        if (dataObj['cdm:lastFileStatusCheckTime'] !== undefined) {
+            localEntityDec.lastFileStatusCheckTime = new Date(dataObj['cdm:lastFileStatusCheckTime']);
+        }
+
+        if (dataObj['cdm:lastFileModifiedTime'] !== undefined) {
+            localEntityDec.lastFileModifiedTime = new Date(dataObj['cdm:lastFileModifiedTime']);
+
+        }
+
+        if (dataObj['cdm:lastChildFileModifiedTime'] !== undefined) {
+            localEntityDec.lastChildFileModifiedTime = new Date(dataObj['cdm:lastChildFileModifiedTime']);
+        }
+
+        if (dataObj.isHidden === true) {
+            const isHiddenTrait: CdmTraitReference = ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.hidden', true);
+            isHiddenTrait.isFromProperty = true;
+            localEntityDec.exhibitsTraits.push(isHiddenTrait);
+        }
+
+        // Add traits for schema entity info.
+        if (dataObj.schemas) {
+            const t2pm: traitToPropertyMap = new traitToPropertyMap(localEntityDec);
+            t2pm.updatePropertyValue('cdmSchemas', dataObj.schemas);
+        }
+
+        // Data partitions are part of the local entity, add them here.
+        if (dataObj.partitions) {
+            for (const element of dataObj.partitions) {
+                const cdmPartition: CdmDataPartitionDefinition =
+                    await DataPartitionPersistence.fromData(
+                        ctx,
+                        element,
+                        extensionTraitDefList,
+                        localExtensionTraitDefList,
+                        documentFolder
+                    );
+                if (cdmPartition !== undefined) {
+                    localEntityDec.dataPartitions.push(cdmPartition);
+                } else {
+                    Logger.error(
+                        LocalEntityDeclarationPersistence.name,
+                        ctx,
+                        'There was an error while trying to convert model.json partition to cdm local data partition.'
+                    );
+
+                    return undefined;
+                }
+            }
+        }
+
+        const importDocs: CdmImport[] = await extensionHelper.standardImportDetection(
+            ctx,
+            extensionTraitDefList,
+            localExtensionTraitDefList
+        );
+        extensionHelper.addImportDocsToManifest(ctx, importDocs, entityDoc);
+
+        return localEntityDec;
+    }
+
+    public static async toData(
+        instance: CdmLocalEntityDeclarationDefinition,
+        manifest: CdmManifestDefinition,
+        resOpt: resolveOptions,
+        options: copyOptions
+    ): Promise<LocalEntity> {
+        const localEntity: LocalEntity = <LocalEntity>{};
+
+        // Fetch the document from entity schema.
+        const entity: LocalEntity = await DocumentPersistence.toData(instance.entityPath, manifest, resOpt, options, instance.ctx);
+
+        if (entity !== undefined) {
+            const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
+            const isHiddenTrait: CdmTraitReference = t2pm.fetchTraitReference('is.hidden');
+
+            localEntity.name = entity.name;
+            localEntity.attributes = entity.attributes;
+            localEntity.$type = 'LocalEntity';
+            localEntity.description = instance.explanation;
+            localEntity.annotations = entity.annotations;
+            entity['cdm:lastFileStatusCheckTime'] = timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime);
+            entity['cdm:lastFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
+            entity['cdm:lastChildFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
+
+            this.copyExtensionProperties(entity, localEntity);
+
+            if (isHiddenTrait !== undefined) {
+                entity.isHidden = true;
+            }
+
+            const schemas: string[] = t2pm.fetchPropertyValue('cdmSchemas') as string[];
+            if (schemas !== undefined) {
+                entity.schemas = schemas;
+            }
+
+            if (instance.dataPartitions !== undefined && instance.dataPartitions.length > 0) {
+                localEntity.partitions = [];
+                for (const partition of instance.dataPartitions) {
+                    const partiton: Partition = await DataPartitionPersistence.toData(partition, resOpt, options);
+                    if (partition !== undefined) {
+                        localEntity.partitions.push(partiton);
+                    } else {
+                        Logger.error(
+                            LocalEntityDeclarationPersistence.name,
+                            instance.ctx,
+                            'There was an error while trying to convert cdm data partition to model.json partition.'
+                        );
+
+                        return undefined;
+                    }
+                }
+            }
+
+            return localEntity;
+        }
+
+        return undefined;
+    }
+
+    private static copyExtensionProperties(entityFrom: Entity, entityDest: LocalEntity): void {
+        for (const prop of Object.keys(entityFrom)
+            .filter((x: string) => x.indexOf(':') !== -1)) {
+            entityDest[prop] = entityFrom[prop];
+        }
+    }
+}

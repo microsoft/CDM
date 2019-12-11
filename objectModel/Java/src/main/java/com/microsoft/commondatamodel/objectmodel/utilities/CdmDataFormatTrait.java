@@ -4,7 +4,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-enum CdmDataFormatTrait {
+/**
+ * @deprecated This class is extremely likely to be removed in the public interface, and not
+ * meant to be called externally at all. Please refrain from using it.
+ */
+@Deprecated
+public enum CdmDataFormatTrait {
+  IDENTIFIED_BY("is.identifiedBy"),
+  DATA_FORMAT("is.dataFormat"),
   INTEGER("is.dataFormat.integer"),
   NUMERIC_SHAPED("is.dataFormat.numeric.shaped"),
   BOOLEAN("is.dataFormat.boolean"),

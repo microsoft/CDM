@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -30,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets the object declared path.
         /// </summary>
-        string AtCorpusPath { get; set;  }
+        string AtCorpusPath { get; }
 
         /// <summary>
         /// Gets or sets the object type.
@@ -38,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         CdmObjectType ObjectType { get; set; }
 
         /// <summary>
-        /// The object that owns or contains this object
+        /// Gets or sets the object that owns or contains this object.
         /// </summary>
         CdmObject Owner { get; set; }
 
@@ -48,22 +49,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
 
         /// <summary>
-        /// Returns the name of the object if this is a defintion or the name of the 
-        /// referenced object if this is an object reference.
+        /// Returns the name of the object if this is a defintion or the name of the referenced object if this is an object reference.
         /// </summary>
         string FetchObjectDefinitionName();
 
-        [Obsolete()]
         /// <summary>
-        /// Runs the preChildren and postChildren input functions with this object as input, also calls recursively on any objects this one contains
+        /// Runs the preChildren and postChildren input functions with this object as input, also calls recursively on any objects this one contains.
         /// </summary>
         bool Visit(string pathRoot, VisitCallback preChildren, VisitCallback postChildren);
 
         /// <summary>
-        /// returns true if the object (or the referenced object) is an extension in some way from the specified symbol name
+        /// Returns true if the object (or the referenced object) is an extension in some way from the specified symbol name.
         /// </summary>
         bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null);
 
+        /// <summary>
+        /// Validates that the object is configured properly.
+        /// </summary>
         bool Validate();
 
         [Obsolete()]
@@ -72,8 +74,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         [Obsolete()]
         dynamic CopyData(ResolveOptions resOpt = null, CopyOptions options = null);
 
-        CdmObject Copy(ResolveOptions resOpt);
+        /// <summary>
+        /// Creates a copy of this object.
+        /// </summary>
+        /// <param name="resOpt">The resolve options.</param>
+        /// <param name="host"> For CDM internal use. Copies the object INTO the provided host instead of creating a new object instance.</param>
+        CdmObject Copy(ResolveOptions resOpt, CdmObject host = null);
 
+        /// <summary>
+        /// Takes an object definition and returns the object reference that points to the definition.
+        /// </summary>
+        /// <param name="resOpt">The resolve options.</param>
         CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null);
     }
 }

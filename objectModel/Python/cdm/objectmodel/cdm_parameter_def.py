@@ -38,10 +38,16 @@ class CdmParameterDefinition(CdmObjectSimple):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.PARAMETER_DEF
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmParameterDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmParameterDefinition'] = None) -> 'CdmParameterDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmParameterDefinition(self.ctx, self.name)
+        if not host:
+            copy = CdmParameterDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
 
         def_val = None
         if self.default_value:
@@ -63,10 +69,12 @@ class CdmParameterDefinition(CdmObjectSimple):
         return bool(self.name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

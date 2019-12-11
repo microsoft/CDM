@@ -4,10 +4,10 @@ import dateutil.parser
 from cdm.enums import CdmObjectType
 from cdm.utilities import TraitToPropertyMap
 
-from . import utils
+from . import extension_helper, utils
 from .data_partition_persistence import DataPartitionPersistence
 from .document_persistence import DocumentPersistence
-from .types import Entity, LocalEntity
+
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmFolderDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition
@@ -19,11 +19,13 @@ class LocalEntityDeclarationPersistence:
     async def from_data(ctx: 'CdmCorpusContext', document_folder: 'CdmFolderDefinition', data: 'LocalEntity',
                         extension_trait_def_list: List['CdmTraitDefinition']) -> 'CdmLocalEntityDeclarationDefinition':
         local_entity_dec = ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF, data.name)
-        entity_doc = await DocumentPersistence.from_data(ctx, data, extension_trait_def_list)
+
+        local_extension_trait_def_list = []  # type: List[CdmTraitDefinition]
+        entity_doc = await DocumentPersistence.from_data(ctx, data, extension_trait_def_list, local_extension_trait_def_list)
 
         if not entity_doc:
             ctx.logger.error('There was an error while trying to fetch the entity doc from local entity declaration persistence.')
-            return
+            return None
 
         document_folder.documents.append(entity_doc)
 
@@ -52,20 +54,23 @@ class LocalEntityDeclarationPersistence:
 
         # Data partitions are part of the local entity, add them here.
         for element in (data.get('partitions') or []):
-            data_partition = await DataPartitionPersistence.from_data(ctx, element, extension_trait_def_list)
+            data_partition = await DataPartitionPersistence.from_data(ctx, element, extension_trait_def_list, local_extension_trait_def_list, document_folder)
             if data_partition is not None:
                 local_entity_dec.data_partitions.append(data_partition)
             else:
                 ctx.logger.error('There was an error while trying to convert model.json partition to cdm local data partition.')
-                return
+                return None
+
+        import_docs = await extension_helper.standard_import_detection(ctx, extension_trait_def_list, local_extension_trait_def_list)  # type: List[CdmImport]
+        extension_helper.add_import_docs_to_manifest(ctx, import_docs, entity_doc)
 
         return local_entity_dec
 
     @staticmethod
-    async def to_data(instance: 'CdmLocalEntityDeclarationDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions',
+    async def to_data(instance: 'CdmLocalEntityDeclarationDefinition', manifest: 'CdmManifestDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions',
                       ctx: 'CdmCorpusContext') -> 'LocalEntity':
         # Fetch the document from entity schema.
-        entity = await DocumentPersistence.to_data(instance.entity_path, res_opt, options, ctx)
+        entity = await DocumentPersistence.to_data(instance.entity_path, manifest, res_opt, options, ctx)
 
         if not entity:
             return None

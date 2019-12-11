@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="AttributeResolutionGuidance.cs" company="Microsoft">
 //      All rights reserved.
 // </copyright>

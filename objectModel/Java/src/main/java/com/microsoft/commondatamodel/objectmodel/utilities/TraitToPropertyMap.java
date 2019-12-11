@@ -21,7 +21,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -375,7 +375,7 @@ public class TraitToPropertyMap {
                 final List<Object> result = new ArrayList<>();
                 final List<List<String>> rawValues = cEnt.getConstantValues();
                 for (final List<String> rawValue : rawValues) {
-                  final Map<String, String> row = new HashMap<>();
+                  final Map<String, String> row = new LinkedHashMap<>();
                   if (rawValue.size() == 2
                       || (lookup && rawValue.size() == 4)
                       || (corr && rawValue.size() == 5)) {

@@ -36,10 +36,16 @@ class CdmArgumentDefinition(CdmObjectSimple):
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.ARGUMENT_DEF
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmArgumentDefinition':
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmArgumentDefinition'] = None) -> 'CdmArgumentDefinition':
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
 
-        copy = CdmArgumentDefinition(self.ctx, self.name)
+        if not host:
+            copy = CdmArgumentDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
+
         if self.value:
             if isinstance(self.value, CdmObject):
                 copy.value = self.value.copy(res_opt)
@@ -60,11 +66,12 @@ class CdmArgumentDefinition(CdmObjectSimple):
         return bool(self.value)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-
-        if not path:
-            path = path_from + ('value/' if self.value else '')
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = '{}{}'.format(path_from, ('value/' if self.value else ''))
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

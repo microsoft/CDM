@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class CdmTraitDefinition(CdmObjectDefinition):
     """Help in expressing semantic meaning and structural guidance."""
 
-    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_trait: Optional['CdmTraitReference']) -> None:
+    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_trait: Optional['CdmTraitReference'] = None) -> None:
         super().__init__(ctx)
 
         # the trait associated properties.
@@ -64,14 +64,24 @@ class CdmTraitDefinition(CdmObjectDefinition):
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: 'CdmAttributeContext' = None) -> None:
         return None
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTraitDefinition'] = None) -> 'CdmTraitDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
-        copy.associated_properties = self.associated_properties
+        if not host:
+            copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.trait_name = self.trait_name
+
+        if self.extends_trait:
+            copy.extends_trait = self.extends_trait.copy(res_opt)
+
+        copy._all_parameters = None
         copy.elevated = self.elevated
-        copy.extends_trait = None if self.extends_trait is None else self.extends_trait.copy(res_opt)
         copy.ugly = self.ugly
+        copy.associated_properties = self.associated_properties
 
         self._copy_def(res_opt, copy)
         return copy
@@ -188,10 +198,12 @@ class CdmTraitDefinition(CdmObjectDefinition):
         return bool(self.trait_name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.trait_name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.trait_name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

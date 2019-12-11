@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -27,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         string NamedReference { get; set; }
 
         /// <summary>
-        /// Gets or sets if the reference is simple named or not. if true use namedReference else use explicitReference.
+        /// Gets or sets whether the reference is simple named or not. If true, use namedReference, else use explicitReference.
         /// </summary>
         bool SimpleNamedReference { get; set; }
 

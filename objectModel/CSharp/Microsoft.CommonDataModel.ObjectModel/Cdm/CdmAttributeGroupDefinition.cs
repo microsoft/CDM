@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -15,6 +16,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmAttributeGroupDefinition : CdmObjectDefinitionBase, CdmReferencesEntities
     {
+        /// <summary>
+        /// Constructs a CdmAttributeGroupDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="attributeGroupName">The attribute group name.</param>
         public CdmAttributeGroupDefinition(CdmCorpusContext ctx, string attributeGroupName)
                    : base(ctx)
         {
@@ -44,6 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.AttributeGroupDef;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -60,23 +67,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmAttributeGroupDefinition>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmAttributeGroupDefinition copy = new CdmAttributeGroupDefinition(this.Ctx, this.AttributeGroupName)
+            CdmAttributeGroupDefinition copy;
+            if (host == null)
             {
-                AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt)
-            };
+                copy = new CdmAttributeGroupDefinition(this.Ctx, this.AttributeGroupName);
+            }
+            else
+            {
+                copy = host as CdmAttributeGroupDefinition;
+                copy.Ctx = this.Ctx;
+                copy.AttributeGroupName = this.AttributeGroupName;
+                copy.Members.Clear();
+            }
+
+            copy.AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt);
+
             foreach (var newMember in this.Members)
                 copy.Members.Add(newMember);
             this.CopyDef(resOpt, copy);
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.AttributeGroupName);
@@ -109,11 +129,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.AttributeGroupName;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.AttributeGroupName;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 
@@ -132,17 +156,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.AttributeGroupName;
-        }
-
-        internal CdmCollection<CdmAttributeItem> MembersAttributeDefs
-        {
-            get
-            {
-                return this.Members;
-            }
         }
 
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)

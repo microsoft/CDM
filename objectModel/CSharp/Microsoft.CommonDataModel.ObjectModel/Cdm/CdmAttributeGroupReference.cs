@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -11,10 +12,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System;
 
     /// <summary>
-    /// The CDM Ref that references a collection of CdmAttributeItem objects
+    /// The CDM reference that references a collection of CdmAttributeItem objects.
     /// </summary>
     public class CdmAttributeGroupReference : CdmObjectReferenceBase, CdmAttributeItem
     {
+        /// <summary>
+        /// Constructs a CdmAttributeGroupReference.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="attributeGroup">The attribute group to reference.</param>
+        /// <param name="simpleReference">Whether this reference is a simple reference.</param>
         public CdmAttributeGroupReference(CdmCorpusContext ctx, dynamic attributeGroup, bool simpleReference)
             : base(ctx, (object)attributeGroup, simpleReference)
         {
@@ -27,9 +34,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.AttributeGroupRef;
         }
 
-        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference)
+        internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
-            return new CdmAttributeGroupReference(this.Ctx, refTo, simpleReference);
+            if (host == null)
+                return new CdmAttributeGroupReference(this.Ctx, refTo, simpleReference);
+            else
+                return host.CopyToHost(this.Ctx, refTo, simpleReference);
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]

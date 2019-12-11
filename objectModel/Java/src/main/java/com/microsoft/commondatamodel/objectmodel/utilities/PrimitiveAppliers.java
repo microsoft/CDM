@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -302,10 +303,9 @@ public class PrimitiveAppliers {
       boolean visible = true;
       if (appCtx.resAttSource != null) {
         // all others go away
-        visible = false;
-        if (appCtx.resAttSource.getTarget() == appCtx.resGuide.getEntityByReference().getForeignKeyAttribute()) {
-          visible = true;
-        }
+        visible = Objects.equals(
+            appCtx.resAttSource.getTarget(),
+            appCtx.resGuide.getEntityByReference().getForeignKeyAttribute());
       }
       return false; // TODO: A bug? Check in C# and TS
     };
@@ -318,7 +318,11 @@ public class PrimitiveAppliers {
       appCtx.resAttNew.updateResolvedName(sub.getName());
 
       // add the trait that tells them what this means
-      if (sub.getAppliedTraits() == null || sub.getAppliedTraits().getAllItems().stream().noneMatch((atr) -> atr.fetchObjectDefinitionName().equals("is.linkedEntity.identifier"))) {
+      if (sub.getAppliedTraits() == null
+          || sub.getAppliedTraits().getAllItems()
+          .parallelStream()
+          .noneMatch((atr) ->
+              atr.fetchObjectDefinitionName().equals("is.linkedEntity.identifier"))) {
         sub.getAppliedTraits().add("is.linkedEntity.identifier", true);
       }
 
@@ -381,12 +385,14 @@ public class PrimitiveAppliers {
       // get the added attribute and applied trait
       final CdmAttribute sub = appCtx.resGuide.getEntityByReference().getForeignKeyAttribute();
       appCtx.resAttNew.setTarget(sub);
-      appCtx.resAttNew.getApplierState().flexRemove = false;
       // use the default name.
       appCtx.resAttNew.updateResolvedName(sub.getName());
 
       // add the trait that tells them what this means
-      if (sub.getAppliedTraits() == null || sub.getAppliedTraits().getAllItems().stream().noneMatch((atr) -> atr.fetchObjectDefinitionName().equals("is.linkedEntity.identifier")))
+      if (sub.getAppliedTraits() == null
+          || sub.getAppliedTraits().getAllItems()
+          .parallelStream()
+          .noneMatch((atr) -> atr.fetchObjectDefinitionName().equals("is.linkedEntity.identifier")))
         sub.getAppliedTraits().add("is.linkedEntity.identifier", true);
 
       // get the resolved traits from attribute, make a copy to avoid conflicting on the param values

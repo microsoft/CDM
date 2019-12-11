@@ -6,22 +6,22 @@ package com.microsoft.commondatamodel.objectmodel.enums;
  */
 @Deprecated
 public enum CdmPropertyName {
-  VERSION("version"),
-  SOURCE_NAME("sourceName"),
-  DISPLAY_NAME("displayName"),
-  DESCRIPTION("description"),
   CDM_SCHEMAS("cdmSchemas"),
-  SOURCE_ORDERING("sourceOrdering"),
-  IS_PRIMARY_KEY("isPrimaryKey"),
+  DATA_FORMAT("dataFormat"),
+  DEFAULT("defaultValue"),
+  DESCRIPTION("description"),
+  DISPLAY_NAME("displayName"),
   IS_NULLABLE("isNullable"),
+  IS_PRIMARY_KEY("isPrimaryKey"),
   IS_READ_ONLY("isReadOnly"),
-  VALUE_CONSTRAINED_TO_LIST("valueConstrainedToList"),
+  MAXIMUM_LENGTH("maximumLength"),
   MAXIMUM_VALUE("maximumValue"),
   MINIMUM_VALUE("minimumValue"),
-  MAXIMUM_LENGTH("maximumLength"),
-  DATA_FORMAT("dataFormat"),
   PRIMARY_KEY("primaryKey"),
-  DEFAULT("defaultValue");
+  SOURCE_NAME("sourceName"),
+  SOURCE_ORDERING("sourceOrdering"),
+  VALUE_CONSTRAINED_TO_LIST("valueConstrainedToList"),
+  VERSION("version");
 
   private final String propertyName;
 

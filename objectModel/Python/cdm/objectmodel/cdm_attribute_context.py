@@ -1,6 +1,7 @@
 ﻿from typing import cast, List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
+from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.utilities import ResolveOptions
 
 from .cdm_collection import CdmCollection
@@ -9,7 +10,7 @@ from .cdm_object_def import CdmObjectDefinition
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmObject, CdmObjectReference
-    from cdm.resolvedmodel import ResolvedAttributeSet, ResolvedAttributeSetBuilder, ResolvedTraitSet, ResolvedTraitSetBuilder
+    from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedTraitSet, ResolvedTraitSetBuilder
     from cdm.utilities import AttributeContextParameters, FriendlyFormatNode, VisitCallback
 
 
@@ -34,11 +35,19 @@ class CdmAttributeContext(CdmObjectDefinition):
         self.type = None  # type: Optional[CdmAttributeContextType]
 
         # This will get overwritten when parent set.
-        self.at_corpus_path = name  # type: str
+        self._at_corpus_path = name  # type: str
 
         # Internal
 
         self._lowest_order = None  # type: Optional[int]
+
+    @property
+    def at_corpus_path(self) -> Optional[str]:
+        return self._at_corpus_path
+
+    @at_corpus_path.setter
+    def at_corpus_path(self, value):
+        self._at_corpus_path = value
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -50,10 +59,18 @@ class CdmAttributeContext(CdmObjectDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         return None
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmAttributeContext'] = None) -> 'CdmAttributeContext':
+        if not res_opt:
+            ResolveOptions(wrt_doc=self)
 
-        copy = cast('CdmAttributeContext', self.copy_node(res_opt))
+        if not host:
+            copy = self.copy_node(res_opt)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.get_name()
+            copy.contents.clear()
+
         if self.parent:
             copy.parent = cast('CdmObjectReference', self.parent.copy(res_opt))
 
@@ -83,7 +100,11 @@ class CdmAttributeContext(CdmObjectDefinition):
                 new_child = cast('CdmAttributeContext', cast('CdmAttributeContext', child).copy_node(res_opt))
                 if new_node:
                     new_child._update_parent(res_opt, new_node)
-                cast('CdmAttributeContext', child)._copy_attribute_context_tree(res_opt, new_child, ras, att_ctx_set, moniker)
+
+                current_ras = ras
+                if ra and isinstance(ra.target, ResolvedAttributeSet):
+                    current_ras = ra.target
+                cast('CdmAttributeContext', child)._copy_attribute_context_tree(res_opt, new_child, current_ras, att_ctx_set, moniker)
 
         return new_node
 
@@ -93,10 +114,12 @@ class CdmAttributeContext(CdmObjectDefinition):
 
         copy = CdmAttributeContext(self.ctx, self.name)
         copy.type = self.type
-        copy._doc_created_in = res_opt.wrt_doc
+        copy.in_document = res_opt.wrt_doc  # CdmDocumentDefinition
 
         if self.definition:
             copy.definition = self.definition.copy(res_opt)
+
+        copy.contents = CdmCollection(self.ctx, copy, CdmObjectType.ATTRIBUTE_REF)
 
         self._copy_def(res_opt, copy)
 
@@ -121,6 +144,7 @@ class CdmAttributeContext(CdmObjectDefinition):
         # included in the link to the definition.
         if acp.regarding:
             definition = acp.regarding.create_simple_reference(res_opt_copy)
+            definition.in_document = acp.under.in_document  # ref is in same doc as context
             # Now get the traits applied at this reference (applied only, not the ones that are part of the definition
             # of the object) and make them the traits for this context.
             if acp.include_traits:
@@ -129,7 +153,7 @@ class CdmAttributeContext(CdmObjectDefinition):
         under_child = acp.under.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, acp.name)  # type: CdmAttributeContext
         # Need context to make this a 'live' object.
         under_child.ctx = acp.under.ctx
-        under_child._doc_created_in = acp.under._doc_created_in
+        under_child.in_document = acp.under.in_document
         under_child.type = acp.type
         under_child.definition = definition
         # Add traits if there are any.
@@ -156,7 +180,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             self.at_corpus_path = parent.at_corpus_path + '/' + self.name
         parent_ref.explicit_reference = parent
         # Setting this will let the 'localize references' code trace from any document back to where the parent is defined.
-        parent_ref._doc_created_in = parent._doc_created_in
+        parent_ref.in_document = parent.in_document
         parent.contents.append(self)
         self.parent = parent_ref
 
@@ -164,10 +188,12 @@ class CdmAttributeContext(CdmObjectDefinition):
         return bool(self.name) and bool(self.type)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

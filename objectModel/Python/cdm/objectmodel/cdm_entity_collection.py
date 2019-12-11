@@ -1,37 +1,44 @@
-from typing import Optional, Union
+from typing import Optional, Union, List, TYPE_CHECKING
+from cdm.objectmodel import CdmEntityDeclarationDefinition
 
 from cdm.enums import CdmObjectType
 
-from .cdm_collection import CdmCollection, T
-from .cdm_entity_def import CdmEntityDefinition
-from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
+from .cdm_collection import CdmCollection
+if TYPE_CHECKING:
+    from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
+    from .cdm_entity_def import CdmEntityDefinition
 
 
 class CdmEntityCollection(CdmCollection):
     def __init__(self, ctx: 'CdmCorpusContext', owner: 'CdmObject'):
         super().__init__(ctx, owner, CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF)
 
-    def append(self, obj: Union[str, T], entity_path: Optional[str] = None) -> None:
-        if not isinstance(obj, str):
-            if obj.object_type == CdmObjectType.ENTITY_DEF:
-                entity = obj  # type: CdmEntityDefinition
-                if not entity.owner:
-                    raise Exception('Expected entity to have an "Owner" document set. Cannot create entity declaration to add to manifest.')
-
-                obj = self.ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF, entity.get_name())  # type: CdmLocalEntityDeclarationDefinition
-                obj.explanation = entity.explanation
-                obj.entity_path = self.ctx.corpus.storage.create_relative_corpus_path(
-                    '{}/{}'.format(entity.owner.at_corpus_path, entity.get_name()), self.owner.in_document)
-        else:
-            obj = self.ctx.corpus.make_object(self.default_type, obj)
+    def append(self, obj: Union[str, 'CdmEntityDefinition', 'CdmEntityDeclarationDefinition'],
+               entity_path: Optional[str] = None, simple_ref: bool = False) -> 'CdmEntityDeclarationDefinition':
+        if isinstance(obj, str):
+            obj = super().append(obj, simple_ref)
             obj.entity_path = entity_path
+            return obj
 
-        return super().append(obj)
+        if isinstance(obj, CdmEntityDeclarationDefinition):
+            return super().append(obj, simple_ref)
 
-    def remove(self, obj: 'CdmObject'):
-        if obj.object_type == CdmObjectType.ENTITY_DEF:
-            for entity in self:
-                if entity.entity_name == obj.entity_name:
-                    super().remove(entity)
-        else:
-            super().remove(obj)
+        if not obj.owner:
+            raise Exception('Expected entity to have an "Owner" document set. Cannot create entity declaration to add to manifest.')
+
+        entity_declaration = self.ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF,
+                                                         obj.entity_name, simple_ref)  # type: CdmEntityDeclarationDefinition
+        entity_declaration.owner = self.owner
+        entity_declaration.entity_path = self.ctx.corpus.storage.create_relative_corpus_path(
+            '{}/{}'.format(obj.owner.at_corpus_path, obj.entity_name), self.owner.in_document)
+        entity_declaration.explanation = obj.explanation
+        return super().append(entity_declaration)
+
+    def extend(self, entity_list: Union[List['CdmEntityDefinition'], List['CdmEntityDeclarationDefinition']]) -> None:
+        for entity in entity_list:
+            self.append(entity)
+
+    def remove(self, obj: 'CdmEntityDefinition') -> None:
+        for entity in self:
+            if obj.entity_name == entity.entity_name:
+                return super().remove(entity)

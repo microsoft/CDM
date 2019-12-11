@@ -85,8 +85,21 @@ public class CdmImport extends CdmObjectSimple {
    */
   @Override
   @Deprecated
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmImport copy = new CdmImport(getCtx(), corpusPath, moniker);
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmImport copy;
+    if (host == null) {
+      copy = new CdmImport(getCtx(), corpusPath, moniker);
+    } else {
+      copy = (CdmImport) host;
+      copy.setCtx(this.getCtx());
+      copy.setCorpusPath(this.getCorpusPath());
+      copy.setMoniker(this.getMoniker());
+    }
+
     copy.setDoc(doc);
     return copy;
   }

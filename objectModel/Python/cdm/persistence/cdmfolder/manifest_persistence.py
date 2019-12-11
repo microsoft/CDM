@@ -40,9 +40,6 @@ class ManifestPersistence:
         manifest.namespace = namespace
         manifest.explanation = data.get('explanation')
 
-        # set this as the current manifest of the context for this operation
-        ctx.update_document_context(manifest)
-
         if data.schema:
             manifest.schema = data.schema
 
@@ -55,6 +52,10 @@ class ManifestPersistence:
         if manifest.json_schema_semantic_version != '0.9.0':
             # TODO: validate that this is a version we can understand with the OM
             pass
+
+        if data.get('exhibitsTraits'):
+            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
+            manifest.exhibits_traits.extend(exhibits_traits)
 
         if data.get('imports'):
             for import_obj in data.imports:
@@ -83,10 +84,6 @@ class ManifestPersistence:
 
         if data.get('lastChildFileModifiedTime'):
             manifest.last_child_file_modified_time = dateutil.parser.parse(data.lastChildFileModifiedTime)
-
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            manifest.exhibits_traits.extend(exhibits_traits)
 
         if data.get('entities'):
             full_path = '{}:{}'.format(namespace, path) if namespace else path

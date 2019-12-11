@@ -88,12 +88,18 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.declaredPath;
-    if (StringUtils.isNullOrTrimEmpty(path)) {
-      path = pathFrom + (this.getValue() != null ? "value/" : "");
-      this.declaredPath = path;
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.declaredPath;
+
+      if (StringUtils.isNullOrTrimEmpty(path)) {
+        path = pathFrom + (this.getValue() != null ? "value/" : "");
+        this.declaredPath = path;
+      }
     }
-    //trackVisits(path);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -112,8 +118,19 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmArgumentDefinition copy = new CdmArgumentDefinition(this.getCtx(), this.name);
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmArgumentDefinition copy;
+    if (host == null) {
+      copy = new CdmArgumentDefinition(this.getCtx(), this.name);
+    } else {
+      copy = (CdmArgumentDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     if (this.getValue() != null) {
       if (this.getValue() instanceof CdmObject) {

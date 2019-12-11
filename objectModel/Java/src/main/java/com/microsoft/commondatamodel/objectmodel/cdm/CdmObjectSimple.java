@@ -26,7 +26,7 @@ public abstract class CdmObjectSimple extends CdmObjectBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 }

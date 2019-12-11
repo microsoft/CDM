@@ -26,14 +26,14 @@
 
             if (!entitySchemaByName.ContainsKey(obj.FromAttribute.EntityName))
             {
-                Logger.Error(nameof(RelationshipPersistence), ctx, $"Relationship's source entity '{obj.FromAttribute.EntityName}' is not defined.");
+                Logger.Warning(nameof(RelationshipPersistence), ctx, $"Relationship's source entity '{obj.FromAttribute.EntityName}' is not defined.");
 
                 return null;
             }
 
             if (!entitySchemaByName.ContainsKey(obj.ToAttribute.EntityName))
             {
-                Logger.Error(nameof(RelationshipPersistence), ctx, $"Relationship's target entity '{obj.ToAttribute.EntityName}' is not defined.");
+                Logger.Warning(nameof(RelationshipPersistence), ctx, $"Relationship's target entity '{obj.ToAttribute.EntityName}' is not defined.");
 
                 return null;
             }

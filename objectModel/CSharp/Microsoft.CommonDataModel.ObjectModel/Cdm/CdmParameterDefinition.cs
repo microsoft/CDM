@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -22,7 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public dynamic DefaultValue { get; set; }
 
         /// <summary>
-        /// Gets or sets if the parameter is required.
+        /// Gets or sets whether the parameter is required.
         /// </summary>
         public bool Required { get; set; }
 
@@ -31,11 +32,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmDataTypeReference DataTypeRef { get; set; }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.Name;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -51,12 +54,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.DataTypeRef;
         }
 
+        /// <summary>
+        /// Constructs a CdmParameterDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The parameter name.</param>
         public CdmParameterDefinition(CdmCorpusContext ctx, string name)
             : base(ctx)
         {
             this.Name = name;
             this.ObjectType = CdmObjectType.ParameterDef;
-            this.AtCorpusPath = "";
         }
 
         [Obsolete]
@@ -70,14 +77,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             return CdmObjectBase.CopyData<CdmParameterDefinition>(this, resOpt, options);
         }
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmParameterDefinition copy = new CdmParameterDefinition(this.Ctx, this.Name);
+            CdmParameterDefinition copy;
+            if (host == null)
+            {
+                copy = new CdmParameterDefinition(this.Ctx, this.Name);
+            }
+            else
+            {
+                copy = host as CdmParameterDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+            }
 
             dynamic defVal = null;
             if (this.DefaultValue != null)
@@ -93,6 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.DataTypeRef = (this.DataTypeRef != null ? this.DataTypeRef.Copy(resOpt) : null) as CdmDataTypeReference;
             return copy;
         }
+
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.Name);
@@ -101,11 +122,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.Name;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.Name;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 

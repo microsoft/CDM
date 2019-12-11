@@ -69,5 +69,9 @@ public class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
     childFolder.setCorpus(this.getOwner().getCorpus());
     childFolder.setNamespace(this.getOwner().getNamespace());
     childFolder.setFolderPath(this.getOwner().getFolderPath() + childFolder.getName() + "/");
+
+    // TODO: At this point we should also propagate the root adapter into the child folder
+    // and all its sub-folders and contained documents. For now, don't add things to the
+    // folder unless it's tied to an adapter root.
   }
 }

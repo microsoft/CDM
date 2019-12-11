@@ -3,6 +3,7 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -21,6 +22,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the data type extended by this data type.
         /// </summary>
         public CdmDataTypeReference ExtendsDataType { get; set; }
+
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.DataTypeName;
@@ -34,6 +37,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
+        /// <summary>
+        /// Constructs a CdmDataTypeDefinition.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="dataTypeName">The data type name.</param>
+        /// <param name="extendsDataType">The data type extended by this data type.</param>
         public CdmDataTypeDefinition(CdmCorpusContext ctx, string dataTypeName, CdmDataTypeReference extendsDataType = null)
             : base(ctx)
         {
@@ -54,22 +63,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmDataTypeDefinition>(this, resOpt, options);
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmDataTypeDefinition copy = new CdmDataTypeDefinition(this.Ctx, this.DataTypeName, null)
+            CdmDataTypeDefinition copy;
+            if (host == null)
             {
-                ExtendsDataType = (CdmDataTypeReference)this.ExtendsDataType?.Copy(resOpt)
-            };
+                copy = new CdmDataTypeDefinition(this.Ctx, this.DataTypeName, null);
+            }
+            else
+            {
+                copy = host as CdmDataTypeDefinition;
+                copy.Ctx = this.Ctx;
+                copy.DataTypeName = this.DataTypeName;
+            }
+
+            copy.ExtendsDataType = (CdmDataTypeReference)this.ExtendsDataType?.Copy(resOpt);
 
             this.CopyDef(resOpt, copy);
             return copy;
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.DataTypeName);
@@ -78,11 +98,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.DataTypeName;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.DataTypeName;
+                    this.DeclaredPath = path;
+                }
             }
             //trackVisits(path);
 
@@ -97,6 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt)
         {
             if (resOpt == null)

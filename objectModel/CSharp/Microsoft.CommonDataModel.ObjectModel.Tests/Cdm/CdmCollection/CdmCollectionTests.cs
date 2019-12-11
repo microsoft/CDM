@@ -59,11 +59,11 @@
             Assert.AreEqual(2, collection.Count);
 
             bool removed = collection.Remove(addedDocument);
-            Assert.AreEqual(true, removed);
+            Assert.IsTrue(removed);
 
             // try to remove a second time.
             removed = collection.Remove(addedDocument);
-            Assert.AreEqual(false, removed);
+            Assert.IsFalse(removed);
             Assert.AreEqual(1, collection.Count);
         }
 
@@ -136,7 +136,7 @@
         [TestMethod]
         public void TestCdmCollectionChangeMakesDocumentDirty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\nothing");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\nothing");
             var collection = new CdmCollection<CdmEntityReference>(manifest.Ctx, manifest, Enums.CdmObjectType.EntityRef);
 
             manifest.IsDirty = false;
@@ -169,7 +169,7 @@
         }
 
         /// <summary>
-        /// For an entity, it creates a document that will containt the entity.
+        /// For an entity, it creates a document that will contain the entity.
         /// </summary>
         /// <param name="cdmCorpus">The corpus everything belongs to.</param>
         /// <param name="entity">The entity we want a document for.</param>

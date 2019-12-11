@@ -39,10 +39,6 @@ public interface CdmObject {
   String getAtCorpusPath();
 
   /**
-   * Sets the object declared path.
-   */
-  void setAtCorpusPath(final String atCorpusPath);
-  /**
    * Gets or sets the object type.
    */
   CdmObjectType getObjectType();
@@ -75,31 +71,23 @@ public interface CdmObject {
   String fetchObjectDefinitionName();
 
   /**
-   * returns true if the object (or the referenced object) is an extension in some way from the specified symbol name
-   * @param resOpt
-   * @return
+   * Returns true if the object (or the referenced object) is an extension in some way from the
+   * specified symbol name.
    */
-  default boolean isDerivedFrom(ResolveOptions resOpt) {
-    return this.isDerivedFrom(resOpt, null);
+  default boolean isDerivedFrom(String baseDef) {
+    return this.isDerivedFrom(baseDef, null);
   }
 
-
   /**
-   * Returns true if the object (or the referenced object) is an extension in some way from the specified symbol name.
+   * Returns true if the object (or the referenced object) is an extension in some way from the
+   * specified symbol name.
    */
-  boolean isDerivedFrom(ResolveOptions resOpt, String baseDef);
+  boolean isDerivedFrom(String baseDef, ResolveOptions resOpt);
 
   /**
    * Runs the preChildren and postChildren input functions with this object as input, also calls
    * recursively on any objects this one contains.
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    */
-  @Deprecated
   boolean visit(String pathRoot, VisitCallback preChildren, VisitCallback postChildren);
 
   /**
@@ -200,25 +188,36 @@ public interface CdmObject {
                                                   AttributeContextParameters acpInContext);
 
   /**
+   * Creates a copy of this object.
+   * Uses the default {@link ResolveOptions}. {@link CdmObject} is null by default.
    *
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
+   * @return A copy of the object.
+   * @see #copy(ResolveOptions, CdmObject).
    */
-  @Deprecated
   default CdmObject copy() {
     return this.copy(new ResolveOptions(this));
   }
 
   /**
+   * Creates a copy of this object. {@link CdmObject} is null by default.
    *
-   * @param resOpt
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt The resolve options.
+   * @return A copy of the object.
+   * @see #copy(ResolveOptions, CdmObject).
    */
-  @Deprecated
-  CdmObject copy(ResolveOptions resOpt);
+  default CdmObject copy(ResolveOptions resOpt) {
+    return this.copy(resOpt, null);
+  }
+
+  /**
+   * Creates a copy of this object.
+   *
+   * @param resOpt The resolve options.
+   * @param host   For CDM internal use. Copies the object INTO the provided host instead of
+   *               creating a new object instance.
+   * @return A copy of the object.
+   */
+  CdmObject copy(ResolveOptions resOpt, CdmObject host);
 
   /**
    *

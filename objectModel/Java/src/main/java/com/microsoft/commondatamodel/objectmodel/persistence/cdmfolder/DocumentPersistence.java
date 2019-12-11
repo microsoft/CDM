@@ -23,9 +23,6 @@ public class DocumentPersistence {
     doc.setFolderPath(path);
     doc.setNamespace(nameSpace);
 
-    // set this as the current doc of the context for this operation
-    ctx.updateDocumentContext(doc);
-
     if (!Strings.isNullOrEmpty(obj.getSchema())) {
       doc.setSchema(obj.getSchema());
     }
@@ -58,8 +55,6 @@ public class DocumentPersistence {
         }
       }
     }
-
-    ctx.updateDocumentContext(null);
 
     return doc;
   }

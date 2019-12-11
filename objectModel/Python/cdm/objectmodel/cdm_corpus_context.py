@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------
 
 import logging
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.utilities.resolve_context_scope import ResolveContextScope
 
@@ -16,8 +16,6 @@ class CdmCorpusContext:
     def __init__(self, corpus: 'CdmCorpusDefinition') -> None:
         self.cache = {}  # type: Dict[str, Any]
         self.corpus = corpus  # type: CdmCorpusDefinition
-        self.corpus_path_root = None  # type: Optional[str]
-        self.current_doc = None  # type: Optional[CdmDocumentDefinition]
         self.current_scope = None  # type: Optional[ResolveContextScope]
         self.errors = None  # type: Optional[int]
         self.relative_path = None  # type: Optional[str]
@@ -48,12 +46,6 @@ class CdmCorpusContext:
     def update_cache(self, for_obj: 'CdmObject', res_opt: 'ResolveOptions', kind: str, value: Any) -> None:
         key = self._fetch_cache_key(for_obj, res_opt, kind)
         self.cache[key] = value
-
-    def update_document_context(self, current_doc: 'CdmDocumentDefinition' = None, corpus_path_root: str = None) -> None:
-        if current_doc:
-            self.current_doc = cast('CdmDocumentDefinition', current_doc)
-        if corpus_path_root:
-            self.corpus_path_root = corpus_path_root
 
     def update_logging_options(self, level=logging.WARNING, handler=None):
         """Configure logger, including level and handler specified by python logging module."""

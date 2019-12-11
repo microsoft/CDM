@@ -34,6 +34,10 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         """the attribute members."""
         return self._members
 
+    def _add_attribute_def(self, attribute_def: 'CdmAttributeItem') -> 'CdmAttributeItem':
+        self.members.append(attribute_def)
+        return attribute_def
+
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext']) -> 'ResolvedAttributeSetBuilder':
         from cdm.resolvedmodel import ResolvedAttributeSetBuilder
         from cdm.utilities import AttributeContextParameters
@@ -81,16 +85,24 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         self._construct_resolved_traits_def(None, rtsb, res_opt)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmAttributeGroupDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmAttributeGroupDefinition'] = None) -> 'CdmAttributeGroupDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmAttributeGroupDefinition(self.ctx, self.attribute_group_name)
+        if not host:
+            copy = CdmAttributeGroupDefinition(self.ctx, self.attribute_group_name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.attribute_group_name = self.attribute_group_name
+            copy.members.clear()
+
         copy.attribute_context = self.attribute_context.copy(res_opt) if self.attribute_context else None
+
         for att in self.members:
             copy.members.append(att.copy())
 
         self._copy_def(res_opt, copy)
-
         return copy
 
     def get_name(self) -> str:
@@ -114,10 +126,12 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return bool(self.attribute_group_name)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + self.attribute_group_name
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + self.attribute_group_name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

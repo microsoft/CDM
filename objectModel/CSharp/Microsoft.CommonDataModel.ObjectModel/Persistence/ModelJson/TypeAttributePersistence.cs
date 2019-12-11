@@ -1,18 +1,19 @@
 ﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The type attribute persistence.
     /// </summary>
     class TypeAttributePersistence
     {
-        public static async Task<CdmTypeAttributeDefinition> FromData(CdmCorpusContext ctx, Attribute obj, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmTypeAttributeDefinition> FromData(CdmCorpusContext ctx, Attribute obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var attribute = ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, obj.Name);
             // Do a conversion between CDM data format and model.json data type.
@@ -29,7 +30,7 @@
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, attribute.AppliedTraits);
 
-            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, attribute.AppliedTraits, extensionTraitDefList);
+            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, attribute.AppliedTraits, extensionTraitDefList, localExtensionTraitDefList);
 
             return attribute;
         }

@@ -12,7 +12,7 @@
         {
             var trait = GenerateTrait();
 
-            var argumentDefinition = new CdmArgumentDefinition(null, null);
+            var argumentDefinition = new CdmArgumentDefinition(trait.Ctx, null);
 
             trait.ResolvedArguments = true;
             Assert.AreEqual(0, trait.Arguments.Count);
@@ -20,7 +20,7 @@
             Assert.AreEqual(argumentDefinition, addedArgument);
             Assert.AreEqual(1, trait.Arguments.Count);
             Assert.AreEqual(argumentDefinition, trait.Arguments[0]);
-            Assert.AreEqual(false, trait.ResolvedArguments);
+            Assert.IsFalse(trait.ResolvedArguments);
             Assert.AreEqual(trait, trait.Arguments[0].Owner);
 
             trait.ResolvedArguments = true;
@@ -36,7 +36,7 @@
         {
             var trait = GenerateTrait();
             
-            var toInsert = new CdmArgumentDefinition(null, null);
+            var toInsert = new CdmArgumentDefinition(trait.Ctx, null);
 
             var arg1 = trait.Arguments.Add("arg1");
             var arg2 = trait.Arguments.Add("arg2");
@@ -45,7 +45,7 @@
 
             trait.Arguments.Insert(1, toInsert);
             Assert.AreEqual(3, trait.Arguments.Count);
-            Assert.AreEqual(false, trait.ResolvedArguments);
+            Assert.IsFalse(trait.ResolvedArguments);
             Assert.AreEqual(arg1, trait.Arguments[0]);
             Assert.AreEqual(toInsert, trait.Arguments[1]);
             Assert.AreEqual(arg2, trait.Arguments[2]);
@@ -58,14 +58,14 @@
             var trait = GenerateTrait();
             trait.ResolvedArguments = true;
             var argList = new List<CdmArgumentDefinition>();
-            var argumentDefinition = new CdmArgumentDefinition(null, null)
+            var argumentDefinition = new CdmArgumentDefinition(trait.Ctx, null)
             {
                 Name = "Arg1",
                 Value = 123
             };
             argList.Add(argumentDefinition);
             var valOfArg2 = CdmCollectionHelperFunctions.GenerateManifest("C://Nothing");
-            argumentDefinition = new CdmArgumentDefinition(null, null)
+            argumentDefinition = new CdmArgumentDefinition(trait.Ctx, null)
             {
                 Name = "Arg2",
                 Value = valOfArg2
@@ -75,7 +75,7 @@
             trait.Arguments.AddRange(argList);
 
             Assert.AreEqual(2, trait.Arguments.Count);
-            Assert.AreEqual(false, trait.ResolvedArguments);
+            Assert.IsFalse(trait.ResolvedArguments);
             Assert.AreEqual("Arg1", trait.Arguments[0].Name);
             Assert.AreEqual(123, trait.Arguments[0].Value);
             Assert.AreEqual(trait, trait.Arguments[0].Owner);
@@ -95,7 +95,7 @@
             // This is what is needed by current code.
             Assert.AreEqual("ValueOfTrait", value);
 
-            var argumentDefinition = new CdmArgumentDefinition(null, null);
+            var argumentDefinition = new CdmArgumentDefinition(trait.Ctx, null);
 
             trait.ResolvedArguments = true;
             trait.Arguments.Add(argumentDefinition);
@@ -124,6 +124,25 @@
             Assert.AreEqual("ThirdArgumentName", trait.Arguments[2].Name);
             Assert.AreEqual("ThirdArgumentValue", trait.Arguments[2].Value);
             Assert.AreEqual(trait, trait.Arguments[2].Owner);
+        }
+
+        [TestMethod]
+        public void TestCdmCollectionAddPopulatesInDocumentWithVisit()
+        {
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\nothing");
+
+            var entityReference = new CdmLocalEntityDeclarationDefinition(manifest.Ctx, "entityName");
+
+            var trait = entityReference.ExhibitsTraits.Add("theTrait");
+
+            var argument = trait.Arguments.Add("GreatArgumentName", "GreatValue");
+
+            manifest.Entities.Add(entityReference);
+
+            Assert.AreEqual(manifest, manifest.InDocument);
+            Assert.AreEqual(manifest, entityReference.InDocument);
+            Assert.AreEqual(manifest, trait.InDocument);
+            Assert.AreEqual(manifest, argument.InDocument);
         }
 
         private CdmTraitReference GenerateTrait()

@@ -19,21 +19,28 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
     super(ctx);
     this.setName(name);
     this.setObjectType(CdmObjectType.ParameterDef);
-    this.setAtCorpusPath("");
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.getName();
-      this.setDeclaredPath(path);
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (Strings.isNullOrEmpty(path)) {
+        path = pathFrom + this.getName();
+        this.setDeclaredPath(path);
+      }
     }
+
     //trackVisits(path);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
@@ -119,8 +126,19 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmParameterDefinition copy = new CdmParameterDefinition(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmParameterDefinition copy;
+    if (host == null) {
+      copy = new CdmParameterDefinition(this.getCtx(), this.getName());
+    } else {
+      copy = (CdmParameterDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     Object defVal = null;
     if (this.getDefaultValue() != null) {

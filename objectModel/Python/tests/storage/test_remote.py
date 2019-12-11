@@ -19,7 +19,9 @@ class RemoteStorageAdapterTestCase(unittest.TestCase):
             'fineart': 'https://fineartschool.net'
         }
 
-        self.adapter = RemoteAdapter(hosts=hosts, http_config={'number_of_retries': 0, 'timeout': 1000})
+        self.adapter = RemoteAdapter(hosts=hosts)
+        self.adapter.number_of_retries = 0
+        self.adapter.timeout = 1000
 
     def test_make_adapter_path(self):
 

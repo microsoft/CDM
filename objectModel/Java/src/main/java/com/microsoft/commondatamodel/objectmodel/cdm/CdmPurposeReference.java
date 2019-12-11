@@ -28,8 +28,33 @@ public class CdmPurposeReference extends CdmObjectReferenceBase {
    */
   @Override
   @Deprecated
-  public CdmObjectReferenceBase copyRefObject(final ResolveOptions resOpt, final Object refTo, final boolean simpleReference) {
-    return new CdmPurposeReference(this.getCtx(), refTo, simpleReference);
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference) {
+    return this.copyRefObject(resOpt, refTo, simpleReference, null);
+  }
+
+  /**
+   * @param resOpt
+   * @param refTo
+   * @param simpleReference
+   * @return
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Override
+  @Deprecated
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference,
+      CdmObjectReferenceBase host) {
+    if (host == null) {
+      return new CdmPurposeReference(this.getCtx(), refTo, simpleReference);
+    } else {
+      return host.copyToHost(this.getCtx(), refTo, simpleReference);
+    }
   }
 
   /**

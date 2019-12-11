@@ -40,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             List<ResolvedEntityReferenceSide> list = new List<ResolvedEntityReferenceSide>(this.Referenced);
             if (nameSort)
             {
-                list.Sort((l, r) => string.Compare(l.Entity?.GetName(), r.Entity?.GetName(), StringComparison.OrdinalIgnoreCase));
+                list.Sort((l, r) => StringUtils.CompareWithOrdinalIgnoreCase(l.Entity?.GetName(), r.Entity?.GetName()));
             }
 
             for (int i = 0; i < this.Referenced.Count; i++)

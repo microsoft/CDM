@@ -14,18 +14,16 @@
     /// </summary>
     public class DocumentPersistence
     {
-        public static async Task<CdmDocumentDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmDocumentDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var docName = $"{obj.Name}.cdm.json";
             var document = ctx.Corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, docName);
 
             // import at least foundations
-            var foundationsImport = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
-            foundationsImport.CorpusPath = "cdm:/foundations.cdm.json";
-            document.Imports.Add(foundationsImport);
+            document.Imports.Add("cdm:/foundations.cdm.json");
 
-            var entity = await EntityPersistence.FromData(ctx, obj, extensionTraitDefList);
- 
+            var entity = await EntityPersistence.FromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList);
+
             if (entity == null)
             {
                 Logger.Error(nameof(DocumentPersistence), ctx, "There was an error while trying to convert a model.json entity to the CDM entity.");
@@ -50,13 +48,11 @@
             return document;
         }
 
-        public static async Task<LocalEntity> ToData(dynamic documentObjectOrPath, ResolveOptions resOpt, CopyOptions options, CdmCorpusContext ctx)
+        public static async Task<LocalEntity> ToData(dynamic documentObjectOrPath, CdmManifestDefinition manifest, ResolveOptions resOpt, CopyOptions options, CdmCorpusContext ctx)
         {
             if (documentObjectOrPath is string)
             {
-                string absCorpusPath = ctx.Corpus.Storage.CreateAbsoluteCorpusPath(documentObjectOrPath);
-
-                if (await ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(absCorpusPath) is CdmEntityDefinition cdmEntity)
+                if (await ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(documentObjectOrPath) is CdmEntityDefinition cdmEntity)
                 {
                     var entity = await EntityPersistence.ToData(cdmEntity, resOpt, options, ctx);
                     if (cdmEntity.Owner != null && cdmEntity.Owner is CdmDocumentDefinition document)
@@ -66,7 +62,13 @@
                             entity.Imports = new List<Import>();
                             foreach (var element in document.Imports)
                             {
-                                entity.Imports.Add(CdmFolder.ImportPersistence.ToData(element, resOpt, options));
+                                var import = CdmFolder.ImportPersistence.ToData(element, resOpt, options);
+                                // the corpus path in the imports are relative to the document where it was defined.
+                                // when saving in model.json the documents are flattened to the manifest level
+                                // so it is necessary to recalculate the path to be relative to the manifest.
+                                var absolutePath = ctx.Corpus.Storage.CreateAbsoluteCorpusPath(import.CorpusPath, document);
+                                import.CorpusPath = ctx.Corpus.Storage.CreateRelativeCorpusPath(absolutePath, manifest);
+                                entity.Imports.Add(import);
                             }
                         }
                     }

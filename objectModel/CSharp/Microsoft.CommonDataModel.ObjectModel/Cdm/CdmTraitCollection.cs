@@ -1,16 +1,22 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Cdm
+﻿//-----------------------------------------------------------------------
+// <copyright file="CdmTraitCollection.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using System.Collections.Generic;
 
     /// <summary>
-    /// <see cref="CdmCollection"/> customized for <see cref="CdmTraitReference"/>
+    /// <see cref="CdmCollection"/> customized for <see cref="CdmTraitReference"/>.
     /// </summary>
     public class CdmTraitCollection : CdmCollection<CdmTraitReference>
     {
         /// <summary>
-        /// Constructs a CdmTraitCollection by using parent constructor and TraitRef as defaultObectType
+        /// Constructs a CdmTraitCollection by using the parent constructor and TraitRef as the default type.
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <param name="owner">The object this collection is a member of.</param>
@@ -27,11 +33,11 @@
         }
 
         /// <summary>
-        /// Creates a <see cref="CdmTraitReference"/> based on a <see cref="CdmTraitDefinition"/> and adds it to the collection
+        /// Creates a <see cref="CdmTraitReference"/> based on a <see cref="CdmTraitDefinition"/> and adds it to the collection.
         /// </summary>
         /// <param name="traitDefinition">The trait definition used to create the trait reference.</param>
-        /// <param name="simpleRef">Used to set trait.SimpleNamedReference in constructor.</param>
-        /// <returns>The created Trait Reference that was added to the CdmCollection.</returns>
+        /// <param name="simpleRef">Used to set trait.SimpleNamedReference in the constructor.</param>
+        /// <returns>The created trait reference that was added to the collection.</returns>
         public CdmTraitReference Add(CdmTraitDefinition traitDefinition, bool simpleRef = false)
         {
             this.ClearCache();
@@ -43,7 +49,7 @@
         /// Adds a <see cref="CdmTraitReference"/> to this collection.
         /// </summary>
         /// <param name="trait">The trait to be added.</param>
-        /// <returns></returns>
+        /// <returns>The created trait reference that was added to the collection.</returns>
         public new CdmTraitReference Add(CdmTraitReference trait)
         {
             this.ClearCache();
@@ -60,10 +66,10 @@
 
         /// <summary>
         /// Removes the <see cref="CdmTraitReference"/> that has the same name as <see cref="CdmTraitDefinition"/>.
-        /// If multiple matches, removes the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, removes the last one that is not from property.
+        /// If there are multiple matches, removes the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, removes the last trait that is not from a property.        
         /// </summary>
-        /// <param name="traitDefToRemove"><see cref="CdmTraitDefinition"/> whose reference needs to be removed from the collection.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
+        /// <param name="traitDefToRemove"><see cref="CdmTraitDefinition"/> whose reference to remove from the collection.</param>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
         /// <returns>Whether the operation completed successfuly.</returns>
         public bool Remove(CdmTraitDefinition traitDefToRemove, bool onlyFromProperty = false)
         {
@@ -72,12 +78,11 @@
         }
 
         /// <summary>
-        /// Removes trait with the specified name from the collection.
-        /// If multiple matches, removes the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, removes the last one that is not from property.
-        /// the first one by prioritizing traits that are from properties even if "onlyFromProperty" parameter is false.
+        /// Removes the trait with the specified name from the collection.
+        /// If there are multiple matches, removes the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, removes the last trait that is not from a property.
         /// </summary>
         /// <param name="traitName">The name of the trait to be removed.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
         /// <returns>Whether a trait was removed from the collection.</returns>
         public bool Remove(string traitName, bool onlyFromProperty = false)
         {
@@ -90,6 +95,7 @@
                 {
                     if (trait.IsFromProperty)
                     {
+                        PropagateInDocument(trait, null);
                         return this.AllItems.Remove(trait);
                     }
                     foundTraitNotFromProperty = trait;
@@ -97,6 +103,7 @@
             }
             if (onlyFromProperty == false && foundTraitNotFromProperty != null)
             {
+                PropagateInDocument(foundTraitNotFromProperty, null);
                 return this.AllItems.Remove(foundTraitNotFromProperty);
             }
             return false;
@@ -104,10 +111,10 @@
 
         /// <summary>
         /// Removes a trait with the same name as the trait provided.
-        /// If multiple matches, removes the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, removes the last one that is not from property.
+        /// If there are multiple matches, removes the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, removes the last trait that is not from a property.
         /// </summary>
         /// <param name="traitToRemove">The trait to be removed.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
         /// <returns>Whether a trait was removed from the collection.</returns>
         public bool Remove(CdmTraitReference traitToRemove, bool onlyFromProperty = false)
         {
@@ -130,12 +137,12 @@
         }
 
         /// <summary>
-        /// The index of a trait reference with the same name as the trait definition provided.
-        /// If multiple matches, retrieves the index of the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, the index of the last one that is not from property.
+        /// Retrieves the index of a trait reference with the same name as the trait definition provided.
+        /// If there are multiple matches, returns the index of the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, returns the index of the last trait that is not from a property.
         /// </summary>
         /// <param name="traitDefinition">The trait definition associated with the trait reference we want to retrieve the index of.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
-        /// <returns>The index of the trait reference or -1 if no such trait exists in the colleciton.</returns>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
+        /// <returns>The index of the trait reference or -1 if no such trait exists in the collection.</returns>
         public int IndexOf(CdmTraitDefinition traitDefinition, bool onlyFromProperty = false)
         {
             var traitName = traitDefinition.TraitName;
@@ -143,11 +150,11 @@
         }
 
         /// <summary>
-        /// The index of a trait reference with the given name.
-        /// If multiple matches, retrieves the index of the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, the index of the last one that is not from property.
+        /// Retrieves the index of a trait reference with the given name.
+        /// If there are multiple matches, returns the index of the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, returns the index of the last trait that is not from a property.
         /// </summary>
         /// <param name="traitName">The trait name associated with the trait reference we want to retrieve the index of.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
         /// <returns>The index of the trait reference or -1 if no such trait exists in the collection.</returns>
         public int IndexOf(string traitName, bool onlyFromProperty = false)
         {
@@ -171,12 +178,12 @@
         }
 
         /// <summary>
-        /// The index in the collection of a trait with the same name as the trait provided.
-        /// If multiple matches, retrieves the index of the first one that is from property, or if there isn't any from property and "onlyFromProperty" is false, the index of the last one that is not from property.
+        /// Retrieves the index of a trait with the same name as the trait provided.
+        /// If there are multiple matches, returns the index of the first trait that is from a property. If there aren't any from properties and "onlyFromProperty" is false, returns the index of the last trait that is not from a property.
         /// </summary>
         /// <param name="trait">The trait we want the index of.</param>
-        /// <param name="onlyFromProperty">Whether function should only be applied for traits that originate from properties.</param>
-        /// <returns>The index of the tarit reference or -1 if no such trait exists in the collection.</returns>
+        /// <param name="onlyFromProperty">Whether the function should only be applied for traits that originate from properties.</param>
+        /// <returns>The index of the trait reference or -1 if no such trait exists in the collection.</returns>
         public int IndexOf(CdmTraitReference trait, bool onlyFromProperty)
         {
             var traitName = trait.FetchObjectDefinitionName();
@@ -184,9 +191,9 @@
         }
 
         /// <summary>
-        /// Adds a the elements of a list of <see cref="CdmTraitDefinition"/> to the collection, after converting them to <see cref="CdmTraitReference"/>
+        /// Adds the elements of a list of <see cref="CdmTraitDefinition"/> to the collection, after converting them to <see cref="CdmTraitReference"/>.
         /// </summary>
-        /// <param name="traitList">The list of trait definitionsn used to create trait references that will be added to the collection.</param>
+        /// <param name="traitList">The list of trait definitions used to create trait references that will be added to the collection.</param>
         /// <param name="simpleRef">Parameter is unused for this collection. Kept for consistency with other CdmCollections.</param>
         public void AddRange(IEnumerable<CdmTraitDefinition> traitList, bool simpleRef = false)
         {
@@ -201,14 +208,14 @@
         /// </summary>
         /// <param name="traitReference">The trait reference.</param>
         /// <param name="traitDefinition">The trait name.</param>
-        /// <returns>Whether the trait reference has the given name.
+        /// <returns>Whether the trait reference has the given name.</returns>
         private bool Corresponds(CdmTraitReference traitReference, string traitName)
         {
             return string.Equals(traitReference.FetchObjectDefinitionName(), traitName);
         }
 
         /// <summary>
-        /// Clears the Trait Cache of the owner if owner object contains such a cache.
+        /// Clears the trait cache of the owner if the owner object contains such a cache.
         /// </summary>
         private void ClearCache()
         {

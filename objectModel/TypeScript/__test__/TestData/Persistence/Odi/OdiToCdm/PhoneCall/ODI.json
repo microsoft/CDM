@@ -1,0 +1,366 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "phoneCallInteractionEventId",
+          "phoneCallActualDateTimeEnd",
+          "phoneCallActualDateTimeBegin",
+          "actualDateTimeUTCOffset",
+          "phoneCallDescription",
+          "fromId",
+          "leftVoiceMail",
+          "phoneNumberFrom",
+          "phoneNumberTo"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallInteractionEvent",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnInstance": "phoneCallInteractionEvent0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:InteractionEvent",
+              "opm:columnIndex": 5,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallActualDateTimeEnd",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallActualDateTimeBegin",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallActualDateTimeUTCOffset",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallDescription",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:from",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnInstance": "from0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Person",
+              "opm:columnIndex": 10,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallLeftVoiceMail",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 11,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallPhoneNumberFrom",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 12,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:phoneCallPhoneNumberTo",
+            "opm:columnEntity": "this:PhoneCall",
+            "opm:columnIndex": 13,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__PhoneCall",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:PhoneCall"
+              },
+              {
+                "@id": "this:PhoneCall",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:phoneCallTo",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:phoneCallInteractionEvent",
+                    "olm:dataType": "this:InteractionEvent",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:phoneCallActualDateTimeEnd",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The actual date and time for when the interaction was completed",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:phoneCallActualDateTimeEnd",
+                    "olm:title": "Actual Date Time End"
+                  },
+                  {
+                    "@id": "this:phoneCallActualDateTimeBegin",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:description": "The actual date and time for when the interaction was started",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:phoneCallActualDateTimeBegin",
+                    "olm:title": "Actual Date Time Begin"
+                  },
+                  {
+                    "@id": "this:phoneCallActualDateTimeUTCOffset",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "The UTC offset of time values in this PhoneCall",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:actualDateTimeUTCOffset",
+                    "olm:title": "Actual Date Time UTC Offset"
+                  },
+                  {
+                    "@id": "this:phoneCallDescription",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "A description about the objective or primary topic of the interaction.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:phoneCallDescription",
+                    "olm:title": "Description"
+                  },
+                  {
+                    "@id": "this:phoneCallFrom",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:phoneCallLeftVoiceMail",
+                    "olm:dataType": "olm:Boolean",
+                    "olm:description": "Indicates if a voice mail message was left.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:leftVoiceMail",
+                    "olm:title": "Left Voice Mail"
+                  },
+                  {
+                    "@id": "this:phoneCallPhoneNumberFrom",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The Phone Number called from.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:phoneNumberFrom",
+                    "olm:title": "Phone Number From"
+                  },
+                  {
+                    "@id": "this:phoneCallPhoneNumberTo",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The Phone Number called.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:phoneNumberTo",
+                    "olm:title": "Phone Number To"
+                  }
+                ],
+                "olm:description": "A phone call type of interaction.",
+                "olm:sameAs": "odic:PhoneCall",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "PhoneCall"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

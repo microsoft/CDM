@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.UUID;
 import org.json.JSONException;
@@ -125,7 +125,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
     final CdmCorpusDefinition cdmCorpus = this.getLocalCorpus(inputPath);
     final CdmManifestDefinition cdmManifest =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-            "SerializerTesting-model.json",
+            "model.json",
             cdmCorpus.getStorage().fetchRootFolder("local")
         ).join();
     final Model obtainedModel = ManifestPersistence.toData(cdmManifest, null, null).join();
@@ -141,7 +141,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
           serialize(obtainedModel));
     }
     final String obtainedModelJson = serialize(obtainedModel);
-    final String originalModelJson = TestHelper.getInputFileContent(
+    final String originalModelJson = TestHelper.getExpectedOutputFileContent(
         TESTS_SUBPATH,
         "testModelJsonExtensibility",
         "SerializerTesting-model.json");
@@ -152,8 +152,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
   /**
    * Reads Model.Json, converts to manifest and compares files from obtained manifest to stored files.
    */
-  @Test(enabled = false)
-  // TODO-BQ: 2019-10-18 Test temporarily disabled due to bug 222478
+  @Test
   public void modelJsonExtensibilityManifestDocumentsTest()
       throws InterruptedException, IOException, JSONException {
     final String inputPath = TestHelper.getInputFolderPath(
@@ -266,7 +265,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
       relationship.setName("Name of Relationship no " + i);
       relationship.setDescription("Description of Relationship no " + i);
 
-      relationship.setOverrideExtensionFields(new HashMap<String, Object>() {{
+      relationship.setOverrideExtensionFields(new LinkedHashMap<String, Object>() {{
         put(UUID.randomUUID().toString(), extensionFields);
       }});
 

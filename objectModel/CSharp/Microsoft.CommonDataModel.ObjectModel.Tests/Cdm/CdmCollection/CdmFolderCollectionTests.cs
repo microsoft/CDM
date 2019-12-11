@@ -50,7 +50,7 @@
             childFolders.Insert(1, childFolder);
 
             Assert.AreEqual(3, childFolders.Count);
-            Assert.AreEqual(true, manifest.IsDirty);
+            Assert.IsTrue(manifest.IsDirty);
             Assert.AreEqual(child1, childFolders[0]);
             Assert.AreEqual(childFolder, childFolders[1]);
             Assert.AreEqual(child2, childFolders[2]);

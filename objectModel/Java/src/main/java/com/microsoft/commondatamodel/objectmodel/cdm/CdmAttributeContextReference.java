@@ -15,18 +15,34 @@ public class CdmAttributeContextReference extends CdmObjectReferenceBase {
   }
 
   /**
-   *
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
-  public CdmObjectReferenceBase copyRefObject(final ResolveOptions resOpt, final Object refTo, final boolean simpleReference) {
-    return new CdmAttributeContextReference(this.getCtx(), refTo.toString());
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference) {
+    return this.copyRefObject(resOpt, refTo, simpleReference, null);
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Override
+  @Deprecated
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference,
+      final CdmObjectReferenceBase host) {
+    if (host == null) {
+      return new CdmAttributeContextReference(this.getCtx(), refTo.toString());
+    } else {
+      return host.copyToHost(this.getCtx(), refTo, simpleReference);
+    }
   }
 
   /**

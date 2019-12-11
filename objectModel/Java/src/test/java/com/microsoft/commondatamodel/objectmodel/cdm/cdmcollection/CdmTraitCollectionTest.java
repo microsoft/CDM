@@ -4,7 +4,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,7 +24,7 @@ public class CdmTraitCollectionTest {
         "Name of other Trait",
         null);
 
-    manifest.setTraitCache(new HashMap<>());
+    manifest.setTraitCache(new LinkedHashMap<>());
 
     final CdmTraitReference addedTrait = manifest.getExhibitsTraits().add(trait);
     final CdmTraitReference addedOtherTrait = manifest.getExhibitsTraits().add(otherTrait);
@@ -49,7 +49,7 @@ public class CdmTraitCollectionTest {
     final CdmTraitReference otherTrait =
         new CdmTraitReference(manifest.getCtx(), "Name of other Trait", false, false);
 
-    manifest.setTraitCache(new HashMap<>());
+    manifest.setTraitCache(new LinkedHashMap<>());
 
     manifest.getExhibitsTraits().add(0, trait);
     manifest.getExhibitsTraits().add(0, otherTrait);
@@ -96,7 +96,7 @@ public class CdmTraitCollectionTest {
     manifest.getExhibitsTraits().add(otherTrait);
 
     Assert.assertEquals(2, manifest.getExhibitsTraits().size());
-    manifest.setTraitCache(new HashMap<>());
+    manifest.setTraitCache(new LinkedHashMap<>());
     boolean removed = manifest.getExhibitsTraits().remove(trait);
     Assert.assertTrue(removed);
     Assert.assertEquals(1, manifest.getExhibitsTraits().size());
@@ -307,7 +307,7 @@ public class CdmTraitCollectionTest {
 
     manifest.getExhibitsTraits().add("trait1");
     manifest.getExhibitsTraits().add("trait2");
-    manifest.setTraitCache(new HashMap<>());
+    manifest.setTraitCache(new LinkedHashMap<>());
 
     manifest.getExhibitsTraits().clear();
     Assert.assertEquals(0, manifest.getExhibitsTraits().getCount());

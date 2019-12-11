@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetB
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
@@ -24,7 +25,10 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     super(ctx);
     this.setObjectType(CdmObjectType.AttributeGroupDef);
     this.attributeGroupName = attributeGroupName;
-    this.members = new CdmCollection<>(this.getCtx(), this, CdmObjectType.TypeAttributeDef);
+    this.members = new CdmCollection<>(
+        this.getCtx(),
+        this,
+        CdmObjectType.TypeAttributeDef);
   }
 
   @Override
@@ -33,19 +37,24 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
+    String path = "";
 
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.attributeGroupName;
-      this.setDeclaredPath(path);
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+
+      if (StringUtils.isNullOrTrimEmpty(path)) {
+        path = pathFrom + this.attributeGroupName;
+        this.setDeclaredPath(path);
+      }
     }
-    //trackVisits(path);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -98,19 +107,6 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     return this.members;
   }
 
-  /**
-   *
-   * @param attributeDef
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  CdmAttributeItem addAttributeDef(final CdmAttributeItem attributeDef) {
-    this.members.add(attributeDef);
-    return attributeDef;
-  }
-
   @Override
   public ResolvedEntityReferenceSet fetchResolvedEntityReferences(final ResolveOptions resOpt) {
     final ResolvedEntityReferenceSet rers = new ResolvedEntityReferenceSet(resOpt);
@@ -142,8 +138,22 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmAttributeGroupDefinition copy = new CdmAttributeGroupDefinition(this.getCtx(), this.getAttributeGroupName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmAttributeGroupDefinition copy;
+    if (host == null) {
+      copy = new CdmAttributeGroupDefinition(this.getCtx(), this.getAttributeGroupName());
+    } else {
+      copy = (CdmAttributeGroupDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setAttributeGroupName(this.getAttributeGroupName());
+      copy.getMembers().clear();
+    }
+
+
     if (this.getAttributeContext() != null) {
       copy.setAttributeContext((CdmAttributeContextReference) this.getAttributeContext().copy(resOpt));
     }

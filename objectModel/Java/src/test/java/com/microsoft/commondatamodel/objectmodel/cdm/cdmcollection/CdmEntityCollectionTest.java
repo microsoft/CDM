@@ -58,21 +58,6 @@ public class CdmEntityCollectionTest {
   }
 
   /**
-   * Tests whether manifest.getEntities().add()
-   * throws an exception when the associated document is not added.
-   */
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testManifestCannotAddEntityWithoutDoc() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
-
-    final CdmEntityDefinition entity =
-        new CdmEntityDefinition(manifest.getCtx(), "entityName", null);
-
-    manifest.getEntities().add(entity);
-  }
-
-  /**
    * Tests whether the EntityDefinition can be passed directly to manifest.getEntities().add().
    */
   @Test

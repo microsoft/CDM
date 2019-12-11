@@ -58,10 +58,17 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         pass
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmConstantEntityDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmConstantEntityDefinition'] = None) -> 'CdmConstantEntityDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmConstantEntityDefinition(self.ctx, self.constant_entity_name)
+        if not host:
+            copy = CdmConstantEntityDefinition(self.ctx, self.constant_entity_name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.constant_entity_name = self.constant_entity_name
+
         copy.entity_shape = self.entity_shape.copy(res_opt)
         copy.constant_values = self.constant_values  # is a deep copy needed?
         self._copy_def(res_opt, copy)
@@ -141,10 +148,12 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         return bool(self.entity_shape)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
-        if not path:
-            path = path_from + (self.constant_entity_name if self.constant_entity_name else '(unspecified)')
-            self._declared_path = path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = path_from + (self.constant_entity_name if self.constant_entity_name else '(unspecified)')
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

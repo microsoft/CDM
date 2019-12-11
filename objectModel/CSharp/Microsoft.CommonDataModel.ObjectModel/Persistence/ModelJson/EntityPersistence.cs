@@ -13,7 +13,7 @@
     /// </summary>
     class EntityPersistence
     {
-        public static async Task<CdmEntityDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, CdmCollection<CdmTraitDefinition> extensionTraitDefList)
+        public static async Task<CdmEntityDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var entity = ctx.Corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, obj.Name);
             entity.Description = obj.Description;
@@ -24,7 +24,7 @@
             {
                 foreach (dynamic attribute in obj.Attributes)
                 {
-                    var typeAttribute = await TypeAttributePersistence.FromData(ctx, attribute, extensionTraitDefList);
+                    var typeAttribute = await TypeAttributePersistence.FromData(ctx, attribute, extensionTraitDefList, localExtensionTraitDefList);
                     if (typeAttribute != null)
                     {
                         entity.Attributes.Add(typeAttribute);
@@ -36,7 +36,7 @@
                     }
                 }
             }
-            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, entity.ExhibitsTraits, extensionTraitDefList);
+            ExtensionHelper.ProcessExtensionFromJson(ctx, obj, entity.ExhibitsTraits, extensionTraitDefList, localExtensionTraitDefList);
 
             return entity;
         }

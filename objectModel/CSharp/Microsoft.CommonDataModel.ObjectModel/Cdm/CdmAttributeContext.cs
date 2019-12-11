@@ -20,7 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmAttributeContextType? Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the attribute context parent.
+        /// Gets or sets the attribute context's parent.
         /// </summary>
         public CdmObjectReference Parent { get; set; }
 
@@ -30,9 +30,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmObjectReference Definition { get; set; }
 
         /// <summary>
-        /// Gets or sets the attribute context content list.
+        /// Gets or sets the attribute context's content list.
         /// </summary>
         public CdmCollection<CdmObject> Contents { get; set; }
+
+        /// <summary>
+        /// For attribute context we don't follow standard path calculation behavior.
+        /// </summary>
+        public new string AtCorpusPath { get; set; }
 
         /// <summary>
         /// Gets or sets the attribute context name.
@@ -40,6 +45,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Name { get; set; }
         internal int? LowestOrder { get; set; }
 
+        /// <summary>
+        /// Constructs a CdmAttributeContext. 
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="name">The attribute context name.</param>
         public CdmAttributeContext(CdmCorpusContext ctx, string name)
             : base(ctx)
         {
@@ -56,11 +66,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.AttributeContextDef;
         }
 
+        /// <inheritdoc />
         public override string GetName()
         {
             return this.Name;
         }
 
+        /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -72,7 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Returns a copy of the current node. if refMoniker is set, definition refs will get a moniker added
+        /// Returns a copy of the current node. If refMoniker is set, definition refs will get a moniker added.
         /// </summary>
         public CdmObject CopyNode(ResolveOptions resOpt)
         {
@@ -80,11 +92,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext copy = new CdmAttributeContext(this.Ctx, this.Name)
             {
                 Type = this.Type,
-                DocCreatedIn = resOpt.WrtDoc as CdmDocumentDefinition
+                InDocument = resOpt.WrtDoc as CdmDocumentDefinition
             };
             if (this.Definition != null)
+            {
                 copy.Definition = (CdmObjectReference)this.Definition.Copy(resOpt);
-            copy.Contents = new CdmCollection<CdmObject>(this.Ctx, this, CdmObjectType.AttributeRef);
+            }
+            copy.Contents = new CdmCollection<CdmObject>(this.Ctx, copy, CdmObjectType.AttributeRef);
 
             this.CopyDef(resOpt, copy);
             return copy;
@@ -113,39 +127,49 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // now copy the children
-            if (this.Contents?.Count > 0)
+            foreach (CdmObject child in this.Contents)
             {
-                foreach (CdmObject child in this.Contents)
+                CdmAttributeContext newChild = null;
+                if (child is CdmAttributeContext childAsAttributeContext)
                 {
-                    CdmAttributeContext newChild = null;
-                    if (child is CdmAttributeContext childAsAttributeContext)
-                    {
-                        newChild = childAsAttributeContext.CopyNode(resOpt) as CdmAttributeContext;
+                    newChild = childAsAttributeContext.CopyNode(resOpt) as CdmAttributeContext;
 
-                        if (newNode != null)
-                        {
-                            newChild.SetParent(resOpt, newNode);
-                        }
-                        ResolvedAttributeSet currentRas = ras;
-                        if (ra?.Target is ResolvedAttributeSet)
-                        {
-                            currentRas = ra.Target;
-                        }
-                        childAsAttributeContext.CopyAttributeContextTree(resOpt, newChild, currentRas, attCtxSet, moniker);
+                    if (newNode != null)
+                    {
+                        newChild.SetParent(resOpt, newNode);
                     }
+                    ResolvedAttributeSet currentRas = ras;
+                    if (ra?.Target is ResolvedAttributeSet)
+                    {
+                        currentRas = ra.Target;
+                    }
+                    childAsAttributeContext.CopyAttributeContextTree(resOpt, newChild, currentRas, attCtxSet, moniker);
                 }
             }
             return newNode;
         }
 
-        public override CdmObject Copy(ResolveOptions resOpt = null)
+        /// <inheritdoc />
+        public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmAttributeContext copy = (CdmAttributeContext)this.CopyNode(resOpt);
+            CdmAttributeContext copy;
+            if (host == null)
+            {
+                copy = (CdmAttributeContext)this.CopyNode(resOpt);
+            }
+            else
+            {
+                copy = host as CdmAttributeContext;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.GetName();
+                copy.Contents.Clear();
+            }
+
             if (this.Parent != null)
                 copy.Parent = (CdmObjectReference)this.Parent.Copy(resOpt);
 
@@ -165,6 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.InstanceFromData<CdmAttributeContext, dynamic>(ctx, obj);
         }
 
+        /// <inheritdoc />
         public override bool Validate()
         {
             return !string.IsNullOrEmpty(this.Name) && this.Type != null;
@@ -179,11 +204,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = this.DeclaredPath;
-            if (string.IsNullOrEmpty(path))
+            string path = string.Empty;
+            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
             {
-                path = pathFrom + this.Name;
-                this.DeclaredPath = path;
+                path = this.DeclaredPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = pathFrom + this.Name;
+                    this.DeclaredPath = path;
+                }
             }
 
             if (preChildren?.Invoke(this, path) == true)
@@ -236,6 +265,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (acp.Regarding != null)
             {
                 definition = acp.Regarding.CreateSimpleReference(resOptCopy);
+                definition.InDocument = acp.under.InDocument; // ref is in same doc as context
                 // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
                 // and make them the traits for this context
                 if (acp.IncludeTraits)
@@ -245,7 +275,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext underChild = acp.under.Ctx.Corpus.MakeObject<CdmAttributeContext>(CdmObjectType.AttributeContextDef, acp.Name);
             // need context to make this a 'live' object
             underChild.Ctx = acp.under.Ctx;
-            underChild.DocCreatedIn = (acp.under as CdmAttributeContext).DocCreatedIn;
+            underChild.InDocument = (acp.under as CdmAttributeContext).InDocument;
             underChild.Type = acp.type;
             underChild.Definition = definition;
             // add traits if there are any
@@ -274,7 +304,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             parentRef.ExplicitReference = parent;
             // setting this will let the 'localize references' code trace from any document back to where the parent is defined
-            parentRef.DocCreatedIn = parent.DocCreatedIn;
+            parentRef.InDocument = parent.InDocument;
             CdmCollection<CdmObject> parentContents = parent.Contents;
             parentContents.Add(this);
             this.Parent = parentRef;

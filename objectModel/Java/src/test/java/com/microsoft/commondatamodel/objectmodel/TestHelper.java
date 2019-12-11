@@ -27,7 +27,7 @@ public class TestHelper {
   /**
    * Whether tests should write debugging files or not.
    */
-  public static final boolean doesWriteTestDebuggingFiles = false;
+  public static final boolean doesWriteTestDebuggingFiles = true;
 
   /**
    * Gets the input folder path associated with specified test.
@@ -92,10 +92,24 @@ public class TestHelper {
   public static String getExpectedOutputFileContent(final String testSubpath, final String testName, final String fileName)
           throws IOException, InterruptedException {
     final String pathOfExpectedOutputFolder = getExpectedOutputFolderPath(testSubpath, testName);
-    final File pathOfExpectedOutputFile = new File(new File(pathOfExpectedOutputFolder), fileName);
+    try {
+      return readFileContent(pathOfExpectedOutputFolder, fileName);
+    } catch (IllegalArgumentException e) {
+      throw new RuntimeException(
+          "Was unable to find the output file for test "
+              + testName
+              + ", file name = "
+              + fileName);
+    }
+  }
 
-    Assert.assertTrue(pathOfExpectedOutputFile.exists(),
-            String.format("Was unable to find the output file for test %s, file name = %s", testName, fileName));
+  public static String readFileContent(final String filePath, final String fileName)
+      throws IOException {
+    final File pathOfExpectedOutputFile = new File(new File(filePath), fileName);
+
+    if (!pathOfExpectedOutputFile.exists()) {
+      throw new IllegalArgumentException("Was unable to find the file name = " + fileName);
+    }
 
     return FileReadWriteUtil.readFileToString(pathOfExpectedOutputFile.toString());
   }

@@ -35,12 +35,23 @@ class CdmAttributeResolutionGuidance_EntityByReference:
 
 
 class CdmAttributeResolutionGuidance_SelectsSubAttribute:
-    # used to indicate either 'one' or 'all' sub-attributes selected.
+    # used to indicate either 'one', 'all' or 'some' sub-attributes selected.
+    # When 'one' the selectedTypeAttribute will hold the name selected per record
+    # when 'some' the selects_some_take_names array can contain an ordered list of the attributes to take from
+    # the source entity. attributes will be added to the containing entity in the same order as this list
+    # or the selects_some_avoid_names array can be used to filter out specific attribute names.
+    # If both exist only the selects_some_avoid_names will be used
     selects = None  # type: Optional[str]
 
     # The supplied attribute definition will be added to the Entity to hold a description of
     # the single attribute that was selected from the sub-entitywhen selects is 'one'
     selected_type_attribute = None  # type: Optional[CdmTypeAttributeDefinition]
+
+    # An ordered list of strings, one for each attribute name to take from the source entity.
+    selects_some_take_names = []  # type: List[str]
+
+    # A list of strings, one for each attribute name to NOT take from the source entity.
+    selects_some_avoid_names = []  # type: List[str]
 
 
 class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
@@ -178,6 +189,18 @@ class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
                 result.selects_sub_attribute.selects = start_with.selects_sub_attribute.selects
                 if add_in.selects_sub_attribute.selects is not None:
                     result.selects_sub_attribute.selects = add_in.selects_sub_attribute.selects
+                if start_with.selects_sub_attribute.selects_some_take_names or add_in.selects_sub_attribute.selects_some_take_names:
+                    result.selects_sub_attribute.selects_some_take_names = []
+                    if start_with.selects_sub_attribute.selects_some_take_names is not None:
+                        result.selects_sub_attribute.selects_some_take_names.extend(start_with.selects_sub_attribute.selects_some_take_names)
+                    if add_in.selects_sub_attribute.selects_some_take_names is not None:
+                        result.selects_sub_attribute.selects_some_take_names.extend(add_in.selects_sub_attribute.selects_some_take_names)
+                if start_with.selects_sub_attribute.selects_some_avoid_names or add_in.selects_sub_attribute.selects_some_avoid_names:
+                    result.selects_sub_attribute.selects_some_avoid_names = []
+                    if start_with.selects_sub_attribute.selects_some_avoid_names is not None:
+                        result.selects_sub_attribute.selects_some_avoid_names.extend(start_with.selects_sub_attribute.selects_some_avoid_names)
+                    if add_in.selects_sub_attribute.selects_some_avoid_names is not None:
+                        result.selects_sub_attribute.selects_some_avoid_names.extend(add_in.selects_sub_attribute.selects_some_avoid_names)
             else:
                 result.selects_sub_attribute = add_in.selects_sub_attribute
         else:
@@ -185,20 +208,28 @@ class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
 
         return result
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmAttributeResolutionGuidanceDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmAttributeResolutionGuidanceDefinition'] = None) -> 'CdmAttributeResolutionGuidanceDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+        if not host:
+            copy = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.expansion = None
+            copy.entity_by_reference = None
+            copy.selects_sub_attribute = None
 
         copy.remove_attribute = self.remove_attribute
         if self.imposed_directives:
             copy.imposed_directives = self.imposed_directives[:]
         if self.removed_directives:
             copy.removed_directives = self.removed_directives[:]
-
         copy.add_supporting_attribute = self.add_supporting_attribute
         copy.cardinality = self.cardinality
         copy.rename_format = self.rename_format
+
         if self.expansion:
             copy.expansion = CdmAttributeResolutionGuidance_Expansion()
             copy.expansion.starting_ordinal = self.expansion.starting_ordinal
@@ -209,13 +240,15 @@ class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
             copy.entity_by_reference = CdmAttributeResolutionGuidance_EntityByReference()
             copy.entity_by_reference.always_include_foreign_key = self.entity_by_reference.always_include_foreign_key
             copy.entity_by_reference.reference_only_after_depth = self.entity_by_reference.reference_only_after_depth
-            copy.entity_by_reference.foreign_key_attribute = self.entity_by_reference.foreign_key_attribute
             copy.entity_by_reference.allow_reference = self.entity_by_reference.allow_reference
+            copy.entity_by_reference.foreign_key_attribute = self.entity_by_reference.foreign_key_attribute
 
         if self.selects_sub_attribute:
             copy.selects_sub_attribute = CdmAttributeResolutionGuidance_SelectsSubAttribute()
-            copy.selects_sub_attribute.selected_type_attribute = self.selects_sub_attribute.selected_type_attribute
             copy.selects_sub_attribute.selects = self.selects_sub_attribute.selects
+            copy.selects_sub_attribute.selected_type_attribute = self.selects_sub_attribute.selected_type_attribute
+            copy.selects_sub_attribute.selects_some_take_names = self.selects_sub_attribute.selects_some_take_names[:]
+            copy.selects_sub_attribute.selects_some_avoid_names = self.selects_sub_attribute.selects_some_avoid_names[:]
 
         return copy
 

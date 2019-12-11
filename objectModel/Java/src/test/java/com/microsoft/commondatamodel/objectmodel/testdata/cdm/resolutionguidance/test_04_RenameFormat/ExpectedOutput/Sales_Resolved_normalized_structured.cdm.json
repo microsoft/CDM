@@ -9,20 +9,6 @@
   "definitions": [
     {
       "entityName": "Sales_Resolved_normalized_structured.cdm.json",
-      "exhibitsTraits": [
-        {
-          "traitReference": "is.CDM.entityVersion",
-          "arguments": [
-            "0.9"
-          ]
-        },
-        {
-          "traitReference": "is.identifiedBy",
-          "arguments": [
-            "Sales_Resolved_normalized_structured.cdm.json/(resolvedAttributes)/SalesId"
-          ]
-        }
-      ],
       "attributeContext": {
         "type": "entity",
         "name": "Sales_Resolved_normalized_structured.cdm.json",
@@ -70,6 +56,15 @@
           },
           {
             "type": "attributeDefinition",
+            "name": "SalesTypeAttribute",
+            "parent": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesTypeAttribute",
+            "contents": [
+              "Sales_Resolved_normalized_structured.cdm.json/hasAttributes/SalesTypeAttribute"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
             "name": "SalesProductId",
             "parent": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json",
             "definition": "resolvedFrom/Sales/hasAttributes/SalesProductId",
@@ -79,20 +74,6 @@
                 "name": "Product",
                 "parent": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json/SalesProductId",
                 "definition": "resolvedFrom/Product",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.CDM.entityVersion",
-                    "arguments": [
-                      "0.9"
-                    ]
-                  },
-                  {
-                    "traitReference": "is.identifiedBy",
-                    "arguments": [
-                      "Product/(resolvedAttributes)/ProductId"
-                    ]
-                  }
-                ],
                 "contents": [
                   {
                     "type": "entityReferenceExtends",
@@ -153,15 +134,10 @@
         {
           "name": "SalesId",
           "appliedTraits": [
-            "is.dataFormat.integer",
-            {
-              "traitReference": "is.identifiedBy",
-              "arguments": [
-                "Sales_Resolved_normalized_structured.cdm.json/(resolvedAttributes)/SalesId"
-              ]
-            }
+            "is.dataFormat.integer"
           ],
           "attributeContext": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json/SalesId",
+          "isPrimaryKey": true,
           "dataFormat": "Int32"
         },
         {
@@ -181,6 +157,16 @@
           ],
           "attributeContext": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json/SalesAmount",
           "dataFormat": "Decimal"
+        },
+        {
+          "name": "SalesTypeAttribute",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Sales_Resolved_normalized_structured.cdm.json/attributeContext/Sales_Resolved_normalized_structured.cdm.json/SalesTypeAttribute",
+          "dataFormat": "String"
         },
         {
           "attributeGroupReference": {
@@ -228,7 +214,8 @@
             ]
           }
         }
-      ]
+      ],
+      "version": "0.9"
     }
   ]
 }

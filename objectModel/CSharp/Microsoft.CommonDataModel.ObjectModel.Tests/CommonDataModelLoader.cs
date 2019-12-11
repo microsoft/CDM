@@ -164,14 +164,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             await validateStep(CdmValidationStep.Start).ConfigureAwait(false);
         }
 
-        public static void PersistCorpus(CdmCorpusDefinition cdmCorpus, AttributeResolutionDirectiveSet directives, CopyOptions options = null)
-        {
-            if (cdmCorpus?.ChildFolders?.Count == 1)
-            {
-                PersistCorpusFolder(cdmCorpus.RootPath, cdmCorpus.ChildFolders[0], directives, options);
-            }
-        }
-
         public static void PersistCorpusFolder(string rootPath, CdmFolderDefinition cdmFolder, AttributeResolutionDirectiveSet directiveSet, CopyOptions options = null)
         {
             if (cdmFolder != null)

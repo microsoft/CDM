@@ -16,9 +16,22 @@ convert_type_to_expected_string = {
     dict: 'object',
     OrderedDict: 'object',
     bool: 'boolean',
-    list: 'array',
+    list: 'object',
     type(None): 'object'
 }
+
+
+EXTENSION_TRAIT_NAME_PREFIX = 'is.extension.'
+EXTENSION_DOC_NAME = 'custom.extension.cdm.json'
+
+# Set of extensions that are officially supported and have their definitions in the extensions folder.
+SUPPORTED_EXTENSIONS = {"pbi"}
+
+
+def add_import_docs_to_manifest(ctx: 'CdmCorpusContext', import_docs: List['CdmImport'], document: 'CdmManifestDefinition'):
+    for import_doc in import_docs:
+        if not list(filter(lambda import_present: import_present.corpus_path == import_doc.corpus_path, document.imports)):
+            document.imports.append(import_doc)
 
 
 async def fetch_def_doc(ctx: 'CdmCorpusContext', file_name: str) -> None:
@@ -28,35 +41,51 @@ async def fetch_def_doc(ctx: 'CdmCorpusContext', file_name: str) -> None:
     path = '/extensions/{}'.format(file_name)
     document = await ctx.corpus.fetch_object_async(path, ctx.corpus.storage.fetch_root_folder('cdm'))
 
-    cached_def_docs[file_name] = document
+    if document is not None:
+        cached_def_docs[file_name] = document
 
     return document
 
 
-async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def_list: List['CdmTraitDefinition']) -> Optional[List['CdmImport']]:
+async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def_list: List['CdmTraitDefinition'],
+                                    local_extension_trait_def_list: List['CdmTraitDefinition']) -> Optional[List['CdmImport']]:
     imports_list = []
-    trait_index = 0
+    trait_index = len(local_extension_trait_def_list) - 1
+    has_custom_extension_import = False
 
-    while trait_index < len(extension_trait_def_list):
-        extension_trait_def = extension_trait_def_list[trait_index]
+    while trait_index >= 0:
+        extension_trait_def = local_extension_trait_def_list[trait_index]
 
-        if not extension_trait_def.trait_name.startswith('is.extension.'):
-            ctx.logger.error('Invalid extension trait name %s', extension_trait_def.trait_name)
+        if not extension_trait_def.trait_name or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
+            ctx.logger.error('Invalid extension trait name %s, expected prefix %s', extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX)
             return None
 
-        # TODO: Magic number is?
-        extension_breakdown = extension_trait_def.trait_name[13:].split(':')
+        extension_breakdown = extension_trait_def.trait_name[len(EXTENSION_TRAIT_NAME_PREFIX):].split(':')
 
         if len(extension_breakdown) > 1:
             extension_name = extension_breakdown[0]
+
+            if extension_name not in SUPPORTED_EXTENSIONS:
+                if not has_custom_extension_import:
+                    import_object = ctx.corpus.make_object(CdmObjectType.IMPORT)
+                    import_object.corpus_path = EXTENSION_DOC_NAME
+                    imports_list.append(import_object)
+                    has_custom_extension_import = True
+                trait_index -= 1
+                continue
+
             file_name = '{}.extension.cdm.json'.format(extension_name)
             file_corpus_path = 'cdm:/extensions/{}'.format(file_name)
             extension_doc = await fetch_def_doc(ctx, file_name)
 
+            # if no document was found for that extensionName, the trait does not have a document with it's definition.
+            # trait will be kept in extensionTraitDefList (a document with its definition will be created locally)
             if not extension_doc:
-                trait_index += 1
+                trait_index -= 1
                 continue
 
+            # there is a document with extensionName, now we search for the trait in the document.
+            # if we find it, we remove the trait from extensionTraitDefList and add the document to imports.
             matching_traits = [
                 definition
                 for definition in extension_doc.definitions
@@ -66,30 +95,27 @@ async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def
             if matching_traits:
                 parameter_list = matching_traits[0].parameters
 
-                # TODO: This needs some heavy testing
-                if all(
-                        any(def_parameter.name == extension_parameter.name for def_parameter in parameter_list)
-                        for extension_parameter in extension_trait_def.parameters):
-                    extension_trait_def_list.pop(trait_index)
-                    trait_index -= 1
+                if all(any(def_parameter.name == extension_parameter.name for def_parameter in parameter_list)
+                       for extension_parameter in extension_trait_def.parameters):
+                    extension_trait_def_list.remove(extension_trait_def)
 
                     if not any(import_doc.corpus_path == file_corpus_path for import_doc in imports_list):
                         import_object = ctx.corpus.make_object(CdmObjectType.IMPORT)
                         import_object.corpus_path = file_corpus_path
                         imports_list.append(import_object)
 
-        trait_index += 1
+        trait_index -= 1
 
     return imports_list
 
 
-async def process_extension_from_json(ctx: 'CdmCorpusContext', extensions: object, trait_ref_set: 'CdmTraitCollection',
-                                      extension_trait_def_list: List['CdmTraitDefinition']):
+def process_extension_from_json(ctx: 'CdmCorpusContext', extensions: object, trait_ref_set: 'CdmTraitCollection',
+                                extension_trait_def_list: List['CdmTraitDefinition'],
+                                local_extension_trait_def_list: Optional[List['CdmTraitDefinition']] = None) -> None:
     extension_keys = [extension for extension in extensions.keys() if extension.find(':') != -1]
 
     for extension_key in extension_keys:
         trait_name = 'is.extension.{}'.format(extension_key)
-        extension_trait_ref = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name)
         extension_trait_defs = [trait for trait in extension_trait_def_list if trait.trait_name == trait_name]
         extension_trait_def = None
         trait_exists = bool(extension_trait_defs)
@@ -100,6 +126,7 @@ async def process_extension_from_json(ctx: 'CdmCorpusContext', extensions: objec
             extension_trait_def = ctx.corpus.make_object(CdmObjectType.TRAIT_DEF, trait_name)
             extension_trait_def.extends_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.extension', True)
 
+        extension_trait_ref = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name)
         extension_value = extensions[extension_key]
         is_array = isinstance(extension_value, list)
 
@@ -151,6 +178,9 @@ async def process_extension_from_json(ctx: 'CdmCorpusContext', extensions: objec
 
         if not trait_exists:
             extension_trait_def_list.append(extension_trait_def)
+
+        if local_extension_trait_def_list is not None:
+            local_extension_trait_def_list.append(extension_trait_def)
 
         trait_ref_set.append(extension_trait_ref)
 

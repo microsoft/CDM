@@ -100,26 +100,6 @@ public class CommonDataModelLoader {
    });
   }
 
-  public static void persistCorpus(
-      CdmCorpusDefinition cdmCorpus,
-      AttributeResolutionDirectiveSet directives) {
-    persistCorpus(cdmCorpus, directives, null);
-  }
-
-  public static void persistCorpus(
-      CdmCorpusDefinition cdmCorpus,
-      AttributeResolutionDirectiveSet directives,
-      CopyOptions options) {
-    if (cdmCorpus != null
-        && cdmCorpus.getChildFolders() != null
-        && cdmCorpus.getChildFolders().size() == 1) {
-      persistCorpusFolder(
-          cdmCorpus.getRootPath(),
-          cdmCorpus.getChildFolders().get(0),
-          directives, options);
-    }
-  }
-
   public static void persistCorpusFolder(
       String rootPath,
       CdmFolderDefinition cdmFolder,

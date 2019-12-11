@@ -15,10 +15,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +29,27 @@ public class StorageManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(StorageManager.class);
 
   private final CdmCorpusDefinition corpus;
-  private final Map<String, CdmFolderDefinition> namespaceFolder = new HashMap<>();
+  private final Map<String, CdmFolderDefinition> namespaceFolder = new LinkedHashMap<>();
 
   private String defaultNamespace;
-  private Map<String, StorageAdapter> namespaceAdapters = new HashMap<>();
+  private Map<String, StorageAdapter> namespaceAdapters = new LinkedHashMap<>();
+
+  // The namespaces that have default adapters defined by the program and not by a user.
+  private Set<String> systemDefinedNamespaces;
 
   public StorageManager(final CdmCorpusDefinition corpus) {
     this.corpus = corpus;
+    this.systemDefinedNamespaces = new HashSet<>();
 
     // Set up default adapters.
     this.mount("local", new LocalAdapter(System.getProperty("user.dir")));
     this.mount("cdm", new GithubAdapter());
+
+    systemDefinedNamespaces.add("local");
+    systemDefinedNamespaces.add("cdm");
   }
 
   /**
-   *
    * @param objectPath
    * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
@@ -63,7 +71,9 @@ public class StorageManager {
       final CdmFolderDefinition fd = new CdmFolderDefinition(this.corpus.getCtx(), "");
       fd.setCorpus(this.corpus);
       fd.setNamespace(nameSpace);
+      fd.setFolderPath("/");
       this.namespaceFolder.put(nameSpace, fd);
+      this.systemDefinedNamespaces.remove(nameSpace);
     }
   }
 
@@ -145,10 +155,33 @@ public class StorageManager {
     if (this.namespaceAdapters.containsKey(nameSpace)) {
       this.namespaceAdapters.remove(nameSpace);
       this.namespaceFolder.remove(nameSpace);
+      this.systemDefinedNamespaces.remove(nameSpace);
+
+      // The special case, use resource adapter.
+      if (nameSpace.equals("cdm")) {
+        this.mount(nameSpace, new ResourceAdapter());
+      }
+
       return true;
     } else {
       LOGGER.warn("Cannot remove the adapter from non-existing namespace.");
       return false;
+    }
+  }
+
+
+  /**
+   * Allow replacing a storage adapter with another one for testing, leaving folders intact.
+   *
+   * @param nameSpace
+   * @param adapter
+   * @deprecated This should only be used for testing only. And is very likely to be removed from
+   * public interface.
+   */
+  @Deprecated
+  public void setAdapter(String nameSpace, StorageAdapter adapter) {
+    if (adapter != null) {
+      this.namespaceAdapters.put(nameSpace, adapter);
     }
   }
 
@@ -235,7 +268,7 @@ public class StorageManager {
       newObjectPath = prefix + pathTuple.getRight();
       finalNamespace = namespaceFromObj;
       if (Strings.isNullOrEmpty(finalNamespace)) {
-        finalNamespace = StringUtils.isNullOrTrimEmpty(pathTuple.getLeft()) ? this.defaultNamespace : pathTuple.getLeft() ;
+        finalNamespace = StringUtils.isNullOrTrimEmpty(pathTuple.getLeft()) ? this.defaultNamespace : pathTuple.getLeft();
       }
     } else {
       finalNamespace = StringUtils.isNullOrTrimEmpty(pathTuple.getLeft()) ? namespaceFromObj : pathTuple.getLeft();
@@ -247,37 +280,45 @@ public class StorageManager {
   }
 
   /**
-   * Fetches the full adapters config.
+   * Fetches the config.
    *
-   * @return JObject, representing the config.
+   * @return The JSON string representing the config.
    */
-  public String fetchAdaptersConfig() {
+  public String fetchConfig() {
     final ArrayNode adaptersArray = JsonNodeFactory.instance.arrayNode();
 
     // Construct the JObject for each adapter.
     for (final Map.Entry<String, StorageAdapter> namespaceAdapterTuple : this.namespaceAdapters.entrySet()) {
+      // Skip system-defined adapters and resource adapters.
+      if (this.systemDefinedNamespaces.contains(namespaceAdapterTuple.getKey())
+          || namespaceAdapterTuple.getValue() instanceof ResourceAdapter) {
+        continue;
+      }
+
       final String config = namespaceAdapterTuple.getValue().fetchConfig();
-      if (Strings.isNullOrEmpty(config))
-      {
+      if (Strings.isNullOrEmpty(config)) {
         LOGGER.error("JSON config constructed by adapter is null or empty.");
         continue;
       }
-      ObjectNode jsonConfig = null;
+
+      ObjectNode jsonConfig;
       try {
         jsonConfig = (ObjectNode) JMapper.MAP.readTree(config);
-      } catch (final IOException e) {
-        LOGGER.error("Config cannot be cast to objectNode. Config: {}, Error: {}", config, e.getMessage());
-      }
-      jsonConfig.put("namespace", namespaceAdapterTuple.getKey());
+        jsonConfig.put("namespace", namespaceAdapterTuple.getKey());
 
-      adaptersArray.add(jsonConfig);
+        adaptersArray.add(jsonConfig);
+      } catch (final IOException e) {
+        LOGGER.error(
+            "Config cannot be cast to objectNode. Config: {}, Error: {}",
+            config,
+            e.getMessage());
+      }
     }
 
     final ObjectNode resultConfig = JsonNodeFactory.instance.objectNode();
 
-    /// App ID might not be set.
-    if (this.corpus.getAppId() != null)
-    {
+    // App ID might not be set.
+    if (this.corpus.getAppId() != null) {
       resultConfig.put("appId", this.corpus.getAppId());
     }
 
@@ -297,7 +338,7 @@ public class StorageManager {
    * @param adapter The adapter used to save the config to a file.
    */
   public void saveAdapterConfig(final String name, final StorageAdapter adapter) {
-    adapter.writeAsync(name, fetchAdaptersConfig());
+    adapter.writeAsync(name, fetchConfig());
   }
 
   public String createRelativeCorpusPath(final String objectPath) {

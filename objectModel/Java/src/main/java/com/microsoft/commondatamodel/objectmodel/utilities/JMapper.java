@@ -58,6 +58,7 @@ public class JMapper {
         .registerModule(timeModule)
         .enable(SerializationFeature.INDENT_OUTPUT)
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     final DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter()
         .withArrayIndenter(new DefaultIndenter("  ", "\n"));

@@ -41,7 +41,11 @@ class SelectsSubAttribute(JObject):
         """used to indicate either 'one' or 'all' sub-attributes selected. """
 
         self.selectedTypeAttribute = None  # type: TypeAttribute
-        """The supplied attribute definition will be added to the Entity to hold a description of the single attribute that was selected from the sub-entity when selects is 'one'"""
+        """The supplied attribute definition will be added to the Entity to hold a description of the single attribute that was selected
+        from the sub-entity when selects is 'one'"""
+
+        self.selectsSomeTakeNames = []
+        self.selectsSomeAvoidNames = []
 
 
 class AttributeResolutionGuidance(JObject):

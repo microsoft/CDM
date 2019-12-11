@@ -28,11 +28,17 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
-    if (Strings.isNullOrEmpty(this.getDeclaredPath())) {
-      this.setDeclaredPath(pathRoot + this.getName());
-    }
+    String path = "";
 
-    final String path = this.getDeclaredPath();
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      if (Strings.isNullOrEmpty(this.getDeclaredPath())) {
+        this.setDeclaredPath(pathRoot + this.getName());
+      }
+
+      path = this.getDeclaredPath();
+    }
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -87,7 +93,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
@@ -115,8 +121,19 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmE2ERelationship copy = new CdmE2ERelationship(this.getCtx(), this.getName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmE2ERelationship copy;
+    if (host == null) {
+      copy = new CdmE2ERelationship(this.getCtx(), this.getName());
+    } else {
+      copy = (CdmE2ERelationship) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+    }
 
     copy.setFromEntity(this.getFromEntity());
     copy.setFromEntityAttribute(this.getFromEntityAttribute());

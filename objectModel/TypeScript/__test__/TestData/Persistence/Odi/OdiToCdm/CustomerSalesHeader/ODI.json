@@ -1,0 +1,618 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:PhysicalAddress",
+        "dls:folderReference": "../PhysicalAddress"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "salesHeaderNumber",
+          "customerSalesHeaderType",
+          "customerSalesHeaderPlacementDate",
+          "customerId",
+          "customerSalesHeaderStateCode",
+          "customerSalesHeaderStatusCode",
+          "customerPrimaryContactIdId",
+          "salesPersonId",
+          "originationChannelType",
+          "originalChannelDetails",
+          "customerSalesHeaderDescription",
+          "isDerived",
+          "billingType",
+          "billingPostalAddressId",
+          "billingEmailAddressId",
+          "defaultShippingType",
+          "defaultShippingPostalAddressId",
+          "defaultShippingEmailAddressId",
+          "shippingChargeAmount",
+          "serviceChargeAmount",
+          "headerDiscountAmount",
+          "customerSalesHeaderTotalDiscountAmount",
+          "totalNetSalesAmount",
+          "currencyCode"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderSalesHeaderNumber",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 5,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderType",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderPlacementDate",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customer",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "customer0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Customer",
+              "opm:columnIndex": 8,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderStateCode",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderStatusCode",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerPrimaryContactId",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "customerPrimaryContactId0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Person",
+              "opm:columnIndex": 11,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:salesPerson",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "salesPerson0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:Person",
+              "opm:columnIndex": 12,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderOriginationChannelType",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 13,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderOriginalChannelDetails",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 14,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderDescription",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 15,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderIsDerived",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 16,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderBillingType",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 17,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:billingPostalAddress",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "billingPostalAddress0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:PhysicalAddress",
+              "opm:columnIndex": 18,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:billingEmailAddress",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "billingEmailAddress0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:EmailAddress",
+              "opm:columnIndex": 19,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderDefaultShippingType",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 20,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:defaultShippingPostalAddress",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "defaultShippingPostalAddress0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:PhysicalAddress",
+              "opm:columnIndex": 21,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:defaultShippingEmailAddress",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnInstance": "defaultShippingEmailAddress0",
+            "opm:columns": {
+              "opm:columnAttribute": "olm:identifier",
+              "opm:columnEntity": "this:EmailAddress",
+              "opm:columnIndex": 22,
+              "opm:traits": {
+                "olm:idScope": "@value"
+              }
+            }
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderShippingChargeAmount",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 23,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderServiceChargeAmount",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 24,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderHeaderDiscountAmount",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 25,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderTotalDiscountAmount",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 26,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderTotalNetSalesAmount",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 27,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:customerSalesHeaderCurrencyCode",
+            "opm:columnEntity": "this:CustomerSalesHeader",
+            "opm:columnIndex": 28,
+            "opm:columnInstance": "default"
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__CustomerSalesHeader",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:CustomerSalesHeader"
+              },
+              {
+                "@id": "this:CustomerSalesHeader",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:customerSalesHeaderSalesHeaderNumber",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Identifier used by the source system",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:salesHeaderNumber",
+                    "olm:title": "Sales Header Number"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The type of transaction, Order, Invoice, Return",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:customerSalesHeaderType",
+                    "olm:title": "Type"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderPlacementDate",
+                    "olm:dataType": "olm:DateTime",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:customerSalesHeaderPlacementDate",
+                    "olm:title": "Placement Date"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderCustomer",
+                    "olm:dataType": "this:Customer",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderStateCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "State of the transaction: active, cancelled, closed",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:customerSalesHeaderStateCode",
+                    "olm:title": "State Code"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderStatusCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "further information about the status of this transaction",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:customerSalesHeaderStatusCode",
+                    "olm:title": "Status Code"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderCustomerPrimaryContactId",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderSalesPerson",
+                    "olm:dataType": "this:Person",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderOriginationChannelType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "web page, physical storefront",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:originationChannelType",
+                    "olm:title": "Origination Channel Type"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderOriginalChannelDetails",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "Details about the original channel: web url, store location, etc.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:originalChannelDetails",
+                    "olm:title": "Original Channel Details"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderDescription",
+                    "olm:dataType": "olm:Text",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:customerSalesHeaderDescription",
+                    "olm:title": "Description"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderIsDerived",
+                    "olm:dataType": "olm:Boolean",
+                    "olm:description": "True if header was not explicitly sourced",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:isDerived",
+                    "olm:title": "Is Derived"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderBillingType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "the method of billing: paper/postal, electronic, both",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:billingType",
+                    "olm:title": "Billing Type"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderBillingPostalAddress",
+                    "olm:dataType": "this:PhysicalAddress",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderBillingEmailAddress",
+                    "olm:dataType": "this:EmailAddress",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderDefaultShippingType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "Default shipping type: paper/postal, electronic, both",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:defaultShippingType",
+                    "olm:title": "Default Shipping Type"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderDefaultShippingPostalAddress",
+                    "olm:dataType": "this:PhysicalAddress",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderDefaultShippingEmailAddress",
+                    "olm:dataType": "this:EmailAddress",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderShippingChargeAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Shipping Charge Amount",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:shippingChargeAmount",
+                    "olm:title": "Shipping Charge Amount"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderServiceChargeAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Service Charge Amount",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:serviceChargeAmount",
+                    "olm:title": "Service Charge Amount"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderHeaderDiscountAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Line item independent discount amount",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:headerDiscountAmount",
+                    "olm:title": "Header Discount Amount"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderTotalDiscountAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Total transaction discount amount",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:customerSalesHeaderTotalDiscountAmount",
+                    "olm:title": "Total Discount Amount"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderTotalNetSalesAmount",
+                    "olm:dataType": "olm:Number",
+                    "olm:description": "Total Net Sales Amount",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:totalNetSalesAmount",
+                    "olm:title": "Total Net Sales Amount"
+                  },
+                  {
+                    "@id": "this:customerSalesHeaderCurrencyCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The ISO 4217 currency code for currency values given in this header",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:currencyCode",
+                    "olm:title": "Currency Code"
+                  }
+                ],
+                "olm:description": "Customer Sales Header",
+                "olm:sameAs": "odic:CustomerSalesHeader",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Customer Sales Header"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -9,20 +9,6 @@
   "definitions": [
     {
       "entityName": "Sales_Resolved_default.cdm.json",
-      "exhibitsTraits": [
-        {
-          "traitReference": "is.CDM.entityVersion",
-          "arguments": [
-            "0.9"
-          ]
-        },
-        {
-          "traitReference": "is.identifiedBy",
-          "arguments": [
-            "Sales_Resolved_default.cdm.json/(resolvedAttributes)/SalesId"
-          ]
-        }
-      ],
       "attributeContext": {
         "type": "entity",
         "name": "Sales_Resolved_default.cdm.json",
@@ -70,6 +56,15 @@
           },
           {
             "type": "attributeDefinition",
+            "name": "SalesTypeAttribute",
+            "parent": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesTypeAttribute",
+            "contents": [
+              "Sales_Resolved_default.cdm.json/hasAttributes/SalesTypeAttribute"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
             "name": "SalesProductId",
             "parent": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json",
             "definition": "resolvedFrom/Sales/hasAttributes/SalesProductId",
@@ -79,20 +74,6 @@
                 "name": "Product",
                 "parent": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json/SalesProductId",
                 "definition": "resolvedFrom/Product",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.CDM.entityVersion",
-                    "arguments": [
-                      "0.9"
-                    ]
-                  },
-                  {
-                    "traitReference": "is.identifiedBy",
-                    "arguments": [
-                      "Product/(resolvedAttributes)/ProductId"
-                    ]
-                  }
-                ],
                 "contents": [
                   {
                     "type": "entityReferenceExtends",
@@ -191,15 +172,10 @@
         {
           "name": "SalesId",
           "appliedTraits": [
-            "is.dataFormat.integer",
-            {
-              "traitReference": "is.identifiedBy",
-              "arguments": [
-                "Sales_Resolved_default.cdm.json/(resolvedAttributes)/SalesId"
-              ]
-            }
+            "is.dataFormat.integer"
           ],
           "attributeContext": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json/SalesId",
+          "isPrimaryKey": true,
           "dataFormat": "Int32"
         },
         {
@@ -221,17 +197,22 @@
           "dataFormat": "Decimal"
         },
         {
+          "name": "SalesTypeAttribute",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json/SalesTypeAttribute",
+          "dataFormat": "String"
+        },
+        {
           "name": "ProductId",
           "appliedTraits": [
-            "is.dataFormat.integer",
-            {
-              "traitReference": "is.identifiedBy",
-              "arguments": [
-                "Sales_Resolved_default.cdm.json/(resolvedAttributes)/ProductId"
-              ]
-            }
+            "is.dataFormat.integer"
           ],
           "attributeContext": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json/SalesProductId/_generatedAttributeSet/_generatedAttributeRound0/ProductId",
+          "isPrimaryKey": true,
           "dataFormat": "Int32"
         },
         {
@@ -264,7 +245,8 @@
           "attributeContext": "Sales_Resolved_default.cdm.json/attributeContext/Sales_Resolved_default.cdm.json/SalesProductId/_generatedAttributeSet/_generatedAttributeRound0/ProductUnitPrice",
           "dataFormat": "Decimal"
         }
-      ]
+      ],
+      "version": "0.9"
     }
   ]
 }

@@ -30,11 +30,20 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         self._construct_resolved_traits_def(self.extends_data_type, rtsb, res_opt)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDataTypeDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataTypeDefinition'] = None) -> 'CdmDataTypeDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmDataTypeDefinition(self.ctx, self.data_type_name, None)
-        copy.extends_data_type = self.extends_data_type.copy(res_opt) if self.extends_data_type else None
+        if not host:
+            copy = CdmDataTypeDefinition(self.ctx, self.data_type_name, None)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.data_type_name = self.data_type_name
+
+        if self.extends_data_type:
+            copy.extends_data_type = self.extends_data_type.copy(res_opt)
+
         self._copy_def(res_opt, copy)
         return copy
 
@@ -45,11 +54,13 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         return self.data_type_name
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = self._declared_path
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
 
-        if not path:
-            path = path_from + self.data_type_name
-            self._declared_path = path
+            if not path:
+                path = path_from + self.data_type_name
+                self._declared_path = path
 
         if pre_children and pre_children(self, path):
             return False

@@ -6,6 +6,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
@@ -13,12 +14,14 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class CdmTraitReference extends CdmObjectReferenceBase {
 
+  protected boolean resolvedArguments;
   private CdmArgumentCollection arguments;
   private boolean fromProperty;
-  protected boolean resolvedArguments;
 
   public CdmTraitReference(final CdmCorpusContext ctx, final Object trait, final boolean simpleReference,
                            final boolean hasArguments) {
@@ -30,7 +33,6 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   *
    * @param pathFrom
    * @param preChildren
    * @param postChildren
@@ -121,7 +123,9 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
       rtsTrait = trait.fetchResolvedTraits(resOpt);
     }
 
-    final boolean cacheByName = trait.thisIsKnownToHaveParameters == null ? true : trait.thisIsKnownToHaveParameters.booleanValue();
+    final boolean cacheByName = trait.thisIsKnownToHaveParameters == null
+        ? true
+        : trait.thisIsKnownToHaveParameters;
     String cacheTag = ctx.getCorpus()
         .createDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
     Object rtsResult = null;
@@ -181,7 +185,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
               argumentDef.setResolvedParameter(paramFound);
               aValue = argumentDef.getValue();
-              ctx.getCorpus().constTypeCheck(resOpt, paramFound, aValue);
+              ctx.getCorpus().constTypeCheck(resOpt, this.getInDocument(), paramFound, aValue);
               argumentDef.setValue(aValue);
               iArg++;
             }
@@ -223,24 +227,43 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   *
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
-  public CdmObjectReferenceBase copyRefObject(final ResolveOptions resOpt, final Object refTo, final boolean simpleReference) {
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference) {
+    return copyRefObject(resOpt, refTo, simpleReference, null);
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Override
+  @Deprecated
+  public CdmObjectReferenceBase copyRefObject(
+      final ResolveOptions resOpt,
+      final Object refTo,
+      final boolean simpleReference,
+      CdmObjectReferenceBase host) {
     final int argCount = null != this.arguments ? this.arguments.size() : 0;
 
-    final CdmTraitReference copy = new CdmTraitReference(
-        this.getCtx(),
-        refTo,
-        simpleReference,
-        argCount > 0);
+    CdmTraitReference copy;
+    if (host == null) {
+      copy = new CdmTraitReference(
+          this.getCtx(),
+          refTo,
+          simpleReference,
+          argCount > 0);
+    } else {
+      copy = (CdmTraitReference) host.copyToHost(this.getCtx(), refTo, simpleReference);
+      copy.getArguments().clear();
+    }
+
 
     if (!simpleReference) {
       copy.resolvedArguments = this.resolvedArguments;
@@ -271,7 +294,6 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   *
    * @param resOpt
    * @param options
    * @return
@@ -283,6 +305,40 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   @Deprecated
   public Object copyData(final ResolveOptions resOpt, final CopyOptions options) {
     return CdmObjectBase.copyData(this, resOpt, options, CdmTraitReference.class);
+  }
+
+  /**
+   * Returns a map from parameter names to the final argument values for a strait reference.
+   * Values come (in this order) from base trait defaults then default overrides on inheritance
+   * then values supplied on this reference
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public Map<String, Object> fetchFinalArgumentValues(ResolveOptions resOpt) {
+    Map<String, Object> finalArgs = new LinkedHashMap<>();
+    // get resolved traits does all the work, just clean up the answers
+    ResolvedTraitSet rts = this.fetchResolvedTraits(resOpt);
+    if (rts == null) {
+      return null;
+    }
+    // there is only one resolved trait
+    ResolvedTrait rt = rts.getFirst();
+    if (rt.getParameterValues() != null && rt.getParameterValues().length() > 0) {
+      final int l = rt.getParameterValues().length();
+      for (int i = 0; i < l; i++) {
+        final CdmParameterDefinition p = rt.getParameterValues().fetchParameter(i);
+        final Object v = rt.getParameterValues().fetchValue(i);
+        String name = p.getName();
+        if (name == null) {
+          name = Integer.toString(i);
+        }
+        finalArgs.put(name, v);
+      }
+    }
+
+    return finalArgs;
   }
 
   private ResolvedTraitSet createEmptyResolvedTraitSet(

@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     public class LocalAdapter : StorageAdapter
     {
         /// <summary>
-        /// The root of schema documents.
+        /// The root path of the schema documents.
         /// </summary>
         public string Root { get; private set; }
 
@@ -33,6 +33,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         internal const string Type = "local";
 
+        /// <summary>
+        /// Constructs a LocalAdapter.
+        /// </summary>
+        /// <param name="root">The root path of the schema documents.</param>
         public LocalAdapter(string root)
         {
             if (root == null)
@@ -62,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             string path = this.CreateAdapterPath(corpusPath);
             byte[] result;
-            using (FileStream stream = File.Open(path, FileMode.Open))
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 result = new byte[stream.Length];
                 await stream.ReadAsync(result, 0, (int)stream.Length);

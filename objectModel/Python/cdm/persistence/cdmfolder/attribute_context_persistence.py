@@ -87,13 +87,15 @@ class AttributeContextPersistence:
     def to_data(instance: CdmAttributeContext, res_opt: ResolveOptions, options: CopyOptions) -> AttributeContext:
         result = AttributeContext()
 
+        exhibits_traits = [trait for trait in instance.exhibits_traits if not trait.is_from_property]
+
         result.explanation = instance.explanation
         result.name = instance.name
         result.type = map_enum_to_type_name[instance.type]
         result.parent = AttributeContextReferencePersistence.to_data(instance.parent, res_opt, options) if instance.parent is not None else None
         result.definition = persistence_layer.to_data(instance.definition, res_opt, 'CdmFolder', options) if instance.definition is not None else None
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
-        result.appliedTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
+        result.appliedTraits = utils.array_copy_data(res_opt, exhibits_traits, options)
         result.contents = utils.array_copy_data(res_opt, instance.contents, options)
 
         return result

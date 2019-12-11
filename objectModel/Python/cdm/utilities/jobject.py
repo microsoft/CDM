@@ -134,14 +134,15 @@ class JObject(OrderedDict):
     def encode(self) -> str:
         """Returns this object in JSON form"""
         data = self.__getstate__()
-        return json.dumps(data, )
+        return json.dumps(data, indent=2)
 
-    def decode(self, jsonStr):
+    def decode(self, json_str):
         """Loads given JSON string into this object"""
-        if isinstance(jsonStr, str):
-            self.__setstate__(json.loads(jsonStr, object_pairs_hook=OrderedDict))
-        elif isinstance(jsonStr, dict):
-            self.__setstate__(jsonStr)
+        if isinstance(json_str, str):
+            self.__setstate__(json.loads(json_str, object_pairs_hook=OrderedDict))
+        elif isinstance(json_str, dict):
+            self.__setstate__(json_str)
+        return self
 
     def __delattr__(self, key):
         self.__delitem__(key)

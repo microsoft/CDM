@@ -61,7 +61,11 @@
             cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
 
             cdmCorpus.Storage.Mount("local", new LocalAdapter(testFilesRoot));
-            cdmCorpus.Storage.Mount("cdm", new LocalAdapter(SchemaDocsRoot));
+
+            // Unmounts the default cdm and mounts the resource adapter. This will
+            // also implicitely test the resource adapter functionality.
+            cdmCorpus.Storage.Unmount("cdm");
+
             var hosts = new Dictionary<string, string>();
             hosts.Add("contoso", "http://contoso.com");
             cdmCorpus.Storage.Mount("remote", new RemoteAdapter()

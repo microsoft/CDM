@@ -283,7 +283,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             List<ResolvedTrait> list = new List<ResolvedTrait>(this.Set);
             if (nameSort)
             {
-                list.Sort((l, r) => string.Compare(l.TraitName, r.TraitName, StringComparison.OrdinalIgnoreCase));
+                list.Sort((l, r) => StringUtils.CompareWithOrdinalIgnoreCase(l.TraitName, r.TraitName));
             }
 
             for (int i = 0; i < this.Set.Count; i++)

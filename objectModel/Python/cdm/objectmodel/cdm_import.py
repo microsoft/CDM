@@ -28,8 +28,18 @@ class CdmImport(CdmObjectSimple):
         """returns the document that has been resolved for this import"""
         return self.doc
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmImport':
-        copy = CdmImport(self.ctx, self.corpus_path, self.moniker)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmImport'] = None) -> 'CdmImport':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
+
+        if not host:
+            copy = CdmImport(self.ctx, self.corpus_path, self.moniker)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.corpus_path = self.corpus_path
+            copy.moniker = self.moniker
+
         copy.doc = self.doc
 
         return copy

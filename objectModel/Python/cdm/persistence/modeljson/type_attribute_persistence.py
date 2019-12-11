@@ -13,7 +13,8 @@ if TYPE_CHECKING:
 
 class TypeAttributePersistence:
     @staticmethod
-    async def from_data(ctx: 'CdmCorpusContext', data: 'Attribute', extension_trait_def_list: List['CdmTraitDefinition']) -> 'CdmTypeAttributeDefinition':
+    async def from_data(ctx: 'CdmCorpusContext', data: 'Attribute', extension_trait_def_list: List['CdmTraitDefinition'],
+                        local_extension_trait_def_list: List['CdmTraitDefinition']) -> 'CdmTypeAttributeDefinition':
         attribute = ctx.corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, '{} attribute'.format(data.name))
         attribute.name = data.name
 
@@ -27,7 +28,7 @@ class TypeAttributePersistence:
             attribute.applied_traits.append(is_hidden_trait)
 
         await utils.process_annotations_from_data(ctx, data, attribute.applied_traits)
-        await extension_helper.process_extension_from_json(ctx, data, attribute.applied_traits, extension_trait_def_list)
+        extension_helper.process_extension_from_json(ctx, data, attribute.applied_traits, extension_trait_def_list, local_extension_trait_def_list)
 
         return attribute
 

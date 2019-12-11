@@ -17,7 +17,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         super().__init__(ctx)
 
         # The name of a data partition.
-        self.data_partition_name = name  # type: str
+        self.name = name  # type: str
 
         # The corpus path for the data file location.
         self.location = None  # type: Optional[str]
@@ -56,11 +56,18 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
     def description(self, val: str) -> None:
         self._ttpm.update_property_value('description', val)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDataPartitionDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionDefinition'] = None) -> 'CdmDataPartitionDefinition':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self)
 
-        copy = CdmDataPartitionDefinition(self.ctx, self.data_partition_name)
+        if not host:
+            copy = CdmDataPartitionDefinition(self.ctx, self.name)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.name = self.name
 
+        copy.description = self.description
         copy.location = self.location
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
@@ -81,7 +88,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
     def get_name(self) -> str:
-        return self.data_partition_name
+        return self.name
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False
@@ -92,7 +99,23 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
             await cast(CdmFileStatus, self.owner).report_most_recent_time_async(child_time)
 
     def validate(self) -> bool:
-        return bool(self.data_partition_name)
+        return bool(self.location)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
+        path = ''
+        if self.ctx.corpus.block_declared_path_changes is False:
+            path = self._declared_path
+            if not path:
+                path = '{}{}'.format(path_from, (self.get_name() or 'UNNAMED'))
+                self._declared_path = path
+
+        if pre_children and pre_children(self, path):
+            return False
+
+        if self._visit_def(path, pre_children, post_children):
+            return True
+
+        if post_children and post_children(self, path):
+            return False
+
         return False

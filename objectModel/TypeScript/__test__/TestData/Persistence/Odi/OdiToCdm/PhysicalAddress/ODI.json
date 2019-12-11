@@ -1,0 +1,466 @@
+{
+  "@context": {
+    "olm": "urn://odi.org/v1/logical-model/",
+    "opm": "urn://odi.org/v1/physical-model/",
+    "dls": "urn://odi.org/v1/data-lake-storage/",
+    "odi": "urn://odi.org/v1-beta/entities/",
+    "odic": "urn://odi.org/v1-beta/entities/customer/",
+    "msft": "urn://microsoft.com/odi-extensions/",
+    "dls:entity": {
+      "@type": "@id"
+    },
+    "olm:subClassOf": {
+      "@type": "@id"
+    },
+    "olm:sameAs": {
+      "@type": "@id"
+    },
+    "olm:dataType": {
+      "@type": "@id"
+    },
+    "opm:columnEntity": {
+      "@type": "@id"
+    },
+    "opm:columnAttribute": {
+      "@type": "@id"
+    },
+    "this": "urn://cdm/ODIResolved.manifest.cdm.json/"
+  },
+  "dls:folder": {
+    "dls:entityReferences": [
+      {
+        "dls:entity": "this:AccountIdentity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:ODIEntity",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:party",
+        "dls:folderReference": "../AccountIdentity"
+      },
+      {
+        "dls:entity": "this:Person",
+        "dls:folderReference": "../Person"
+      },
+      {
+        "dls:entity": "this:Organization",
+        "dls:folderReference": "../Organization"
+      },
+      {
+        "dls:entity": "this:EmailAddress",
+        "dls:folderReference": "../EmailAddress"
+      },
+      {
+        "dls:entity": "this:PersonOrganization",
+        "dls:folderReference": "../PersonOrganization"
+      },
+      {
+        "dls:entity": "this:PhoneNumber",
+        "dls:folderReference": "../PhoneNumber"
+      },
+      {
+        "dls:entity": "this:Appointment",
+        "dls:folderReference": "../Appointment"
+      },
+      {
+        "dls:entity": "this:InteractionEvent",
+        "dls:folderReference": "../InteractionEvent"
+      },
+      {
+        "dls:entity": "this:Email",
+        "dls:folderReference": "../ASubfolder/Email"
+      },
+      {
+        "dls:entity": "this:InteractionEventParty",
+        "dls:folderReference": "../InteractionEventParty"
+      },
+      {
+        "dls:entity": "this:PhoneCall",
+        "dls:folderReference": "../PhoneCall"
+      },
+      {
+        "dls:entity": "this:Customer",
+        "dls:folderReference": "../Customer"
+      },
+      {
+        "dls:entity": "this:Lead",
+        "dls:folderReference": "../ASubfolder/Lead"
+      },
+      {
+        "dls:entity": "this:Opportunity",
+        "dls:folderReference": "../Opportunity"
+      },
+      {
+        "dls:entity": "this:CustomerSalesLine",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Product",
+        "dls:folderReference": "../Product"
+      },
+      {
+        "dls:entity": "this:UnitOfMeasure",
+        "dls:folderReference": "../CustomerSalesLine"
+      },
+      {
+        "dls:entity": "this:Campaign",
+        "dls:folderReference": "../Campaign"
+      },
+      {
+        "dls:entity": "this:CustomerSalesHeader",
+        "dls:folderReference": "../CustomerSalesHeader"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategory",
+        "dls:folderReference": "../ProductCatalogCategory"
+      },
+      {
+        "dls:entity": "this:ProductCatalog",
+        "dls:folderReference": "../ProductCatalog"
+      },
+      {
+        "dls:entity": "this:ProductCatalogCategoryProduct",
+        "dls:folderReference": "../ProductCatalogCategoryProduct"
+      },
+      {
+        "dls:entity": "this:CampaignProduct",
+        "dls:folderReference": "../CampaignProduct"
+      },
+      {
+        "dls:entity": "this:CampaignParty",
+        "dls:folderReference": "../CampaignParty"
+      }
+    ],
+    "dls:partitionSpec": {
+      "dls:fileFormat": {
+        "@type": "dls:csv-format",
+        "dls:csvDelimiters": ",",
+        "dls:csvHeaders": [
+          "identifier",
+          "createdOn",
+          "modifiedOn",
+          "originalTimeZoneUTCOffset",
+          "sourceAuthority",
+          "physicalAddressType",
+          "physicalAddressIsPrimary",
+          "primaryContactName",
+          "line1",
+          "line2",
+          "line3",
+          "city",
+          "stateOrProvince",
+          "county",
+          "country",
+          "postOfficeBox",
+          "postalCode",
+          "latitude",
+          "longitude",
+          "physicalAddressPartyId",
+          "physicalAddressPartyIdType"
+        ],
+        "dls:csvHeadersInFile": true,
+        "dls:csvQuotedStrings": true
+      },
+      "dls:partitionKeys": [],
+      "dls:partitionTemplate": "./partitionData/sample-partition-data.csv",
+      "opm:physicalModel": {
+        "opm:columns": [
+          {
+            "opm:columnAttribute": "this:ODIEntityIdentifier",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 0,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityCreatedOn",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 1,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityModifiedOn",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 2,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntityOriginalTimeZoneUTCOffset",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 3,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:ODIEntitySourceAuthority",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 4,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressType",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 5,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressIsPrimary",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 6,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressPrimaryContactName",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 7,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressLine1",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 8,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressLine2",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 9,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressLine3",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 10,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressCity",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 11,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressStateOrProvince",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 12,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressCounty",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 13,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressCountry",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 14,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressPostOfficeBox",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 15,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressPostalCode",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 16,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressLatitude",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 17,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressLongitude",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnIndex": 18,
+            "opm:columnInstance": "default"
+          },
+          {
+            "opm:columnAttribute": "this:physicalAddressParty",
+            "opm:columnEntity": "this:PhysicalAddress",
+            "opm:columnInstance": "physicalAddressParty0",
+            "opm:columns": [
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 19,
+                "opm:traits": {
+                  "olm:idScope": "@value"
+                }
+              },
+              {
+                "opm:columnAttribute": "olm:identifier",
+                "opm:columnEntity": "this:party",
+                "opm:columnIndex": 20,
+                "opm:traits": {
+                  "olm:identifier": "@value"
+                }
+              }
+            ]
+          }
+        ],
+        "opm:modelDefinitions": [
+          {
+            "olm:entityDefinitions": [
+              {
+                "@id": "this:__PhysicalAddress",
+                "olm:attributeDefinitions": [],
+                "olm:subClassOf": "this:PhysicalAddress"
+              },
+              {
+                "@id": "this:PhysicalAddress",
+                "olm:attributeDefinitions": [
+                  {
+                    "@id": "this:physicalAddressType",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "the address type, such as home, work, billing.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1,
+                    "olm:sameAs": "odic:physicalAddressType",
+                    "olm:title": "Address Type"
+                  },
+                  {
+                    "@id": "this:physicalAddressIsPrimary",
+                    "olm:dataType": "olm:Boolean",
+                    "olm:description": "indicated the primary address for an organization or contact",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:physicalAddressIsPrimary",
+                    "olm:title": "Is Primary"
+                  },
+                  {
+                    "@id": "this:physicalAddressPrimaryContactName",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The name of the primary contact person for the physical address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:primaryContactName",
+                    "olm:title": "Primary Contact Name"
+                  },
+                  {
+                    "@id": "this:physicalAddressLine1",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The first line of the customer's address to help identify the location.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:line1",
+                    "olm:title": "Street 1"
+                  },
+                  {
+                    "@id": "this:physicalAddressLine2",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The second line of the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:line2",
+                    "olm:title": "Street 2"
+                  },
+                  {
+                    "@id": "this:physicalAddressLine3",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The third line of the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:line3",
+                    "olm:title": "Street 3"
+                  },
+                  {
+                    "@id": "this:physicalAddressCity",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The city for the address",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:city",
+                    "olm:title": "City"
+                  },
+                  {
+                    "@id": "this:physicalAddressStateOrProvince",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The state or province of the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:stateOrProvince",
+                    "olm:title": "State/Province"
+                  },
+                  {
+                    "@id": "this:physicalAddressCounty",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The county for the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:county",
+                    "olm:title": "County"
+                  },
+                  {
+                    "@id": "this:physicalAddressCountry",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The country or region for the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:country",
+                    "olm:title": "Country/Region"
+                  },
+                  {
+                    "@id": "this:physicalAddressPostOfficeBox",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The post office box number of the customer's address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:postOfficeBox",
+                    "olm:title": "Post Office Box"
+                  },
+                  {
+                    "@id": "this:physicalAddressPostalCode",
+                    "olm:dataType": "olm:Text",
+                    "olm:description": "The ZIP Code or postal code for the address.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:postalCode",
+                    "olm:title": "ZIP/Postal Code"
+                  },
+                  {
+                    "@id": "this:physicalAddressLatitude",
+                    "olm:dataType": "olm:Double",
+                    "olm:description": "The latitude value for the customer's address, for use in mapping and other applications.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:latitude",
+                    "olm:title": "Latitude"
+                  },
+                  {
+                    "@id": "this:physicalAddressLongitude",
+                    "olm:dataType": "olm:Double",
+                    "olm:description": "The longitude value for the customer's address, for use in mapping and other applications.",
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 0,
+                    "olm:sameAs": "odic:longitude",
+                    "olm:title": "Longitude"
+                  },
+                  {
+                    "@id": "this:physicalAddressParty",
+                    "olm:dataType": [
+                      "this:Person",
+                      "this:Organization"
+                    ],
+                    "olm:maxCardinality": 1,
+                    "olm:minCardinality": 1
+                  }
+                ],
+                "olm:description": "Address and shipping information. Used to store addresses for an organization or contact.",
+                "olm:sameAs": "odic:PhysicalAddress",
+                "olm:subClassOf": "this:ODIEntity",
+                "olm:title": "Address"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

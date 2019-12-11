@@ -27,12 +27,16 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   private CdmObjectReference parent;
   private CdmObjectReference definition;
   private String declaredPath;
+  private String atCorpusPath;
 
   public CdmAttributeContext(final CdmCorpusContext ctx, final String name) {
     super(ctx);
     this.setObjectType(CdmObjectType.AttributeContextDef);
     this.name = name;
+
+    // This will get overwritten when parent set.
     this.setAtCorpusPath(name);
+    this.contents = new CdmCollection<>(this.getCtx(), this.getOwner(), this.getObjectType());
   }
 
   public final CdmAttributeContextType getType() {
@@ -73,6 +77,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     // included in the link to the definition.
     if (acp.getRegarding() != null) {
       definition = acp.getRegarding().createSimpleReference(resOptCopy);
+      definition.setInDocument(acp.getUnder().getInDocument()); // Ref is in the same doc as context.
 
       // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
       // and make them the traits for this context
@@ -86,7 +91,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
     // need context to make this a 'live' object
     underChild.setCtx(acp.getUnder().getCtx());
-    underChild.setDocCreatedIn(acp.getUnder().getDocCreatedIn());
+    underChild.setInDocument(acp.getUnder().getInDocument());
     underChild.setType(acp.getType());
     underChild.setDefinition(definition);
 
@@ -111,16 +116,16 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   /**
    * Returns a copy of the current node.
    */
-  public CdmObject copyNode(final ResolveOptions resOpt) {
+  CdmObject copyNode(final ResolveOptions resOpt) {
     // instead of copying the entire context tree, just the current node
     final CdmAttributeContext copy = new CdmAttributeContext(this.getCtx(), this.getName());
     copy.setType(this.type);
-    copy.setDocCreatedIn(resOpt.getWrtDoc());
+    copy.setInDocument(resOpt.getWrtDoc());
     if (this.getDefinition() != null) {
       copy.setDefinition((CdmObjectReference) this.getDefinition().copy(resOpt));
     }
 
-    copy.setContents(new CdmCollection<>(this.getCtx(), this.getOwner(), this.getObjectType()));
+    copy.setContents(new CdmCollection<>(this.getCtx(), copy, CdmObjectType.AttributeRef));
 
     this.copyDef(resOpt, copy);
     return copy;
@@ -167,9 +172,11 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
 
     // now copy the children
-    if (this.contents != null && this.contents.size() > 0) {
-      for (final Object child : this.contents) {
-        final CdmAttributeContext newChild = (CdmAttributeContext) ((CdmAttributeContext) child)
+    for (final CdmObject child : this.contents) {
+      CdmAttributeContext newChild = null;
+      if (child instanceof CdmAttributeContext) {
+        final CdmAttributeContext childAsAttributeContext = (CdmAttributeContext) child;
+        newChild = (CdmAttributeContext) childAsAttributeContext
             .copyNode(resOpt);
         if (newNode != null) {
           newChild.setParent(resOpt, newNode);
@@ -179,7 +186,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
           currentRas = (ResolvedAttributeSet) ra.getTarget();
         }
 
-        ((CdmAttributeContext) child)
+        childAsAttributeContext
             .copyAttributeContextTree(resOpt, newChild, currentRas, attCtxSet, moniker);
       }
     }
@@ -203,10 +210,6 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   public final CdmCollection<CdmObject> getContents() {
-    if (this.contents == null) {
-      this.contents = new CdmCollection<>(this.getCtx(), this.getOwner(), this.getObjectType());
-    }
-
     return this.contents;
   }
 
@@ -230,16 +233,23 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     this.lowestOrder = value;
   }
 
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (Strings.isNullOrEmpty(path)) {
-      path = pathFrom + this.getName();
-      this.setDeclaredPath(path);
+    String path = "";
+
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.declaredPath;
+
+      if (StringUtils.isNullOrTrimEmpty(path)) {
+        path = pathFrom + this.getName();
+        this.declaredPath = path;
+      }
     }
 
     if (preChildren != null && preChildren.invoke(this, path)) {
@@ -261,10 +271,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     if (this.visitDef(path, preChildren, postChildren)) {
       return true;
     }
-    if (postChildren != null && postChildren.invoke(this, path)) {
-      return true;
-    }
-    return false;
+    return postChildren != null && postChildren.invoke(this, path);
   }
 
   @Override
@@ -278,19 +285,39 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmAttributeContext copy = (CdmAttributeContext) this.copyNode(resOpt);
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmAttributeContext copy;
+    if (host == null) {
+      copy = (CdmAttributeContext) this.copyNode(resOpt);
+    } else {
+      copy = (CdmAttributeContext) host;
+      copy.setCtx(this.getCtx());
+      copy.setName(this.getName());
+      copy.getContents().clear();
+    }
+
     if (this.getParent() != null) {
       copy.setParent((CdmObjectReference) this.getParent().copy(resOpt));
     }
 
     if (this.contents != null && this.contents.size() > 0) {
-      this.contents.forEach(child -> copy.getContents().add((CdmAttributeContext) ((CdmObject) child).copy(resOpt)));
+      for (final CdmObject child : this.contents) {
+        copy.getContents().add(child.copy(resOpt));
+      }
     }
     return copy;
   }
 
-  public void setParent(final ResolveOptions resOpt, final CdmAttributeContext parent) {
+  public void setRelativePath(String rp) {
+    this.declaredPath = rp;
+  }
+
+  private void setParent(ResolveOptions resOpt, CdmAttributeContext parent) {
     // will need a working reference to this as the parent
     final CdmObjectReferenceBase parentRef = getCtx().getCorpus()
         .makeObject(CdmObjectType.AttributeContextRef, parent.getAtCorpusPath(), true);
@@ -306,7 +333,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     parentRef.setExplicitReference(parent);
     // Setting this will let the 'localize references' code trace from any document
     // back to where the parent is defined.
-    parentRef.setDocCreatedIn(parent.getDocCreatedIn());
+    parentRef.setInDocument(parent.getInDocument());
     final CdmCollection<CdmObject> parentContents = parent.getContents();
     parentContents.add(this);
     this.setParent(parentRef);
@@ -326,5 +353,23 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
     // Intended to return null.
     return;
+  }
+
+
+  /**
+   * For attribute context we don't follow standard path calculation behavior.
+   * @return The atCorpusPath.
+   */
+  @Override
+  public String getAtCorpusPath() {
+    return atCorpusPath;
+  }
+
+  /**
+   * For attribute context we don't follow standard path calculation behavior.
+   * @param atCorpusPath The atCorpusPath.
+   */
+  public void setAtCorpusPath(String atCorpusPath) {
+    this.atCorpusPath = atCorpusPath;
   }
 }

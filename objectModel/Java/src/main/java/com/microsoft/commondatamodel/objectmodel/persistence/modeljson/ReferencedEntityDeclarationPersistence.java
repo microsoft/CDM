@@ -1,9 +1,9 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -11,6 +11,8 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Ref
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +20,12 @@ import org.slf4j.LoggerFactory;
 public class ReferencedEntityDeclarationPersistence {
   private static final Logger LOGGER = LoggerFactory.getLogger(ReferencedEntityDeclarationPersistence.class);
 
-  public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(final CdmCorpusContext ctx,
-                                                                           final ReferenceEntity obj, final String location,
-                                                                           final CdmCollection<CdmTraitDefinition> extensionTraitDefList) {
+  public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
+      final CdmCorpusContext ctx,
+      final ReferenceEntity obj,
+      final String location) {
     final CdmEntityDeclarationDefinition referencedEntity = ctx.getCorpus()
-            .makeObject(CdmObjectType.ReferencedEntityDeclarationDef, obj.getName());
+        .makeObject(CdmObjectType.ReferencedEntityDeclarationDef, obj.getName());
     final String corpusPath = ctx.getCorpus().getStorage().adapterPathToCorpusPath(location);
 
     referencedEntity.setEntityName(obj.getName());
@@ -46,7 +49,14 @@ public class ReferencedEntityDeclarationPersistence {
       trait.getArguments().add(argument);
       referencedEntity.getExhibitsTraits().add(trait);
 
-      ExtensionHelper.processExtensionFromJson(ctx, obj, referencedEntity.getExhibitsTraits(), extensionTraitDefList);
+      final List<CdmTraitDefinition> extensionTraitDefList = new ArrayList<>();
+      final CdmTraitCollection extensionTraits = new CdmTraitCollection(ctx, referencedEntity);
+      ExtensionHelper.processExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
+
+      if (extensionTraitDefList.size() > 0) {
+        LOGGER.warn("Custom extensions are not supported in referenced entity.");
+      }
+
       return CompletableFuture.completedFuture(referencedEntity);
     });
   }

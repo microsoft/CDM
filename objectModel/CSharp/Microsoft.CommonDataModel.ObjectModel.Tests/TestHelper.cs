@@ -21,7 +21,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// Whether tests should write debugging files or not.
         /// </summary>
-        public const bool DoesWriteTestDebuggingFiles = false;
+        public const bool DoesWriteTestDebuggingFiles = true;
 
         /// <summary>
         /// Gets the input folder path associated with specified test.

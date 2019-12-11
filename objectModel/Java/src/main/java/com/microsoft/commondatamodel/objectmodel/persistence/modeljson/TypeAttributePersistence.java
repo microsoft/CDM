@@ -1,6 +1,5 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
@@ -10,12 +9,16 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Att
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TypeAttributePersistence {
 
-  public static CompletableFuture<CdmTypeAttributeDefinition> fromData(final CdmCorpusContext ctx, final Attribute obj,
-                                                                       final CdmCollection<CdmTraitDefinition> extensionTraitDefList) {
+  public static CompletableFuture<CdmTypeAttributeDefinition> fromData(
+      final CdmCorpusContext ctx,
+      final Attribute obj,
+      final List<CdmTraitDefinition> extensionTraitDefList,
+      final List<CdmTraitDefinition> localExtensionTraitDefList) {
     final CdmTypeAttributeDefinition attribute = ctx.getCorpus().makeObject(CdmObjectType.TypeAttributeDef, obj.getName());
     // Do a conversion between CDM data format and model.json data type.
     attribute.updateDataFormat(dataTypeFromData(obj.getDataType()));
@@ -27,10 +30,16 @@ public class TypeAttributePersistence {
       attribute.getAppliedTraits().add(isHiddenTrait);
     }
 
-    return Utils.processAnnotationsFromData(ctx, obj, attribute.getAppliedTraits()).thenCompose(v -> {
-      ExtensionHelper.processExtensionFromJson(ctx, obj, attribute.getAppliedTraits(), extensionTraitDefList);
-      return CompletableFuture.completedFuture(attribute);
-    });
+    return Utils.processAnnotationsFromData(ctx, obj, attribute.getAppliedTraits())
+        .thenCompose(v -> {
+          ExtensionHelper.processExtensionFromJson(
+              ctx,
+              obj,
+              attribute.getAppliedTraits(),
+              extensionTraitDefList,
+              localExtensionTraitDefList);
+          return CompletableFuture.completedFuture(attribute);
+        });
   }
 
   public static CompletableFuture<Attribute> toData(final CdmTypeAttributeDefinition instance, final ResolveOptions resOpt,

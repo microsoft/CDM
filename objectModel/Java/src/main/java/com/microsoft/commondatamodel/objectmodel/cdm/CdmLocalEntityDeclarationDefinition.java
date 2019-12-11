@@ -20,17 +20,21 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   public String entityName;
   public String entityPath;
-  public CdmCollection<CdmDataPartitionDefinition> dataPartitions;
-  public CdmCollection<CdmDataPartitionPatternDefinition> dataPartitionPatterns;
   public String prefixPath;
   public OffsetDateTime lastFileStatusCheckTime;
   public OffsetDateTime lastFileModifiedTime;
   public OffsetDateTime lastChildFileModifiedTime;
+  private CdmCollection<CdmDataPartitionDefinition> dataPartitions;
+  private CdmCollection<CdmDataPartitionPatternDefinition> dataPartitionPatterns;
 
   public CdmLocalEntityDeclarationDefinition(final CdmCorpusContext ctx, final String entityName) {
     super(ctx);
     this.setObjectType(CdmObjectType.LocalEntityDeclarationDef);
     this.setEntityName(entityName);
+    this.dataPartitions =
+        new CdmCollection<>(this.getCtx(), this, CdmObjectType.DataPartitionDef);
+    this.dataPartitionPatterns =
+        new CdmCollection<>(this.getCtx(), this, CdmObjectType.DataPartitionPatternDef);
   }
 
   @Override
@@ -39,25 +43,51 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   }
 
   @Override
-  public boolean isDerivedFrom(final ResolveOptions resOpt, final String baseDef) {
+  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
     // Intended to return false
     return false;
   }
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = this.getDeclaredPath();
-    if (path == null) {
-      path = pathFrom + this.getEntityName();
-      this.setDeclaredPath(path);
+    String path = "";
+    if (this.getCtx() != null
+        && this.getCtx().getCorpus() != null
+        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+      path = this.getDeclaredPath();
+      if (path == null) {
+        path = pathFrom + this.getEntityName();
+        this.setDeclaredPath(path);
+      }
     }
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
 
-    return this.getDataPartitions() != null && this.getDataPartitions()
-        .visitList(path + "/", preChildren, postChildren);
+    if (this.dataPartitions != null && this.dataPartitions
+        .visitList(path + "/dataPartitions/", preChildren, postChildren)) {
+      return true;
+    }
+
+    if (this.dataPartitionPatterns != null) {
+      if (this.dataPartitionPatterns.visitList(
+          path + "/dataPartitionPatterns/",
+          preChildren,
+          postChildren)) {
+        return true;
+      }
+    }
+
+    if (this.visitDef(path, preChildren, postChildren)) {
+      return true;
+    }
+
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return false;
+    }
+
+    return false;
   }
 
   /**
@@ -75,32 +105,17 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   /**
    * Gets the data partitions.
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    */
   @Override
-  @Deprecated
   public CdmCollection<CdmDataPartitionDefinition> getDataPartitions() {
-    if (this.dataPartitions == null) {
-      this.dataPartitions = new CdmCollection(this.getCtx(), this, CdmObjectType.DataPartitionDef);
-    }
     return this.dataPartitions;
   }
 
   /**
    * Gets the data partition patterns.
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    */
   @Override
-  @Deprecated
   public CdmCollection<CdmDataPartitionPatternDefinition> getDataPartitionPatterns() {
-    if (this.dataPartitionPatterns == null) {
-      this.dataPartitionPatterns = new CdmCollection(this.getCtx(), this,
-          CdmObjectType.DataPartitionPatternDef);
-    }
     return this.dataPartitionPatterns;
   }
 
@@ -159,7 +174,15 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final OffsetDateTime modifiedTime = getCtx().getCorpus().computeLastModifiedTimeAsync(getEntityPath()).join();
+      final String fullPath =
+          this.getCtx()
+              .getCorpus()
+              .getStorage()
+              .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
+      final OffsetDateTime modifiedTime = getCtx()
+          .getCorpus()
+          .computeLastModifiedTimeAsync(fullPath, this)
+          .join();
 
       for (final CdmDataPartitionDefinition partition : getDataPartitions()) {
           partition.fileStatusCheckAsync().join();
@@ -212,9 +235,21 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
    */
   @Override
   @Deprecated
-  public CdmObject copy(final ResolveOptions resOpt) {
-    final CdmLocalEntityDeclarationDefinition copy = new CdmLocalEntityDeclarationDefinition(this.getCtx(),
-        this.getEntityName());
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this);
+    }
+
+    CdmLocalEntityDeclarationDefinition copy;
+    if (host == null) {
+      copy = new CdmLocalEntityDeclarationDefinition(this.getCtx(), this.getEntityName());
+    } else {
+      copy = (CdmLocalEntityDeclarationDefinition) host;
+      copy.setCtx(this.getCtx());
+      copy.setEntityName(this.getEntityName());
+      copy.getDataPartitions().clear();
+      copy.getDataPartitionPatterns().clear();
+    }
 
     copy.setEntityPath(this.getEntityPath());
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
@@ -262,7 +297,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         newPartition.getArguments().put(entry.getKey(), entry.getValue());
       }
 
-      getDataPartitions().add(newPartition);
+      this.dataPartitions.add(newPartition);
     }
   }
 }
