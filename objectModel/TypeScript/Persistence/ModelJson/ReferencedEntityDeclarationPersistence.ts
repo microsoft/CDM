@@ -50,8 +50,8 @@ export class ReferencedEntityDeclarationPersistence {
             referencedEntity.exhibitsTraits.push(isHiddenTrait);
         }
 
-        const trait: CdmTraitReference = ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.propertyContent.multiTrait');
-        trait.simpleNamedReference = false;
+        const trait: CdmTraitReference =
+            ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.propertyContent.multiTrait', false);
         trait.isFromProperty = true;
 
         const argument: CdmArgumentDefinition = ctx.corpus.MakeObject<CdmArgumentDefinition>(cdmObjectType.argumentDef, 'modelId');
@@ -86,7 +86,8 @@ export class ReferencedEntityDeclarationPersistence {
                 ReferencedEntityDeclarationPersistence.name,
                 instance.ctx,
                 'Source name is not present in entityDeclaration path.',
-                instance.atCorpusPath);
+                instance.atCorpusPath
+            );
 
             return Promise.reject('Source name is not present in entityDeclaration path.');
         }
@@ -102,7 +103,7 @@ export class ReferencedEntityDeclarationPersistence {
         if (isHidden !== undefined) {
             referenceEntity.isHidden = true;
         }
-        referenceEntity.annotations = [];
+
         await processAnnotationsToData(instance.ctx, referenceEntity, instance.exhibitsTraits);
 
         if (propertiesTrait) {

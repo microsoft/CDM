@@ -9,9 +9,9 @@ import {
     resolveContext,
     resolveOptions
 } from '../../../../internal';
-import { ManifestPersistence } from '../../../../Persistence/CdmFolder';
+import { CdmFolder } from '../../../../Persistence';
 import { DataPartition, EntityDeclarationDefinition, ManifestContent } from '../../../../Persistence/CdmFolder/types';
-import { LocalAdapter } from '../../../../StorageAdapter';
+import { LocalAdapter } from '../../../../Storage';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.DataPartition', () => {
@@ -31,7 +31,7 @@ describe('Persistence.CdmFolder.DataPartition', () => {
             'TestLoadLocalEntityWithDataPartition',
             'entities.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = ManifestPersistence.fromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'entities', 'testNamespace', '/', JSON.parse(readFile));
 
         expect(cdmManifest.entities.length)
@@ -83,10 +83,10 @@ describe('Persistence.CdmFolder.DataPartition', () => {
             'TestDataPartitionArgumentsAreSerializedAppropriately',
             'entities.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = ManifestPersistence.fromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'entities', 'testNamespace', '/', JSON.parse(readFile));
 
-        const obtainedCdmFolder: ManifestContent = ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         if (doesWriteTestDebuggingFiles) {
             testHelper.writeActualOutputFileContent(
                 testsSubpath,
@@ -122,7 +122,7 @@ describe('Persistence.CdmFolder.DataPartition', () => {
         entity.dataPartitions.push(relativePartition);
         entity.dataPartitions.push(absolutePartition);
 
-        const manifestData: ManifestContent = ManifestPersistence.toData(manifest, new resolveOptions(), new copyOptions());
+        const manifestData: ManifestContent = CdmFolder.ManifestPersistence.toData(manifest, new resolveOptions(), new copyOptions());
         expect(manifestData.entities.length)
             .toBe(1);
         const entityData: EntityDeclarationDefinition = manifestData.entities[0];

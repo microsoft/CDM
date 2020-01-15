@@ -1,18 +1,15 @@
 import {
-    CdmDocumentDefinition,
-    CdmImport,
     CdmManifestDefinition,
     CdmTraitDefinition,
     CdmTraitReference,
     ResolvedTraitSetBuilder
 } from '../../../internal';
-import {generateManifest} from './CdmCollectionHelperFunctions';
-import { ResolvedTraitSet } from '../../../ResolvedModel/ResolvedTraitSet';
+import { generateManifest } from './CdmCollectionHelperFunctions';
 
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/CdmCollection/CdmTraitCollection', () => {
-    it ('TestCdmTraitCollectionAdd', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('TestCdmTraitCollectionAdd', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'Name of other trait', undefined);
@@ -38,8 +35,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(manifest);
     });
 
-    it ('TestCdmTraitCollectionInsert', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\nothing');
+    it('TestCdmTraitCollectionInsert', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
         const trait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'traitName', false, false);
         const otherTrait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'name of other trait', false, false);
 
@@ -61,8 +58,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(manifest);
     });
 
-    it ('CdmTraitCollectionAddRange', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionAddRange', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -82,8 +79,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(manifest);
     });
 
-    it ('CdmTraitCollectionRemove', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionRemove', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -128,8 +125,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(0);
     });
 
-    it ('CdmTRaitCollectionRemoveAt', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionRemoveAt', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -152,8 +149,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(otherTrait);
     });
 
-    it ('CdmTraitCollectionIndexOf', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionIndexOf', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -183,8 +180,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(1);
     });
 
-    it ('CdmTraitCollectionRemoveOnlyFromProperty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionRemoveOnlyFromProperty', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'traitName', undefined, undefined);
         const otherTrait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'name of other trait', undefined, undefined);
@@ -216,8 +213,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(trait);
     });
 
-    it ('CdmTraitCollectionRemovePrioritizeFromProperty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionRemovePrioritizeFromProperty', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'traitName', undefined, undefined);
         const otherTrait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'name of other trait', undefined, undefined);
@@ -249,8 +246,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(otherTrait);
     });
 
-    it ('CdmTraitCollectionRemoveTraitDefinitionPrioritizeFromProperty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionRemoveTraitDefinitionPrioritizeFromProperty', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -278,8 +275,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual('traitName');
     });
 
-    it ('CdmTraitCollectionIndexOfOnlyFromProperty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionIndexOfOnlyFromProperty', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'traitName', undefined);
         const otherTrait: CdmTraitDefinition = new CdmTraitDefinition(manifest.ctx, 'name of other trait', undefined);
@@ -312,8 +309,8 @@ describe('Cdm/CdmCollection/CdmTraitCollection', () => {
             .toEqual(2);
     });
 
-    it ('CdmTraitCollectionClear', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
+    it('CdmTraitCollectionClear', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const trait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'traitName', undefined, undefined);
         const otherTrait: CdmTraitReference = new CdmTraitReference(manifest.ctx, 'name of other trait', undefined, undefined);

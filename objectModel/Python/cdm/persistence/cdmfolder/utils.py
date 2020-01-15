@@ -1,8 +1,7 @@
-from datetime import datetime
 from typing import Union, List, Optional, TYPE_CHECKING
 
 from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmAttributeItem, CdmObjectReference, CdmTraitReference
-from cdm.persistence import persistence_layer
+from cdm.persistence import PersistenceLayer
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions
 
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
@@ -46,7 +45,7 @@ def array_copy_data(res_opt: ResolveOptions, source: Union['CdmCollection', List
 
     for elem in source:
         if elem:
-            data = persistence_layer.to_data(elem, res_opt, 'CdmFolder', options)
+            data = PersistenceLayer.to_data(elem, res_opt, 'CdmFolder', options)
             casted.append(data)
 
     return casted

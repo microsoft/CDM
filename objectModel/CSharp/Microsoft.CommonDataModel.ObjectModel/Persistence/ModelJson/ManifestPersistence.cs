@@ -14,20 +14,47 @@
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The manifest persistence.
     /// </summary>
     public class ManifestPersistence
     {
-        public static async Task<CdmManifestDefinition> FromData(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
+        /// <summary>
+        /// Whether this persistence class has async methods.
+        /// </summary>
+        public static readonly bool IsPersistenceAsync = true;
+
+        /// <summary>
+        /// The file format/extension types this persistence class supports.
+        /// </summary>
+        public static readonly string[] Formats = { PersistenceLayer.FetchModelJsonExtension() };
+
+        public static async Task<CdmManifestDefinition> FromObject(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
         {
-            #region Prepare extenisonDoc
+            #region Prepare extensionDoc
             List<CdmTraitDefinition> extensionTraitDefList = new List<CdmTraitDefinition>();
             #endregion
 
             #region Set manifest fields
             CdmManifestDefinition manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, obj.Name);
+
+            // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
+            folder.Documents.Add(manifest);
+
+            if (obj.Imports != null)
+            {
+                foreach (var element in obj.Imports)
+                {
+                    manifest.Imports.Add(CdmFolder.ImportPersistence.FromData(ctx, element));
+                }
+            }
+
+            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == "cdm:/foundations.cdm.json"))
+            {
+                manifest.Imports.Add("cdm:/foundations.cdm.json");
+            }
 
             manifest.Explanation = obj.Description;
             manifest.LastFileModifiedTime = obj.ModifiedTime;
@@ -103,7 +130,7 @@
 
                     if ((string)element["$type"] == "LocalEntity")
                     {
-                        entity = await LocalEntityDeclarationPersistence.FromData(ctx, folder, element.ToObject<LocalEntity>(), extensionTraitDefList);
+                        entity = await LocalEntityDeclarationPersistence.FromData(ctx, folder, element.ToObject<LocalEntity>(), extensionTraitDefList, manifest);
                     }
                     else if ((string)element["$type"] == "ReferenceEntity")
                     {
@@ -150,15 +177,6 @@
                 }
             }
 
-            if (obj.Imports != null)
-            {
-                foreach (var element in obj.Imports)
-                {
-                    manifest.Imports.Add(CdmFolder.ImportPersistence.FromData(ctx, element));
-                }
-            }
-
-
             await Utils.ProcessAnnotationsFromData(ctx, obj, manifest.ExhibitsTraits);
 
             var localExtensionTraitDefList = new List<CdmTraitDefinition>();
@@ -173,10 +191,14 @@
             CreateExtensionDocAndAddToFolderAndImports(ctx, extensionTraitDefList, folder);
             #endregion
 
-            // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
-            folder.Documents.Add(manifest);
 
             return manifest;
+        }
+
+        public static async Task<CdmManifestDefinition> FromData(CdmCorpusContext ctx, string docName, string jsonData, CdmFolderDefinition folder)
+        {
+            var obj = JsonConvert.DeserializeObject<Model>(jsonData);
+            return await FromObject(ctx, obj, folder);
         }
 
         /// <summary>
@@ -296,26 +318,40 @@
                                     options
                                );
 
-                            ReferenceEntity referenceEntity = element as ReferenceEntity;
-                            string location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(
-                                entity.EntityPath);
+                            var location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(entity.EntityPath);
+                            if (string.IsNullOrEmpty(location))
+                            {
+                                Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"Invalid entity path set in entity {entity.EntityName}");
+                                element = null;
+                            }
 
-                            if (referenceEntity.ModelId != null)
+                            if (element is ReferenceEntity referenceEntity)
                             {
-                                if (referenceModels[referenceEntity.ModelId] == null)
+                                location = location.Slice(0, location.LastIndexOf("/"));
+
+                                if (referenceEntity.ModelId != null)
                                 {
-                                    referenceModels[referenceEntity.ModelId] = location;
+                                    if (referenceModels.TryGetValue(referenceEntity.ModelId, out var savedLocation) && savedLocation != location)
+                                    {
+                                        Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"Same ModelId pointing to different locations");
+                                        element = null;
+                                    }
+                                    else if (savedLocation == null)
+                                    {
+                                        referenceModels[referenceEntity.ModelId] = location;
+                                        referenceEntityLocations[location] = referenceEntity.ModelId;
+                                    }
                                 }
-                            }
-                            else if (referenceEntityLocations[location] != null)
-                            {
-                                referenceEntity.ModelId = referenceEntityLocations[location];
-                            }
-                            else
-                            {
-                                referenceEntity.ModelId = Guid.NewGuid().ToString();
-                                referenceModels[referenceEntity.ModelId] = location;
-                                referenceEntityLocations[location] = referenceEntity.ModelId;
+                                else if (referenceEntity.ModelId == null && referenceEntityLocations.ContainsKey(location))
+                                {
+                                    referenceEntity.ModelId = referenceEntityLocations[location];
+                                }
+                                else
+                                {
+                                    referenceEntity.ModelId = Guid.NewGuid().ToString();
+                                    referenceModels[referenceEntity.ModelId] = location;
+                                    referenceEntityLocations[location] = referenceEntity.ModelId;
+                                }
                             }
                         }
 
@@ -325,13 +361,20 @@
                         }
                         else
                         {
-                            Logger.Error(nameof(ManifestPersistence), instance.Ctx, "There was an error while trying to convert entity declaration to model json format.");
+                            Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"There was an error while trying to convert {entity.EntityName}'s entity declaration to model json format.");
                         }
                     });
-                    promises.Add(createdPromise);
-                    // TODO: Currently function is synchronous. Remove next line to turn it asynchronous.
-                    // Currently some functions called are not thread safe.
-                    await createdPromise;
+                    try
+                    {
+                        // TODO: Currently function is synchronous. Remove next line to turn it asynchronous.
+                        // Currently some functions called are not thread safe.
+                        await createdPromise;
+                        promises.Add(createdPromise);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"There was an error while trying to convert {entity.EntityName}'s entity declaration to model json format for reason {ex.Message}.");
+                    }
                 }
                 await Task.WhenAll(promises);
                 result.Entities = obtainedEntities.ToList();

@@ -39,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             private set
             {
                 this._root = value;
-                this.ExtractFilesystemAndSubPath(this._root, out this.fileSystem, out this.subPath);
+                this.ExtractFilesystemAndSubPath(this._root);
             }
         }
 
@@ -123,7 +123,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The default constructor, a user has to apply JSON config after creating it this way.
         /// </summary>
-        /// <param name="configs">The configs</param>
         public ADLSAdapter()
         {
             this.httpClient = new CdmHttpClient();
@@ -197,7 +196,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string CreateCorpusPath(string adapterPath)
         {
             var prefix = $"https://{this.Hostname}{this.Root}";
-            if (adapterPath.StartsWith(prefix))
+            if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
             {
                 return adapterPath.Substring(prefix.Length);
             }
@@ -239,7 +238,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
         {
-            this.CreateFetchAllFilesUrl(this.FormatCorpusPath(folderCorpusPath), out string url, out string directory);
+            var url = $"https://{this.Hostname}/{this.fileSystem}";
+            
+            var directory = $"{this.subPath}{FormatCorpusPath(folderCorpusPath)}";
+            if (directory.StartsWith("/"))
+            {
+                directory = directory.Substring(1);
+            }
+
             var request = await this.BuildRequest($"{url}?directory={directory}&recursive=True&resource=filesystem", HttpMethod.Get);
             CdmHttpResponse cdmResponse = await base.ExecuteRequest(request);
 
@@ -342,7 +348,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             using (HMACSHA256 hmac = new HMACSHA256(bytes))
             {
-                hmac.Key = bytes;
                 string signedString = $"SharedKey {accountName}:{System.Convert.ToBase64String(hmac.ComputeHash(dataToHash))}";
 
                 headers.Add(HttpAuthorization, signedString);
@@ -352,31 +357,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// Create the url to fetch all files async.
-        /// </summary>
-        /// <param name="currFullPath">Current full path.</param>
-        /// <param name="url">The url.</param>
-        /// <param name="directory">The directory param.</param>
-        /// <returns></returns>
-        private void CreateFetchAllFilesUrl(string currFullPath, out string url, out string directory)
-        {
-            url = $"https://{this.Hostname}/{fileSystem}";
-            directory = $"{subPath}/{currFullPath}";
-        }
-
-        /// <summary>
         /// Extracts the filesystem and sub-path from the given root value.
         /// </summary>
         /// <param name="root">The root</param>
         /// <param name="fileSystem">The extracted filesystem name</param>
         /// <param name="subPath">The extracted sub-path</param>
-        private void ExtractFilesystemAndSubPath(string root, out string fileSystem, out string subPath)
+        private void ExtractFilesystemAndSubPath(string root)
         {
             // No root value was set
             if (string.IsNullOrEmpty(root))
             {
-                fileSystem = "";
-                subPath = "";
+                this.fileSystem = "";
+                this.subPath = "";
                 return;
             }
 
@@ -386,15 +378,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             // Root contains only the file-system name, e.g. "fs-name"
             if (prepRoot.IndexOf('/') == -1)
             {
-                fileSystem = prepRoot;
-                subPath = "";
+                this.fileSystem = prepRoot;
+                this.subPath = "";
                 return;
             }
 
             // Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
             var prepRootArray = prepRoot.Split('/');
-            fileSystem = prepRootArray.First();
-            subPath = String.Join("/", prepRootArray.Skip(1));
+            this.fileSystem = prepRootArray.First();
+            this.subPath = String.Join("/", prepRootArray.Skip(1));
         }
 
         /// <summary>
@@ -526,8 +518,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception("ADLS adapter needs a config.");
             }
 
-            this.UpdateNetworkConfig(config);
-
             var configJson = JsonConvert.DeserializeObject<JObject>(config);
 
             if (configJson["root"] != null)
@@ -547,6 +537,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 throw new Exception("Hostname has to be set for ADLS adapter.");
             }
+
+            this.UpdateNetworkConfig(config);
 
             // Check first for clientId/secret auth.
             if (configJson["tenant"] != null && configJson["clientId"] != null)

@@ -1,9 +1,10 @@
 import { CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, cdmStatusLevel } from '../../../internal';
-import { LocalAdapter } from '../../../StorageAdapter';
+import { LocalAdapter } from '../../../Storage';
+import { testHelper } from '../../testHelper';
 
 describe('Cdm/Resolution/ManifestResolve', () => {
     const testsSubPath: string = 'Cdm/Resolution/ManifestResolve';
-    const schemaDocsPath: string = '../CDM.SchemaDocuments';
+    const schemaDocsPath: string = testHelper.schemaDocumentsPath;
 
     /**
      * Test if a manifest resolves correctly a referenced entity declaration

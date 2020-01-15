@@ -21,7 +21,7 @@ class CdmObjectDefinition(CdmObject):
         # the object explanation.
         self.explanation = None  # type: Optional[str]
 
-        # Internal
+        # --- internal ---
 
         self._exhibits_traits = CdmTraitCollection(ctx, self)  # type: CdmTraitCollection
 

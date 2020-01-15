@@ -109,7 +109,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
                 self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=/dir1/dir2&recursive=True&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=dir1/dir2&recursive=True&resource=filesystem')
                 self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
                 self.assertEqual(all_files, ['/dir1/dir2/file1.json', '/dir1/dir2/file2.json'])  # Verify data.
 
@@ -118,7 +118,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
                 all_files = await self.adapter.fetch_all_files_async('/')
 
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=/&recursive=True&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=&recursive=True&resource=filesystem')
 
 
 if __name__ == '__main__':

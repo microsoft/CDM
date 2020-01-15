@@ -47,10 +47,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string LocationHint { get; set; }
 
         /// <summary>
+        /// The default constructor without specifying hosts.
+        /// </summary>
+        public RemoteAdapter() : this(null)
+        {
+        }
+
+        /// <summary>
         /// The default constructor, a user has to apply JSON config or add hosts after creating it this way.
         /// </summary>
-        public RemoteAdapter()
+        public RemoteAdapter(Dictionary<string, string> hosts = null)
         {
+            if (hosts != null)
+                this.Hosts = hosts;
+
             // Create a new CDM Http Client without base URL.
             this.httpClient = new CdmHttpClient();
         }
@@ -102,6 +112,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public string CreateCorpusPath(string adapterPath)
         {
+            if (string.IsNullOrEmpty(adapterPath))
+            {
+                return null;
+            }
+
             var protocolIndex = adapterPath.IndexOf("://");
 
             if (protocolIndex == -1)

@@ -16,12 +16,12 @@
         /// <summary>
         /// The path of the SchemaDocs project.
         /// </summary>
-        private const string SchemaDocsPath = "../../../../../../CDM.SchemaDocuments";
+        private const string SchemaDocsPath = TestHelper.SchemaDocumentsPath;
 
         /// <summary>
         /// The test's data path.
         /// </summary>
-        private static string testsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
+        private static readonly string TestsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
 
         [TestMethod]
         public async Task TestResolutionGuidanceCopy()
@@ -46,95 +46,104 @@
         }
 
         /// <summary>
-        /// Resolution Guidance Test 01 - Resolve entity by name
+        /// Resolution Guidance Test - Resolve entity by name
         /// </summary>
         [TestMethod]
-        public async Task Test_01_ByEntityName()
+        public async Task TestByEntityName()
         {
-            string testName = "Test_01_ByEntityName";
+            string testName = "TestByEntityName";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 02 - Resolve entity by primarykey
+        /// Resolution Guidance Test - Resolve entity by primarykey
         /// </summary>
         [TestMethod]
-        public async Task Test_02_ByPrimaryKey()
+        public async Task TestByPrimaryKey()
         {
-            string testName = "Test_02_ByPrimaryKey";
+            string testName = "TestByPrimaryKey";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 03 - Empty ResolutionGuidance
+        /// Resolution Guidance Test - Empty ResolutionGuidance
         /// </summary>
         [TestMethod]
-        public async Task Test_03_EmptyResolutionGuidance()
+        public async Task TestEmptyResolutionGuidance()
         {
-            string testName = "Test_03_EmptyResolutionGuidance";
+            string testName = "TestEmptyResolutionGuidance";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 04 - With RenameFormat property
+        /// Resolution Guidance Test - With RenameFormat property
         /// </summary>
         [TestMethod]
-        public async Task Test_04_RenameFormat()
+        public async Task TestRenameFormat()
         {
-            string testName = "Test_04_RenameFormat";
+            string testName = "TestRenameFormat";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 05 - Empty EntityReference property
+        /// Resolution Guidance Test - Empty EntityReference property
         /// </summary>
         [TestMethod]
-        public async Task Test_05_EmptyEntityReference()
+        public async Task TestEmptyEntityReference()
         {
-            string testName = "Test_05_EmptyEntityReference";
+            string testName = "TestEmptyEntityReference";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 06 - With AllowReferences = true
+        /// Resolution Guidance Test - With AllowReferences = true
         /// </summary>
         [TestMethod]
-        public async Task Test_06_AllowReferencesTrue()
+        public async Task TestAllowReferencesTrue()
         {
-            string testName = "Test_06_AllowReferencesTrue";
+            string testName = "TestAllowReferencesTrue";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 07 - With AlwaysIncludeForeignKey = true
+        /// Resolution Guidance Test - With AlwaysIncludeForeignKey = true
         /// </summary>
         [TestMethod]
-        public async Task Test_07_AlwaysIncludeForeignKeyTrue()
+        public async Task TestAlwaysIncludeForeignKeyTrue()
         {
-            string testName = "Test_07_AlwaysIncludeForeignKeyTrue";
+            string testName = "TestAlwaysIncludeForeignKeyTrue";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 08 - With ForeignKeyAttribute property
+        /// Resolution Guidance Test- With ForeignKeyAttribute property
         /// </summary>
         [TestMethod]
-        public async Task Test_08_ForeignKeyAttribute()
+        public async Task TestForeignKeyAttribute()
         {
-            string testName = "Test_08_ForeignKeyAttribute";
+            string testName = "TestForeignKeyAttribute";
             await RunTest(testName, "Sales");
         }
 
         /// <summary>
-        /// Resolution Guidance Test 09 - With Cardinality = "one"
+        /// Resolution Guidance Test - With Cardinality = "one"
         /// </summary>
         [TestMethod]
-        public async Task Test_09_CardinalityOne()
+        public async Task TestCardinalityOne()
         {
-            string testName = "Test_09_CardinalityOne";
+            string testName = "TestCardinalityOne";
             await RunTest(testName, "Sales");
         }
 
+        /// <summary>
+        /// Resolution Guidance Test - With SelectsSubAttribute property
+        /// </summary>
+        [TestMethod]
+        public async Task TestSelectsSubAttribute()
+        {
+            string testName = "TestSelectsSubAttribute";
+            await RunTest(testName, "Sales");
+        }
 
         // this is the hook for the OM to report on errors or status 
         internal static Action<CdmStatusLevel, string> ConsoleStatusReport = (level, msg) =>
@@ -153,12 +162,12 @@
         {
             try
             {
-                string testInputPath = TestHelper.GetInputFolderPath(testsSubpath, testName);
-                string testExpectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-                string testActualOutputPath = TestHelper.GetActualOutputFolderPath(testsSubpath, testName);
+                string testInputPath = TestHelper.GetInputFolderPath(TestsSubpath, testName);
+                string testExpectedOutputPath = TestHelper.GetExpectedOutputFolderPath(TestsSubpath, testName);
+                string testActualOutputPath = TestHelper.GetActualOutputFolderPath(TestsSubpath, testName);
 
                 CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-                corpus.SetEventCallback(new Utilities.EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+                corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
                 corpus.Storage.Mount("localInput", new LocalAdapter(testInputPath));
                 corpus.Storage.Mount("localExpectedOutput", new LocalAdapter(testExpectedOutputPath));
                 corpus.Storage.Mount("localActualOutput", new LocalAdapter(testActualOutputPath));

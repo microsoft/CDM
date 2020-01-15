@@ -1,20 +1,8 @@
 import {
-    AttributeGroupPersistence,
-    ConstantEntityPersistence,
-    DataTypePersistence,
-    E2ERelationshipPersistence,
-    EntityPersistence,
-    LocalEntityDeclarationPersistence,
-    ManifestDeclarationPersistence,
-    PurposePersistence,
-    ReferencedEntityDeclarationPersistence,
-    TraitPersistence
-} from './index';
-import {DocumentPersistence} from './DocumentPersistence';
-import {
     CdmCorpusContext,
     CdmE2ERelationship,
     CdmEntityDeclarationDefinition,
+    CdmFolderDefinition,
     CdmImport,
     CdmManifestDefinition,
     cdmObjectType,
@@ -24,7 +12,19 @@ import {
 } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
+import { fetchFolioExtension, fetchManifestExtension } from '../extensionFunctions';
+import { AttributeGroupPersistence } from './AttributeGroupPersistence';
+import { ConstantEntityPersistence } from './ConstantEntityPersistence';
+import { DataTypePersistence } from './DataTypePersistence';
+import { DocumentPersistence } from './DocumentPersistence';
+import { E2ERelationshipPersistence } from './E2ERelationshipPersistence';
+import { EntityPersistence } from './EntityPersistence';
 import { ImportPersistence } from './ImportPersistence';
+import { LocalEntityDeclarationPersistence } from './LocalEntityDeclarationPersistence';
+import { ManifestDeclarationPersistence } from './ManifestDeclarationPersistence';
+import { PurposePersistence } from './PurposePersistence';
+import { ReferencedEntityDeclarationPersistence } from './ReferencedEntityDeclarationPersistence';
+import { TraitPersistence } from './TraitPersistence';
 import {
     EntityDeclarationDefinition,
     entityDeclarationDefinitionType,
@@ -35,7 +35,19 @@ import {
 import * as utils from './utils';
 
 export class ManifestPersistence {
-    public static fromData(ctx: CdmCorpusContext, name: string, namespace: string, path: string, dataObj: ManifestContent): CdmManifestDefinition {
+    // Whether this persistence class has async methods.
+    public static readonly isPersistenceAsync: boolean = false;
+
+    // The file format/extension types this persistence class supports.
+    public static readonly formats: string[] = [fetchManifestExtension(), fetchFolioExtension()];
+
+    public static fromObject(
+        ctx: CdmCorpusContext,
+        name: string,
+        namespace: string,
+        path: string,
+        dataObj: ManifestContent
+    ): CdmManifestDefinition {
         // Determine name of the manifest
         let manifestName: string;
         if (dataObj) {
@@ -43,8 +55,8 @@ export class ManifestPersistence {
         }
         // We haven't found the name in the file, use one provided in the call but without the suffixes
         if (!manifestName && name) {
-            manifestName = name.replace('.manifest.cdm.json', '')
-                .replace('.folio.cdm.json', '');
+            manifestName = name.replace(fetchManifestExtension(), '')
+                .replace(fetchFolioExtension(), '');
         }
         const manifest: CdmManifestDefinition = ctx.corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, manifestName);
         // this is the document name which is assumed by constructor to be related to the the manifestName, but may not be
@@ -114,7 +126,10 @@ export class ManifestPersistence {
             }
 
             if (dataObj.exhibitsTraits) {
-                utils.addArrayToCdmCollection<CdmTraitReference>(manifest.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+                utils.addArrayToCdmCollection<CdmTraitReference>(
+                    manifest.exhibitsTraits,
+                    utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits)
+                );
             }
 
             if (dataObj.entities) {
@@ -127,7 +142,12 @@ export class ManifestPersistence {
                         } else if (entityObj.type === entityDeclarationDefinitionType.referencedEntity) {
                             entity = ReferencedEntityDeclarationPersistence.fromData(ctx, fullPath, entityObj);
                         } else {
-                            Logger.error(ManifestPersistence.name, ctx, 'Couldn\'t find the type for entity declaration', 'FromData');
+                            Logger.error(
+                                ManifestPersistence.name,
+                                ctx,
+                                'Couldn\'t find the type for entity declaration',
+                                this.fromData.name
+                            );
                         }
                     } else {
                         // We see old structure of entity declaration, check for entity schema/declaration.
@@ -162,6 +182,12 @@ export class ManifestPersistence {
         }
 
         return manifest;
+    }
+
+    public static fromData(ctx: CdmCorpusContext, docName: string, jsonData: string, folder: CdmFolderDefinition): CdmManifestDefinition {
+        const dataObj = JSON.parse(jsonData);
+
+        return ManifestPersistence.fromObject(ctx, docName, folder.namespace, folder.folderPath, dataObj);
     }
 
     public static toData(instance: CdmManifestDefinition, resOpt: resolveOptions, options: copyOptions): ManifestContent {

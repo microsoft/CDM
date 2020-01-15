@@ -118,7 +118,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public string CreateCorpusPath(string adapterPath)
         {
-            if (adapterPath.StartsWith("http")) {
+            if (string.IsNullOrEmpty(adapterPath) || adapterPath.StartsWith("http")) {
                 return null;
             }
 

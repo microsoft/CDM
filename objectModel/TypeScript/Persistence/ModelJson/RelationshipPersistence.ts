@@ -1,5 +1,5 @@
-import { processAnnotationsFromData, processAnnotationsToData } from '.';
-import { CdmCorpusContext, CdmE2ERelationship, cdmObjectType, cdmStatusLevel, copyOptions, resolveOptions } from '../../internal';
+import { ModelJson } from '..';
+import { CdmCorpusContext, CdmE2ERelationship, cdmObjectType, copyOptions, resolveOptions } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import { SingleKeyRelationship } from './types';
 
@@ -33,7 +33,7 @@ export class RelationshipPersistence {
 
         const relationship: CdmE2ERelationship = ctx.corpus.MakeObject<CdmE2ERelationship>(cdmObjectType.e2eRelationshipDef, obj.name);
 
-        await processAnnotationsFromData(ctx, obj, relationship.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsFromData(ctx, obj, relationship.exhibitsTraits);
 
         relationship.name = obj.name;
         relationship.explanation = obj.description;
@@ -62,7 +62,7 @@ export class RelationshipPersistence {
 
         result.description = instance.explanation;
         result.name = instance.name;
-        await processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         return result;
     }

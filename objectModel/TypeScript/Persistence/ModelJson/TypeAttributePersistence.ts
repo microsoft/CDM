@@ -1,4 +1,4 @@
-import { processAnnotationsFromData, processAnnotationsToData } from '.';
+import { ModelJson } from '..';
 import {
     CdmCorpusContext,
     cdmDataFormat,
@@ -11,7 +11,7 @@ import {
     traitToPropertyMap
 } from '../../internal';
 import { processExtensionFromJson } from './ExtensionHelper';
-import { Attribute, DataType, attributeBaseProperties } from './types';
+import { Attribute, attributeBaseProperties, DataType } from './types';
 
 export class TypeAttributePersistence {
     public static async fromData(
@@ -34,7 +34,7 @@ export class TypeAttributePersistence {
             attribute.appliedTraits.push(isHiddenTrait);
         }
 
-        await processAnnotationsFromData(ctx, object, attribute.appliedTraits);
+        await ModelJson.utils.processAnnotationsFromData(ctx, object, attribute.appliedTraits);
         processExtensionFromJson(
             ctx,
             object,
@@ -56,7 +56,7 @@ export class TypeAttributePersistence {
             'cdm:traits': undefined
         };
 
-        await processAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
+        await ModelJson.utils.processAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
 
         const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
         const isHiddenTrait: CdmTraitReference = t2pm.fetchTraitReference('is.hidden');

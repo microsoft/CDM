@@ -181,7 +181,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                     CdmManifestDefinition.name,
                     this.ctx,
                     `New folder for manifest not found ${newFolderPath}`,
-                    'CreateResolvedManifestAsync'
+                    this.createResolvedManifestAsync.name
                 );
 
                 return undefined;
@@ -191,7 +191,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             resolvedManifestFolder = this.owner as CdmFolderDefinition;
         }
 
-        Logger.debug('CdmManifestDefinition', this.ctx, `resolving manifest ${this.manifestName}`, `CreateResolvedManifestAsync`);
+        Logger.debug(
+            'CdmManifestDefinition',
+            this.ctx,
+            `resolving manifest ${this.manifestName}`,
+            this.createResolvedManifestAsync.name
+        );
 
         // Using the references present in the resolved entities, get an entity
         // create an imports doc with all the necessary resolved entity references and then resolve it
@@ -211,7 +216,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
 
             if (entDef === undefined) {
-                Logger.error('CdmManifestDefinition', this.ctx, `Unable to get entity from reference`, 'CreateResolvedManifestAsync');
+                Logger.error(
+                    'CdmManifestDefinition',
+                    this.ctx,
+                    `Unable to get entity from reference`,
+                    this.createResolvedManifestAsync.name
+                );
 
                 return undefined;
             }
@@ -233,7 +243,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             // make sure the new folder exists
             const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
             if (folder === undefined) {
-                Logger.error(CdmManifestDefinition.name, this.ctx, `new folder not found ${newDocumentPath}`, 'CreateResolvedManifest');
+                Logger.error(
+                    CdmManifestDefinition.name,
+                    this.ctx,
+                    `new folder not found ${newDocumentPath}`,
+                    this.createResolvedManifestAsync.name
+                );
 
                 return undefined;
             }
@@ -248,7 +263,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                 'CdmManifestDefinition',
                 this.ctx,
                 `resolving entity ${sourceEntityFullPath} to document {newDocumentFullPath}`,
-                'CreateResolvedManifestAsync'
+                this.createResolvedManifestAsync.name
             );
 
             const resolvedEntity: CdmEntityDefinition =
@@ -277,7 +292,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             return undefined;
         }
 
-        Logger.debug('CdmManifestDefinition', this.ctx, `calculating relationships`, 'CreateResolvedManifestAsync');
+        Logger.debug(
+            'CdmManifestDefinition',
+            this.ctx,
+            `calculating relationships`,
+            this.createResolvedManifestAsync.name
+        );
 
         // calculate the entity graph for this manifest and any submanifests
         await this.ctx.corpus._calculateEntityGraphAsync(resolvedManifest as unknown as CdmManifestDefinition, resEntMap);
@@ -390,7 +410,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         const result: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
         if (result === undefined) {
-            Logger.error(CdmManifestDefinition.name, this.ctx, `failed to resolve entity ${entityPath}`, `GetEntityFromReference`);
+            Logger.error(
+                CdmManifestDefinition.name,
+                this.ctx,
+                `failed to resolve entity ${entityPath}`,
+                this.getEntityFromReference.name
+            );
         }
 
         return result;
@@ -460,7 +485,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                 'CdmManifestDefinition',
                 this.ctx,
                 `Could not save document ${relative} because it couldn't be loaded.`,
-                'saveDirtyLink'
+                this.saveDirtyLink.name
             );
 
             return false;
@@ -471,7 +496,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             if (docImp.isDirty) {
                 // save it with the same name
                 if (await docImp.saveAsAsync(docImp.name, true, options) === false) {
-                    Logger.error('CdmManifestDefinition', this.ctx, `failed saving document ${docImp.name}`, 'saveDirtyLink');
+                    Logger.error(
+                        'CdmManifestDefinition',
+                        this.ctx,
+                        `failed saving document ${docImp.name}`,
+                        this.saveDirtyLink.name
+                    );
                 }
             }
         }
@@ -490,7 +520,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                         'CdmManifestDefinition',
                         this.ctx,
                         `Failed saving imported document ${imp.atCorpusPath}`,
-                        'SaveLinkedDocuments'
+                        this.saveLinkedDocuments.name
                     );
                 }
             }
@@ -505,7 +535,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                             'CdmManifestDefinition',
                             this.ctx,
                             `failed saving local entity schema document ${defImp.entityPath}`,
-                            'SaveLinkedDocumnets'
+                            this.saveLinkedDocuments.name
                         );
 
                         return false;
@@ -520,7 +550,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                                         'CdmManifestDefinition',
                                         this.ctx,
                                         `failed saving local entity schema documnet ${defImp.entityPath}`,
-                                        'SaveLinkedDocuments'
+                                        this.saveLinkedDocuments.name
                                     );
 
                                     return false;
@@ -537,7 +567,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                                         'CdmManifestDifinition',
                                         this.ctx,
                                         `Failed saving partition shcema document ${part.specializedSchema}`,
-                                        'SaveLinkedDocuments'
+                                        this.saveLinkedDocuments.name
                                     );
                                 }
                             }
@@ -553,7 +583,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                         'CdmManifestDefinition',
                         this.ctx,
                         `failed saving sub-manifest document ${sub.definition}`,
-                        'LaveLivkedDocuments'
+                        this.saveLinkedDocuments.name
                     );
 
                     return false;

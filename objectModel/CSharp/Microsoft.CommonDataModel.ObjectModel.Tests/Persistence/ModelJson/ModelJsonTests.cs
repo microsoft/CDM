@@ -11,6 +11,7 @@
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using System.Collections.Generic;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     /// <summary>
     /// The model json tests.
@@ -20,12 +21,9 @@
         /// <summary>
         /// The path between TestDataPath and TestName.
         /// </summary>
-        private string testsSubpath = Path.Combine("Persistence", "ModelJson", "ModelJson");
+        private readonly string testsSubpath = Path.Combine("Persistence", "ModelJson", "ModelJson");
 
-        private bool doesWriteTestDebuggingFiles = TestHelper.DoesWriteTestDebuggingFiles;
-
-        private readonly string CdmRootPath = Path.Combine(TestHelper.TestDataPath, "Persistence", "CdmFolder", "TestCorpus");
-        private readonly string ModelJsonExtensibilityRootPath = Path.Combine(TestHelper.TestDataPath, "Persistence", "ModelJson", "Extensibility");
+        private readonly bool doesWriteTestDebuggingFiles = TestHelper.DoesWriteTestDebuggingFiles;
 
         /// <summary>
         /// Test ManifestPersistence fromData and toData and save it back to a file.
@@ -35,8 +33,7 @@
         [Retry(3)]
         public async Task TestFromAndToData()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestFromAndToData");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestFromAndToData");
 
             var watch = Stopwatch.StartNew();
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
@@ -59,8 +56,7 @@
         [Retry(3)]
         public async Task TestLoadingCdmFolderAndSavingModelJson()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestLoadingCdmFolderAndSavingModelJson");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLoadingCdmFolderAndSavingModelJson");
 
             var watch = Stopwatch.StartNew();
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("default.manifest.cdm.json", cdmCorpus.Storage.FetchRootFolder("local"));
@@ -83,8 +79,7 @@
         [Retry(3)]
         public async Task TestLoadingModelJsonResultAndSavingCdmFolder()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestLoadingModelJsonResultAndSavingCdmFolder");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLoadingModelJsonResultAndSavingCdmFolder");
 
             var watch = Stopwatch.StartNew();
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
@@ -107,8 +102,7 @@
         [Retry(3)]
         public async Task TestLoadingModelJsonAndSavingCdmFolder()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestLoadingModelJsonAndSavingCdmFolder");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLoadingModelJsonAndSavingCdmFolder");
 
             var watch = Stopwatch.StartNew();
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
@@ -131,8 +125,7 @@
         [Retry(3)]
         public async Task TestLoadingCdmFolderResultAndSavingModelJson()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestLoadingCdmFolderResultAndSavingModelJson");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLoadingCdmFolderResultAndSavingModelJson");
 
             var watch = Stopwatch.StartNew();
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("result.model.manifest.cdm.json", cdmCorpus.Storage.FetchRootFolder("local"));
@@ -152,6 +145,31 @@
         }
 
         /// <summary>
+        /// Test if when loading a model.json file the foundations is imported correctly.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Test]
+        [Retry(3)]
+        public async Task TestManifestFoundationImport()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestManifestFoundationImport");
+
+            var callback = new EventCallback
+            {
+                Invoke = (CdmStatusLevel statusLevel, string message1) =>
+                {
+                    if (statusLevel >= CdmStatusLevel.Error)
+                    {
+                        Assert.Fail(message1);
+                    }
+                }
+            };
+            corpus.SetEventCallback(callback);
+
+            var cdmManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("model.json", corpus.Storage.FetchRootFolder("local"));
+        }
+
+        /// <summary>
         /// Test if the imports location are relative to the root level file.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
@@ -161,7 +179,7 @@
             // the corpus path in the imports are relative to the document where it was defined.
             // when saving in model.json the documents are flattened to the manifest level
             // so it is necessary to recalculate the path to be relative to the manifest.
-            var corpus = this.GetLocalCorpus("notImportantLocation");
+            var corpus = TestHelper.GetLocalCorpus("notImportant", "notImportantLocation");
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var manifest = new CdmManifestDefinition(corpus.Ctx, "manifest");
@@ -178,6 +196,8 @@
             var subFolder = entityFolder.ChildFolders.Add("subfolder");
             subFolder.Documents.Add("EntityName.cdm.json");
 
+            corpus.Storage.FetchRootFolder("remote").Documents.Add(manifest);
+
             var data = await ManifestPersistence.ToData(manifest, null, null);
 
             Assert.AreEqual(1, data.Entities.Count);
@@ -187,13 +207,65 @@
         }
 
         /// <summary>
+        /// Test if the referenceModels is generated correctly.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Test]
+        public async Task TestReferenceModels()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestReferenceModels");
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("model.json", corpus.Storage.FetchRootFolder("local"));
+
+            // entity with same modelId but different location
+            var referenceEntity1 = new CdmReferencedEntityDeclarationDefinition(corpus.Ctx, "ReferenceEntity1")
+            {
+                EntityPath = "remote:/contoso/entity1.model.json/Entity1"
+            };
+            var modelIdTrait1 = referenceEntity1.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            modelIdTrait1.IsFromProperty = true;
+            modelIdTrait1.Arguments.Add("modelId", "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612");
+            manifest.Entities.Add(referenceEntity1);
+
+            // entity without modelId but same location
+            var referenceEntity2 = new CdmReferencedEntityDeclarationDefinition(corpus.Ctx, "ReferenceEntity2")
+            {
+                EntityPath = "remote:/contoso/entity.model.json/Entity2"
+            };
+            manifest.Entities.Add(referenceEntity2);
+
+            // entity with modelId and new location
+            var referenceEntity3 = new CdmReferencedEntityDeclarationDefinition(corpus.Ctx, "ReferenceEntity3")
+            {
+                EntityPath = "remote:/contoso/entity3.model.json/Entity3"
+            };
+            var modelIdTrait3 = referenceEntity3.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            modelIdTrait3.IsFromProperty = true;
+            modelIdTrait3.Arguments.Add("modelId", "3b2e040a-c8c5-4508-bb42-09952eb04a50");
+            manifest.Entities.Add(referenceEntity3);
+
+            // entity with same modelId and same location
+            var referenceEntity4 = new CdmReferencedEntityDeclarationDefinition(corpus.Ctx, "ReferenceEntity4")
+            {
+                EntityPath = "remote:/contoso/entity.model.json/Entity4"
+            };
+            var modelIdTrait4 = referenceEntity4.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            modelIdTrait4.IsFromProperty = true;
+            modelIdTrait4.Arguments.Add("modelId", "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612");
+            manifest.Entities.Add(referenceEntity4);
+
+
+            var obtainedModelJson = await ManifestPersistence.ToData(manifest, null, null);
+            this.HandleOutput("TestReferenceModels", "model.json", obtainedModelJson);
+        }
+
+        /// <summary>
         /// Tests loading Model.json and converting to a CdmFolder.
         /// </summary>
         [Test]
         public async Task TestExtensibilityLoadingModelJsonAndSavingCdmFolder()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestExtensibilityLoadingModelJsonAndSavingCdmFolder");
-            var cdmCorpus = this.GetLocalCorpus(testInputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestExtensibilityLoadingModelJsonAndSavingCdmFolder");
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
 
             var obtainedCdmFolder = CdmFolderPersistence.ManifestPersistence.ToData(cdmManifest, null, null);

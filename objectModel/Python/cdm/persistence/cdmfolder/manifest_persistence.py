@@ -2,7 +2,8 @@ import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition
-from cdm.utilities import CopyOptions, ResolveOptions, time_utils
+from cdm.persistence import PersistenceLayer
+from cdm.utilities import logger, CopyOptions, ResolveOptions, time_utils
 
 from . import utils
 from .attribute_group_persistence import AttributeGroupPersistence
@@ -19,9 +20,21 @@ from .trait_persistence import TraitPersistence
 from .types import ManifestContent
 
 
+_TAG = 'ManifestPersistence'
+
+
 class ManifestPersistence:
+    is_persistence_async = False
+
+    formats = [PersistenceLayer._MANIFEST_EXTENSION, PersistenceLayer._FOLIO_EXTENSION]
+
     @staticmethod
-    async def from_data(ctx: CdmCorpusContext, name: str, namespace: str, path: str, data: ManifestContent) -> CdmManifestDefinition:
+    def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmManifestDefinition':
+        obj = ManifestContent().decode(json_data)
+        return ManifestPersistence.from_object(ctx, doc_name, folder.namespace, folder.folder_path, obj)
+
+    @staticmethod
+    def from_object(ctx: CdmCorpusContext, name: str, namespace: str, path: str, data: 'ManifestContent') -> 'CdmManifestDefinition':
         if data is None:
             return None
 
@@ -30,7 +43,7 @@ class ManifestPersistence:
         elif data.get('folioName'):
             manifest_name = data.folioName
         elif name:
-            manifest_name = name.replace('.manifest.cdm.json', '').replace('.folio.cdm.json', '')
+            manifest_name = name.replace(PersistenceLayer._MANIFEST_EXTENSION, '').replace(PersistenceLayer._FOLIO_EXTENSION, '')
         else:
             manifest_name = ''
 
@@ -93,7 +106,7 @@ class ManifestPersistence:
                 elif entity_obj.get('type') == 'ReferencedEntity' or 'entityDeclaration' in entity_obj:
                     manifest.entities.append(ReferencedEntityDeclarationPersistence.from_data(ctx, full_path, entity_obj))
                 else:
-                    ctx.logger.error('Folio entity type should be either LocalEntity or Referenced entity.', entity_obj.entityName)
+                    logger.error(_TAG, ctx, 'Couldn\'t find the type for entity declaration',  ManifestPersistence.from_object.__name__)
                     return None
 
         if data.get('relationships'):
@@ -113,10 +126,11 @@ class ManifestPersistence:
         return manifest
 
     @staticmethod
-    async def to_data(instance: CdmManifestDefinition, res_opt: ResolveOptions, options: CopyOptions) -> ManifestContent:
+    def to_data(instance: CdmManifestDefinition, res_opt: ResolveOptions, options: CopyOptions) -> ManifestContent:
         manifest = ManifestContent()
 
         manifest.manifestName = instance.manifest_name
+        manifest.schema = instance.schema
         manifest.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
         manifest.lastFileStatusCheckTime = time_utils.get_formatted_date_string(instance.last_file_status_check_time)
         manifest.lastFileModifiedTime = time_utils.get_formatted_date_string(instance.last_file_modified_time)

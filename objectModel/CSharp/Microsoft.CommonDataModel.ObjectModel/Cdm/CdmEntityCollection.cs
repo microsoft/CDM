@@ -7,6 +7,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Generic;
 
     /// <summary>
@@ -36,11 +37,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (entity.Owner == null)
             {
-                entity.Owner = this.Owner;
-                if (entity.Owner == null)
-                {
-                    throw new System.ArgumentException("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.");
-                }
+                Logger.Error(nameof(CdmEntityCollection), entity.Ctx, "Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.", nameof(Add));
+                return null;
             }
 
             var entityDeclaration = (this.Ctx.Corpus as CdmCorpusDefinition).MakeObject<CdmEntityDeclarationDefinition>(this.DefaultType, entity.EntityName, simpleRef);

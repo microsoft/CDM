@@ -4,12 +4,23 @@
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
 
     public class DocumentPersistence
     {
-        public static CdmDocumentDefinition FromData(CdmCorpusContext ctx, string name, string nameSpace, string path, DocumentContent obj)
+        /// <summary>
+        /// Whether this persistence class has async methods.
+        /// </summary>
+        public static readonly bool IsPersistenceAsync = false;
+
+        /// <summary>
+        /// The file format/extension types this persistence class supports.
+        /// </summary>
+        public static readonly string[] Formats = { ".cdm.json" };
+
+        public static CdmDocumentDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, DocumentContent obj)
         {
             var doc = ctx.Corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, name);
             doc.FolderPath = path;
@@ -48,6 +59,12 @@
             }
 
             return doc;
+        }
+
+        public static CdmDocumentDefinition FromData(CdmCorpusContext ctx, string docName, string jsonData, CdmFolderDefinition folder)
+        {
+            var obj = JsonConvert.DeserializeObject<DocumentContent>(jsonData);
+            return FromObject(ctx, docName, folder.Namespace, folder.FolderPath, obj);
         }
 
         public static DocumentContent ToData(CdmDocumentDefinition instance, ResolveOptions resOpt, CopyOptions options)

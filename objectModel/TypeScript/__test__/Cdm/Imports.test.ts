@@ -1,8 +1,7 @@
 import { CdmDocumentDefinition } from '../../Cdm/CdmDocumentDefinition';
-import { CdmImport } from '../../Cdm/CdmImport';
 import { CdmManifestDefinition } from '../../Cdm/CdmManifestDefinition';
 import { CdmCorpusDefinition, cdmStatusLevel, StorageAdapter } from '../../internal';
-import { LocalAdapter } from '../../StorageAdapter';
+import { LocalAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
 
 /**

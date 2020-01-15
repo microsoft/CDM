@@ -152,38 +152,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmAttributeResolutionGuidance c;
+            CdmAttributeResolutionGuidance copy;
             if (host == null)
             {
-                c = new CdmAttributeResolutionGuidance(this.Ctx);
+                copy = new CdmAttributeResolutionGuidance(this.Ctx);
             }
             else
             {
-                c = host as CdmAttributeResolutionGuidance;
-                c.Ctx = this.Ctx;
-                c.expansion = null;
-                c.entityByReference = null;
-                c.selectsSubAttribute = null;
+                copy = host as CdmAttributeResolutionGuidance;
+                copy.Ctx = this.Ctx;
+                copy.expansion = null;
+                copy.entityByReference = null;
+                copy.selectsSubAttribute = null;
             }
 
-            c.removeAttribute = this.removeAttribute;
+            copy.removeAttribute = this.removeAttribute;
             if (this.imposedDirectives != null)
             {
-                c.imposedDirectives = new List<string>(this.imposedDirectives);
+                copy.imposedDirectives = new List<string>(this.imposedDirectives);
             }
 
             if (this.removedDirectives != null)
             {
-                c.removedDirectives = new List<string>(this.removedDirectives);
+                copy.removedDirectives = new List<string>(this.removedDirectives);
             }
 
-            c.addSupportingAttribute = this.addSupportingAttribute;
-            c.cardinality = this.cardinality;
-            c.renameFormat = this.renameFormat;
+            copy.addSupportingAttribute = this.addSupportingAttribute;
+            copy.cardinality = this.cardinality;
+            copy.renameFormat = this.renameFormat;
 
             if (this.expansion != null)
             {
-                c.expansion = new Expansion()
+                copy.expansion = new Expansion()
                 {
                     startingOrdinal = this.expansion.startingOrdinal,
                     maximumExpansion = this.expansion.maximumExpansion,
@@ -192,7 +192,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (this.entityByReference != null)
             {
-                c.entityByReference = new CdmAttributeResolutionGuidance_EntityByReference()
+                copy.entityByReference = new CdmAttributeResolutionGuidance_EntityByReference()
                 {
                     alwaysIncludeForeignKey = this.entityByReference.alwaysIncludeForeignKey,
                     referenceOnlyAfterDepth = this.entityByReference.referenceOnlyAfterDepth,
@@ -202,7 +202,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (this.selectsSubAttribute != null)
             {
-                c.selectsSubAttribute = new CdmAttributeResolutionGuidance_SelectsSubAttribute()
+                copy.selectsSubAttribute = new CdmAttributeResolutionGuidance_SelectsSubAttribute()
                 {
                     selects = this.selectsSubAttribute.selects,
                     selectedTypeAttribute = this.selectsSubAttribute.selectedTypeAttribute,
@@ -210,7 +210,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     selectsSomeAvoidNames = this.selectsSubAttribute.selectsSomeAvoidNames
                 };
             }
-            return c;
+            return copy;
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]

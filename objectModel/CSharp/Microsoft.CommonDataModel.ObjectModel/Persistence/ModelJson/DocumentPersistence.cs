@@ -52,7 +52,7 @@
         {
             if (documentObjectOrPath is string)
             {
-                if (await ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(documentObjectOrPath) is CdmEntityDefinition cdmEntity)
+                if (await ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(documentObjectOrPath, manifest) is CdmEntityDefinition cdmEntity)
                 {
                     var entity = await EntityPersistence.ToData(cdmEntity, resOpt, options, ctx);
                     if (cdmEntity.Owner != null && cdmEntity.Owner is CdmDocumentDefinition document)
@@ -67,6 +67,11 @@
                                 // when saving in model.json the documents are flattened to the manifest level
                                 // so it is necessary to recalculate the path to be relative to the manifest.
                                 var absolutePath = ctx.Corpus.Storage.CreateAbsoluteCorpusPath(import.CorpusPath, document);
+
+                                if (!string.IsNullOrEmpty(document.Namespace) && absolutePath.StartsWith(document.Namespace + ":"))
+                                {
+                                    absolutePath = absolutePath.Substring(document.Namespace.Length + 1);
+                                }
                                 import.CorpusPath = ctx.Corpus.Storage.CreateRelativeCorpusPath(absolutePath, manifest);
                                 entity.Imports.Add(import);
                             }

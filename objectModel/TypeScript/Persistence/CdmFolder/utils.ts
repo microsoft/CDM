@@ -1,27 +1,19 @@
-import {
-    AttributeGroupReferencePersistence,
-    DataTypeReferencePersistence,
-    EntityAttributePersistence,
-    EntityReferencePersistence,
-    PurposeReferencePersistence,
-    TraitReferencePersistence,
-    TypeAttributePersistence
-} from '.';
+import { CdmFolder } from '..';
 import {
     ArgumentValue,
+    CdmArgumentCollection,
     CdmAttributeItem,
     CdmCollection,
     CdmCorpusContext,
-    CdmArgumentCollection,
-    CdmDocumentCollection,
     CdmDefinitionCollection,
+    CdmDocumentCollection,
     CdmEntityCollection,
     CdmFolderCollection,
     CdmImportCollection,
-    CdmTraitCollection,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
+    CdmTraitCollection,
     CdmTraitReference,
     copyOptions,
     identifierRef,
@@ -60,7 +52,7 @@ export function createTraitReferenceArray(
 
     const result: CdmTraitReference[] = [];
     object.forEach((traitReference: string | TraitReference) => {
-        result.push(TraitReferencePersistence.fromData(ctx, traitReference));
+        result.push(CdmFolder.TraitReferencePersistence.fromData(ctx, traitReference));
     });
 
     return result;
@@ -82,7 +74,7 @@ export function addArrayToCdmCollection<T extends CdmObject>(cdmCollection: CdmC
  */
 export function arrayCopyData<T>(
     resOpt: resolveOptions,
-    source: CdmCollection<CdmObject> | CdmArgumentCollection | CdmDocumentCollection | CdmDefinitionCollection | CdmEntityCollection | CdmTraitCollection| CdmFolderCollection | CdmImportCollection | CdmObject[],
+    source: CdmCollection<CdmObject> | CdmArgumentCollection | CdmDocumentCollection | CdmDefinitionCollection | CdmEntityCollection | CdmTraitCollection | CdmFolderCollection | CdmImportCollection | CdmObject[],
     options: copyOptions): T[] {
     if (!source || !source.length) {
         return undefined;
@@ -118,22 +110,22 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
             };
         if (checkExistingProperty('purpose') || checkExistingProperty('dataType') || checkExistingProperty('entity')) {
             if (checkExistingProperty('dataType')) {
-                return TypeAttributePersistence.fromData(ctx, object as TypeAttribute);
+                return CdmFolder.TypeAttributePersistence.fromData(ctx, object as TypeAttribute);
             } else if (checkExistingProperty('entity')) {
-                return EntityAttributePersistence.fromData(ctx, object as EntityAttribute);
+                return CdmFolder.EntityAttributePersistence.fromData(ctx, object as EntityAttribute);
             } else {
                 return object;
             }
         } else if (checkExistingProperty('purposeReference')) {
-            return PurposeReferencePersistence.fromData(ctx, object as PurposeReference);
+            return CdmFolder.PurposeReferencePersistence.fromData(ctx, object as PurposeReference);
         } else if (checkExistingProperty('traitReference')) {
-            return TraitReferencePersistence.fromData(ctx, object as TraitReference);
+            return CdmFolder.TraitReferencePersistence.fromData(ctx, object as TraitReference);
         } else if (checkExistingProperty('dataTypeReference')) {
-            return DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
+            return CdmFolder.DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
         } else if (checkExistingProperty('entityReference')) {
-            return EntityReferencePersistence.fromData(ctx, object as EntityReference);
+            return CdmFolder.EntityReferencePersistence.fromData(ctx, object as EntityReference);
         } else if (checkExistingProperty('attributeGroupReference')) {
-            return AttributeGroupReferencePersistence.fromData(ctx, object as AttributeGroupReference);
+            return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object as AttributeGroupReference);
         } else {
             return object;
         }
@@ -150,11 +142,11 @@ export function createAttribute(ctx: CdmCorpusContext, object: (string | Attribu
     }
 
     if (typeof object === 'string' || isAttributeGroupReference(object)) {
-        return AttributeGroupReferencePersistence.fromData(ctx, object);
+        return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object);
     } else if (isEntityAttribute(object)) {
-        return EntityAttributePersistence.fromData(ctx, object);
+        return CdmFolder.EntityAttributePersistence.fromData(ctx, object);
     } else if (isTypeAttribute(object)) {
-        return TypeAttributePersistence.fromData(ctx, object);
+        return CdmFolder.TypeAttributePersistence.fromData(ctx, object);
     }
 }
 

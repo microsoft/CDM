@@ -2,7 +2,6 @@
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.Odi;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,7 +21,7 @@
         [TestMethod]
         public async Task TestInvalidJson()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestInvalidJson");
+            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, nameof(TestInvalidJson));
 
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
             corpus.SetEventCallback(new EventCallback{ Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
@@ -48,19 +47,25 @@
         public async Task TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck()
         {
             var testName = "TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck";
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, testName);
+            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, nameof(TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck));
 
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
             corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            LocalAdapter localAdapter = new LocalAdapter(testInputPath);
+            var localAdapter = new LocalAdapter(testInputPath);
             corpus.Storage.Mount("local", localAdapter);
+            var remoteAdapter = new RemoteAdapter
+            {
+                Hosts = new Dictionary<string, string>
+                    {
+                        { "contoso", "http://contoso.com" }
+                    }
+            };
+            corpus.Storage.Mount("remote", remoteAdapter);
             corpus.Storage.DefaultNamespace = "local";
             corpus.Storage.Unmount("cdm");
 
-
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("empty.Manifest.cdm.json");
             var manifestFromModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("Model.json");
-            var manifestFromOdi = await corpus.FetchObjectAsync<CdmManifestDefinition>("Odi.json");
 
             // Swap out the adapter for a fake one so that we aren't actually saving files. 
             Dictionary<string, string> allDocs = new Dictionary<string, string>();
@@ -80,21 +85,43 @@
             serializedManifest = allDocs[$"/{newManifestFromModelJsonName}"];
             expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.Name);
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
-
-            var newManifestFromOdiName = "ODI.json";
-            await manifestFromOdi.SaveAsAsync(newManifestFromOdiName, true);
-            // Verify that ODI persistence was called by comparing the saved document to the original ODI document.
-            serializedManifest = allDocs[$"/{newManifestFromOdiName}"];
-            expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromOdi.Name);
-            TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
-            // TODO: We need to check the odi.json for linked documents too, will add it when Bug 232672 is fixed
         }
 
         /// <summary>
+        /// Test that a document is fetched and saved when its data partition contains unregistered remote adapter path.
+        /// </summary>
+        [TestMethod]
+        public async Task TestFetchingDocumentUnderneathAPathAndSavingDocuments()
+        {
+            var testName = nameof(TestFetchingDocumentUnderneathAPathAndSavingDocuments);
+            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, testName);
+
+            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            LocalAdapter localAdapter = new LocalAdapter(testInputPath);
+            corpus.Storage.Mount("local", localAdapter);
+            corpus.Storage.DefaultNamespace = "local";
+            corpus.Storage.Unmount("cdm");
+
+            var manifestFromModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("sub-folder/model.json");
+
+            // Swap out the adapter for a fake one so that we aren't actually saving files. 
+            Dictionary<string, string> allDocs = new Dictionary<string, string>();
+            var testAdapter = new TestStorageAdapter(allDocs);
+            corpus.Storage.SetAdapter("local", testAdapter);
+
+            var newManifestFromModelJsonName = "model.json";
+            await manifestFromModelJson.SaveAsAsync(newManifestFromModelJsonName, true);
+            // Verify that model.json persistence was called by comparing the saved document to the original model.json.
+            var serializedManifest = allDocs[$"/sub-folder/{newManifestFromModelJsonName}"];
+            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.Name);
+            TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
+        }
+        /// <summary>/// 
         /// Test that saving a model.json or odi.json that isn't named exactly as such fails to save. 
         /// </summary>
         [TestMethod]
-        public async Task TestSavingInvalidModelJsonAndOdiJsonName()
+        public async Task TestSavingInvalidModelJsonName()
         {
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
             corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
@@ -112,19 +139,15 @@
             await manifest.SaveAsAsync(newManifestFromModelJsonName, true);
             // TODO: because we can load documents properly now, SaveAsAsync returns false. Will check the value returned from SaveAsAsync() when the problem is solved
             Assert.IsFalse(allDocs.ContainsKey($"/{newManifestFromModelJsonName}"));
-
-            var newManifestFromOdiName = "my.odi.json";
-            await manifest.SaveAsAsync(newManifestFromOdiName, true);
-            Assert.IsFalse(allDocs.ContainsKey($"/{newManifestFromOdiName}"));
         }
 
         /// <summary>
-        /// Test that loading a model.json or odi.json that isn't named exactly as such fails to load.  
+        /// Test that loading a model.json that isn't named exactly as such fails to load.  
         /// </summary>
         [TestMethod]
-        public async Task TestLoadingInvalidModelJsonAndOdiJsonName()
+        public async Task TestLoadingInvalidModelJsonName()
         {
-            var testName = "TestLoadingInvalidModelJsonAndOdiJsonName";
+            var testName = "TestLoadingInvalidModelJsonName";
             var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, testName);
 
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
@@ -135,9 +158,6 @@
             // We are trying to load a file with an invalid name, so FetchObjectAsync() should just return null.
             var invalidModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("test.model.json");
             Assert.IsNull(invalidModelJson);
-
-            var invalidOdiJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("test.odi.json");
-            Assert.IsNull(invalidOdiJson);
         }
     }
 

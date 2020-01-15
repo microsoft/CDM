@@ -2,7 +2,7 @@
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import TraitToPropertyMap
+from cdm.utilities import logger, TraitToPropertyMap
 
 from . import extension_helper, utils
 from .types import Partition
@@ -22,6 +22,10 @@ class DataPartitionPersistence:
         data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.name if data.get('name') else None)
         data_partition.description = data.get('description')
         data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
+
+        if not data_partition.location:
+            logger.warning(DataPartitionPersistence.__name__, ctx,
+                           'Couldn\'t find data partition\'s location for partition {}.'.format(data_partition.name), DataPartitionPersistence.from_data.__name__)
 
         if data.get('refreshTime'):
             data_partition.refresh_time = data.refreshTime
@@ -47,7 +51,7 @@ class DataPartitionPersistence:
             if csv_format_trait:
                 data_partition.exhibits_traits.append(csv_format_trait)
             else:
-                ctx.logger.error('There was a problem while processing csv format settings inside data partition.')
+                logger.error(DataPartitionPersistence.__name__, ctx, 'There was a problem while processing csv format settings inside data partition.')
                 return
 
         extension_helper.process_extension_from_json(ctx, data, data_partition.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
@@ -55,15 +59,19 @@ class DataPartitionPersistence:
         return data_partition
 
     @staticmethod
-    async def to_data(instance: 'CdmDataPartitionDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions', ctx: 'CdmCorpusContext') -> Optional['Partition']:
+    async def to_data(instance: 'CdmDataPartitionDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions') -> Optional['Partition']:
         result = Partition()
         result.name = instance.name
         result.description = instance.description
-        result.location = ctx.corpus.storage.corpus_path_to_adapter_path(
-            ctx.corpus.storage.create_absolute_corpus_path(instance.location, instance.in_document))
+        result.location = instance.ctx.corpus.storage.corpus_path_to_adapter_path(
+            instance.ctx.corpus.storage.create_absolute_corpus_path(instance.location, instance.in_document))
         result.refreshTime = instance.refresh_time
         result.lastFileModifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         result.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
+
+        if not result.location:
+            logger.warning(DataPartitionPersistence.__name__, instance.ctx,
+                           'Couldn\'t find data partition\'s location for partition {}.'.format(result.name), DataPartitionPersistence.to_data.__name__)
 
         # filter description since it is mapped to a property
         exhibits_traits = filter(lambda t: t.named_reference != 'is.localized.describedAs', instance.exhibits_traits)
@@ -82,7 +90,7 @@ class DataPartitionPersistence:
                 result.fileFormatSettings = csv_format_settings
                 result.fileFormatSettings.type = 'CsvFormatSettings'
             else:
-                ctx.logger.error('There was a problem while processing csv format trait inside data partition.')
+                logger.error(DataPartitionPersistence.__name__, instance.ctx, 'There was a problem while processing csv format trait inside data partition.')
                 return
 
         return result

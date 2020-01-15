@@ -2,7 +2,7 @@
 from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.utilities import CopyOptions, logger, ResolveOptions
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
@@ -62,6 +62,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self._needs_indexing = True
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
+        self._TAG = CdmDocumentDefinition.__name__
 
         self._clear_caches()
 
@@ -125,14 +126,12 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # make the corpus internal machinery pay attention to this document for this call
         corpus = self.folder._corpus
 
-        docs_just_added = set()  # type Set[CdmDocumentDefinition]
-        docs_not_found = set()  # type Set[str]
-        await corpus.resolve_imports_async(self, docs_just_added, docs_not_found)
+        await corpus._resolve_imports_async(self)
 
         # maintain actual current doc
-        docs_just_added.add(self)
+        corpus._docs_not_indexed.add(self)
 
-        return corpus._index_documents(res_opt, self, docs_just_added)
+        return corpus._index_documents(res_opt, self)
 
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
@@ -155,8 +154,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         was_blocking = self.ctx.corpus.block_declared_path_changes
         self.ctx.corpus.block_declared_path_changes = True
 
-        # shout into the void
-        self.ctx.logger.info('Localizing corpus paths in document \'{}\''.format(self.name))
+        logger.info(self._TAG, self.ctx, 'Localizing corpus paths in document \'{}\''.format(self.name), self._localize_corpus_paths.__name__)
 
         def import_callback(obj: 'CdmObject', path: str) -> bool:
             nonlocal all_went_well
@@ -348,10 +346,15 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         linked from the source doc and that have been modified. existing document names are used for those."""
         options = options if options is not None else CopyOptions()
 
+        index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self))
+        if not index_if_needed:
+            logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
+            return False
+
         if new_name == self.name:
             self._is_dirty = False
 
-        return await self.ctx.corpus._save_document_as(self, options, new_name, save_referenced)
+        return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
 
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
         # the only linked documents would be the imports
@@ -362,7 +365,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 if doc_imp and doc_imp._is_dirty:
                     # save it with the same name
                     if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                        self.ctx.logger.error('Failed to save import {}'.format(doc_imp.name))
+                        logger.error(self._TAG, self.ctx, 'Failed to save import {}'.format(doc_imp.name), self._save_linked_documents_async.__name__)
                         return False
         return True
 

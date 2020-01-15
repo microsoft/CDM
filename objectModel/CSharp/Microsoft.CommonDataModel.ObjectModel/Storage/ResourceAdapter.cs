@@ -4,7 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;

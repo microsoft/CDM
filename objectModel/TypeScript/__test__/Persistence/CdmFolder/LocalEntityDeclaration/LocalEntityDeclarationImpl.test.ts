@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs';
 import { CdmCorpusDefinition, CdmLocalEntityDeclarationDefinition, CdmManifestDefinition, cdmObjectType, resolveContext } from '../../../../internal';
-import { ManifestPersistence } from '../../../../Persistence/CdmFolder';
+import { CdmFolder } from '../../../../Persistence';
 import { ManifestContent } from '../../../../Persistence/CdmFolder/types';
 import { testHelper } from '../../../testHelper';
 
@@ -20,7 +19,7 @@ describe('Persistence.CdmFolder.LocalEntityDeclaration', () => {
             'TestLoadLocalEntityNoPartition',
             'entities.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), '', '', '', JSON.parse(readFile));
         expect(cdmManifest.entities.length)
             .toBe(1);
@@ -51,7 +50,7 @@ describe('Persistence.CdmFolder.LocalEntityDeclaration', () => {
             'TestLoadLocalEntityNoPartitionnamespaceSet',
             'entities.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'testEntity', 'testNamespace', '/', JSON.parse(readFile));
         expect(cdmManifest.entities.length)
             .toBe(1);
@@ -71,7 +70,7 @@ describe('Persistence.CdmFolder.LocalEntityDeclaration', () => {
         expect(entity.dataPartitionPatterns.length)
             .toBe(0);
 
-        const manifestToData: ManifestContent = ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const manifestToData: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         expect(manifestToData.entities[0].entityPath)
             .toBe('Account.cdm.json/Account');
     });
@@ -86,7 +85,7 @@ describe('Persistence.CdmFolder.LocalEntityDeclaration', () => {
             'TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet',
             'entitiesWithNamespace.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'testEntity', 'testNamespace', '/', JSON.parse(readFile));
         expect(cdmManifest.entities.length)
             .toBe(1);
@@ -106,7 +105,7 @@ describe('Persistence.CdmFolder.LocalEntityDeclaration', () => {
         expect(entity.dataPartitionPatterns.length)
             .toBe(0);
 
-        const manifestToData: ManifestContent = ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const manifestToData: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         expect(manifestToData.entities[0].entityPath)
             .toBe('testNamespace:/Account.cdm.json/Account');
     });

@@ -1,4 +1,4 @@
-import * as http from 'http'
+import * as http from 'http';
 import { CdmHttpResponse } from './CdmHttpResponse';
 
 /**

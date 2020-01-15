@@ -1,5 +1,5 @@
 // tslint:disable
-import { performance } from 'perf_hooks';
+// import { performance } from 'perf_hooks';
 import {
     CdmArgumentDefinition,
     CdmAttributeContext,
@@ -110,9 +110,11 @@ export class CdmProfiler implements ICdmProfiler {
                 this.calls.set(loc, cnt);
             }
             cnt.calls++;
-            const n: number = performance.now();
+            const n: number = 0;
+            //const n: number = performance.now();
             const retVal: any = code();
-            let elaspsed: number = performance.now() - n;
+            let elaspsed: number = 1;
+            //let elaspsed: number = performance.now() - n;
             if (elaspsed < 0) {
                 elaspsed = 0.00001;
             }

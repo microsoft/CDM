@@ -1,6 +1,7 @@
 ﻿from typing import List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 from . import extension_helper, utils
 from .type_attribute_persistence import TypeAttributePersistence
@@ -27,7 +28,7 @@ class EntityPersistence:
             if type_attribute is not None:
                 entity.attributes.append(type_attribute)
             else:
-                ctx.logger.error('There was an error while trying to convert model.json attribute to cdm attribute.')
+                logger.error(EntityPersistence.__name__, ctx, 'There was an error while trying to convert model.json attribute to cdm attribute.')
                 return
 
         extension_helper.process_extension_from_json(ctx, data, entity.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
@@ -50,7 +51,7 @@ class EntityPersistence:
                 if attribute:
                     data.attributes.append(attribute)
                 else:
-                    ctx.logger.error('There was an error while trying to convert cdm attribute to model.json attribute.')
+                    logger.error(EntityPersistence.__name__, ctx, 'There was an error while trying to convert cdm attribute to model.json attribute.')
                     return None
 
         return data

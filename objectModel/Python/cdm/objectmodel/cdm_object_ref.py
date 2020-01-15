@@ -3,6 +3,7 @@ from abc import abstractmethod
 from typing import cast, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
+from cdm.utilities import logger
 
 from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
@@ -34,6 +35,7 @@ class CdmObjectReference(CdmObject):
         # Internal
         self._declared_path = None
         self._applied_traits = CdmTraitCollection(ctx, self)
+        self._TAG = CdmObjectReference.__name__
 
     @property
     def applied_traits(self) -> 'CdmTraitCollection':
@@ -79,7 +81,7 @@ class CdmObjectReference(CdmObject):
                 rasb.remove_requested_atts()
         else:
             def_name = self.fetch_object_definition_name()
-            self.ctx.logger.warning('unable to resolve an object from the reference \'{}\''.format(def_name))
+            logger.warning(self._TAG, self.ctx, 'unable to resolve an object from the reference \'{}\''.format(def_name))
 
         return rasb
 
@@ -104,7 +106,6 @@ class CdmObjectReference(CdmObject):
         if not self.ctx:
             return None
 
-        ctx = self.ctx
         res = None
 
         # if this is a special request for a resolved attribute, look that up now
@@ -116,7 +117,7 @@ class CdmObjectReference(CdmObject):
             ent = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, ent_name, CdmObjectType.ENTITY_DEF, True)
 
             if not ent:
-                ctx.logger.warning('Unable to resolve an entity named \'%s\' from the reference \'%s\'', ent_name, self.named_reference)
+                logger.warning(self._TAG, self.ctx, 'Unable to resolve an entity named \'{}\' from the reference \'{}\''.format(ent_name, self.named_reference))
                 return None
 
             # get the resolved attribute
@@ -124,8 +125,8 @@ class CdmObjectReference(CdmObject):
             if ra:
                 res = ra.target
             else:
-                ctx.logger.warning('Could not resolve the attribute promise for \'%s\' | %s', self.named_reference,
-                                   res_opt.wrt_doc.at_corpus_path)
+                logger.warning(self._TAG, self.ctx, 'Could not resolve the attribute promise for \'{}\''.format(self.named_reference),
+                               res_opt.wrt_doc.at_corpus_path)
         else:
             # normal symbolic reference, look up from the corpus, it knows where everything is
             res = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, self.named_reference, self.object_type, True)
@@ -190,7 +191,7 @@ class CdmObjectReference(CdmObject):
         if self.named_reference and self.applied_traits is None:
             ctx = self.ctx
             cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True)
-            rts_result = ctx.cache.get(cache_tag) if cache_tag else None
+            rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
             # store the previous reference symbol set, we will need to add it with
             # children found from the _construct_resolved_traits call
@@ -210,7 +211,7 @@ class CdmObjectReference(CdmObject):
                     # get the new cache tag now that we have the list of docs
                     cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True)
                     if cache_tag:
-                        ctx.cache[cache_tag] = rts_result
+                        ctx._cache[cache_tag] = rts_result
             else:
                 # cache was found
                 # get the SymbolSet for this cached object

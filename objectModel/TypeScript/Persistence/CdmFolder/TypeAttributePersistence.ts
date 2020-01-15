@@ -1,9 +1,4 @@
-import {
-    AttributeContextReferencePersistence,
-    AttributeResolutionGuidancePersistence,
-    DataTypeReferencePersistence,
-    PurposeReferencePersistence
-} from '.';
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     cdmDataFormat,
@@ -31,13 +26,16 @@ export class TypeAttributePersistence {
             typeAttribute.explanation = object.explanation;
         }
 
-        typeAttribute.purpose = PurposeReferencePersistence.fromData(ctx, object.purpose);
-        typeAttribute.dataType = DataTypeReferencePersistence.fromData(ctx, object.dataType);
+        typeAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
+        typeAttribute.dataType = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
         typeAttribute.attributeContext =
-            AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
-        utils.addArrayToCdmCollection<CdmTraitReference>(typeAttribute.appliedTraits, utils.createTraitReferenceArray(ctx, object.appliedTraits));
+            CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
+        utils.addArrayToCdmCollection<CdmTraitReference>(
+            typeAttribute.appliedTraits,
+            utils.createTraitReferenceArray(ctx, object.appliedTraits)
+        );
         typeAttribute.resolutionGuidance =
-            AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
+            CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
 
         if (object.isReadOnly) {
             typeAttribute.isReadOnly = object.isReadOnly;
@@ -76,7 +74,7 @@ export class TypeAttributePersistence {
                     TypeAttributePersistence.name,
                     ctx,
                     `Couldn't find an enum value for ${object.dataFormat}.`,
-                    'FromData'
+                    this.fromData.name
                 );
             }
         }

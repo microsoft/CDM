@@ -71,14 +71,14 @@ for decl in manifest.entities:
 
 # Create a new document where the new entity's definition will be stored
 new_entity_doc = corpus.make_object(CdmObjectType.DOCUMENT_DEF, 'NewEntity.cdm.json')  # type: CdmDocumentDefinition
-corpus.storage.fetch_root_folder('local').add_document(new_entity_doc.name, new_entity_doc)
+corpus.storage.fetch_root_folder('local').documents.append(new_entity_doc.name, new_entity_doc)
 
-new_entity = new_entity_doc.add_definition(CdmObjectType.ENTITY_DEF, 'NewEntity')  # type: CdmEntityDefinition
+new_entity = new_entity_doc.definitions.append(CdmObjectType.ENTITY_DEF, 'NewEntity')  # type: CdmEntityDefinition
 
 # Define new string attribute and add it to the entity definition
 new_attribute = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, 'NewAttribute')  # type: CdmTypeAttributeDefinition
 new_attribute.data_format = CdmDataFormat.STRING
-new_entity.has_attributes.add(new_attribute)
+new_entity.attributes.append(new_attribute)
 
 # Create a local declaration of the entity and point it to the new entity document
 new_entity_decl = corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF)  # type: CdmLocalEntityDeclarationDefinition
@@ -87,10 +87,10 @@ new_entity_decl.entity_path = new_entity_doc.at_corpus_path + '/' + new_entity.e
 # Define a partition and add it to the local declaration
 new_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'NewPartition')  # type: CdmDataPartitionDefinition
 new_partition.location = 'adls:/new-partition.csv'
-new_entity_decl.data_partitions.add(new_partition)
+new_entity_decl.data_partitions.append(new_partition)
 
 # Add the local declaration to the manifest
-manifest.entities.add(new_entity_decl)
+manifest.entities.append(new_entity_decl)
 
 # ---------------------------------------------------------------------------------------------
 # Save the updated model to adls

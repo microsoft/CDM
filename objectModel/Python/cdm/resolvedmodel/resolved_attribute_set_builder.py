@@ -166,8 +166,8 @@ class ResolvedAttributeSetBuilder:
                 if selects_some_take_names and not selects_some_avoid_names:
                     # make an index that goes from name to insertion order
                     inverted = {}  # type: Dictionary[str, int]
-                    for index, resolved_name in enumerate(resolved_set):
-                        inverted[resolved_name] = index
+                    for index, resolved_attribute in enumerate(resolved_set):
+                        inverted[resolved_attribute._resolved_name] = index
 
                     for name in selects_some_take_names:
                         # if in the original set of attributes, take it in the new order

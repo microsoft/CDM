@@ -3,7 +3,9 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
 namespace Microsoft.CommonDataModel.Tools.Processor
 {
     using System;
@@ -25,7 +27,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
     class CommonDataModelLoader
     {
         private static AttributeResolutionDirectiveSet directives = new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
-
 
         public static Action<CdmStatusLevel, string> ConsoleStatusReport = (level, msg) =>
         {
@@ -97,7 +98,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
                 using (var reader = File.OpenText(fi.FullName))
                 {
                     string content = await reader.ReadToEndAsync().ConfigureAwait(false);
-                    CdmDocumentDefinition doc = DocumentPersistence.FromData(corpus.Ctx, fi.Name, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<DocumentContent>(content));
+                    CdmDocumentDefinition doc = DocumentPersistence.FromObject(corpus.Ctx, fi.Name, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<DocumentContent>(content));
                     folder.Documents.Add(doc);
                     Console.WriteLine($"Loading {fi.FullName}");
                 }

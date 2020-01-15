@@ -48,7 +48,7 @@
                     typeAttribute.DataFormat = cdmDataFormat;
                 } else
                 {
-                    Logger.Warning(nameof(TypeAttributePersistence), ctx, $"Couldn't find an enum value for {dataFormat}.", "FromData");
+                    Logger.Warning(nameof(TypeAttributePersistence), ctx, $"Couldn't find an enum value for {dataFormat}.", nameof(FromData));
                 }
             }
 

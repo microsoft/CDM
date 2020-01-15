@@ -48,7 +48,7 @@
 
             // Open the default manifest at the root, used later when done
             // This method turns relative corpus paths into absolute ones in case we are in some sub-folders and don't know it
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("default.folio.cdm.json");
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("default.manifest.cdm.json");
 
             Console.WriteLine("Define new extension");
 
@@ -107,7 +107,7 @@
             // await manifest.RefreshFileStatus();
 
             // Save the manifest along with linked definition files
-            await manifest.SaveAsAsync("default.manifest.cdm.json", true);
+            await manifest.SaveAsAsync("default-resolved.manifest.cdm.json", true);
         }
     }
 }

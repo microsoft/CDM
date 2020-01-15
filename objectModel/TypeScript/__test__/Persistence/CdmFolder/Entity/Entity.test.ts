@@ -5,7 +5,7 @@ import {
     CdmTraitReference,
     CdmTypeAttributeDefinition
 } from '../../../../internal';
-import { LocalAdapter } from '../../../../StorageAdapter';
+import { LocalAdapter } from '../../../../Storage';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.Entity', () => {

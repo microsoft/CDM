@@ -94,7 +94,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrWhiteSpace(this.Location);
+            return true;
         }
 
  
@@ -152,10 +152,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 path = this.DeclaredPath;
                 if (path == null)
                 {
-                    string thisName = this.GetName();
-                    if (thisName == null)
-                        thisName = "UNNAMED";
-                    path = pathFrom + thisName;
+                    path = pathFrom + (this.GetName() ?? "UNNAMED");
                     this.DeclaredPath = path;
                 }
             }

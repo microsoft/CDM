@@ -2,7 +2,7 @@ from typing import Optional
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmObjectReference
-from cdm.persistence import persistence_layer
+from cdm.persistence import PersistenceLayer
 from cdm.utilities import ResolveOptions, CopyOptions
 
 from . import utils
@@ -28,7 +28,7 @@ class CdmObjectRefPersistence:
                 copy = replace
 
         elif instance.explicit_reference:
-            er_copy = persistence_layer.to_data(instance.explicit_reference, res_opt, 'CdmFolder', options)
+            er_copy = PersistenceLayer.to_data(instance.explicit_reference, res_opt, 'CdmFolder', options)
             replace = CdmObjectRefPersistence._copy_ref_data(instance, res_opt, copy, er_copy, options)
 
             if replace:

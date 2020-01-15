@@ -10,6 +10,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public interface CdmCorpusContext
     {
+        CdmStatusLevel ReportAtLevel { get; set; }
+
         CdmCorpusDefinition Corpus { get; set; }
 
         EventCallback StatusEvent { get; }

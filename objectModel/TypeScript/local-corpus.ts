@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as cdm from './cdm-types';
 import { CdmFolderDefinition } from './internal';
-import * as persistence from './Persistence/index';
+import * as persistence from './Persistence';
 
 /* tslint:disable:no-console */
 

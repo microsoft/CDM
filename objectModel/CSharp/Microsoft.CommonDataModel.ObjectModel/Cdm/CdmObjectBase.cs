@@ -17,7 +17,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         public CdmObjectBase(CdmCorpusContext ctx)
         {
-            this.Id = CdmCorpusDefinition.NextId();
+            if (ctx?.Corpus != null)
+            {
+                // when loading imports asynchronously, multiple objects may be created at the same time so multiple objects
+                // can inadvertently get the same ID. Adding a lock here ensures that the global id variable is incremented
+                // and then that value is set to the object ID before that same process can happen for another object
+                bool lockTaken = false;
+                try
+                {
+                    // acquire spinlock
+                    ctx.Corpus.spinLock.Enter(ref lockTaken);
+                    this.Id = CdmCorpusDefinition.NextId();
+
+                }
+                finally
+                {
+                    // release spinlock
+                    if (lockTaken)
+                        ctx.Corpus.spinLock.Exit();
+                }
+            }
+
             this.Ctx = ctx;
         }
 
@@ -170,7 +190,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
-            string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
             dynamic rasbCache = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rasbCache);

@@ -35,8 +35,7 @@
                 referencedEntity.ExhibitsTraits.Add(isHiddenTrait);
             }
 
-            var trait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.propertyContent.multiTrait", true);
-            trait.SimpleNamedReference = false;
+            var trait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.propertyContent.multiTrait", false);
             trait.IsFromProperty = true;
             var argument = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "modelId");
             argument.Value = obj.ModelId;

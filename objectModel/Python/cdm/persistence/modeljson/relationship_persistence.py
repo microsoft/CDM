@@ -1,6 +1,7 @@
 ﻿from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 from . import utils
 from .types import SingleKeyRelationship, AttributeReference
@@ -9,17 +10,19 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship
     from cdm.utilities import CopyOptions, ResolveOptions
 
+_TAG = 'RelationshipPersistence'
+
 
 class RelationshipPersistence:
     @staticmethod
     async def from_data(ctx: 'CdmCorpusContext', obj: 'SingleKeyRelationship', entity_schema_by_name: Dict[str, str]) -> Optional['CdmE2ERelationship']:
         if obj.type != 'SingleKeyRelationship':
             # We don't have any other type of a relationship yet!
-            return
+            return None
 
-        if (obj.fromAttribute.entityName not in entity_schema_by_name or obj.toAttribute.entityName not in entity_schema_by_name):
-            ctx.logger.error('Trying to create relationship to an entity not defined.')
-            return
+        if obj.fromAttribute.entityName not in entity_schema_by_name or obj.toAttribute.entityName not in entity_schema_by_name:
+            logger.error(_TAG, ctx, 'Trying to create relationship to an entity not defined.')
+            return None
 
         relationship = ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, obj.get('name'))
 

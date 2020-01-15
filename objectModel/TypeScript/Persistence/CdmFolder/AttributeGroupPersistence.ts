@@ -1,12 +1,12 @@
-import { AttributeContextReferencePersistence } from '.';
 import {
+    CdmAttributeGroupDefinition,
     CdmCorpusContext,
     cdmObjectType,
-    copyOptions,
-    CdmAttributeGroupDefinition,
     CdmTraitReference,
+    copyOptions,
     resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     AttributeGroup,
     AttributeGroupReference,
@@ -24,8 +24,11 @@ export class AttributeGroupPersistence {
         if (object.explanation) {
             attributeGroup.explanation = object.explanation;
         }
-        attributeGroup.attributeContext = AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
-        utils.addArrayToCdmCollection<CdmTraitReference>(attributeGroup.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.exhibitsTraits));
+        attributeGroup.attributeContext = CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
+        utils.addArrayToCdmCollection<CdmTraitReference>(
+            attributeGroup.exhibitsTraits,
+            utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
+        );
         for (const att of object.members) {
             attributeGroup.members.push(utils.createAttribute(ctx, att));
         }

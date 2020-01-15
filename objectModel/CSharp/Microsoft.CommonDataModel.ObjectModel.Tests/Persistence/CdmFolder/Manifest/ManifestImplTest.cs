@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestLoadFolderWithNoEntityFolders()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadFolderWithNoEntityFolders", "empty.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "cdmTest", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "cdmTest", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(cdmManifest.ManifestName, "cdmTest");
             Assert.AreEqual(cdmManifest.JsonSchemaSemanticVersion, "0.9.0");
@@ -51,13 +51,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestManifestWithEverything()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestWithEverything", "complete.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.SubManifests.Count, 1);
             Assert.AreEqual(cdmManifest.Entities.Count, 2);
             Assert.AreEqual("cdmTest", cdmManifest.ManifestName);
 
             content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestWithEverything", "complete.manifest.cdm.json");
-            cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "docName.manifest.cdm.json", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName.manifest.cdm.json", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.SubManifests.Count, 1);
             Assert.AreEqual(cdmManifest.Entities.Count, 2);
             Assert.AreEqual("cdmTest", cdmManifest.ManifestName);
@@ -70,13 +70,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestFolioWithEverything()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestFolioWithEverything", "complete.folio.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(1, cdmManifest.SubManifests.Count);
             Assert.AreEqual(2, cdmManifest.Entities.Count);
             Assert.AreEqual("cdmTest", cdmManifest.ManifestName);
 
             content = TestHelper.GetInputFileContent(testsSubpath, "TestFolioWithEverything", "noname.folio.cdm.json");
-            cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "docName.folio.cdm.json", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName.folio.cdm.json", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(1, cdmManifest.SubManifests.Count);
             Assert.AreEqual(2, cdmManifest.Entities.Count);
             Assert.AreEqual("docName", cdmManifest.ManifestName);
@@ -89,7 +89,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestManifestForCopyData()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestForCopyData", "complete.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "0.9.0");

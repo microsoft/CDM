@@ -1,4 +1,3 @@
-import { DataTypePersistence } from '.';
 import {
     CdmCorpusContext,
     CdmDataTypeDefinition,
@@ -6,6 +5,7 @@ import {
     cdmObjectType,
     CdmTraitReference
 } from '../../internal';
+import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     DataTypeReference
@@ -25,7 +25,7 @@ export class DataTypeReferencePersistence extends cdmObjectRefPersistence {
             if (typeof (object.dataTypeReference) === 'string') {
                 dataType = object.dataTypeReference;
             } else {
-                dataType = DataTypePersistence.fromData(ctx, object.dataTypeReference);
+                dataType = CdmFolder.DataTypePersistence.fromData(ctx, object.dataTypeReference);
             }
         }
 

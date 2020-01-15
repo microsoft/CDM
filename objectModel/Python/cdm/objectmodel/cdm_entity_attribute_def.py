@@ -1,7 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import logger, ResolveOptions
 
 from .cdm_attribute_def import CdmAttribute
 from .relationship_info import RelationshipInfo
@@ -16,6 +16,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         super().__init__(ctx, name)
 
         self.entity = None  # type: Optional[CdmEntityReference]
+
+        # --- internal ---
+        self._TAG = CdmEntityAttributeDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -122,7 +125,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                     continue
 
                 if not reqd_trait.parameter_values:
-                    self.ctx.logger.warning('is.linkedEntity.identifier does not support arguments')
+                    logger.warning(self._TAG, self.ctx, 'is.linkedEntity.identifier does not support arguments')
                     continue
 
                 ent_references = []
@@ -269,7 +272,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         rers = ResolvedEntityReferenceSet(res_opt)
         rer = ResolvedEntityReference()
         # referencing attribute(s) come from this attribute
-        rer.referencing.rasb.merge_attributes(self._fetch_resolved_attributes(res_opt))
+        rer.referencing._rasb.merge_attributes(self._fetch_resolved_attributes(res_opt))
 
         def resolve_side(ent_ref: 'CdmEntityReference') -> ResolvedEntityReferenceSide:
             side_other = ResolvedEntityReferenceSide()
@@ -286,9 +289,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         if isinstance(other_ref, CdmObject):
                             other_attribute = other_ref.fetch_object_definition(other_opts)
                             if other_attribute:
-                                side_other.rasb.own_one(side_other.entity._fetch_resolved_attributes(other_opts)
-                                                        .get(other_attribute.get_name())
-                                                        .copy())
+                                side_other._rasb.own_one(side_other.entity._fetch_resolved_attributes(other_opts)
+                                                         .get(other_attribute.get_name())
+                                                         .copy())
 
             return side_other
 

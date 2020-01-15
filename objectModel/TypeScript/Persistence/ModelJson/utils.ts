@@ -1,15 +1,13 @@
 import { readFileSync } from 'fs';
-import { ArgumentPersistence } from '.';
+import { CdmFolder, ModelJson } from '..';
 import {
     CdmArgumentDefinition,
-    CdmCollection,
     CdmCorpusContext,
     cdmObjectType,
     CdmTraitCollection,
     CdmTraitReference,
     Logger
 } from '../../internal';
-import { TraitReferencePersistence } from '../CdmFolder';
 import { CdmJsonType, TraitReference } from '../CdmFolder/types';
 import { processExtensionTraitToObject, traitRefIsExtension } from './ExtensionHelper';
 import { Annotation, AnnotationTraitMapping, CsvFormatSettings, MetadataObject } from './types';
@@ -29,17 +27,6 @@ export function shouldAnnotationGoIntoASingleTrait(name: string): boolean {
 
 export function convertAnnotationToTrait(name: string): string {
     return annotationToTraitMap.get(name);
-}
-
-export function readAnnotationToTrait(): void {
-    const readFile: string = readFileSync('Configs/annotationToTrait.json')
-        .toString();
-
-    const fileObj: AnnotationTraitMapping[] = JSON.parse(readFile);
-
-    fileObj.forEach((el: AnnotationTraitMapping) => {
-        annotationToTraitMap.set(el.annotationName, el.traitValue);
-    });
 }
 
 export function createCsvTrait(object: CsvFormatSettings, ctx: CdmCorpusContext): CdmTraitReference {
@@ -118,7 +105,7 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
             } else {
                 const innerTrait: CdmTraitReference =
                     ctx.corpus.MakeObject(cdmObjectType.traitRef, convertAnnotationToTrait(annotation.name));
-                innerTrait.arguments.push(await ArgumentPersistence.fromData(ctx, annotation));
+                innerTrait.arguments.push(await ModelJson.ArgumentPersistence.fromData(ctx, annotation));
                 traits.push(innerTrait);
             }
         }
@@ -136,7 +123,7 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
 
         if (object['cdm:traits'] !== undefined) {
             object['cdm:traits'].forEach((trait: string | TraitReference) => {
-                traits.push(TraitReferencePersistence.fromData(ctx, trait));
+                traits.push(CdmFolder.TraitReferencePersistence.fromData(ctx, trait));
             });
         }
     }
@@ -174,14 +161,14 @@ export async function processAnnotationsToData(
 
             if (annotationName !== undefined && trait.arguments !== undefined && trait.arguments.allItems !== undefined
                 && trait.arguments.length === 1) {
-                const argument: Annotation = await ArgumentPersistence.toData(trait.arguments.allItems[0], undefined, undefined);
+                const argument: Annotation = await ModelJson.ArgumentPersistence.toData(trait.arguments.allItems[0], undefined, undefined);
 
                 if (argument !== undefined) {
                     argument.name = annotationName;
                     annotations.push(argument);
                 }
             } else if (!ignoredTraits.has(trait.namedReference)) {
-                const extension: CdmJsonType = TraitReferencePersistence.toData(trait, undefined, undefined);
+                const extension: CdmJsonType = CdmFolder.TraitReferencePersistence.toData(trait, undefined, undefined);
                 extensions.push(extension);
             }
         }

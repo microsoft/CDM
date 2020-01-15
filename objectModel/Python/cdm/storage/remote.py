@@ -59,6 +59,9 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
         raise NotImplementedError()
 
     def create_adapter_path(self, corpus_path: str) -> str:
+        if not corpus_path:
+            return None
+
         host_key_end = corpus_path.find('/', 1)
         host_key = corpus_path[1:host_key_end]
 

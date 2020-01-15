@@ -2,7 +2,7 @@
 from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
-from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions, time_utils
+from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
 
 from .cdm_collection import CdmCollection
 from .cdm_entity_collection import CdmEntityCollection
@@ -38,8 +38,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
 
-        # Internal
+        # --- internal ---
         self._file_system_modified_time = None  # type: Optional[datetime]
+        self._TAG = CdmManifestDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -127,13 +128,13 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
             resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
             if resolved_manifest_folder is None:
-                self.ctx.logger.error('New folder for manifest not found {}'.format(new_folder_path), 'create_resolved_manifest_async')
+                logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
                 return None
             new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
         else:
             resolved_manifest_folder = self.owner
 
-        self.ctx.logger.debug('resolving manifest {}'.format(source_manifest_path), 'create_resolved_manifest_async')
+        logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
 
         # using the references present in the resolved entities, get an entity
         # create an imports doc with all the necessary resolved entity references and then resolve it
@@ -151,7 +152,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             ent_def = await self._get_entity_from_reference(entity, self)
 
             if not ent_def:
-                self.ctx.logger.error('Unable to get entity from reference')
+                logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
                 return None
 
             # get the path from this manifest to the source entity. this will be the {f} replacement value
@@ -170,7 +171,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             # make sure the new folder exists
             folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
             if not folder:
-                self.ctx.logger.error('New folder not found {}'.format(new_document_path))
+                logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
                 return None
 
             # next create the resolved entity.
@@ -178,7 +179,8 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             res_opt.wrt_doc = ent_def.in_document
             res_opt.directives = AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})
 
-            self.ctx.logger.debug('    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path))
+            logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
+                         self.create_resolved_manifest_async.__name__)
 
             resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
             if not resolved_entity:
@@ -196,7 +198,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(result.entity_path, resolved_manifest)
             res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
 
-        self.ctx.logger.debug('    calculating relationships')
+        logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
         # Calculate the entity graph for just this manifest.
         await self.ctx.corpus._calculate_entity_graph_async(resolved_manifest, res_ent_map)
         # Stick results into the relationships list for the manifest.
@@ -231,7 +233,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         result = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
         if result is None:
-            self.ctx.logger.error('failed to resolve entity %s', entity_path)
+            logger.error(self._TAG, self.ctx, 'failed to resolve entity {}'.format(entity_path), self._get_entity_from_reference.__name__)
 
         return result
 
@@ -361,12 +363,12 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         # get the document object from the import
         doc_path = self.ctx.corpus.storage.create_absolute_corpus_path(relative, self)
         if doc_path is None:
-            self.ctx.logger.error('Invalid corpus path {}'.format(relative))
+            logger.error(self._TAG, self.ctx, 'Invalid corpus path {}'.format(relative), self._save_dirty_link.__name__)
             return False
 
         obj_at = await self.ctx.corpus.fetch_object_async(doc_path)
         if obj_at is None:
-            self.ctx.logger.error('Couldn\'t get object from path {}'.format(doc_path))
+            logger.error(self._TAG, self.ctx, 'Couldn\'t get object from path {}'.format(doc_path), self._save_dirty_link.__name__)
             return False
 
         doc_imp = cast('CdmDocumentDefinition', obj_at.in_document)
@@ -374,7 +376,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if doc_imp._is_dirty:
                 # save it with the same name
                 if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                    self.ctx.logger.error('failed saving document {}'.format(doc_imp.name))
+                    logger.error(self._TAG, self.ctx, 'failed saving document {}'.format(doc_imp.name), self._save_dirty_link.__name__)
                     return False
         return True
 
@@ -382,22 +384,25 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         if self.imports:
             for imp in self.imports:
                 if not await self._save_dirty_link(imp.corpus_path, options):
-                    self.ctx.logger.error('failed saving imported document {}'.format(imp.corpus_path))
+                    logger.error(self._TAG, self.ctx, 'failed saving imported document {}'.format(
+                        imp.at_corpus_path), self._save_linked_documents_async.__name__)
                     return False
 
         # only the local entity declarations please
         for entity_def in self.entities:
             if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
                 if not await self._save_dirty_link(entity_def.entity_path, options):
-                    self.ctx.logger.error('failed saving local entity schema document {}'.format(entity_def.entity_path))
+                    logger.error(self._TAG, self.ctx, 'failed saving local entity schema document {}'.format(entity_def.entity_path),
+                                 self._save_linked_documents_async.__name__)
                     return False
 
                 # also, partitions can have their own schemas
                 if entity_def.data_partitions:
                     for partition in entity_def.data_partitions:
                         if partition.specialized_schema:
-                            if not await self._save_dirty_link(partition.specialized_schema, options):
-                                self.ctx.logger.error('failed saving partition schema document {}'.format(partition.specialized_schema))
+                            if not await self._save_dirty_link(entity_def.entity_path, options):
+                                logger.error(self._TAG, self.ctx, 'failed saving partition schema document {}'.format(
+                                    entity_def.entity_path), self._save_linked_documents_async.__name__)
                                 return False
 
                 # so can patterns
@@ -405,13 +410,15 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     for pattern in entity_def.data_partition_patterns:
                         if pattern.specialized_schema:
                             if not await self._save_dirty_link(pattern.specialized_schema, options):
-                                self.ctx.logger.error('failed saving partition schema document {}'.format(pattern.specialized_schema))
+                                logger.error(self._TAG, self.ctx, 'failed saving partition schema document {}'.format(
+                                    pattern.specialized_schema), self._save_linked_documents_async.__name__)
                                 return False
 
         if self.sub_manifests:
             for sub in self.sub_manifests:
                 if not await self._save_dirty_link(sub.definition, options):
-                    self.ctx.logger.error('failed saving sub-manifest document {}'.format(sub.definition))
+                    logger.error(self._TAG, self.ctx, 'failed saving sub-manifest document {}'.format(sub.definition),
+                                 self._save_linked_documents_async.__name__)
                     return False
 
         return True

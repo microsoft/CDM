@@ -1,4 +1,3 @@
-import { PurposePersistence } from '.';
 import {
     CdmCorpusContext,
     cdmObjectType,
@@ -6,6 +5,7 @@ import {
     CdmPurposeReference,
     CdmTraitReference
 } from '../../internal';
+import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     PurposeReference
@@ -25,7 +25,7 @@ export class PurposeReferencePersistence extends cdmObjectRefPersistence {
             if (typeof (object.purposeReference) === 'string') {
                 purpose = object.purposeReference;
             } else {
-                purpose = PurposePersistence.fromData(ctx, object.purposeReference);
+                purpose = CdmFolder.PurposePersistence.fromData(ctx, object.purposeReference);
             }
         }
 

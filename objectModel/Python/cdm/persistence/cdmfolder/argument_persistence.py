@@ -1,7 +1,7 @@
 ﻿from typing import Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.persistence import persistence_layer
+from cdm.persistence import PersistenceLayer
 
 from . import utils
 from .types import Argument, CdmJsonType
@@ -40,7 +40,7 @@ class ArgumentPersistence:
 
         if instance.value is not None:
             if isinstance(instance.value, CdmObject):
-                value = persistence_layer.to_data(instance.value, res_opt, 'CdmFolder', options)
+                value = PersistenceLayer.to_data(instance.value, res_opt, 'CdmFolder', options)
             else:
                 value = instance.value
 

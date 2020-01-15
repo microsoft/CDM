@@ -75,6 +75,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                             }
                             rows.Add(row);
                         }
+
+                        if (rows.Count > 0)
+                        {
+                            var keys = rows[0].Keys.OrderBy(key => key).ToList();
+                            var firstKey = keys[0];
+                            var orderesRows = rows.OrderBy(currentRow => currentRow[firstKey]);
+
+                            if (keys.Count > 1)
+                            {
+                                var secondKey = keys[1];
+                                orderesRows = orderesRows.ThenBy(currentRow => currentRow[secondKey]);
+                            }
+
+                            rows = orderesRows.ToList();
+                        }
                     }
                     return JsonConvert.SerializeObject(rows, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
                 }

@@ -90,7 +90,7 @@ class CdmTraitReference(CdmObjectReference):
 
         cache_by_name = not trait._this_is_known_to_have_parameters
         cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_name)
-        rts_result = ctx.cache.get(cache_tag) if cache_tag else None
+        rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
@@ -140,7 +140,7 @@ class CdmTraitReference(CdmObjectReference):
             # get the new cache tag now that we have the list of docs
             cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_name)
             if cache_tag:
-                ctx.cache[cache_tag] = rts_result
+                ctx._cache[cache_tag] = rts_result
         else:
             # cache was found
             # get the SymbolSet for this cached object
@@ -153,7 +153,7 @@ class CdmTraitReference(CdmObjectReference):
 
         return rts_result
 
-    def _get_final_argument_values(self, res_opt: 'ResolveOptions') -> Optional[Dict[str, Any]]:
+    def fetch_final_argument_values(self, res_opt: 'ResolveOptions') -> Optional[Dict[str, Any]]:
         final_args = {}  # type: Dict[str, Any]
         # get resolved traits does all the work, just clean up the answers
         rts = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet

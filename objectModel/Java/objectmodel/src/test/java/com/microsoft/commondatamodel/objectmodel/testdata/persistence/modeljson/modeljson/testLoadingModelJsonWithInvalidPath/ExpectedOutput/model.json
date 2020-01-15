@@ -1,0 +1,164 @@
+{
+  "entities": [
+    {
+      "$type": "LocalEntity",
+      "attributes": [
+        {
+          "dataType": "string",
+          "name": "CustomerID"
+        },
+        {
+          "dataType": "string",
+          "name": "CompanyName"
+        },
+        {
+          "dataType": "string",
+          "name": "ContactName"
+        },
+        {
+          "dataType": "string",
+          "name": "ContactTitle"
+        },
+        {
+          "dataType": "string",
+          "name": "Address"
+        },
+        {
+          "dataType": "string",
+          "name": "City"
+        },
+        {
+          "dataType": "string",
+          "name": "Region"
+        },
+        {
+          "dataType": "string",
+          "name": "PostalCode"
+        },
+        {
+          "dataType": "string",
+          "name": "Country"
+        },
+        {
+          "dataType": "string",
+          "name": "Phone"
+        },
+        {
+          "dataType": "string",
+          "name": "Fax"
+        }
+      ],
+      "partitions": [
+        {
+          "refreshTime": "2018-11-14T19:37:55.437Z",
+          "location": "https://<ACCOUNT-NAME>.dfs.core.windows.net/<FILESYSTEM-NAME>/Customers/partition-data.csv",
+          "fileFormatSettings": {
+            "$type": "CsvFormatSettings",
+            "columnHeaders": true,
+            "delimiter": ","
+          },
+          "cdm:lastFileStatusCheckTime": "2019-05-16T10:05:00.000Z",
+          "cdm:lastFileModifiedTime": "2019-10-06T23:30:00.000Z",
+          "isHidden": true,
+          "name": "Sample Partition",
+          "cdm:traits": [
+            "is.hidden"
+          ],
+          "pbi:partitionDataQuery": "<sample partition query>",
+          "pbi:refreshBookmark": "2018-12-19T09:05:03.2374986",
+          "pbi:source": {
+            "$type": "RangePolicyPartitionSource",
+            "start": "2018-12-19T10:05:03.2374986+00:00",
+            "end": "2018-12-19T10:05:03.2374986+00:00"
+          }
+        }
+      ],
+      "schemas": [
+        "schema1",
+        "schema2"
+      ],
+      "cdm:imports": [
+        {
+          "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+          "corpusPath": "cdm:/extensions/pbi.extension.cdm.json"
+        }
+      ],
+      "name": "Customers",
+      "description": "Description of the Customers entity"
+    },
+    {
+      "$type": "LocalEntity",
+      "attributes": [
+        {
+          "dataType": "string",
+          "name": "OrderID"
+        },
+        {
+          "dataType": "string",
+          "name": "FkCustomerId"
+        }
+      ],
+      "cdm:imports": [
+        {
+          "corpusPath": "cdm:/foundations.cdm.json"
+        }
+      ],
+      "name": "Orders",
+      "description": "Description of the Orders entity",
+      "annotations": [
+        {
+          "name": "pbi:EntityTypeDisplayHint",
+          "value": "LinkedEntity"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "Orders",
+        "attributeName": "FkCustomerId"
+      },
+      "toAttribute": {
+        "entityName": "Customers",
+        "attributeName": "CustomerID"
+      }
+    }
+  ],
+  "cdm:imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "cdm:/extensions/pbi.extension.cdm.json"
+    }
+  ],
+  "name": "OrdersProductsCustomersLinked",
+  "description": "Description of the model OrdersProductsCustomersLinked",
+  "pbi:mashup": {
+    "fastCombine": true,
+    "allowNativeQueries": false,
+    "queriesMetadata": {
+      "Orders": {
+        "queryId": "88bc570c-047d-460f-8eed-c0ef17649afd",
+        "queryName": "Orders",
+        "loadEnabled": true
+      },
+      "Products": {
+        "queryId": "f33e2de9-69f0-42db-adc9-a244aa544b0a",
+        "queryName": "Products",
+        "loadEnabled": true
+      },
+      "Customers": {
+        "queryId": "77ea2dfa-b868-4527-a6ee-c1da01a3b4c3",
+        "queryName": "Customers",
+        "loadEnabled": true
+      }
+    },
+    "document": "section Section1;\r\nshared Customers = let\r\n  Source = OData.Feed(\"https://services.odata.org/V2/Northwind/Northwind.svc\"),\r\n  Navigation = Source{[Name = \"Customers\", Signature = \"table\"]}[Data],\r\n  #\"Remove columns\" = Table.RemoveColumns(Navigation, Table.ColumnsOfType(Navigation, {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\n"
+  },
+  "version": "1.0"
+}

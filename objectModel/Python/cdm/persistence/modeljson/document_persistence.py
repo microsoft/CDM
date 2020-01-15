@@ -1,8 +1,9 @@
 ﻿from typing import List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmDocumentDefinition, CdmImport
+from cdm.objectmodel import CdmDocumentDefinition
 from cdm.persistence.cdmfolder.import_persistence import ImportPersistence as CdmImportPersistence
+from cdm.utilities import logger
 
 from .entity_persistence import EntityPersistence
 
@@ -25,7 +26,7 @@ class DocumentPersistence:
         entity_dec = await EntityPersistence.from_data(ctx, data_obj, extension_trait_def_list, local_extension_trait_def_list)
 
         if not entity_dec:
-            ctx.logger.error('There was an error while trying to convert a model.json entity to the CDM entity.')
+            logger.error(DocumentPersistence.__name__, ctx, 'There was an error while trying to convert a model.json entity to the CDM entity.')
             return None
 
         if data_obj.get('imports'):
@@ -45,10 +46,10 @@ class DocumentPersistence:
                       ctx: 'CdmCorpusContext') -> Optional['LocalEntity']:
         if isinstance(document_object_or_path, str):
             # Fetch the document from entity schema.
-            cdm_entity = await ctx.corpus.fetch_object_async(document_object_or_path)
+            cdm_entity = await ctx.corpus.fetch_object_async(document_object_or_path, manifest)
 
             if not cdm_entity:
-                ctx.logger.error('There was an error while trying to fetch cdm entity doc.')
+                logger.error(DocumentPersistence.__name__, ctx, 'There was an error while trying to fetch cdm entity doc.')
                 return None
 
             entity = await EntityPersistence.to_data(cdm_entity, res_opt, options, ctx)
@@ -60,10 +61,15 @@ class DocumentPersistence:
                     # when saving in model.json the documents are flattened to the manifest level
                     # so it is necessary to recalculate the path to be relative to the manifest.
                     absolute_path = ctx.corpus.storage.create_absolute_corpus_path(imp.corpusPath, document)
+
+                    if document.namespace and absolute_path.startswith(document.namespace + ':'):
+                        absolute_path = absolute_path[len(document.namespace) + 1:]
+
                     imp.corpusPath = ctx.corpus.storage.create_relative_corpus_path(absolute_path, manifest)
                     entity.imports.append(imp)
             else:
-                ctx.logger.warning('Entity {} is not inside a document or its owner is not a document.'.format(cdm_entity.get_name()))
+                logger.warning(DocumentPersistence.__name__, ctx, 'Entity {} is not inside a document or its owner is not a document.'.format(
+                    cdm_entity.get_name()))
             return entity
         else:
             # TODO: Do something else when document_object_or_path is an object.

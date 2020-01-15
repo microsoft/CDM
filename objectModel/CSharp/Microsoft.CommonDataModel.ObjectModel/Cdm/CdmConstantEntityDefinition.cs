@@ -34,10 +34,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Constructs a CdmConstantEntityDefinition.
         /// </summary>
         /// <param name="ctx">The context.</param>
-        public CdmConstantEntityDefinition(CdmCorpusContext ctx)
+        public CdmConstantEntityDefinition(CdmCorpusContext ctx, string constantEntityName)
                    : base(ctx)
         {
             this.ObjectType = CdmObjectType.ConstantEntityDef;
+            this.ConstantEntityName = constantEntityName;
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
@@ -57,15 +58,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmConstantEntityDefinition copy;
             if (host == null)
             {
-                copy = new CdmConstantEntityDefinition(this.Ctx);
+                copy = new CdmConstantEntityDefinition(this.Ctx, this.ConstantEntityName);
             }
             else
             {
                 copy = host as CdmConstantEntityDefinition;
                 copy.Ctx = this.Ctx;
+                copy.ConstantEntityName = this.ConstantEntityName;
             }
 
-            copy.ConstantEntityName = this.ConstantEntityName;
             copy.EntityShape = (CdmEntityReference)this.EntityShape.Copy(resOpt);
             copy.ConstantValues = this.ConstantValues; // is a deep copy needed? 
             this.CopyDef(resOpt, copy);
