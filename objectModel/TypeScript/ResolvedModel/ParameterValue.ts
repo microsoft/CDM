@@ -139,7 +139,7 @@ export class ParameterValue {
                 if (value.getObjectType() === cdmObjectType.entityRef && def && def.getObjectType() === cdmObjectType.constantEntityDef) {
                     const entShape: CdmEntityReference = (def as CdmConstantEntityDefinition).getEntityShape();
                     const entValues: string[][] = (def as CdmConstantEntityDefinition).getConstantValues();
-                    if (!entValues && entValues.length === 0) {
+                    if (!entValues || entValues.length === 0) {
                         return '';
                     }
 

@@ -7,7 +7,6 @@
 from typing import Optional
 import json
 import unittest
-import os
 
 from cdm.storage import LocalAdapter
 from cdm.objectmodel import CdmCorpusDefinition
@@ -16,7 +15,7 @@ from tests.common import async_test, TestHelper
 
 
 class StorageConfigTest(unittest.TestCase):
-    tests_subpath = 'storage'
+    tests_subpath = 'Storage'
 
     def get_local_corpus(self, test_files_input_root: str, test_files_output_root: Optional[str] = None):
         """Gets local corpus."""
@@ -34,10 +33,10 @@ class StorageConfigTest(unittest.TestCase):
     @async_test
     async def test_loading_and_saving_config(self):
         """Testing loading and saving config."""
+        test_name = 'test_loading_and_saving_config'
+        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)
 
-        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, 'test_loading_and_saving_config')
-
-        test_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, 'test_loading_and_saving_config')
+        test_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
 
         # Create a corpus to load the config.
         cdm_corpus = self.get_local_corpus(test_input_path, test_output_path)
@@ -56,8 +55,8 @@ class StorageConfigTest(unittest.TestCase):
     @async_test
     async def test_loading_config_and_trying_to_fetch_manifest(self):
         """Testing loading config and fetching a manifest with the defined adapters."""
-
-        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, 'test_loading_config_and_trying_to_fetch_manifest')
+        test_name = 'test_loading_config_and_trying_to_fetch_manifest'
+        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)
 
         # Create a corpus to load the config.
         cdm_corpus = self.get_local_corpus(test_input_path)
@@ -65,7 +64,6 @@ class StorageConfigTest(unittest.TestCase):
         config = await cdm_corpus.storage.fetch_adapter('local').read_async('/config.json')
 
         different_corpus = CdmCorpusDefinition()
-
         unrecognized_adapters = different_corpus.storage.mount_from_config(config, True)
 
         cdm_manifest = await different_corpus.fetch_object_async('model.json', cdm_corpus.storage.fetch_root_folder('local'))

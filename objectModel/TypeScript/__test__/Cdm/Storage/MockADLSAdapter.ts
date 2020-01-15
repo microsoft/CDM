@@ -1,4 +1,4 @@
-import { ADLSAdapter } from '../../../StorageAdapter';
+import { ADLSAdapter } from '../../../Storage';
 
 export class MockADLSAdapter extends ADLSAdapter {
 }

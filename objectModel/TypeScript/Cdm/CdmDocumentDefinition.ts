@@ -3,34 +3,32 @@ import {
     CdmCollection,
     CdmCorpusContext,
     CdmCorpusDefinition,
+    CdmDataPartitionDefinition,
+    CdmDataPartitionPatternDefinition,
     CdmDefinitionCollection,
+    CdmE2ERelationship,
+    CdmEntityDeclarationDefinition,
     CdmFolderDefinition,
     CdmImport,
     CdmImportCollection,
+    CdmManifestDeclarationDefinition,
     CdmObject,
     CdmObjectBase,
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectSimple,
     cdmObjectType,
-    cdmStatusLevel,
     copyOptions,
     Logger,
-    resolveContext,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback,
-    CdmEntityDeclarationDefinition,
-    CdmDataPartitionDefinition,
-    CdmDataPartitionPatternDefinition,
-    CdmE2ERelationship,
-    CdmManifestDeclarationDefinition
+    VisitCallback
 } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 class ImportPriorities {
     public importPriority: Map<CdmDocumentDefinition, number>;
     public monikerPriorityMap: Map<string, CdmDocumentDefinition>;
@@ -41,13 +39,13 @@ class ImportPriorities {
     }
 
     public copy(): ImportPriorities {
-        const c: ImportPriorities = new ImportPriorities();
+        const copy: ImportPriorities = new ImportPriorities();
         if (this.importPriority) {
-            this.importPriority.forEach((v: number, k: CdmDocumentDefinition) => { c.importPriority.set(k, v); });
-            this.monikerPriorityMap.forEach((v: CdmDocumentDefinition, k: string) => { c.monikerPriorityMap.set(k, v); });
+            this.importPriority.forEach((v: number, k: CdmDocumentDefinition) => { copy.importPriority.set(k, v); });
+            this.monikerPriorityMap.forEach((v: CdmDocumentDefinition, k: string) => { copy.monikerPriorityMap.set(k, v); });
         }
 
-        return c;
+        return copy;
     }
 }
 
@@ -138,11 +136,17 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public localizeCorpusPaths(newFolder: CdmFolderDefinition): boolean {
         let allWentWell: boolean = true;
         let worked: boolean;
+        let corpPath: string;
         const wasBlocking: boolean = this.ctx.corpus.blockDeclaredPathChanges;
         this.ctx.corpus.blockDeclaredPathChanges = true;
 
         // shout into the void
-        Logger.info(CdmDocumentDefinition.name, this.ctx, `Localizing corpus paths in document '${this.name}'`, 'LocalizeCorpusPaths');
+        Logger.info(
+            CdmDocumentDefinition.name,
+            this.ctx,
+            `Localizing corpus paths in document '${this.name}'`,
+            this.localizeCorpusPaths.name
+        );
 
         // find anything in the document that is a corpus path
         this.visit(
@@ -155,8 +159,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 switch (iObject.objectType) {
                     case cdmObjectType.import: {
                         const typeObj: CdmImport = iObject as CdmImport;
-                        let corpPath: string = typeObj.corpusPath;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.corpusPath, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -167,8 +170,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                     case cdmObjectType.localEntityDeclarationDef:
                     case cdmObjectType.referencedEntityDeclarationDef: {
                         const typeObj: CdmEntityDeclarationDefinition = iObject as CdmEntityDeclarationDefinition;
-                        let corpPath: string = typeObj.entityPath;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.entityPath, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -178,15 +180,13 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                     }
                     case cdmObjectType.dataPartitionDef: {
                         const typeObj: CdmDataPartitionDefinition = iObject as CdmDataPartitionDefinition;
-                        let corpPath: string = typeObj.location;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.location, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
                             typeObj.location = corpPath;
                         }
-                        corpPath = typeObj.specializedSchema;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.specializedSchema, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -196,15 +196,13 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                     }
                     case cdmObjectType.dataPartitionPatternDef: {
                         const typeObj: CdmDataPartitionPatternDefinition = iObject as CdmDataPartitionPatternDefinition;
-                        let corpPath: string = typeObj.rootLocation;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.rootLocation, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
                             typeObj.rootLocation = corpPath;
                         }
-                        corpPath = typeObj.specializedSchema;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.specializedSchema, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -214,15 +212,13 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                     }
                     case cdmObjectType.e2eRelationshipDef: {
                         const typeObj: CdmE2ERelationship = iObject as CdmE2ERelationship;
-                        let corpPath: string = typeObj.toEntity;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.toEntity, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
                             typeObj.toEntity = corpPath;
                         }
-                        corpPath = typeObj.fromEntity;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.fromEntity, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -232,8 +228,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                     }
                     case cdmObjectType.manifestDeclarationDef: {
                         const typeObj: CdmManifestDeclarationDefinition = iObject as CdmManifestDeclarationDefinition;
-                        let corpPath: string = typeObj.definition;
-                        [corpPath, worked] = this.localizeCorpusPath(corpPath, newFolder);
+                        [corpPath, worked] = this.localizeCorpusPath(typeObj.definition, newFolder);
                         if (worked === false) {
                             allWentWell = false;
                         } else {
@@ -421,7 +416,12 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         }
         const resOpt: resolveOptions = new resolveOptions(this);
         if (await this.indexIfNeeded(resOpt) === false) {
-            Logger.error(CdmDocumentDefinition.name, this.ctx, `Failed to index document prior to save '${this.name}'`, 'SaveAsAsync');
+            Logger.error(
+                CdmDocumentDefinition.name,
+                this.ctx,
+                `Failed to index document prior to save '${this.name}'`,
+                this.saveAsAsync.name
+            );
 
             return false;
         }
@@ -430,7 +430,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.isDirty = false;
         }
 
-        if (await ((this.ctx.corpus)).saveDocumentAs(this, options, newName, saveReferenced) === false) {
+        if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
             return false;
         }
 
@@ -524,7 +524,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                             'CdmDocumentDefinition',
                             this.ctx,
                             `Foiled to save import ${docImp.name}`,
-                            'SaveLinkedDocuments'
+                            this.saveLinkedDocuments.name
                         );
 
                         return false;

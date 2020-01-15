@@ -93,7 +93,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public validate(): boolean {
-        return !!this.location;
+        return true;
     }
 
     /**
@@ -140,11 +140,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
         if (this.ctx.corpus.blockDeclaredPathChanges === false) {
             path = this.declaredPath;
             if (!path) {
-                let thisName: string = this.getName();
-                if (!thisName) {
-                    thisName = 'UNNAMED';
-                }
-                path = pathFrom + thisName;
+                path = pathFrom + (this.getName() || 'UNNAMED');
                 this.declaredPath = path;
             }
         }

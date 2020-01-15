@@ -168,7 +168,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 CdmCorpusDefinition.name,
                 this.ctx,
                 `Adapter not found for the document '${this.inDocument.name}'.`,
-                'fileStatusCheck'
+                this.fileStatusCheckAsync.name
             );
 
             return;
@@ -184,41 +184,48 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         }
         const rootCorpus: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(rootCleaned, this.inDocument);
 
-        // get a list of all corpusPaths under the root
-        const fileInfoList: string[] = await adapter.fetchAllFilesAsync(rootCorpus);
-
-        // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-        for (let i: number = 0; i < fileInfoList.length; i++) {
-            fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
-            fileInfoList[i] = fileInfoList[i].slice(rootCorpus.length);
+        let fileInfoList: string[];
+        try {
+            // get a list of all corpusPaths under the root
+            fileInfoList = await adapter.fetchAllFilesAsync(rootCorpus);
+        } catch (e) {
+            Logger.warning(CdmDataPartitionPatternDefinition.name, this.ctx, `The folder location '${rootCorpus}' described by a partition pattern does not exist`, this.fileStatusCheckAsync.name);
         }
 
-        const regexPattern: RegExp = new RegExp(this.regularExpression);
+        if (fileInfoList !== undefined) {
+            // remove root of the search from the beginning of all paths so anything in the root is not found by regex
+            for (let i: number = 0; i < fileInfoList.length; i++) {
+                fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
+                fileInfoList[i] = fileInfoList[i].slice(rootCorpus.length);
+            }
 
-        if (isLocalEntityDeclarationDefinition(this.owner)) {
-            for (const fi of fileInfoList) {
-                const m: RegExpExecArray = regexPattern.exec(fi);
-                if (m && m.length > 0 && m[0] === fi) {
-                    // create a map of arguments out of capture groups
-                    const args: KeyValPair[] = [];
-                    // captures start after the string match at m[0]
-                    for (let i: number = 1; i < m.length; i++) {
-                        const iParam: number = i - 1;
-                        if (this.parameters && iParam < this.parameters.length) {
-                            const currentParam: string = this.parameters[iParam];
-                            args.push({
-                                name: currentParam,
-                                value: m[i]
-                            });
+            const regexPattern: RegExp = new RegExp(this.regularExpression);
+
+            if (isLocalEntityDeclarationDefinition(this.owner)) {
+                for (const fi of fileInfoList) {
+                    const m: RegExpExecArray = regexPattern.exec(fi);
+                    if (m && m.length > 0 && m[0] === fi) {
+                        // create a map of arguments out of capture groups
+                        const args: KeyValPair[] = [];
+                        // captures start after the string match at m[0]
+                        for (let i: number = 1; i < m.length; i++) {
+                            const iParam: number = i - 1;
+                            if (this.parameters && iParam < this.parameters.length) {
+                                const currentParam: string = this.parameters[iParam];
+                                args.push({
+                                    name: currentParam,
+                                    value: m[i]
+                                });
+                            }
                         }
-                    }
 
-                    // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
-                    const locationCorpusPath: string = `${rootCleaned}${fi}`;
-                    const fullPath: string = `${rootCorpus}${fi}`;
-                    const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(fullPath);
-                    (this.owner).createDataPartitionFromPattern(
-                        locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
+                        // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
+                        const locationCorpusPath: string = `${rootCleaned}${fi}`;
+                        const fullPath: string = `${rootCorpus}${fi}`;
+                        const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(fullPath);
+                        (this.owner).createDataPartitionFromPattern(
+                            locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
+                    }
                 }
             }
         }

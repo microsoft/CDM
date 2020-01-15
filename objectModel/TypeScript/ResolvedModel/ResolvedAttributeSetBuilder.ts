@@ -260,9 +260,8 @@ export class ResolvedAttributeSetBuilder {
 
                             for (const take of selectsSomeTakeNames) {
                                 // if in the original set of attributes, take it in the new order
-                                const iOriginalOrder: number = inverted.get(take);
-                                if (iOriginalOrder) {
-                                    takeSet.push(set[iOriginalOrder]);
+                                if (inverted.has(take)) {
+                                    takeSet.push(set[inverted.get(take)]);
                                 }
                             }
                         }

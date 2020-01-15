@@ -2,7 +2,7 @@
 from typing import List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import JObject
+from cdm.utilities import JObject, logger
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmParameterDefinition, CdmTraitCollection, CdmTraitDefinition
@@ -20,6 +20,7 @@ convert_type_to_expected_string = {
     type(None): 'object'
 }
 
+_TAG = 'ExtensionHelper'
 
 EXTENSION_TRAIT_NAME_PREFIX = 'is.extension.'
 EXTENSION_DOC_NAME = 'custom.extension.cdm.json'
@@ -57,7 +58,7 @@ async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def
         extension_trait_def = local_extension_trait_def_list[trait_index]
 
         if not extension_trait_def.trait_name or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
-            ctx.logger.error('Invalid extension trait name %s, expected prefix %s', extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX)
+            logger.error(_TAG, ctx, 'Invalid extension trait name {}, expected prefix {}'.format(extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX))
             return None
 
         extension_breakdown = extension_trait_def.trait_name[len(EXTENSION_TRAIT_NAME_PREFIX):].split(':')

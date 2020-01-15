@@ -26,7 +26,7 @@
 
                 if (entityPath == null)
                 {
-                    Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
+                    Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", nameof(FromData));
                 }
 
             }

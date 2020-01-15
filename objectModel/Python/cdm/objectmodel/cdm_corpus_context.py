@@ -3,62 +3,48 @@
 # All rights reserved.
 # ----------------------------------------------------------------------
 
-import logging
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
-from cdm.utilities.resolve_context_scope import ResolveContextScope
+from cdm.enums import CdmStatusLevel
+from cdm.utilities import EventCallback, ResolveContextScope
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusDefinition, CdmDocumentDefinition
 
 
 class CdmCorpusContext:
-    def __init__(self, corpus: 'CdmCorpusDefinition') -> None:
-        self.cache = {}  # type: Dict[str, Any]
+    def __init__(self, corpus: 'CdmCorpusDefinition', status_event: 'EventCallback', report_at_level: Optional['CdmStatusLevel'] = None) -> None:
         self.corpus = corpus  # type: CdmCorpusDefinition
-        self.current_scope = None  # type: Optional[ResolveContextScope]
-        self.errors = None  # type: Optional[int]
-        self.relative_path = None  # type: Optional[str]
-        self.scope_stack = []  # type: List[ResolveContextScope]
+        self.report_at_level = report_at_level or CdmStatusLevel.INFO  # type: CdmStatusLevel
+        self.status_event = status_event  # type: EventCallback
 
-        self.logger = None  # type: logging.Logger
-
-        self.update_logging_options()
+        # --- internal ---
+        self._cache = {}  # type: Dict[str, Any]
+        self._current_scope = None  # type: Optional[ResolveContextScope]
+        self._relative_path = None  # type: Optional[str]
+        self._scope_stack = []  # type: List[ResolveContextScope]
 
     def fetch_cache(self, for_obj: 'CdmObject', res_opt: 'ResolveOptions', kind: str) -> Any:
         key = self._fetch_cache_key(for_obj, res_opt, kind)
-        return self.cache.get(key)
+        return self._cache.get(key)
 
     def pop_scope(self):
-        self.scope_stack.pop()
-        self.current_scope = self.scope_stack[-1] if self.scope_stack else None
+        self._scope_stack.pop()
+        self._current_scope = self._scope_stack[-1] if self._scope_stack else None
 
-    def push_scope(self, current_trait: Optional['CdmTraitDefinition']) -> None:
-        if not self.scope_stack:
-            self.scope_stack = []
+    def push_scope(self, current_trait: 'CdmTraitDefinition') -> None:
+        if not self._scope_stack:
+            self._scope_stack = []
 
-        current_trait = current_trait if current_trait else (self.current_scope.current_trait if self.current_scope else None)
+        current_trait = current_trait if current_trait else (self._current_scope.current_trait if self._current_scope else None)
 
         ctx_new = ResolveContextScope(current_trait=current_trait, current_parameter=0)
-        self.current_scope = ctx_new
-        self.scope_stack.append(ctx_new)
+        self._current_scope = ctx_new
+        self._scope_stack.append(ctx_new)
 
     def update_cache(self, for_obj: 'CdmObject', res_opt: 'ResolveOptions', kind: str, value: Any) -> None:
         key = self._fetch_cache_key(for_obj, res_opt, kind)
-        self.cache[key] = value
-
-    def update_logging_options(self, level=logging.WARNING, handler=None):
-        """Configure logger, including level and handler specified by python logging module."""
-
-        self.logger = logging.getLogger('cdm-python')
-        self.logger.setLevel(level)
-
-        # Log to console by default if handler is not specified.
-        handler = handler or logging.StreamHandler()
-        handler.setLevel(self.logger.level)
-        handler.setFormatter(logging.Formatter('%(asctime)s\t%(levelname)s\t%(filename)s:%(lineno)s\t%(funcName)s\t%(message)s'))
-
-        self.logger.handlers = [handler]  # Overwrite existing handler.
+        self._cache[key] = value
 
     def _fetch_cache_key(self, for_obj: 'CdmObject', res_opt: 'ResolveOptions', kind: str) -> str:
         return '{}_{}_{}'.format(for_obj.id, res_opt.wrt_doc.id if res_opt and res_opt.wrt_doc else 'NULL', kind)

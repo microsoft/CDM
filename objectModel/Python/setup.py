@@ -10,7 +10,7 @@ from typing import List, Optional
 
 
 class CopyResourcesCommand(distutils.cmd.Command):
-    """A command which is copying the resources from CDM.SchemaDocuments."""
+    """A command which is copying the resources from SchemaDocuments."""
 
     description = 'Copy resources from schema documents into this project.'  # type: Optional[str]
 
@@ -32,7 +32,7 @@ class CopyResourcesCommand(distutils.cmd.Command):
         print("Copying files from schema documents....")
         root_path = os.getcwd()
 
-        paths_to_ignore = ['*.0.6.cdm.json', '*.0.7.cdm.json', '*.0.8.cdm.json', '*.0.8.1.cdm.json',
+        paths_to_ignore = ['*.manifest.cdm.json', '*.0.6.cdm.json', '*.0.7.cdm.json', '*.0.8.cdm.json', '*.0.8.1.cdm.json',
                            '*core*', '*office*', '*.git*', '*.jpg', '*.md']
 
         self.copy_and_overwrite('{}/../../schemaDocuments/'.format(root_path), '{}/resources/'.format(root_path), paths_to_ignore)

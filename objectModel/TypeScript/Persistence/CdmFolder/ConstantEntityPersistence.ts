@@ -1,8 +1,7 @@
-import { EntityReferencePersistence } from '.';
+import { CdmFolder } from '..';
 import {
     CdmConstantEntityDefinition,
     CdmCorpusContext,
-    CdmEntityReference,
     cdmObjectType,
     copyOptions,
     resolveOptions
@@ -22,7 +21,7 @@ export class ConstantEntityPersistence {
         if (object.constantValues) {
             constantEntity.constantValues = object.constantValues;
         }
-        constantEntity.entityShape = EntityReferencePersistence.fromData(ctx, object.entityShape);
+        constantEntity.entityShape = CdmFolder.EntityReferencePersistence.fromData(ctx, object.entityShape);
 
         return constantEntity;
     }

@@ -1,5 +1,4 @@
 import {
-    CdmCollection,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentCollection,
@@ -16,7 +15,6 @@ import {
     StorageAdapter,
     VisitCallback
 } from '../internal';
-import { LoadDocumentFromPathAsync } from '../Persistence';
 
 /**
  * The object model implementation for Folder object.
@@ -163,7 +161,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
                         CdmFolderDefinition.name,
                         this.ctx,
                         `Invalid path '${path}'`,
-                        'FetchChildFolderFromPathAsync'
+                        this.fetchChildFolderFromPathAsync.name
                     );
                 }
 
@@ -179,6 +177,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
                 return this;
             }
         }
+
+        return undefined;
     }
 
     /**
@@ -208,7 +208,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
                 return doc;
             }
 
-            // remove them from the caches since tehy will be back in a moment
+            // remove them from the caches since they will be back in a moment
             if (doc.isDirty) {
                 Logger.warning('CdmFolderDefinition', this.ctx, `discarding changes in document: ${doc.name}`);
             }
@@ -216,7 +216,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
         }
 
         // go get the doc
-        doc = await LoadDocumentFromPathAsync(this, docName, doc);
+        doc = await this.corpus.persistence.LoadDocumentFromPathAsync(this, docName, doc);
 
         return doc;
     }

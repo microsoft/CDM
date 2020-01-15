@@ -45,6 +45,7 @@ def _get_trait_ref_argument_value(trait_ref_or_def: 'CdmTraitDefOrRef', arg_name
 class TraitToPropertyMap:
     def __init__(self, host: 'CdmObject') -> None:
         self._host = host
+        self._TAG = TraitToPropertyMap.__name__
 
     @property
     def _ctx(self) -> 'CdmCorpusContext':
@@ -449,9 +450,9 @@ class TraitToPropertyMap:
 
     def _update_default_value(self, new_default: Any) -> None:
         if not isinstance(new_default, list):
-            self._host.ctx.logger.error('Default value type not supported. Please provide a list.')
+            logger.error(self._TAG, self._host.ctx, 'Default value type not supported. Please provide a list.')
         elif new_default is None or new_default[0].get('languageTag') is None or new_default[0].get('displayText') is None:
-            self._host.ctx.logger.error('Default value missing languageTag or displayText.')
+            logger.error(self._TAG, self._host.ctx, 'Default value missing languageTag or displayText.')
         elif new_default:
             # Looks like something we understand.
             corr = new_default[0].get('correlatedValue') is not None

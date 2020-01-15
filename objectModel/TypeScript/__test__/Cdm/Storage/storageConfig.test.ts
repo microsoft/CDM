@@ -1,5 +1,5 @@
 import { CdmCorpusDefinition, CdmManifestDefinition, cdmStatusLevel } from '../../../internal';
-import { LocalAdapter } from '../../../StorageAdapter';
+import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
 
 describe('Cdm.Storage.StorageConfig', () => {
@@ -18,18 +18,18 @@ describe('Cdm.Storage.StorageConfig', () => {
         cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
         // tslint:disable-next-line: no-backbone-get-set-outside-model
-        const config: string = await cdmCorpus.storage.namespaceAdapters.get('local')
+        const config: string = await cdmCorpus.storage.fetchAdapter('local')
             .readAsync('/config.json');
 
         const differentCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         differentCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
-        differentCorpus.storage.mount(config);
+        differentCorpus.storage.mountFromConfig(config);
 
         const resultConfig: string = differentCorpus.storage.fetchConfig();
 
         // tslint:disable-next-line: no-backbone-get-set-outside-model
-        const outputConfig: string = await cdmCorpus.storage.namespaceAdapters.get('target')
+        const outputConfig: string = await cdmCorpus.storage.fetchAdapter('target')
             .readAsync('/config.json');
 
         testHelper.assertObjectContentEquality(JSON.parse(outputConfig), JSON.parse(resultConfig));
@@ -44,13 +44,13 @@ describe('Cdm.Storage.StorageConfig', () => {
         cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
         // tslint:disable-next-line: no-backbone-get-set-outside-model
-        const config: string = await cdmCorpus.storage.namespaceAdapters.get('local')
+        const config: string = await cdmCorpus.storage.fetchAdapter('local')
             .readAsync('/config.json');
 
         const differentCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         differentCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
-        const unrecognizedAdapters: string[] = differentCorpus.storage.mount(config, true);
+        const unrecognizedAdapters: string[] = differentCorpus.storage.mountFromConfig(config, true);
 
         const cdmManifest: CdmManifestDefinition =
             await differentCorpus.fetchObjectAsync<CdmManifestDefinition>('model.json', cdmCorpus.storage.fetchRootFolder('local'));

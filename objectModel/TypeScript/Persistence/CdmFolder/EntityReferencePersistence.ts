@@ -1,8 +1,4 @@
 import {
-    ConstantEntityPersistence,
-    EntityPersistence
-} from '.';
-import {
     CdmConstantEntityDefinition,
     CdmCorpusContext,
     CdmEntityDefinition,
@@ -10,6 +6,7 @@ import {
     cdmObjectType,
     CdmTraitReference
 } from '../../internal';
+import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     ConstantEntity,
@@ -35,9 +32,9 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
             if (typeof (object.entityReference) === 'string') {
                 entity = object.entityReference;
             } else if (isConstantEntity(object.entityReference)) {
-                entity = ConstantEntityPersistence.fromData(ctx, object.entityReference);
+                entity = CdmFolder.ConstantEntityPersistence.fromData(ctx, object.entityReference);
             } else {
-                entity = EntityPersistence.fromData(ctx, object.entityReference);
+                entity = CdmFolder.EntityPersistence.fromData(ctx, object.entityReference);
             }
         }
 

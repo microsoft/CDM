@@ -5,9 +5,10 @@ from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, time_utils
 
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
+from .cdm_file_status import CdmFileStatus
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmFileStatus, CdmObject
+    from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmObject
     from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedTraitSetBuilder
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
@@ -82,5 +83,5 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
-        if cast('CdmFileStatus', self.owner).report_most_recent_time_async and child_time:
+        if isinstance(self.owner, CdmFileStatus) and child_time:
             await cast('CdmFileStatus', self.owner).report_most_recent_time_async(child_time)

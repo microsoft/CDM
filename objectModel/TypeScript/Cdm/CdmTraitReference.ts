@@ -1,12 +1,9 @@
 import {
     ArgumentValue,
     CdmArgumentCollection,
-    CdmArgumentDefinition,
     CdmAttributeContext,
-    CdmCollection,
     CdmCorpusContext,
     CdmCorpusDefinition,
-    CdmObject,
     CdmObjectReferenceBase,
     cdmObjectType,
     CdmParameterDefinition,
@@ -96,10 +93,7 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
         // return p.measure(bodyCode);
     }
 
-    /**
-     * @internal
-     */
-    public getFinalArgumentValues(resOpt: resolveOptions): Map<string, ArgumentValue> {
+    public fetchFinalArgumentValues(resOpt: resolveOptions): Map<string, ArgumentValue> {
         const finalArgs: Map<string, ArgumentValue> = new Map<string, ArgumentValue>();
         // get resolved traits does all the work, just clean up the answers
         const rts: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);

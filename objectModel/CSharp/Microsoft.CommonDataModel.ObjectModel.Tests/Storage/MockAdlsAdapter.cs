@@ -171,7 +171,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
         public string CreateCorpusPath(string adapterPath)
         {
             var prefix = $"https://{this.Hostname}{this.Root}";
-            if (adapterPath.StartsWith(prefix))
+            if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
             {
                 return adapterPath.Slice(prefix.Length);
             }

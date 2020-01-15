@@ -30,15 +30,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ImportPriorities Copy()
         {
-            ImportPriorities c = new ImportPriorities();
+            ImportPriorities copy = new ImportPriorities();
             if (this.ImportPriority != null)
             {
                 foreach (KeyValuePair<CdmDocumentDefinition, int> pair in this.ImportPriority)
-                    c.ImportPriority[pair.Key] = pair.Value;
+                    copy.ImportPriority[pair.Key] = pair.Value;
                 foreach (KeyValuePair<string, CdmDocumentDefinition> pair in this.MonikerPriorityMap)
-                    c.MonikerPriorityMap[pair.Key] = pair.Value;
+                    copy.MonikerPriorityMap[pair.Key] = pair.Value;
             }
-            return c;
+            return copy;
         }
     }
 
@@ -79,7 +79,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             this.Imports = new CdmImportCollection(this.Ctx, this);
             this.Definitions = new CdmDefinitionCollection(this.Ctx, this);
-        }    
+        }
 
         /// <summary>
         /// Gets or sets the document name.
@@ -134,7 +134,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.blockDeclaredPathChanges = true;
 
             // shout into the void
-            Logger.Info(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Localizing corpus paths in document '{this.Name}'", "LocalizeCorpusPaths");
+            Logger.Info(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Localizing corpus paths in document '{this.Name}'", nameof(LocalizeCorpusPaths));
 
             // find anything in the document that is a corpus path
             this.Visit("", new VisitCallback
@@ -145,82 +145,46 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // in theory, we could create a virtual function on cdmObject that localizes properties
                     // but then every object would need to know about the documents and paths and such ...
                     // also, i already wrote this code.
-                    switch(iObject.ObjectType)
+                    switch (iObject.ObjectType)
                     {
                         case CdmObjectType.Import:
                         {
                             CdmImport typeObj = iObject as CdmImport;
-                            string corpPath = typeObj.CorpusPath;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.CorpusPath = corpPath;
+                            typeObj.CorpusPath = LocalizeCorpusPath(typeObj.CorpusPath, newFolder, ref allWentWell) ?? typeObj.CorpusPath;
                             break;
                         }
                         case CdmObjectType.LocalEntityDeclarationDef:
                         case CdmObjectType.ReferencedEntityDeclarationDef:
                         {
                             CdmEntityDeclarationDefinition typeObj = iObject as CdmEntityDeclarationDefinition;
-                            string corpPath = typeObj.EntityPath;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.EntityPath = corpPath;
+                            typeObj.EntityPath = LocalizeCorpusPath(typeObj.EntityPath, newFolder, ref allWentWell) ?? typeObj.EntityPath;
                             break;
                         }
                         case CdmObjectType.DataPartitionDef:
                         {
                             CdmDataPartitionDefinition typeObj = iObject as CdmDataPartitionDefinition;
-                            string corpPath = typeObj.Location;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.Location = corpPath;
-                            corpPath = typeObj.SpecializedSchema;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.SpecializedSchema = corpPath;
+                            typeObj.Location = LocalizeCorpusPath(typeObj.Location, newFolder, ref allWentWell) ?? typeObj.Location;
+                            typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
                             break;
                         }
                         case CdmObjectType.DataPartitionPatternDef:
                         {
                             CdmDataPartitionPatternDefinition typeObj = iObject as CdmDataPartitionPatternDefinition;
-                            string corpPath = typeObj.RootLocation;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.RootLocation = corpPath;
-                            corpPath = typeObj.SpecializedSchema;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.SpecializedSchema = corpPath;
+                            typeObj.RootLocation = LocalizeCorpusPath(typeObj.RootLocation, newFolder, ref allWentWell) ?? typeObj.RootLocation;
+                            typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
                             break;
                         }
                         case CdmObjectType.E2ERelationshipDef:
                         {
                             CdmE2ERelationship typeObj = iObject as CdmE2ERelationship;
-                            string corpPath = typeObj.ToEntity;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.ToEntity = corpPath;
-                            corpPath = typeObj.FromEntity;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.FromEntity = corpPath;
+                            typeObj.ToEntity = LocalizeCorpusPath(typeObj.ToEntity, newFolder, ref allWentWell) ?? typeObj.ToEntity;
+                            typeObj.FromEntity = LocalizeCorpusPath(typeObj.FromEntity, newFolder, ref allWentWell) ?? typeObj.FromEntity;
                             break;
                         }
                         case CdmObjectType.ManifestDeclarationDef:
                         {
                             CdmManifestDeclarationDefinition typeObj = iObject as CdmManifestDeclarationDefinition;
-                            string corpPath = typeObj.Definition;
-                            if (LocalizeCorpusPath(ref corpPath, newFolder) == false)
-                                allWentWell = false;
-                            else 
-                                typeObj.Definition = corpPath;
+                            typeObj.Definition = LocalizeCorpusPath(typeObj.Definition, newFolder, ref allWentWell) ?? typeObj.Definition;
                             break;
                         }
                     }
@@ -236,14 +200,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// changes a relative corpus path to be relative to the new folder
         /// </summary>
-        private bool LocalizeCorpusPath(ref string path, CdmFolderDefinition newFolder)
+        private string LocalizeCorpusPath(string path, CdmFolderDefinition newFolder, ref bool allWentWell)
         {
             // if this isn't a local path, then don't do anything to it
             if (string.IsNullOrWhiteSpace(path))
-                return true;
+            {
+                return path;
+            }
 
             // but first, if there was no previous folder (odd) then just localize as best we can
-            CdmFolderDefinition oldFolder = this.Owner as CdmFolderDefinition;
+            var oldFolder = this.Owner as CdmFolderDefinition;
             string newPath;
             if (oldFolder == null)
             {
@@ -263,10 +229,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             if (newPath == null)
-                return false;
-
-            path = newPath;
-            return true;
+            {
+                allWentWell = false;
+            }
+            
+            return newPath;
         }
 
 
@@ -278,31 +245,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this);
             }
 
-            CdmDocumentDefinition c;
+            CdmDocumentDefinition copy;
             if (host == null)
             {
-                c = new CdmDocumentDefinition(this.Ctx, this.Name);
+                copy = new CdmDocumentDefinition(this.Ctx, this.Name);
             }
             else
             {
-                c = host as CdmDocumentDefinition;
-                c.Ctx = this.Ctx;
-                c.Name = this.Name;
-                c.Definitions.Clear();
-                c.Imports.Clear();
+                copy = host as CdmDocumentDefinition;
+                copy.Ctx = this.Ctx;
+                copy.Name = this.Name;
+                copy.Definitions.Clear();
+                copy.Imports.Clear();
             }
 
-            c.InDocument = c;
-            c.IsDirty = true;
-            c.FolderPath = this.FolderPath;
-            c.Schema = this.Schema;
-            c.JsonSchemaSemanticVersion = this.JsonSchemaSemanticVersion;
+            copy.InDocument = copy;
+            copy.IsDirty = true;
+            copy.FolderPath = this.FolderPath;
+            copy.Schema = this.Schema;
+            copy.JsonSchemaSemanticVersion = this.JsonSchemaSemanticVersion;
 
             foreach (var def in this.Definitions)
-                c.Definitions.Add(def);
+                copy.Definitions.Add(def);
             foreach (var imp in this.Imports)
-                c.Imports.Add(imp);
-            return c;
+                copy.Imports.Add(imp);
+            return copy;
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
@@ -389,7 +356,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ResolveOptions resOpt = new ResolveOptions(this);
             if (await this.IndexIfNeeded(resOpt) == false)
             {
-                Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", "SaveAsAsync");
+                Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
                 return false;
             }
 
@@ -397,7 +364,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (newName == this.Name)
                 this.IsDirty = false;
 
-            if (await ((this.Ctx.Corpus) as CdmCorpusDefinition).SaveDocumentAs(this, options, newName, saveReferenced) == false)
+            if (await this.Ctx.Corpus.Persistence.SaveDocumentAsAsync(this, options, newName, saveReferenced) == false)
             {
                 return false;
             }
@@ -425,14 +392,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // make the corpus internal machinery pay attention to this document for this call
                 CdmCorpusDefinition corpus = (this.Folder as CdmFolderDefinition).Corpus;
 
-                ConcurrentDictionary<CdmDocumentDefinition, byte> docsJustAdded = new ConcurrentDictionary<CdmDocumentDefinition, byte>();
-                ConcurrentDictionary<string, byte> docsNotFound = new ConcurrentDictionary<string, byte>();
-                await corpus.ResolveImportsAsync(this, docsJustAdded, docsNotFound);
+                await corpus.ResolveImportsAsync(this);
 
                 // maintain actual current doc
-                docsJustAdded[this] = 1;
+                corpus.docsNotIndexed.TryAdd(this, 1);
 
-                return corpus.IndexDocuments(resOpt, this, docsJustAdded);
+                return corpus.IndexDocuments(resOpt, this);
             }
 
             return true;
@@ -577,7 +542,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // save it with the same name
                         if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
                         {
-                            Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to save import '{docImp.Name}'", "SaveLinkedDocuments");
+                            Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to save import '{docImp.Name}'", nameof(SaveLinkedDocuments));
                             return false;
                         }
                     }

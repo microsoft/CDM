@@ -6,24 +6,24 @@
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
 
-     /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------
-     * This sample is going to simulate the steps a tool would follow in order to create a new manifest document 
-     * in some user storage folder with two types of entities - a net new entity and an entity extended from some public standards.
-     * Note: If we want to create a relationship from a new custom entity to an existing entity which is loaded from some public standards, 
-     * we need to create an entity extended from the existing entity and add a relationship to the attribute of the new entity.
-     * Since we can't modify attributes from an 'abstract' schema defintion in the public standards.
-     * This sample also creates a relationship from a net new entity to an existing entity, and a relationship between two net new entities.
-     * 
-     * The steps are:
-     *      1. Create a temporary 'manifest' object at the root of the corpus
-     *      2. Create two net new entities without extending any existing entity, create a relationship from one to the other, and add them to the manifest
-     *      3. Create one entity which extends from the public standards, create a relationship from it to a net new entity, and add the entity to the manifest
-     *      4. Make a 'resolved' version of each entity doc in our local folder. Call CreateResolvedManifestAsync on our starting manifest. 
-     *          This will resolve everything and find all of the relationships between entities for us. Please check out the second example 2-create-manifest for more details
-     *      5. Save the new document(s) 
-     * ----------------------------------------------------------------------------------------------------------------------------------------
-     */
+    /*
+    * ----------------------------------------------------------------------------------------------------------------------------------------
+    * This sample is going to simulate the steps a tool would follow in order to create a new manifest document 
+    * in some user storage folder with two types of entities - a net new entity and an entity extended from some public standards.
+    * Note: If we want to create a relationship from a new custom entity to an existing entity which is loaded from some public standards, 
+    * we need to create an entity extended from the existing entity and add a relationship to the attribute of the new entity.
+    * Since we can't modify attributes from an 'abstract' schema defintion in the public standards.
+    * This sample also creates a relationship from a net new entity to an existing entity, and a relationship between two net new entities.
+    * 
+    * The steps are:
+    *      1. Create a temporary 'manifest' object at the root of the corpus
+    *      2. Create two net new entities without extending any existing entity, create a relationship from one to the other, and add them to the manifest
+    *      3. Create one entity which extends from the public standards, create a relationship from it to a net new entity, and add the entity to the manifest
+    *      4. Make a 'resolved' version of each entity doc in our local folder. Call CreateResolvedManifestAsync on our starting manifest. 
+    *          This will resolve everything and find all of the relationships between entities for us. Please check out the second example 2-create-manifest for more details
+    *      5. Save the new document(s) 
+    * ----------------------------------------------------------------------------------------------------------------------------------------
+    */
 
     class Program
     {
@@ -143,25 +143,27 @@
             // more details of how to use resolution guidance to customize your data
             var simpleCustomAccountAttribute = CreateAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CustomAccountEntityName, "SimpleCustomAccount", attrExplanation);
             extendedStandardAccountEntity.Attributes.Add(simpleCustomAccountAttribute);
-            var extendedStandardAccountntityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{ExtendedStandardAccount}.cdm.json", false);
+            var extendedStandardAccountEntityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{ExtendedStandardAccount}.cdm.json", false);
             // Add an import to the foundations doc so the traits about partitons will resolve nicely
-            extendedStandardAccountntityDoc.Imports.Add(FoundationJsonPath);
+            extendedStandardAccountEntityDoc.Imports.Add(FoundationJsonPath);
             // The ExtendedAccount entity extends from the "Account" entity from standards, the import to the entity Account's doc is required
             // it also has a relationship with the CustomAccount entity, the relationship defined from its from its attribute with traits, the import to the entity reference CustomAccount's doc is required
-            extendedStandardAccountntityDoc.Imports.Add($"{SchemaDocsRoot}/Account.cdm.json");
-            extendedStandardAccountntityDoc.Imports.Add($"{CustomAccountEntityName}.cdm.json");
+            extendedStandardAccountEntityDoc.Imports.Add($"{SchemaDocsRoot}/Account.cdm.json");
+            extendedStandardAccountEntityDoc.Imports.Add($"{CustomAccountEntityName}.cdm.json");
             // Add the document to the root of the local documents in the corpus
-            localRoot.Documents.Add(extendedStandardAccountntityDoc, extendedStandardAccountntityDoc.Name);
-            extendedStandardAccountntityDoc.Definitions.Add(extendedStandardAccountEntity);
+            localRoot.Documents.Add(extendedStandardAccountEntityDoc, extendedStandardAccountEntityDoc.Name);
+            extendedStandardAccountEntityDoc.Definitions.Add(extendedStandardAccountEntity);
             // Add the entity to the manifest
             manifestAbstract.Entities.Add(extendedStandardAccountEntity);
-
 
             // Create the resolved version of everything in the root folder too
             Console.WriteLine("Resolve the placeholder");
             var manifestResolved = await manifestAbstract.CreateResolvedManifestAsync("default", null);
 
-            Console.WriteLine("Save the docs");
+            // Add an import to the foundations doc so the traits about partitons will resolve nicely
+            manifestResolved.Imports.Add(FoundationJsonPath);
+
+            Console.WriteLine("Save the documents");
             foreach (CdmEntityDeclarationDefinition eDef in manifestResolved.Entities)
             {
                 // Get the entity being pointed at
@@ -179,7 +181,7 @@
                 csvTrait.Arguments.Add("delimiter", ",");
             }
 
-            // We can save the docs as manifest.cdm.json format or model.json
+            // We can save the documents as manifest.cdm.json format or model.json
             // Save as manifest.cdm.json
             await manifestResolved.SaveAsAsync($"{manifestResolved.ManifestName}.manifest.cdm.json", true);
             // Save as a model.json

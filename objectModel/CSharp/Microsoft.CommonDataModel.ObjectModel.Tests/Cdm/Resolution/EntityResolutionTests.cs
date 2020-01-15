@@ -21,7 +21,7 @@
         /// <summary>
         /// The path of the SchemaDocs project.
         /// </summary>
-        private const string SchemaDocsPath = "../../../../../../CDM.SchemaDocuments";
+        private const string SchemaDocsPath = TestHelper.SchemaDocumentsPath;
 
         /// <summary>
         /// The path between TestDataPath and TestName.

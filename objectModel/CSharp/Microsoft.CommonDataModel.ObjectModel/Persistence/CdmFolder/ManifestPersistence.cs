@@ -5,19 +5,30 @@
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Linq;
 
     public class ManifestPersistence
     {
-        public static CdmManifestDefinition FromData(CdmCorpusContext ctx, string name, string nameSpace, string path, ManifestContent dataObj)
+        /// <summary>
+        /// Whether this persistence class has async methods.
+        /// </summary>
+        public static readonly bool IsPersistenceAsync = false;
+
+        /// <summary>
+        /// The file format/extension types this persistence class supports.
+        /// </summary>
+        public static readonly string[] Formats = { PersistenceLayer.FetchManifestExtension(), PersistenceLayer.FetchFolioExtension() };
+
+        public static CdmManifestDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, ManifestContent dataObj)
         {
             // Determine name of the manifest
             var manifestName = !string.IsNullOrEmpty(dataObj.ManifestName) ? dataObj.ManifestName : dataObj.FolioName;
             // We haven't found the name in the file, use one provided in the call but without the suffixes
             if (string.IsNullOrEmpty(manifestName))
-                manifestName = name.Replace(".manifest.cdm.json", "").Replace(".folio.cdm.json", "");      
+                manifestName = name.Replace(PersistenceLayer.FetchManifestExtension(), "").Replace(PersistenceLayer.FetchFolioExtension(), "");
 
             var manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, manifestName);
 
@@ -102,7 +113,7 @@
                        }
                        else
                        {
-                            Logger.Error(nameof(ManifestPersistence), ctx, "Couldn't find the type for entity declaration", "FromData");
+                            Logger.Error(nameof(ManifestPersistence), ctx, "Couldn't find the type for entity declaration", nameof(FromObject));
                        }
                     } 
                     else
@@ -149,6 +160,12 @@
             }
 
             return manifest;
+        }
+
+        public static CdmManifestDefinition FromData(CdmCorpusContext ctx, string docName, string jsonData, CdmFolderDefinition folder)
+        {
+            var dataObj = JsonConvert.DeserializeObject<ManifestContent>(jsonData);
+            return FromObject(ctx, docName, folder.Namespace, folder.FolderPath, dataObj);
         }
 
         public static ManifestContent ToData(CdmManifestDefinition instance, ResolveOptions resOpt, CopyOptions options)

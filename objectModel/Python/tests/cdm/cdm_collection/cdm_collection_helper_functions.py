@@ -22,6 +22,9 @@ def generate_manifest(local_root_path: str) -> 'CdmManifestDefinition':
 
 
 def create_document_for_entity(cdm_corpus: 'CdmCorpusDefinition', entity: 'CdmEntityDefinition', nameSpace: str = 'local'):
+    """
+        For an entity, it creates a document that will contain the entity.
+    """
     cdm_folder_def = cdm_corpus.storage.fetch_root_folder(nameSpace)
     entity_doc = cdm_corpus.ctx.corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(entity.entity_name), False)
 

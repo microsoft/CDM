@@ -130,6 +130,6 @@ public class Program {
         true).join();
 
     // You can save the doc as a model.json format as an option.
-    // manifestResolved.saveAsAsync("model.json", true).get();
+    // manifestResolved.saveAsAsync("model.json", true).join();
   }
 }

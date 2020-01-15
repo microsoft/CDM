@@ -25,6 +25,12 @@
             partition.LastFileModifiedTime = obj.LastFileModifiedTime;
             partition.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
 
+
+            if (string.IsNullOrEmpty(partition.Location))
+            {
+                Logger.Warning(nameof(DataPartitionPersistence), ctx as ResolveContext, $"Couldn't find data partition's location for partition {partition.Name}.", nameof(FromData));
+            }
+
             if (obj.IsHidden == true)
             {
                 var isHiddenTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.hidden", true);
@@ -37,9 +43,8 @@
             {
                 var csvFormatTrait = Utils.CreateCsvTrait(obj.FileFormatSettings, ctx);
 
-                if (csvFormatTrait == null)
-                {
-                    Logger.Error(typeof(DataPartitionPersistence).ToString(), ctx as ResolveContext, "There was a problem while processing csv format settings inside data partition.");
+                if (csvFormatTrait == null) {
+                    Logger.Error(nameof(DataPartitionPersistence), ctx as ResolveContext, "There was a problem while processing csv format settings inside data partition.");
 
                     return null;
                 }
@@ -65,6 +70,11 @@
                 LastFileModifiedTime = instance.LastFileModifiedTime,
                 LastFileStatusCheckTime = instance.LastFileStatusCheckTime
             };
+
+            if (string.IsNullOrEmpty(result.Location))
+            {
+                Logger.Warning(nameof(DataPartitionPersistence), instance.Ctx, $"Couldn't find data partition's location for partition {result.Name}.", nameof(ToData));
+            }
 
             await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 

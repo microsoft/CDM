@@ -9,7 +9,7 @@
     {
 
         /// <summary>
-        /// Creates a Corpus used for the tests.
+        /// Creates a manifest used for the tests.
         /// </summary>
         /// <param name="localRootPath">A string used as root path for "local" namespace.</param>
         /// <returns>Created corpus.</returns>
@@ -30,6 +30,22 @@
             manifest.Namespace = "local";
 
             return manifest;
+        }
+
+        /// <summary>
+        /// For an entity, it creates a document that will contain the entity.
+        /// </summary>
+        /// <param name="cdmCorpus">The corpus everything belongs to.</param>
+        /// <param name="entity">The entity we want a document for.</param>
+        /// <returns>A document containing desired entity.</returns>
+        public static CdmDocumentDefinition CreateDocumentForEntity(CdmCorpusDefinition cdmCorpus, CdmEntityDefinition entity, string nameSpace = "local")
+        {
+            var cdmFolderDef = cdmCorpus.Storage.FetchRootFolder(nameSpace);
+            var entityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(Enums.CdmObjectType.DocumentDef, $"{entity.EntityName}.cdm.json", false);
+
+            cdmFolderDef.Documents.Add(entityDoc);
+            entityDoc.Definitions.Add(entity);
+            return entityDoc;
         }
     }
 }

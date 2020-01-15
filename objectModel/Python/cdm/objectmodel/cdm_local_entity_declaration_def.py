@@ -6,10 +6,11 @@ from cdm.utilities import ResolveOptions, time_utils
 
 from .cdm_collection import CdmCollection
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
+from .cdm_file_status import CdmFileStatus
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmCorpusDefinition, CdmDataPartitionDefinition, \
-        CdmDataPartitionPatternDefinition, CdmFileStatus
+        CdmDataPartitionPatternDefinition
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
     from .cdm_trait_collection import CdmTraitCollection
@@ -62,7 +63,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
         full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
-        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
+        modified_time = await self.ctx.corpus._compute_last_modified_time_async(full_path, self)
 
         for partition in self.data_partitions:
             await partition.file_status_check_async()
@@ -113,7 +114,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         self.last_child_file_modified_time = child_time
         most_recent_at_this_level = time_utils.max_time(child_time, self.last_file_modified_time)
 
-        if cast('CdmFileStatus', self.owner).report_most_recent_time_async and most_recent_at_this_level:
+        if isinstance(self.owner, CdmFileStatus) and most_recent_at_this_level:
             await cast('CdmFileStatus', self.owner).report_most_recent_time_async(most_recent_at_this_level)
 
     def validate(self) -> bool:

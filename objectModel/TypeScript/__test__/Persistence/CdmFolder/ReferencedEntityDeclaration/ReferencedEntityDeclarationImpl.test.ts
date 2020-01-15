@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
 import { CdmCorpusDefinition, CdmManifestDefinition, cdmObjectType, CdmReferencedEntityDeclarationDefinition, resolveContext } from '../../../../internal';
+import { CdmFolder } from '../../../../Persistence';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.ReferencedEntityDeclaration', () => {
@@ -14,7 +14,7 @@ describe('Persistence.CdmFolder.ReferencedEntityDeclaration', () => {
     it('TestLoadReferencedEntity', () => {
         const readFile: string = testHelper.getInputFileContent(testsSubpath, 'TestLoadReferencedEntity', 'entities.manifest.cdm.json');
 
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), '', '', '', JSON.parse(readFile));
         expect(cdmManifest.entities.length)
             .toBe(1);

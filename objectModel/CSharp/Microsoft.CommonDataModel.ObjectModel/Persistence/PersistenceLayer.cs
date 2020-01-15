@@ -15,17 +15,72 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
-    using System.Text;
+    using System.Reflection;
     using System.Threading.Tasks;
 
-    public static class PersistenceLayer
+    public class PersistenceLayer
     {
+        internal CdmCorpusDefinition Corpus { get; }
+        internal CdmCorpusContext Ctx => this.Corpus.Ctx;
+
+        internal const string CdmFolder = "CdmFolder";
+        internal const string ModelJson = "ModelJson";
+        internal const string Odi = "Odi";
+
         private static readonly IDictionary<string, IPersistenceType> persistenceTypes = new Dictionary<string, IPersistenceType>
         {
-            { "CdmFolder", new CdmFolderType() }
+            { CdmFolder, new CdmFolderType() }
         };
+
+        /// <summary>
+        /// The dictionary of file extension <-> persistence class that handles the file format.
+        /// </summary>
+        private IDictionary<string, Type> registeredPersistenceFormats;
+
+        /// <summary>
+        /// The dictionary of persistence class <-> whether the persistence class has async methods. 
+        /// </summary>
+        private IDictionary<Type, bool> isRegisteredPersistenceAsync;
+
+        /// <summary>
+        /// Constructs a PersistenceLayer and registers persistence classes to load and save known file formats.
+        /// </summary>
+        /// <param name="corpus">The corpus that owns this persistence layer.</param>
+        internal PersistenceLayer(CdmCorpusDefinition corpus)
+        {
+            this.Corpus = corpus;
+            this.registeredPersistenceFormats = new Dictionary<string, Type>();
+            this.isRegisteredPersistenceAsync = new Dictionary<Type, bool>();
+
+            // Register known persistence classes.
+            this.RegisterFormat(typeof(ManifestPersistence).FullName);
+            this.RegisterFormat(typeof(ModelJson.ManifestPersistence).FullName);
+            this.RegisterFormat(typeof(DocumentPersistence).FullName);
+            this.RegisterFormat("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.ManifestPersistence", "Microsoft.CommonDataModel.ObjectModel.Persistence.Odi");
+        }
+
+        internal static string FetchFolioExtension()
+        {
+            return ".folio.cdm.json";
+        }
+
+        internal static string FetchManifestExtension()
+        {
+            return ".manifest.cdm.json";
+        }
+
+        internal static string FetchModelJsonExtension()
+        {
+            return "model.json";
+        }
+
+        internal static string FetchOdiExtension()
+        {
+            return "odi.json";
+        }
 
         public static T FromData<T, U>(CdmCorpusContext ctx, U obj, string persistenceTypeName)
             where T : CdmObject
@@ -35,7 +90,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             if (method == null)
             {
                 string persistenceClassName = typeof(T).Name;
-                throw new Exception($"Persistence class {persistenceClassName} in type {persistenceTypeName} does not implement FromData.");
+                throw new Exception($"Persistence class {persistenceClassName} in type {persistenceTypeName} does not implement {nameof(FromData)}.");
             }
 
             var fromData = (Func<CdmCorpusContext, U, T>)Delegate.CreateDelegate(typeof(Func<CdmCorpusContext, U, T>), method);
@@ -50,7 +105,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             if (method == null)
             {
                 string persistenceClassName = typeof(T).Name;
-                throw new Exception($"Persistence class {persistenceClassName} in type {persistenceTypeName} does not implement ToData.");
+                throw new Exception($"Persistence class {persistenceClassName} in type {persistenceTypeName} does not implement {nameof(ToData)}.");
             }
 
             var toData = (Func<T, ResolveOptions, CopyOptions, U>)Delegate.CreateDelegate(typeof(Func<T, ResolveOptions, CopyOptions, U>), method);
@@ -77,7 +132,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
         }
 
-        public static async Task<CdmDocumentDefinition> LoadDocumentFromPathAsync(CdmFolderDefinition folder, string docName, CdmDocumentDefinition docContainer)
+        /// <summary>
+        /// Loads a document from the folder path.
+        /// </summary>
+        /// <param name="folder">The folder that contains the document we want to load.</param>
+        /// <param name="docName">The document name.</param>
+        /// <param name="docContainer">The loaded document, if it was previously loaded.</param>
+        /// <returns>The loaded document.</returns>
+        internal async Task<CdmDocumentDefinition> LoadDocumentFromPathAsync(CdmFolderDefinition folder, string docName, CdmDocumentDefinition docContainer)
         {
             // This makes sure date values are consistently parsed exactly as they appear. 
             // Default behavior auto formats date values.
@@ -86,12 +148,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 DateParseHandling = DateParseHandling.None
             };
 
-            CdmDocumentDefinition docContent = null;
+            dynamic docContent = null;
             string jsonData = null;
             DateTimeOffset? fsModifiedTime = null;
-            CdmCorpusContext ctx = folder.Ctx;
             string docPath = folder.FolderPath + docName;
-            StorageAdapter adapter = ctx.Corpus.Storage.FetchAdapter(folder.Namespace);
+            StorageAdapter adapter = this.Corpus.Storage.FetchAdapter(folder.Namespace);
 
             try
             {
@@ -99,40 +160,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 {
                     jsonData = await adapter.ReadAsync(docPath);
                     fsModifiedTime = await adapter.ComputeLastModifiedTimeAsync(docPath);
-                    Logger.Info(nameof(CdmFolderDefinition), ctx, $"read file: {docPath}", "LoadDocumentFromPathAsync");
+                    Logger.Info(nameof(PersistenceLayer), this.Ctx, $"read file: {docPath}", nameof(LoadDocumentFromPathAsync));
                 }
             }
             catch (Exception e)
             {
-                Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)ctx, $"Could not read '{docPath}' from the '{folder.Namespace}' namespace. Reason '{e.Message}'", "LoadDocumentFromPathAsync");
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not read '{docPath}' from the '{folder.Namespace}' namespace. Reason '{e.Message}'", nameof(LoadDocumentFromPathAsync));
                 return null;
             }
 
-            try
+            if (string.IsNullOrWhiteSpace(docName))
             {
-                // Check file extensions, which performs a case-insensitive ordinal string comparison
-                if (docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchManifestExtension()) || docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchFolioExtension()))
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Document name cannot be null or empty.", nameof(LoadDocumentFromPathAsync));
+                return null;
+            }
+
+            // If loading an odi.json/model.json file, check that it is named correctly.
+            if (docName.EndWithOrdinalIgnoreCase(FetchOdiExtension()) && !docName.EqualsWithOrdinalIgnoreCase(FetchOdiExtension()))
+            {
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be {FetchOdiExtension()}.", nameof(LoadDocumentFromPathAsync));
+                return null;
+            }
+
+            if (docName.EndWithOrdinalIgnoreCase(FetchModelJsonExtension()) && !docName.EqualsWithOrdinalIgnoreCase(FetchModelJsonExtension()))
+            {
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be {FetchModelJsonExtension()}.", nameof(LoadDocumentFromPathAsync));
+                return null;
+            }
+
+            // Fetch the correct persistence class to use.
+            Type persistenceClass = FetchRegisteredPersistenceFormat(docName);
+            if (persistenceClass != null)
+            {
+                try
                 {
-                    docContent = ManifestPersistence.FromData(ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<ManifestContent>(jsonData)) as CdmDocumentDefinition;
-                }
-                else if (docPath.EndWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchModelJsonExtension()))
-                {
-                    if (!docName.EqualsWithOrdinalIgnoreCase(CdmCorpusDefinition.FetchModelJsonExtension()))
+                    MethodInfo method = persistenceClass.GetMethod(nameof(FromData));
+                    object[] parameters = new object[] { this.Ctx, docName, jsonData, folder };
+
+                    // Check if FromData() is asynchronous for this persistence class.
+                    if (!isRegisteredPersistenceAsync.ContainsKey(persistenceClass))
                     {
-                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be model.json.", "LoadDocumentFromPathAsync");
-                        return null;
+                        // Cache whether this persistence class has async methods.
+                        isRegisteredPersistenceAsync.Add(persistenceClass, (bool)persistenceClass.GetField("IsPersistenceAsync").GetValue(null));
                     }
 
-                    docContent = await ModelJson.ManifestPersistence.FromData(ctx, JsonConvert.DeserializeObject<Model>(jsonData), folder);
+                    if (isRegisteredPersistenceAsync[persistenceClass])
+                    {
+                        var task = (Task)method.Invoke(null, parameters);
+                        await task;
+                        docContent = task.GetType().GetProperty("Result").GetValue(task);
+                    }
+                    else
+                    {
+                        docContent = method.Invoke(null, parameters);
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    docContent = DocumentPersistence.FromData(ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<DocumentContent>(jsonData));
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not convert '{docName}'. Reason '{e.Message}'", nameof(LoadDocumentFromPathAsync));
+                    return null;
                 }
             }
-            catch (Exception e)
+            else
             {
-                Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)ctx, $"Could not convert '{docPath}'. Reason '{e.Message}'", "LoadDocumentFromPathAsync");
+                // Could not find a registered persistence class to handle this document type.
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not find a persistence class to handle the file '{docName}'", nameof(LoadDocumentFromPathAsync));
                 return null;
             }
 
@@ -158,6 +250,240 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
 
             return docContent;
+        }
+
+        // A manifest or document can be saved with a new or existing name. 
+        // If saved with the same name, then consider this document 'clean' from changes. If saved with a back compat model or
+        // to a different name, then the source object is still 'dirty'.
+        // An option will cause us to also save any linked documents.
+        internal async Task<bool> SaveDocumentAsAsync(CdmDocumentDefinition doc, CopyOptions options, string newName, bool saveReferenced = false)
+        {
+            // Find out if the storage adapter is able to write.
+            string ns = doc.Namespace;
+            if (string.IsNullOrWhiteSpace(ns))
+                ns = this.Corpus.Storage.DefaultNamespace;
+            var adapter = this.Corpus.Storage.FetchAdapter(ns);
+
+            if (adapter == null)
+            {
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Couldn't find a storage adapter registered for the namespace '{ns}'.", nameof(SaveDocumentAsAsync));
+                return false;
+            }
+            else if (adapter.CanWrite() == false)
+            {
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"The storage adapter '{ns}' claims it is unable to write files.", nameof(SaveDocumentAsAsync));
+                return false;
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(newName))
+                {
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Document name cannot be null or empty.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                // What kind of document is requested?
+                // Check file extensions using a case-insensitive ordinal string comparison.
+                string persistenceType = newName.EndWithOrdinalIgnoreCase(FetchModelJsonExtension())
+                    ? ModelJson
+                    : (newName.EndWithOrdinalIgnoreCase(FetchOdiExtension()) ? Odi : CdmFolder);
+                
+                if (persistenceType == Odi && !newName.EqualsWithOrdinalIgnoreCase(FetchOdiExtension()))
+                {
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to persist '{newName}', as it's not an acceptable file name. It must be {FetchOdiExtension()}.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                if (persistenceType == ModelJson && !newName.EqualsWithOrdinalIgnoreCase(FetchModelJsonExtension()))
+                {
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to persist '{newName}', as it's not an acceptable file name. It must be {FetchModelJsonExtension()}.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                // Save the object into a json blob.
+                ResolveOptions resOpt = new ResolveOptions() { WrtDoc = doc, Directives = new AttributeResolutionDirectiveSet() };
+                dynamic persistedDoc;
+
+                // Fetch the correct persistence class to use.
+                Type persistenceClass = FetchRegisteredPersistenceFormat(newName);
+                if (persistenceClass != null)
+                {
+                    try
+                    {
+                        MethodInfo method = persistenceClass.GetMethod(nameof(ToData));
+                        object[] parameters = new object[] { doc, resOpt, options };
+
+                        // Check if ToData() is asynchronous for this persistence class.
+                        if (!isRegisteredPersistenceAsync.ContainsKey(persistenceClass))
+                        {
+                            // Cache whether this persistence class has async methods.
+                            isRegisteredPersistenceAsync.Add(persistenceClass, (bool)persistenceClass.GetField("IsPersistenceAsync").GetValue(null));
+                        }
+
+                        if (isRegisteredPersistenceAsync[persistenceClass])
+                        {
+                            // We don't know what the return type of ToData() is going to be and Task<T> is not covariant, 
+                            // so we can't use Task<dynamic> here. Instead, we just await on a Task object without a return value 
+                            // and fetch the Result property from it, which will have the result of ToData().
+                            var task = (Task)method.Invoke(null, parameters);
+                            await task;
+                            persistedDoc = task.GetType().GetProperty("Result").GetValue(task);
+                        }
+                        else
+                        {
+                            persistedDoc = method.Invoke(null, parameters);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not persist file '{newName}'. Reason '{e.Message}'.", nameof(SaveDocumentAsAsync));
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Could not find a registered persistence class to handle this document type.
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not find a persistence class to handle the file '{newName}'.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                if (persistedDoc == null)
+                {
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to persist '{newName}'.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                if (persistenceType == Odi)
+                {
+                    await this.SaveOdiDocuments(persistedDoc, adapter, newName);
+                    return true;
+                }
+
+                // turn the name into a path
+                string newPath = $"{doc.FolderPath}{newName}";
+                newPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(newPath, doc);
+                if (newPath.StartsWith($"{ns}:"))
+                    newPath = newPath.Slice(ns.Length + 1);
+                // ask the adapter to make it happen
+                try
+                {
+                    var content = JsonConvert.SerializeObject(persistedDoc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                    await adapter.WriteAsync(newPath, content);
+
+                    // Write the adapter's config.
+                    if (options.IsTopLevelDocument)
+                    {
+                        await this.Corpus.Storage.SaveAdaptersConfigAsync("/config.json", adapter);
+
+                        // The next document won't be top level, so reset the flag.
+                        options.IsTopLevelDocument = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to write to the file '{newName}' for reason {e.Message}.", nameof(SaveDocumentAsAsync));
+                    return false;
+                }
+
+                // if we also want to save referenced docs, then it depends on what kind of thing just got saved
+                // if a model.json there are none. If a manifest or definition doc then ask the docs to do the right things
+                // definition will save imports, manifests will save imports, schemas, sub manifests
+                if (saveReferenced && persistenceType == CdmFolder)
+                {
+                    if (await doc.SaveLinkedDocuments(options) == false)
+                    {
+                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to save linked documents for file '{newName}'.", nameof(SaveDocumentAsAsync));
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        internal async Task SaveOdiDocuments(dynamic doc, StorageAdapter adapter, string newName)
+        {
+            if (doc == null)
+            {
+                throw new ArgumentNullException($"Failed to persist document because {nameof(doc)} is null.");
+            }
+
+            // Ask the adapter to make it happen.
+            try
+            {
+                var oldDocumentPath = doc.DocumentPath;
+                var newDocumentPath = oldDocumentPath.Substring(0, oldDocumentPath.Length - FetchOdiExtension().Length) + newName;
+                var content = JsonConvert.SerializeObject(doc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                await adapter.WriteAsync(newDocumentPath, content);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx,
+                    $"Failed to write to the file '{doc.DocumentPath}' for reason {e.Message}.", nameof(SaveOdiDocuments));
+            }
+
+            // Save linked documents.
+            if (doc.LinkedDocuments != null)
+            {
+                foreach (var linkedDoc in doc.LinkedDocuments)
+                {
+                    await SaveOdiDocuments(linkedDoc, adapter, newName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers a persistence class to use for loading and saving documents in a specific format.
+        /// </summary>
+        /// <param name="persistenceClassName">The full name (including the namespace) of the persistence class.</param>
+        /// <param name="assemblyName">The name of the assembly that contains this persistence class to load.</param>
+        public void RegisterFormat(string persistenceClassName, string assemblyName = null)
+        {
+            try
+            {
+                Assembly assembly;
+                if (assemblyName == null)
+                {
+                    // If an assembly name is not provided, just use the assembly that contains the code that is currently executing.
+                    assembly = Assembly.GetExecutingAssembly();
+                }
+                else
+                {
+                    assembly = Assembly.Load(assemblyName);
+                }
+
+                Type persistenceClass = assembly.GetType(persistenceClassName);
+
+                // Get the file formats that this persistence class supports.
+                string[] formats = (string[])persistenceClass.GetField("Formats").GetValue(null);
+                foreach (string format in formats)
+                {
+                    registeredPersistenceFormats[format] = persistenceClass;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Info(nameof(PersistenceLayer), this.Ctx, $"Unable to register persistence class {persistenceClassName}. Reason: {e.Message}.", nameof(RegisterFormat));
+            }
+        }
+
+        /// <summary>
+        /// Fetches the registered persistence class type to handle the specified document format.
+        /// </summary>
+        /// <param name="docName">The name of the document. The document's extension is used to determine which persistence class to use.</param>
+        /// <returns>The registered persistence class type.</returns>
+        private Type FetchRegisteredPersistenceFormat(string docName)
+        {
+            foreach (KeyValuePair<string, Type> registeredPersistenceFormat in registeredPersistenceFormats)
+            {
+                // Find the persistence class to use for this document.
+                if (docName.EndWithOrdinalIgnoreCase(registeredPersistenceFormat.Key))
+                {
+                    Type persistenceClass = registeredPersistenceFormat.Value;
+                    return persistenceClass;
+                }
+            }
+            return null;
         }
     }
 }

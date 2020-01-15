@@ -3,7 +3,7 @@ from typing import Any, cast, Dict, Iterable, List, Optional, Set, Union, TYPE_C
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
-from cdm.utilities import AttributeContextParameters, ResolveOptions
+from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
 
 from .cdm_attribute_context import CdmAttributeContext
 from .cdm_collection import CdmCollection
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, CdmTypeAttributeDefinition
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet, \
         ResolvedTraitSetBuilder, TraitSpec
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions, TraitToPropertyMap, VisitCallback
+    from cdm.utilities import FriendlyFormatNode, TraitToPropertyMap, VisitCallback
 
 
 class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
@@ -36,12 +36,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # the resolution guidance for attributes taken from the entity extended by this entity
         self.extends_entity_resolution_guidance = None  # type: Optional[CdmAttributeResolutionGuidanceDefinition]
 
-        # internal
-
-        self.rasb = None  # type: Optional[ResolvedAttributeSetBuilder]
-        self.resolving_entity_references = False  # type: bool
+        # --- internal ---
+        self._rasb = None  # type: Optional[ResolvedAttributeSetBuilder]
+        self._resolving_entity_references = False  # type: bool
         self._attributes = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
+
+        self._TAG = CdmEntityDefinition.__name__
 
     @property
     def attributes(self) -> 'CdmCollection[CdmAttributeItem]':
@@ -118,8 +119,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         from cdm.resolvedmodel import ResolvedAttributeSetBuilder
         from cdm.utilities import AttributeContextParameters
 
-        self.rasb = ResolvedAttributeSetBuilder()
-        self.rasb.ras.attribute_context = under
+        self._rasb = ResolvedAttributeSetBuilder()
+        self._rasb.ras.attribute_context = under
 
         if self.extends_entity:
             ext_ref = self.extends_entity
@@ -132,7 +133,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     name='extends',
                     regarding=None,
                     include_traits=False)
-                extends_ref_under = self.rasb.ras.create_attribute_context(res_opt, acp_ext)
+                extends_ref_under = self._rasb.ras.create_attribute_context(res_opt, acp_ext)
                 acp_ext_ent = AttributeContextParameters(
                     under=extends_ref_under,
                     type=CdmAttributeContextType.ENTITY,
@@ -144,7 +145,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # want to pass along to getting this entities attributes
             old_moniker = res_opt._from_moniker
 
-            self.rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
+            self._rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
 
             if self.extends_entity_resolution_guidance:
                 # some guidance was given on how to integrate the base attributes into the set. apply that guidance
@@ -157,13 +158,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 # holds all the info needed by the resolver code
                 arc = AttributeResolutionContext(res_opt, res_guide, rts_base)  # type: AttributeResolutionContext
 
-                self.rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
+                self._rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
 
             # reset to the old moniker
             res_opt._from_moniker = old_moniker
 
-        self.rasb.mark_inherited()
-        self.rasb.ras.attribute_context = under
+        self._rasb.mark_inherited()
+        self._rasb.ras.attribute_context = under
 
         if self.attributes:
             for att in self.attributes:
@@ -175,15 +176,15 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         name=att.fetch_object_definition_name(),
                         regarding=att,
                         include_traits=False)
-                self.rasb.merge_attributes(att._fetch_resolved_attributes(res_opt, acp_att))
+                self._rasb.merge_attributes(att._fetch_resolved_attributes(res_opt, acp_att))
 
-        self.rasb.mark_order()
-        self.rasb.ras.attribute_context = under
+        self._rasb.mark_order()
+        self._rasb.ras.attribute_context = under
 
         # things that need to go away
-        self.rasb.remove_requested_atts()
+        self._rasb.remove_requested_atts()
 
-        return self.rasb
+        return self._rasb
 
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         from cdm.resolvedmodel import ResolvedTraitSet
@@ -235,11 +236,11 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             res_opt = ResolveOptions(self)
 
         if not res_opt.wrt_doc:
-            self.ctx.logger.error('No WRT document was supplied.')
+            logger.error(self._TAG, self.ctx, 'No WRT document was supplied.', self.create_resolved_entity_async.__name__)
             return None
 
         if not new_ent_name:
-            self.ctx.logger.error('No Entity Name provided.')
+            logger.error(self._TAG, self.ctx, 'No Entity Name provided.', self.create_resolved_entity_async.__name__)
             return None
 
         folder = folder or self.in_document.folder
@@ -249,11 +250,12 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # Don't overwite the source document.
         target_at_corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(folder.at_corpus_path, folder) + file_name
         if target_at_corpus_path == orig_doc:
-            self.ctx.logger.error('Attempting to replace source entity\'s document \'%s\'', target_at_corpus_path)
+            logger.error(self._TAG, self.ctx, 'Attempting to replace source entity\'s document \'{}\''.format(
+                target_at_corpus_path), self.create_resolved_entity_async.__name__)
             return None
 
         if not await res_opt.wrt_doc._index_if_needed(res_opt):
-            self.ctx.logger.error('Couldn\'t index source document.')
+            logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', self.create_resolved_entity_async.__name__)
             return None
 
         # Make the top level attribute context for this entity.
@@ -552,7 +554,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         res_opt_new.wrt_doc = doc_res
         res_opt_new._localize_references_for = doc_res
         if not await doc_res.refresh_async(res_opt_new):
-            self.ctx.logger.error('Failed to index the resolved document.')
+            logger.error(self._TAG, self.ctx, 'Failed to index the resolved document.', self.create_resolved_entity_async.__name__)
             return None
 
         # Get a fresh ref.
@@ -565,7 +567,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         # Ensures that cache exits.
         self._fetch_resolved_attributes(res_opt)
-        return self.rasb.inherited_mark
+        return self._rasb.inherited_mark
 
     def fetch_attributes_with_traits(self, res_opt: 'ResolveOptions', query_for: Union['TraitSpec', Iterable['TraitSpec']]) -> 'ResolvedAttributeSet':
         """Return a set of the entity attributes with traits."""
@@ -600,8 +602,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         if not ent_ref_set_cache:
             ent_ref_set_cache = ResolvedEntityReferenceSet(res_opt)
 
-            if not self.resolving_entity_references:
-                self.resolving_entity_references = True
+            if not self._resolving_entity_references:
+                self._resolving_entity_references = True
                 # get from any base class and then 'fix' those to point here instead.
                 ext_ref = self.extends_entity
                 if ext_ref:
@@ -623,7 +625,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
                             ent_ref_set_cache.add(sub)
                 ctx.update_cache(self, res_opt, 'entRefSet', ent_ref_set_cache)
-                self.resolving_entity_references = False
+                self._resolving_entity_references = False
 
         self.ctx.corpus.is_currently_resolving = was_previously_resolving
         return ent_ref_set_cache

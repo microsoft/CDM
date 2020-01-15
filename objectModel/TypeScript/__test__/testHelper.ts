@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { isArray, isDate, isObject, isString } from 'util';
 import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
-import { LocalAdapter, RemoteAdapter } from '../StorageAdapter';
+import { LocalAdapter, RemoteAdapter } from '../Storage';
 
 enum testFolders {
     Input,
@@ -12,7 +12,7 @@ enum testFolders {
 
 export const testHelper = {
     testDataPath: '__test__/TestData',
-    schemaDocumentsPath: '../CDM.SchemaDocuments',
+    schemaDocumentsPath: '../../schemaDocuments',
     doesWriteTestDebuggingFiles: false,
     getInputFolderPath: (testSubpath: string, testName: string) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input),

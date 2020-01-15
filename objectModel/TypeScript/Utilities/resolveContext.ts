@@ -18,11 +18,10 @@ export class resolveContext implements CdmCorpusContext {
     public currentDoc?: CdmDocumentDefinition;
     public relativePath?: string;
     public corpusPathRoot?: string;
-    public errors?: number;
     public cache: Map<string, any>;
     public corpus: CdmCorpusDefinition;
     constructor(corpus: CdmCorpusDefinition, statusRpt?: EventCallback, reportAtLevel?: cdmStatusLevel) {
-        this.reportAtLevel = reportAtLevel;
+        this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.info;
         this.statusEvent = statusRpt;
         this.cache = new Map<string, any>();
         this.corpus = corpus;

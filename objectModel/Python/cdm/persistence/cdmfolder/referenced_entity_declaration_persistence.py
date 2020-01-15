@@ -2,10 +2,12 @@ import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmReferencedEntityDeclarationDefinition
-from cdm.utilities import CopyOptions, ResolveOptions, time_utils
+from cdm.utilities import CopyOptions, logger, ResolveOptions, time_utils
 
 from . import utils
 from .types import ReferencedEntityDeclaration
+
+_TAG = 'ReferencedEntityDeclarationPersistence'
 
 
 class ReferencedEntityDeclarationPersistence:
@@ -13,13 +15,15 @@ class ReferencedEntityDeclarationPersistence:
     def from_data(ctx: CdmCorpusContext, prefix_path: str, data: ReferencedEntityDeclaration) -> CdmReferencedEntityDeclarationDefinition:
         referenced_entity = ctx.corpus.make_object(CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF, data.entityName)
 
-        entity_path = data.get('entityDeclaration') or data.get('entityPath')
+        entity_path = data.get('entityPath') or data.get('entityDeclaration')
 
-        if entity_path.find(':/') == -1:
-            referenced_entity.entity_path = '{}{}'.format(prefix_path, entity_path)
-        else:
-            referenced_entity.entity_path = entity_path
+        if not entity_path:
+            logger.error(_TAG, ctx, 'Couldn\'t find entity path or similar.', ReferencedEntityDeclarationPersistence.from_data.__name__)
 
+        if entity_path and entity_path.find(':') == -1:
+            entity_path = '{}{}'.format(prefix_path, entity_path)
+
+        referenced_entity.entity_path = entity_path
         referenced_entity.explanation = data.get('explanation')
 
         if data.get('lastFileStatusCheckTime'):

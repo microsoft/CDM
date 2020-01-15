@@ -1,7 +1,7 @@
 from typing import Optional
 
 from cdm.enums import CdmObjectType
-from cdm.persistence import persistence_layer
+from cdm.persistence import PersistenceLayer
 from cdm.objectmodel import CdmAttributeResolutionGuidanceDefinition, CdmAttributeResolutionGuidance_EntityByReference, \
     CdmAttributeResolutionGuidance_Expansion, CdmAttributeResolutionGuidance_SelectsSubAttribute, CdmCorpusContext
 from cdm.utilities import ResolveOptions, CopyOptions
@@ -74,7 +74,7 @@ class AttributeResolutionGuidancePersistence:
         result.renameFormat = instance.rename_format
 
         if instance.add_supporting_attribute:
-            result.addSupportingAttribute = persistence_layer.to_data(instance.add_supporting_attribute, res_opt, 'CdmFolder', options)
+            result.addSupportingAttribute = PersistenceLayer.to_data(instance.add_supporting_attribute, res_opt, 'CdmFolder', options)
 
         if instance.expansion:
             result.expansion = Expansion()
@@ -82,7 +82,7 @@ class AttributeResolutionGuidancePersistence:
             result.expansion.maximumExpansion = instance.expansion.maximum_expansion
 
             if instance.expansion.count_attribute:
-                result.expansion.countAttribute = persistence_layer.to_data(instance.expansion.count_attribute, res_opt, 'CdmFolder', options)
+                result.expansion.countAttribute = PersistenceLayer.to_data(instance.expansion.count_attribute, res_opt, 'CdmFolder', options)
 
         if instance.entity_by_reference:
             result.entityByReference = EntityByReference()
@@ -91,14 +91,14 @@ class AttributeResolutionGuidancePersistence:
             result.entityByReference.referenceOnlyAfterDepth = instance.entity_by_reference.reference_only_after_depth
 
             if instance.entity_by_reference.foreign_key_attribute:
-                result.entityByReference.foreignKeyAttribute = persistence_layer.to_data(
+                result.entityByReference.foreignKeyAttribute = PersistenceLayer.to_data(
                     instance.entity_by_reference.foreign_key_attribute, res_opt, 'CdmFolder', options)
 
         if instance.selects_sub_attribute:
             result.selectsSubAttribute = SelectsSubAttribute()
             result.selectsSubAttribute.selects = instance.selects_sub_attribute.selects
             if instance.selects_sub_attribute.selected_type_attribute:
-                result.selectsSubAttribute.selectedTypeAttribute = persistence_layer.to_data(
+                result.selectsSubAttribute.selectedTypeAttribute = PersistenceLayer.to_data(
                     instance.selects_sub_attribute.selected_type_attribute, res_opt, 'CdmFolder', options)
                 result.selectsSubAttribute.selectsSomeTakeNames = instance.selects_sub_attribute.selects_some_take_names
                 result.selectsSubAttribute.selectsSomeAvoidNames = instance.selects_sub_attribute.selects_some_avoid_names

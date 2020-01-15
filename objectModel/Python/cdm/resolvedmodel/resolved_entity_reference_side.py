@@ -16,12 +16,14 @@ if TYPE_CHECKING:
 class ResolvedEntityReferenceSide:
     def __init__(self, entity: Optional['CdmEntityDefinition'] = None, rasb: Optional['ResolvedAttributeSetBuilder'] = None) -> None:
         self.entity = entity  # type: Optional[CdmEntityDefinition]
-        self.rasb = rasb if rasb else ResolvedAttributeSetBuilder()  # type: ResolvedAttributeSetBuilder
+
+        # --- internal ---
+        self._rasb = rasb if rasb else ResolvedAttributeSetBuilder()  # type: ResolvedAttributeSetBuilder
 
     def get_first_attribute(self) -> Optional['ResolvedAttribute']:
-        return self.rasb.ras.set[0] if self.rasb and self.rasb.ras and self.rasb.ras.set else None
+        return self._rasb.ras.set[0] if self._rasb and self._rasb.ras and self._rasb.ras.set else None
 
     def spew(self, res_opt: 'ResolveOptions', to: 'SpewCatcher', indent: str, name_sort: bool) -> None:
         to.spew_line(indent + ' ent=' + self.entity.entity_name)
-        if self.rasb and self.rasb.ras:
-            self.rasb.ras.spew(res_opt, to, indent + '  atts:', name_sort)
+        if self._rasb and self._rasb.ras:
+            self._rasb.ras.spew(res_opt, to, indent + '  atts:', name_sort)

@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.CommonDataModel.ObjectModel.Cdm;
+using Microsoft.CommonDataModel.ObjectModel.Storage;
+using Microsoft.CommonDataModel.ObjectModel.Utilities;
+using Microsoft.CommonDataModel.Tools.Processor;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,6 +21,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// Here will be found input files and expected output files used by tests
         /// </summary>
         public const string TestDataPath = "../../../TestData";
+
+        /// <summary>
+        /// The path of the CDM Schema Documents Folder.
+        /// </summary>
+        public const string SchemaDocumentsPath = "../../../../../../schemaDocuments";
 
         /// <summary>
         /// Whether tests should write debugging files or not.
@@ -92,6 +101,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             return File.ReadAllText(pathOfExpectedOutputFile);
         }
 
+        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null)
+        {
+            testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName);
+            var testOutputDir = GetActualOutputFolderPath(testSubpath, testName);
+
+            var corpus = new CdmCorpusDefinition();
+            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            corpus.Storage.DefaultNamespace = "local";
+
+            corpus.Storage.Mount("local", new LocalAdapter(testInputDir));
+            corpus.Storage.Mount("output", new LocalAdapter(testOutputDir));
+            corpus.Storage.Mount("cdm", new LocalAdapter(SchemaDocumentsPath));
+            corpus.Storage.Mount("remote", new RemoteAdapter()
+            {
+                Hosts = new Dictionary<string, string>()
+                {
+                    { "contoso", "http://contoso.com" }
+                }
+            });
+
+            return corpus;
+        }
+
         /// <summary>
         /// Writes an actual output file used to debug a test.
         /// </summary>
@@ -161,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Strings did not match. Expected = {expectedString} , Actual = {actualString}");                    
+                    Console.WriteLine($"Strings did not match. Expected = {expectedString} , Actual = {actualString}");
                     return false;
                 }
             }
@@ -309,7 +341,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 }
             }
 
-            Assert.IsTrue(Directory.Exists(testFolderPath), $"Was unable to find directory {testFolderPath}");
+            //Assert.IsTrue(Directory.Exists(testFolderPath), $"Was unable to find directory {testFolderPath}");
             return testFolderPath;
         }
     }

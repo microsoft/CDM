@@ -31,7 +31,6 @@ class RemoteStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(self.adapter.create_adapter_path('/fineart/file.json'), 'https://fineartschool.net/file.json')
 
         # Invalid paths.
-        self.assertRaises(ValueError, self.adapter.create_adapter_path, '')
         self.assertRaises(ValueError, self.adapter.create_adapter_path, '/')
         self.assertRaises(ValueError, self.adapter.create_adapter_path, '/contoso')
         self.assertRaises(ValueError, self.adapter.create_adapter_path, '/adapter/file.json')

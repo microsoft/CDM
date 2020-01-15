@@ -1,14 +1,11 @@
 import {
-    ParameterPersistence,
-    TraitReferencePersistence
-} from '.';
-import {
     CdmCorpusContext,
     cdmObjectType,
     CdmTraitDefinition,
     copyOptions,
     resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     Parameter,
     Trait,
@@ -21,7 +18,7 @@ export class TraitPersistence {
         const trait: CdmTraitDefinition = ctx.corpus.MakeObject(cdmObjectType.traitDef, object.traitName);
 
         if (object.extendsTrait) {
-            trait.extendsTrait = TraitReferencePersistence.fromData(ctx, object.extendsTrait);
+            trait.extendsTrait = CdmFolder.TraitReferencePersistence.fromData(ctx, object.extendsTrait);
         }
 
         if (object.explanation) {
@@ -31,7 +28,7 @@ export class TraitPersistence {
         if (object.hasParameters) {
             object.hasParameters.forEach((ap: string | Parameter) => {
                 if (typeof (ap) !== 'string') {
-                    trait.parameters.push(ParameterPersistence.fromData(ctx, ap));
+                    trait.parameters.push(CdmFolder.ParameterPersistence.fromData(ctx, ap));
                 }
             });
         }

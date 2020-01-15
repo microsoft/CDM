@@ -47,7 +47,7 @@ class LocalAdapter(StorageAdapterBase):
         return os.path.normpath(os.path.join(self._full_root, corpus_path))
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        if not adapter_path.startswith('http'):
+        if adapter_path and not adapter_path.startswith('http'):
             normalized_adapter_path = os.path.abspath(adapter_path).replace('\\', '/')
             normalized_root = self._full_root.replace('\\', '/')
 

@@ -32,7 +32,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
                 Console.WriteLine(msg);
         };
 
-
         public static async Task ValidateSchemaAsync(CdmCorpusDefinition cdmCorpus, CdmValidationStep finishStep)
         {
             Stopwatch stopwatch = new Stopwatch();

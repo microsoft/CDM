@@ -1,7 +1,7 @@
 import { CdmManifestDeclarationDefinition } from '../../../../Cdm/CdmManifestDeclarationDefinition';
 import { CdmManifestDefinition } from '../../../../Cdm/CdmManifestDefinition';
 import { CdmCorpusDefinition } from '../../../../internal';
-import { ManifestPersistence } from '../../../../Persistence/CdmFolder';
+import { CdmFolder } from '../../../../Persistence';
 import { ManifestContent } from '../../../../Persistence/CdmFolder/types';
 import { resolveContext } from '../../../../Utilities/resolveContext';
 import { testHelper } from '../../../testHelper';
@@ -19,7 +19,7 @@ describe('Persistence.CdmFolder.FolderDeclaration', () => {
         const content: string = testHelper.getInputFileContent(testsSubpath, 'TestLoadFolderWithSubFolders', 'subManifest.manifest.cdm.json');
         const context: resolveContext = new resolveContext(new CdmCorpusDefinition(), undefined);
         const cdmManifest: CdmManifestDefinition =
-            ManifestPersistence.fromData(context, 'testEntity', 'testNamespace', '/', JSON.parse(content) as ManifestContent);
+            CdmFolder.ManifestPersistence.fromObject(context, 'testEntity', 'testNamespace', '/', JSON.parse(content) as ManifestContent);
         expect(cdmManifest.subManifests.length)
             .toEqual(1);
         const subManifest: CdmManifestDeclarationDefinition = cdmManifest.subManifests.allItems[0];

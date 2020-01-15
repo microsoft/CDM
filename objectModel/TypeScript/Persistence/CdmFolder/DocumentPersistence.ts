@@ -1,19 +1,12 @@
 import {
-    AttributeGroupPersistence,
-    ConstantEntityPersistence,
-    DataTypePersistence,
-    EntityPersistence,
-    ImportPersistence,
-    PurposePersistence,
-    TraitPersistence
-} from '.';
-import {
     CdmCorpusContext,
     CdmDocumentDefinition,
+    CdmFolderDefinition,
     cdmObjectType,
     copyOptions,
     resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     AttributeGroup,
     ConstantEntity,
@@ -27,7 +20,13 @@ import {
 import * as utils from './utils';
 
 export class DocumentPersistence {
-    public static fromData(ctx: CdmCorpusContext, name: string, namespace: string, path: string, object: DocumentContent): CdmDocumentDefinition {
+    // Whether this persistence class has async methods.
+    public static readonly isPersistenceAsync: boolean = false;
+
+    // The file format/extension types this persistence class supports.
+    public static readonly formats: string[] = ['.cdm.json'];
+
+    public static fromObject(ctx: CdmCorpusContext, name: string, namespace: string, path: string, object: DocumentContent): CdmDocumentDefinition {
         const document: CdmDocumentDefinition = ctx.corpus.MakeObject(cdmObjectType.documentDef, name);
         document.folderPath = path;
         document.namespace = namespace;
@@ -50,23 +49,23 @@ export class DocumentPersistence {
 
             if (object.imports) {
                 for (const importObj of object.imports) {
-                    document.imports.push(ImportPersistence.fromData(ctx, importObj));
+                    document.imports.push(CdmFolder.ImportPersistence.fromData(ctx, importObj));
                 }
             }
             if (object.definitions && Array.isArray(object.definitions)) {
                 for (const definition of object.definitions) {
                     if ('dataTypeName' in definition) {
-                        document.definitions.push(DataTypePersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.DataTypePersistence.fromData(ctx, definition));
                     } else if ('purposeName' in definition) {
-                        document.definitions.push(PurposePersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.PurposePersistence.fromData(ctx, definition));
                     } else if ('attributeGroupName' in definition) {
-                        document.definitions.push(AttributeGroupPersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.AttributeGroupPersistence.fromData(ctx, definition));
                     } else if ('traitName' in definition) {
-                        document.definitions.push(TraitPersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.TraitPersistence.fromData(ctx, definition));
                     } else if ('entityShape' in definition) {
-                        document.definitions.push(ConstantEntityPersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.ConstantEntityPersistence.fromData(ctx, definition));
                     } else if ('entityName' in definition) {
-                        document.definitions.push(EntityPersistence.fromData(ctx, definition));
+                        document.definitions.push(CdmFolder.EntityPersistence.fromData(ctx, definition));
                     }
                 }
             }
@@ -74,6 +73,13 @@ export class DocumentPersistence {
 
         return document;
     }
+
+    public static fromData(ctx: CdmCorpusContext, docName: string, jsonData: string, folder: CdmFolderDefinition): CdmDocumentDefinition {
+        const obj = JSON.parse(jsonData);
+
+        return DocumentPersistence.fromObject(ctx, docName, folder.namespace, folder.folderPath, obj);
+    }
+
     public static toData(instance: CdmDocumentDefinition, resOpt: resolveOptions, options: copyOptions): DocumentContent {
         return {
             $schema: instance.schema,

@@ -1,7 +1,4 @@
-import {
-    ArgumentPersistence,
-    TraitPersistence
-} from '.';
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     cdmObjectType,
@@ -28,14 +25,14 @@ export class TraitReferencePersistence extends cdmObjectRefPersistence {
             if (typeof (object.traitReference) === 'string') {
                 trait = object.traitReference;
             } else {
-                trait = TraitPersistence.fromData(ctx, object.traitReference);
+                trait = CdmFolder.TraitPersistence.fromData(ctx, object.traitReference);
             }
         }
 
         const traitReference: CdmTraitReference = ctx.corpus.MakeRef(cdmObjectType.traitRef, trait, simpleReference);
         if (args) {
             args.forEach((a: (string | Argument)) => {
-                traitReference.arguments.push(ArgumentPersistence.fromData(ctx, a));
+                traitReference.arguments.push(CdmFolder.ArgumentPersistence.fromData(ctx, a));
             });
         }
 

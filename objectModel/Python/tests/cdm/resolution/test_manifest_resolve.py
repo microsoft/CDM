@@ -1,6 +1,7 @@
 
 import unittest
 
+from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition
 from cdm.storage import LocalAdapter
 
@@ -11,7 +12,8 @@ class ManifestResolveTest(unittest.TestCase):
     @async_test
     async def test_referenced_entity_declaration_resolution(self):
         corpus = CdmCorpusDefinition()
-        corpus.storage.mount('cdm', LocalAdapter(root='../CDM.SchemaDocuments'))
+        corpus.ctx.report_at_level = CdmStatusLevel.WARNING
+        corpus.storage.mount('cdm', LocalAdapter(root='../../schemaDocuments'))
         corpus.storage.default_namespace = 'cdm'
 
         manifest = CdmManifestDefinition(corpus.ctx, 'manifest')

@@ -14,12 +14,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
     {
         internal Stack<ResolveContextScope> ScopeStack;
         internal ResolveContextScope CurrentScope;
-        internal CdmStatusLevel ReportAtLevel;
+        public CdmStatusLevel ReportAtLevel { get; set; }
         public CdmCorpusDefinition Corpus { get; set; }
         public EventCallback StatusEvent { get; set; }
 
         internal string RelativePath;
-        internal int Errors;
         internal IDictionary<string, dynamic> Cache;
 
         public ResolveContext(CdmCorpusDefinition corpus, EventCallback statusEvent, CdmStatusLevel? reportAtLevel = null)

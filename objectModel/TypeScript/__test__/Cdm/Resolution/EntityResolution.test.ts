@@ -1,15 +1,16 @@
 import * as fs from 'fs';
-import { CdmEntityDeclarationDefinition } from '../../../Cdm/CdmEntityDeclarationDefinition';
-import { CdmEntityDefinition } from '../../../Cdm/CdmEntityDefinition';
-import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { CdmObject } from '../../../Cdm/CdmObject';
-import { CdmReferencedEntityDeclarationDefinition } from '../../../Cdm/CdmReferencedEntityDeclarationDefinition';
-import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import { stringSpewCatcher } from '../../../Cdm/stringSpewCatcher';
-import { cdmObjectType } from '../../../Enums/cdmObjectType';
-import { CdmCorpusDefinition } from '../../../internal';
+import {
+    CdmCorpusDefinition,
+    CdmEntityDeclarationDefinition,
+    CdmEntityDefinition,
+    CdmManifestDefinition,
+    CdmReferencedEntityDeclarationDefinition,
+    cdmStatusLevel
+} from '../../../internal';
 import { ResolvedEntity } from '../../../ResolvedModel/ResolvedEntity';
-import { LocalAdapter } from '../../../StorageAdapter';
+import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { isReferencedEntityDeclarationDefinition } from '../../../Utilities/cdmObjectTypeGuards';
 import { resolveOptions } from '../../../Utilities/resolveOptions';
@@ -21,7 +22,7 @@ import { testHelper } from '../../testHelper';
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/Resolution/EntityResolution', () => {
     const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
-    const schemaDocsRoot: string = '../CDM.SchemaDocuments';
+    const schemaDocsRoot: string = testHelper.schemaDocumentsPath;
     const doesWriteDebuggingFiles: boolean = testHelper.doesWriteTestDebuggingFiles;
 
     /**

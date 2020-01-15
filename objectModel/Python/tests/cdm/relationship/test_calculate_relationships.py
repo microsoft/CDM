@@ -1,5 +1,6 @@
 
 import unittest
+import os
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
 
@@ -12,12 +13,12 @@ def match_relationship(rel1, rel2):
 
 
 class RelationshipTest(unittest.TestCase):
-    tests_subpath = 'cdm/relationship'
-    test_name = 'test_calculate_relationships_and_populate_manifest'
+    tests_subpath = os.path.join('Cdm', 'Relationship')
 
     @async_test
-    async def test_calculate_relationships_and_populate_manifest(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name)
+    async def test_calculate_relationships_and_populate_manifests(self):
+        test_name = 'test_calculate_relationships_and_populate_manifests'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
         root_manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
         sub_manifest = await corpus.fetch_object_async(root_manifest.sub_manifests[0].definition)
@@ -28,8 +29,8 @@ class RelationshipTest(unittest.TestCase):
         self.assertEqual(len(root_manifest.relationships), 5)
         self.assertEqual(len(sub_manifest.relationships), 7)
 
-        expected_all_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, self.test_name, 'expectedAllManifestRels.json')
-        expected_all_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, self.test_name, 'expectedAllSubManifestRels.json')
+        expected_all_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedAllManifestRels.json')
+        expected_all_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedAllSubManifestRels.json')
 
         for expected_rel in expected_all_manifest_rels:
             found = list(filter(lambda x: match_relationship(expected_rel, x), root_manifest.relationships))
@@ -41,7 +42,8 @@ class RelationshipTest(unittest.TestCase):
 
     @async_test
     async def test_calculate_relationships_and_populate_manifest_with_exclusive_flag(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name)
+        test_name = 'test_calculate_relationships_and_populate_manifests'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
         root_manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
         sub_manifest = await corpus.fetch_object_async(root_manifest.sub_manifests[0].definition)
@@ -53,8 +55,8 @@ class RelationshipTest(unittest.TestCase):
         self.assertEqual(len(root_manifest.relationships), 3)
         self.assertEqual(len(sub_manifest.relationships), 3)
 
-        expected_exclusive_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, self.test_name, 'expectedExclusiveManifestRels.json')
-        expected_exclusive_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, self.test_name, 'expectedExclusiveSubManifestRels.json')
+        expected_exclusive_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedExclusiveManifestRels.json')
+        expected_exclusive_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedExclusiveSubManifestRels.json')
 
         for expected_rel in expected_exclusive_manifest_rels:
             found = list(filter(lambda x: match_relationship(expected_rel, x), root_manifest.relationships))
@@ -66,7 +68,8 @@ class RelationshipTest(unittest.TestCase):
 
     @async_test
     async def test_calculate_relationships_and_populate_manifest_with_none_flag(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name)
+        test_name = 'test_calculate_relationships_and_populate_manifests'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
         root_manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
         sub_manifest = await corpus.fetch_object_async(root_manifest.sub_manifests[0].definition)
@@ -80,7 +83,7 @@ class RelationshipTest(unittest.TestCase):
 
     @async_test
     async def test_calculate_relationships_on_resolved_entities(self):
-        test_name = 'TestCalculateRelationshipsOnResolvedEntities'
+        test_name = 'test_calculate_relationships_on_resolved_entities'
         expected_resolved_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedManifestRels.json')
         expected_resolved_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedSubManifestRels.json')
 

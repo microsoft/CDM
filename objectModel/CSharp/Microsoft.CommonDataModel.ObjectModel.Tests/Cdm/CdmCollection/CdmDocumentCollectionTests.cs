@@ -11,7 +11,7 @@
         [TestMethod]
         public void TestDocumentCollectionAdd()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";
@@ -32,7 +32,7 @@
         [TestMethod]
         public void TestDocumentCollectionInsert()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.InDocument = manifest;
             folder.Corpus = manifest.Ctx.Corpus;
@@ -64,7 +64,7 @@
         [TestMethod]
         public void TestDocumentCollectionAddWithDocumentName()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";
@@ -85,7 +85,7 @@
         [TestMethod]
         public void TestDocumentCollectionAddRange()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";
@@ -118,7 +118,7 @@
         [TestMethod]
         public void TestDocumentCollectionRemove()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";
@@ -159,7 +159,7 @@
         [TestMethod]
         public void TestDocumentCollectionRemoveAt()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";
@@ -197,7 +197,7 @@
         [TestMethod]
         public void TestDocumentCollectionClear()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var folder = new CdmFolderDefinition(manifest.Ctx, "Folder");
             folder.Corpus = manifest.Ctx.Corpus;
             folder.FolderPath = "FolderPath/";

@@ -4,7 +4,7 @@ import {
     CdmTypeAttributeDefinition,
     resolveContext
 } from '../../../../internal';
-import { fromData } from '../../../../Persistence';
+import { PersistenceLayer } from '../../../../Persistence';
 
 describe('Persistence.CdmFolder.TypeAttribute', () => {
     it('TestNonNullDefaultValueAttribute', () => {
@@ -24,7 +24,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             defaultValue: theList
         };
 
-        const result: CdmTypeAttributeDefinition = fromData<CdmTypeAttributeDefinition>(
+        const result: CdmTypeAttributeDefinition = PersistenceLayer.fromData<CdmTypeAttributeDefinition>(
             new resolveContext(new CdmCorpusDefinition(), undefined),
             input,
             cdmObjectType.typeAttributeDef,

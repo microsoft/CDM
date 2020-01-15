@@ -72,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Returns a map from parameter names to the final argument values for a trait reference.
         /// Values come (in this order) from base trait defaults, then default overrides on inheritence,
         /// then values supplied on this reference.
-        internal Dictionary<string, dynamic> GetFinalArgumentValues(ResolveOptions resOpt)
+        public Dictionary<string, dynamic> FetchFinalArgumentValues(ResolveOptions resOpt)
         {
             Dictionary<string, dynamic> finalArgs = new Dictionary<string, dynamic>();
             // get resolved traits does all the work, just clean up the answers

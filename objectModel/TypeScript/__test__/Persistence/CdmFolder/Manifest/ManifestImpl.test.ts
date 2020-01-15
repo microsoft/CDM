@@ -9,9 +9,9 @@ import {
     cdmStatusLevel,
     resolveContext
 } from '../../../../internal';
-import { ManifestPersistence } from '../../../../Persistence/CdmFolder';
+import { CdmFolder } from '../../../../Persistence';
 import { ManifestContent } from '../../../../Persistence/CdmFolder/types';
-import { LocalAdapter } from '../../../../StorageAdapter';
+import { LocalAdapter } from '../../../../Storage';
 import { EventCallback } from '../../../../Utilities/EventCallback';
 import * as timeUtils from '../../../../Utilities/timeUtils';
 import { testHelper } from '../../../testHelper';
@@ -33,7 +33,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
             'empty.manifest.cdm.json'
         );
 
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
         expect(cdmManifest.getName())
             .toBe('cdmTest');
@@ -66,7 +66,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const content: string = testHelper.getInputFileContent(testsSubpath, 'TestManifestWithEverything', 'complete.manifest.cdm.json');
         const jsonContent = JSON.parse(content);
 
-        let cdmManifest: CdmManifestDefinition = ManifestPersistence.fromData(
+        let cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName', 'someNamespace', '', jsonContent);
 
         expect(cdmManifest.subManifests.length)
@@ -76,7 +76,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(cdmManifest.manifestName)
             .toBe('cdmTest');
 
-        cdmManifest = ManifestPersistence.fromData(
+        cdmManifest = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName.manifest.cdm.json', 'someNamespace', '/', jsonContent);
         expect(cdmManifest.subManifests.length)
             .toBe(1);
@@ -92,7 +92,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
     it('TestFolioWithEverything', () => {
         let content: string = testHelper.getInputFileContent(testsSubpath, 'TestFolioWithEverything', 'complete.folio.cdm.json');
 
-        let cdmManifest: CdmManifestDefinition = ManifestPersistence.fromData(
+        let cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName', 'someNamespace', '', JSON.parse(content));
 
         expect(cdmManifest.subManifests.length)
@@ -103,7 +103,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
             .toBe('cdmTest');
 
         content = testHelper.getInputFileContent(testsSubpath, 'TestFolioWithEverything', 'noname.folio.cdm.json');
-        cdmManifest = ManifestPersistence.fromData(
+        cdmManifest = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName.folio.cdm.json', 'someNamespace', '/', JSON.parse(content));
         expect(cdmManifest.subManifests.length)
             .toBe(1);
@@ -118,7 +118,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
      */
     it('TestManifestForCopyData', () => {
         const content: string = testHelper.getInputFileContent(testsSubpath, 'TestManifestForCopyData', 'complete.manifest.cdm.json');
-        const cdmManifest: CdmManifestDefinition = CdmManifestDefinition.instanceFromData(
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
         const manifestObject: ManifestContent = cdmManifest.copyData(undefined, undefined) as ManifestContent;
         expect(manifestObject.$schema)
@@ -151,11 +151,12 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Test modified times for manifest and files beneath it
      * (loads and sets modified times correctly)
      */
-    it('TestLoadsAndSetsTimesCorrectly', async () => {
+    it('TestLoadsAndSetsTimesCorrectly', async (done) => {
         const timeBeforeLoad: Date = new Date();
 
         const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
         const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
+        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
         cdmCorpus.storage.mount('someNamespace', new LocalAdapter(inputPath));
         cdmCorpus.storage.unMount('cdm');
 
@@ -190,6 +191,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const maxTime: Date = timeUtils.maxTime(entity.lastFileModifiedTime, subManifest.lastFileModifiedTime);
         expect(timeUtils.getFormattedDateString(cdmManifest.lastChildFileModifiedTime))
             .toBe(timeUtils.getFormattedDateString(maxTime));
+        done();
     });
 
     /**
@@ -202,6 +204,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const actualLastModTime: Date = (await util.promisify(fs.stat)(inputPath)).mtime;
 
         const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubpath, 'TestRefreshDataPartitionPatterns');
+        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
         const cdmManifest: CdmManifestDefinition =
             await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');

@@ -113,5 +113,3 @@ class CdmCollection(list, Generic[T]):
         if isinstance(obj, (list, CdmCollection)):
             for element in obj:
                 self.append(element)
-        else:
-            self.ctx.logger.error('unsupported type to extend', 'extend')

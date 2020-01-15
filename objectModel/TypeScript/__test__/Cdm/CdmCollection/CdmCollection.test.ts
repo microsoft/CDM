@@ -7,15 +7,14 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
-    CdmFolderDefinition,
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDefinition
- } from '../../../internal';
-import { LocalAdapter } from '../../../StorageAdapter';
-import { generateManifest } from './CdmCollectionHelperFunctions';
+} from '../../../internal';
+import { LocalAdapter } from '../../../Storage';
+import { createDocumentForEntity, generateManifest } from './CdmCollectionHelperFunctions';
 
 describe('Cdm/CdmCollection/CdmCollection', () => {
-    it ('TestCdmCollectionAddMethod', () => {
+    it('TestCdmCollectionAddMethod', () => {
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.defaultNamespace = 'local';
 
@@ -39,15 +38,15 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
             .toEqual(addedAttribute);
     });
 
-    it ('TestCdmCollectionRemoveMethod', () => {
+    it('TestCdmCollectionRemoveMethod', () => {
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.defaultNamespace = 'local';
         cdmCorpus.storage.mount('local', new LocalAdapter('CdmCorpus/LocalPath'));
 
-        const ctx: CdmCorpusContext =  cdmCorpus.ctx;
+        const ctx: CdmCorpusContext = cdmCorpus.ctx;
         const cdmDocument: CdmDocumentDefinition = new CdmDocumentDefinition(ctx, 'NameOfDocument');
         const collection: CdmCollection<CdmAttributeContext>
-             = new CdmCollection<CdmAttributeContext>(ctx, cdmDocument, cdmObjectType.attributeContextDef);
+            = new CdmCollection<CdmAttributeContext>(ctx, cdmDocument, cdmObjectType.attributeContextDef);
 
         const addedDocument: CdmAttributeContext = collection.push('nameOfNewDocument');
         const addedDocument2: CdmAttributeContext = collection.push('otherDocument');
@@ -67,15 +66,15 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
             .toEqual(1);
     });
 
-    it ('TestCdmCollectionRemoveAt', () => {
+    it('TestCdmCollectionRemoveAt', () => {
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.defaultNamespace = 'local';
         cdmCorpus.storage.mount('local', new LocalAdapter('CdmCorpus/LocalPath'));
 
-        const ctx: CdmCorpusContext =  cdmCorpus.ctx;
+        const ctx: CdmCorpusContext = cdmCorpus.ctx;
         const cdmDocument: CdmDocumentDefinition = new CdmDocumentDefinition(ctx, 'NameOfDocument');
         const collection: CdmCollection<CdmAttributeContext>
-             = new CdmCollection<CdmAttributeContext>(ctx, cdmDocument, cdmObjectType.attributeContextDef);
+            = new CdmCollection<CdmAttributeContext>(ctx, cdmDocument, cdmObjectType.attributeContextDef);
 
         const addedDocument: CdmAttributeContext = collection.push('nameOfNewDocument');
         const addedDocument2: CdmAttributeContext = collection.push('otherDocument');
@@ -90,7 +89,7 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
             .toEqual(addedDocument2);
         collection.removeAt(1);
         expect(collection.length)
-        .toEqual(1);
+            .toEqual(1);
         expect(collection.allItems[0])
             .toEqual(addedDocument2);
         collection.removeAt(0);
@@ -114,7 +113,7 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
         for (let i: number = 0; i < 2; i++) {
             const entity: CdmEntityDefinition = new CdmEntityDefinition(cdmCorpus.ctx, `entityName_${i}`, undefined);
 
-            CreateDocumentForEntity(cdmCorpus, entity);
+            createDocumentForEntity(cdmCorpus, entity);
 
             const entityDeclaration: CdmLocalEntityDeclarationDefinition =
                 cdmCorpus.MakeObject<CdmLocalEntityDeclarationDefinition>(
@@ -143,9 +142,9 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
         }
     });
 
-    it ('TestCdmCollectionChangeMakesDocumentDirty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('c:\nothing');
-        const collection : CdmCollection<CdmEntityReference> =
+    it('TestCdmCollectionChangeMakesDocumentDirty', () => {
+        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const collection: CdmCollection<CdmEntityReference> =
             new CdmCollection<CdmEntityReference>(manifest.ctx, manifest, cdmObjectType.entityRef);
         manifest.isDirty = false;
         collection.push(new CdmEntityReference(manifest.ctx, 'name', false));
@@ -183,16 +182,3 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
             .toBeTruthy();
     });
 });
-
-function CreateDocumentForEntity(cdmCorpus: CdmCorpusDefinition, entity: CdmEntityDefinition): CdmDocumentDefinition {
-    const cdmFolderDef: CdmFolderDefinition = cdmCorpus.storage.fetchRootFolder('local');
-    const entityDoc: CdmDocumentDefinition =
-        cdmCorpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `${entity.entityName}.cdm.json`, false);
-    entityDoc.namespace = cdmFolderDef.namespace;
-    entityDoc.folderPath = cdmFolderDef.folderPath;
-
-    cdmFolderDef.documents.push(entityDoc);
-    entityDoc.definitions.push(entity);
-
-    return entityDoc;
-}

@@ -2,6 +2,7 @@
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.IO;
@@ -22,7 +23,7 @@
         {
             var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestEntityProperties");
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new Utilities.EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
             corpus.Storage.Mount("local", new LocalAdapter(testInputPath));
             corpus.Storage.DefaultNamespace = "local";
 

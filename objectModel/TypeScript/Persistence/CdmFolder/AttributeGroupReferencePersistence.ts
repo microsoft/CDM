@@ -1,10 +1,10 @@
-import { AttributeGroupPersistence } from '.';
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
     CdmCorpusContext,
     cdmObjectType
 } from '../../internal';
+import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import { AttributeGroupReference } from './types';
 
@@ -20,7 +20,7 @@ export class AttributeGroupReferencePersistence extends cdmObjectRefPersistence 
             if (typeof (object.attributeGroupReference) === 'string') {
                 attributeGroup = object.attributeGroupReference;
             } else {
-                attributeGroup = AttributeGroupPersistence.fromData(ctx, object.attributeGroupReference);
+                attributeGroup = CdmFolder.AttributeGroupPersistence.fromData(ctx, object.attributeGroupReference);
             }
         }
 

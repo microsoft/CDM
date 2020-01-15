@@ -81,7 +81,7 @@
             // Add an import to the foundations doc so the traits about partitons will resolve nicely
             manifestResolved.Imports.Add("cdm:/foundations.cdm.json");
 
-            Console.WriteLine("Save the docs");
+            Console.WriteLine("Save the documents");
             foreach(CdmEntityDeclarationDefinition eDef in manifestResolved.Entities)
             {
                 // Get the entity being pointed at

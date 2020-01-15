@@ -502,13 +502,23 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if (!resOpt.wrtDoc) {
-                Logger.error('CdmEntityDefinition', this.ctx, 'No WRT document was supplied', 'CreateResolvedEntityAsync');
+                Logger.error(
+                    'CdmEntityDefinition',
+                    this.ctx,
+                    'No WRT document was supplied',
+                    this.createResolvedEntityAsync.name
+                );
 
                 return undefined;
             }
 
             if (!newEntName || newEntName === '') {
-                Logger.error('CdmEntityDefinition', this.ctx, 'No Entity Name provided', 'CreateResolvedENtityAsync');
+                Logger.error(
+                    'CdmEntityDefinition',
+                    this.ctx,
+                    'No Entity Name provided',
+                    this.createResolvedEntityAsync.name
+                );
 
                 return undefined;
             }
@@ -521,13 +531,14 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             let origDoc: string = this.inDocument.atCorpusPath;
 
             // Don't overwite the source document
-            const targetAtCorpusPath: string = `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
+            const targetAtCorpusPath: string =
+                `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
             if (targetAtCorpusPath === origDoc) {
                 Logger.error(
                     CdmEntityDefinition.name,
                     this.ctx as resolveContext,
                     `attempting to replace source entity's document '${targetAtCorpusPath}`,
-                    'CreateResolvedEntity'
+                    this.createResolvedEntityAsync.name
                 );
 
                 return undefined;
@@ -535,7 +546,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if (await (resOpt.wrtDoc.indexIfNeeded(resOpt)) === false) {
-                Logger.error(CdmEntityDefinition.name, this.ctx, 'Couldn\'t index source document', 'CreateResolvedEntity');
+                Logger.error(
+                    CdmEntityDefinition.name,
+                    this.ctx,
+                    'Couldn\'t index source document',
+                    this.createResolvedEntityAsync.name
+                );
 
                 return undefined;
             }
@@ -910,7 +926,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             resOptNew.wrtDoc = docRes;
             resOptNew.localizeReferencesFor = docRes;
             if (!await docRes.refreshAsync(resOptNew)) {
-                Logger.error(CdmEntityDefinition.name, this.ctx, 'Failed to index the resolved document.', 'createResolvedEntity');
+                Logger.error(
+                    CdmEntityDefinition.name,
+                    this.ctx,
+                    'Failed to index the resolved document.',
+                    this.createResolvedEntityAsync.name
+                );
 
                 return undefined;
             }

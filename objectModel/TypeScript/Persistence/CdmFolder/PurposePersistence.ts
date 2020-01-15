@@ -1,12 +1,12 @@
-import { PurposeReferencePersistence } from '.';
 import {
     CdmCorpusContext,
     cdmObjectType,
     CdmPurposeDefinition,
+    CdmTraitReference,
     copyOptions,
-    resolveOptions,
-    CdmTraitReference
+    resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     Purpose,
     PurposeReference,
@@ -17,11 +17,14 @@ import * as utils from './utils';
 export class PurposePersistence {
     public static fromData(ctx: CdmCorpusContext, object: Purpose): CdmPurposeDefinition {
         const purpose: CdmPurposeDefinition = ctx.corpus.MakeObject(cdmObjectType.purposeDef, object.purposeName);
-        purpose.extendsPurpose = PurposeReferencePersistence.fromData(ctx, object.extendsPurpose);
+        purpose.extendsPurpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.extendsPurpose);
         if (object.explanation) {
             purpose.explanation = object.explanation;
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(purpose.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReference>(
+            purpose.exhibitsTraits,
+            utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
+        );
 
         return purpose;
     }

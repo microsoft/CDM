@@ -125,9 +125,9 @@ class ParameterValue():
 
             # Should be a reference to an object.
 
-            from cdm.persistence import persistence_layer
+            from cdm.persistence import PersistenceLayer
             from cdm.utilities import CopyOptions
-            data = persistence_layer.to_data(self.value, res_opt, 'CdmFolder', CopyOptions(string_refs=False))
+            data = PersistenceLayer.to_data(self.value, res_opt, 'CdmFolder', CopyOptions(string_refs=False))
             if isinstance(data, str):
                 return data
 

@@ -26,7 +26,7 @@
         /// </summary>
         private string testsSubpath = Path.Combine("Cdm", "Performance");
 
-        private const string SchemaDocsRoot = "../../../../../../CDM.SchemaDocuments";
+        private const string SchemaDocsRoot = TestHelper.SchemaDocumentsPath;
 
         /// <summary>
         /// Test the time taken to resolve the corpus

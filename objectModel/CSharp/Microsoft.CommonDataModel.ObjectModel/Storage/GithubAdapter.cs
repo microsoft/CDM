@@ -34,8 +34,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public GithubAdapter()
         {
-            this.folders = new ConcurrentDictionary<string, byte>();
-            this.files = new ConcurrentDictionary<string, object>();
             this.httpClient = new CdmHttpClient($"https://{ghHost}");
         }
 
@@ -53,8 +51,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<string> ReadAsync(string corpusPath)
         {
-            string ghPath = "/Microsoft/CDM/master/schemaDocuments";
-
             var httpRequest = this.SetUpCdmRequest($"{ghPath}{corpusPath}", 
                 new Dictionary<string, string>() { { "User-Agent", "CDM" } }, HttpMethod.Get);
 
@@ -78,8 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public void ClearCache()
         {
-            this.folders = new ConcurrentDictionary<string, byte>();
-            this.files = new ConcurrentDictionary<string, object>();
+            
         }
 
         /// <inheritdoc />
@@ -95,31 +90,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return null;
         }
 
-        private void CacheDirectory(string folderPath, List<Dictionary<string, string>> res)
-        {
-            // only add the current directory
-            this.folders[folderPath] = 1;
-
-            // cache the folders and files inside of this directory
-            foreach (var fileOrDir in res)
-            {
-                // do not add directories inside this one
-                string type = null;
-                if (fileOrDir.TryGetValue("type", out type) && type != "dir")
-                {
-                    string name = null;
-                    if (fileOrDir.TryGetValue("name", out name))
-                    {
-                        this.files[$"{folderPath}/{name}"] = new { };
-                    }
-                    else
-                    {
-                        this.files[$"{folderPath}/"] = new { };
-                    }
-                }
-            }
-        }
-
         /// <inheritdoc />
         public string CreateAdapterPath(string corpusPath)
         {
@@ -131,7 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             string ghRoot = GithubAdapter.GhRawRoot();
             // might not be an adapterPath that we understand. check that first 
-            if (adapterPath.StartsWith(ghRoot))
+            if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(ghRoot))
             {
                 return StringUtils.Slice(adapterPath, ghRoot.Length);
             }

@@ -3,12 +3,9 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -139,7 +136,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 resOpt = new ResolveOptions(this);
             }
-
             return null;
         }
 
@@ -185,7 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // go get the doc
-            doc = await PersistenceLayer.LoadDocumentFromPathAsync(this, docName, doc);
+            doc = await this.Corpus.Persistence.LoadDocumentFromPathAsync(this, docName, doc);
 
             return doc;
         }
@@ -270,7 +266,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var childPath = await this.ChildFolders.Add(name).FetchChildFolderFromPathAsync(remainingPath, makeFolder);
                     if (childPath == null)
                     {
-                        Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", "FetchChildFolderFromPathAsync");
+                        Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", nameof(FetchChildFolderFromPathAsync));
                     }
                     return childPath;
                 }

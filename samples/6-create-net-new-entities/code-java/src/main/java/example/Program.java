@@ -142,16 +142,16 @@ public class Program {
     // more details of how to use resolution guidance to customize your data
     CdmEntityAttributeDefinition simpleCustomAccountAttribute = createAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME, "SimpleCustomAccount", attrExplanation);
     extendedStandardAccountEntity.getAttributes().add(simpleCustomAccountAttribute);
-    CdmDocumentDefinition extendedStandardAccountntityDoc = cdmCorpus.makeObject(CdmObjectType.DocumentDef, EXTENDED_STANDARD_ACCOUNT + ".cdm.json", false);
+    CdmDocumentDefinition extendedStandardAccountEntityDoc = cdmCorpus.makeObject(CdmObjectType.DocumentDef, EXTENDED_STANDARD_ACCOUNT + ".cdm.json", false);
     // Add an import to the foundations doc so the traits about partitons will resolve nicely
-    extendedStandardAccountntityDoc.getImports().add(FOUNDATION_JSON_PATH);
+    extendedStandardAccountEntityDoc.getImports().add(FOUNDATION_JSON_PATH);
     // The ExtendedAccount entity extends from the "Account" entity from standards, the import to the entity Account's doc is required
     // it also has a relationship with the CustomAccount entity, the relationship defined from its from its attribute with traits, the import to the entity reference CustomAccount's doc is required
-    extendedStandardAccountntityDoc.getImports().add(SCHEMA_DOCS_ROOT + "/Account.cdm.json");
-    extendedStandardAccountntityDoc.getImports().add(CUSTOM_ACCOUNT_ENTITY_NAME + ".cdm.json");
+    extendedStandardAccountEntityDoc.getImports().add(SCHEMA_DOCS_ROOT + "/Account.cdm.json");
+    extendedStandardAccountEntityDoc.getImports().add(CUSTOM_ACCOUNT_ENTITY_NAME + ".cdm.json");
     // Add the document to the root of the local documents in the corpus
-    localRoot.getDocuments().add(extendedStandardAccountntityDoc);
-    extendedStandardAccountntityDoc.getDefinitions().add(extendedStandardAccountEntity);
+    localRoot.getDocuments().add(extendedStandardAccountEntityDoc);
+    extendedStandardAccountEntityDoc.getDefinitions().add(extendedStandardAccountEntity);
     // Add the entity to the manifest
     manifestAbstract.getEntities().add(extendedStandardAccountEntity);
 
@@ -159,7 +159,10 @@ public class Program {
     System.out.println("Resolve the placeholder");
     CdmManifestDefinition manifestResolved = manifestAbstract.createResolvedManifestAsync("default", null).get();
 
-    System.out.println("Save the docs");
+    // Add an import to the foundations doc so the traits about partitions will resolve nicely.
+    manifestResolved.getImports().add(FOUNDATION_JSON_PATH);
+
+    System.out.println("Save the documents");
     for (CdmEntityDeclarationDefinition eDef : manifestResolved.getEntities()) {
       // Get the entity being pointed at
       CdmEntityDeclarationDefinition localEDef = eDef;
@@ -175,11 +178,11 @@ public class Program {
       csvTrait.getArguments().add("columnHeaders", "true");
       csvTrait.getArguments().add("delimiter", ",");
     }
-    // We can save the docs as manifest.cdm.json format or model.json
+    // We can save the documents as manifest.cdm.json format or model.json
     // Save as manifest.cdm.json
     manifestResolved.saveAsAsync(manifestResolved.getManifestName() + ".manifest.cdm.json", true).get();
     // Save as a model.json
-    // await manifestResolved.saveAsAsync($"{manifestResolved.ManifestName}.model.json", true);
+    // manifestResolved.saveAsAsync("model.json", true).get();
   }
 
   /**

@@ -24,11 +24,12 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         return cdmObjectType.constantEntityDef;
     }
 
-    constructor(ctx: CdmCorpusContext) {
+    constructor(ctx: CdmCorpusContext, constantEntityName: string) {
         super(ctx);
         // let bodyCode = () =>
         {
             this.objectType = cdmObjectType.constantEntityDef;
+            this.constantEntityName = constantEntityName
         }
         // return p.measure(bodyCode);
     }
@@ -41,12 +42,13 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             }
             let copy: CdmConstantEntityDefinition;
             if (!host) {
-                copy = new CdmConstantEntityDefinition(this.ctx);
+                copy = new CdmConstantEntityDefinition(this.ctx, this.constantEntityName);
             } else {
                 copy = host as CdmConstantEntityDefinition;
                 copy.ctx = this.ctx;
+                copy.constantEntityName = this.constantEntityName;
             }
-            copy.constantEntityName = this.constantEntityName;
+            
             copy.entityShape = <CdmEntityReference>this.entityShape.copy(resOpt);
             copy.constantValues = this.constantValues; // is a deep copy needed?
             this.copyDef(resOpt, copy);

@@ -192,7 +192,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resolvedManifestFolder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newFolderPath);
                 if (resolvedManifestFolder == null)
                 {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder for manifest not found {newFolderPath}", "CreateResolvedManifestAsync");
+                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder for manifest not found {newFolderPath}", nameof(CreateResolvedManifestAsync));
                     return null;
                 }
                 newManifestName = newManifestName.Substring(resolvedManifestPathSplit);
@@ -202,7 +202,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resolvedManifestFolder = this.Owner as CdmFolderDefinition;
             }
 
-            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"resolving manifest {sourceManifestPath}", "CreateResolvedManifestAsync");
+            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"resolving manifest {sourceManifestPath}", nameof(CreateResolvedManifestAsync));
 
             // Using the references present in the resolved entities, get an entity
             // create an imports doc with all the necessary resolved entity references and then resolve it
@@ -223,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 var entDef = await this.GetEntityFromReference(entity, this);
                 if (entDef == null)
                 {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Unable to get entity from reference", "CreateResolvedManifestAsync");
+                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Unable to get entity from reference", nameof(CreateResolvedManifestAsync));
                     return null;
                 }
 
@@ -248,7 +248,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath) as CdmFolderDefinition;
                 if (folder == null)
                 {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder not found {newDocumentPath}", "CreateResolvedManifestAsync");
+                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder not found {newDocumentPath}", nameof(CreateResolvedManifestAsync));
                     return null;
                 }
 
@@ -259,7 +259,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" })
                 };
 
-                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", "CreateResolvedManifestAsync");
+                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", nameof(CreateResolvedManifestAsync));
 
                 var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, resOpt, folder, newDocumentName);
                 if (resolvedEntity == null)
@@ -281,7 +281,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resEntMap.Add(this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument), absoluteEntPath);
             }
 
-            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", "CreateResolvedManifestAsync");
+            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
 
             // calculate the entity graph for just this manifest and any submanifests
             await (this.Ctx.Corpus as CdmCorpusDefinition)._CalculateEntityGraphAsync(resolvedManifest, resEntMap);
@@ -410,7 +410,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmEntityDefinition result = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
 
             if (result == null)
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx, $"failed to resolve entity {entityPath}", "GetEntityFromReference");
+                Logger.Error(nameof(CdmManifestDefinition), this.Ctx, $"failed to resolve entity {entityPath}", nameof(GetEntityFromReference));
 
             return result;
         }
@@ -513,13 +513,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(relative, this);
             if (docPath == null)
             {
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Invalid corpus path {relative}`, `saveDirtyLink", "saveDirtyLink");
+                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Invalid corpus path {relative}", nameof(SaveDirtyLink));
                 return false;
             }
             CdmObject objAt = await Ctx.Corpus.FetchObjectAsync<CdmObject>(docPath);
             if (objAt == null)
             {
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Couldn't get object from path {docPath}", "saveDirtyLink");
+                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Couldn't get object from path {docPath}", nameof(SaveDirtyLink));
                 return false;
             }
 
@@ -532,7 +532,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // save it with the same name
                     if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving document {docImp.Name}", "saveDirtyLink");
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving document {docImp.Name}", nameof(SaveDirtyLink));
                         return false;
                     }
                 }
@@ -554,7 +554,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (await SaveDirtyLink(imp.CorpusPath, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving imported document {imp.AtCorpusPath}", "SaveLinkedDocuments");
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving imported document {imp.AtCorpusPath}", nameof(SaveLinkedDocuments));
                         return false;
                     }
                 }
@@ -569,7 +569,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         CdmLocalEntityDeclarationDefinition defImp = def as CdmLocalEntityDeclarationDefinition;
                         if (await SaveDirtyLink(defImp.EntityPath, options) == false)
                         {
-                            Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", "SaveLinkedDocuments");
+                            Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", nameof(SaveLinkedDocuments));
                             return false;
                         }
 
@@ -582,7 +582,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 {
                                     if (await SaveDirtyLink(defImp.EntityPath, options) == false)
                                     {
-                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", "SaveLinkedDocuments");
+                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", nameof(SaveLinkedDocuments));
                                         return false;
                                     }
                                 }
@@ -597,7 +597,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 {
                                     if (await SaveDirtyLink(part.SpecializedSchema, options) == false)
                                     {
-                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving partition schema document {part.SpecializedSchema}", "SaveLinkedDocuments");
+                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving partition schema document {part.SpecializedSchema}", nameof(SaveLinkedDocuments));
                                         return false;
                                     }
                                 }
@@ -612,7 +612,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (await SaveDirtyLink(sub.Definition, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving sub-manifest document {sub.DeclaredPath}", "SaveLinkedDocuments");
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving sub-manifest document {sub.DeclaredPath}", nameof(SaveLinkedDocuments));
                         return false;
                     }
                 }

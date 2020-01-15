@@ -1,17 +1,13 @@
 import {
-    AttributeContextPersistence,
-    AttributeResolutionGuidancePersistence,
-    EntityReferencePersistence
-} from '.';
-import {
+    CdmAttributeItem,
     CdmCorpusContext,
     CdmEntityDefinition,
     cdmObjectType,
     CdmTraitReference,
     copyOptions,
-    resolveOptions,
-    CdmAttributeItem
+    resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     AttributeContext,
     AttributeGroupReference,
@@ -27,15 +23,18 @@ import * as utils from './utils';
 export class EntityPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Entity): CdmEntityDefinition {
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.entityName);
-        entity.extendsEntity = EntityReferencePersistence.fromData(ctx, object.extendsEntity);
+        entity.extendsEntity = CdmFolder.EntityReferencePersistence.fromData(ctx, object.extendsEntity);
         entity.extendsEntityResolutionGuidance =
-            AttributeResolutionGuidancePersistence.fromData(ctx, object.extendsEntityResolutionGuidance);
+            CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.extendsEntityResolutionGuidance);
 
         if (object.explanation) {
             entity.explanation = object.explanation;
         }
 
-        utils.addArrayToCdmCollection<CdmTraitReference>(entity.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReference>(
+            entity.exhibitsTraits,
+            utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
+        );
         if (object.sourceName) {
             entity.sourceName = object.sourceName;
         }
@@ -52,7 +51,7 @@ export class EntityPersistence {
             entity.cdmSchemas = object.cdmSchemas;
         }
         if (object.attributeContext) {
-            entity.attributeContext = AttributeContextPersistence.fromData(ctx, object.attributeContext);
+            entity.attributeContext = CdmFolder.AttributeContextPersistence.fromData(ctx, object.attributeContext);
         }
 
         utils.addArrayToCdmCollection<CdmAttributeItem>(entity.attributes, utils.createAttributeArray(ctx, object.hasAttributes));
