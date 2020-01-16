@@ -489,13 +489,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (resOpt.WrtDoc == null)
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No WRT document was supplied.", "CreateResolvedEntityAsync");
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No WRT document was supplied.", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 
             if (string.IsNullOrEmpty(newEntName))
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No Entity Name provided.", "CreateResolvedEntityAsync");
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No Entity Name provided.", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 
@@ -511,14 +511,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string targetAtCorpusPath = $"{this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(folder.AtCorpusPath, folder)}{fileName}";
             if (targetAtCorpusPath.Equals(origDoc, StringComparison.InvariantCultureIgnoreCase))
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Attempting to replace source entity's document '{targetAtCorpusPath}'", "CreateResolvedEntityAsync");
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Attempting to replace source entity's document '{targetAtCorpusPath}'", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if (!await (resOpt.WrtDoc as CdmDocumentDefinition).IndexIfNeeded(resOpt))
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Couldn't index source document.", "CreateResolvedEntity");
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Couldn't index source document.", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 
@@ -972,7 +972,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOptNew.WrtDoc = docRes;
             if (!await docRes.RefreshAsync(resOptNew))
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Failed to index the resolved document.", "CreateResolvedEntity");
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Failed to index the resolved document.", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 

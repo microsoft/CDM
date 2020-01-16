@@ -1,4 +1,4 @@
-import { isString, isBoolean } from 'util';
+import { isBoolean, isString } from 'util';
 import {
     CdmCollection,
     CdmCorpusContext,
@@ -6,7 +6,8 @@ import {
     CdmEntityDefinition,
     CdmLocalEntityDeclarationDefinition,
     CdmObject,
-    cdmObjectType
+    cdmObjectType,
+    Logger
 } from '../internal';
 import { isEntityDefinition } from '../Utilities/cdmObjectTypeGuards';
 
@@ -37,11 +38,9 @@ export class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
                 const entity: CdmEntityDefinition = obj;
 
                 if (!entity.owner) {
-                    entity.owner = this.owner;
-                    if (!entity.owner) {
-                        throw new Error(
-                            'Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.');
-                    }
+                    Logger.error(CdmEntityCollection.name, entity.ctx, 'Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.', this.push.name);
+
+                    return undefined;
                 }
 
                 entityDeclaration =

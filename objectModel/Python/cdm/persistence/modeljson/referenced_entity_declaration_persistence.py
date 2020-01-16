@@ -3,7 +3,7 @@ import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmTraitCollection
-from cdm.utilities import TraitToPropertyMap
+from cdm.utilities import logger, TraitToPropertyMap
 
 from . import utils, extension_helper
 from .types import ReferenceEntity
@@ -11,6 +11,8 @@ from .types import ReferenceEntity
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmReferencedEntityDeclarationDefinition, CdmTraitDefinition
     from cdm.utilities import CopyOptions, ResolveOptions
+
+_TAG = 'ReferencedEntityDeclarationPersistence'
 
 
 class ReferencedEntityDeclarationPersistence:
@@ -46,13 +48,13 @@ class ReferencedEntityDeclarationPersistence:
         properties_trait.arguments.append(argument)
         referenced_entity.exhibits_traits.append(properties_trait)
 
-        extension_trait_def_list = [] # type: List[CdmTraitDefinition]
+        extension_trait_def_list = []  # type: List[CdmTraitDefinition]
         extension_traits = CdmTraitCollection(ctx, referenced_entity)
 
         extension_helper.process_extension_from_json(ctx, data_obj, extension_traits, extension_trait_def_list)
 
         if extension_trait_def_list:
-            ctx.logger.warning('Custom extensions are not supported in referenced entity.')
+            logger.warning(_TAG, ctx, 'Custom extensions are not supported in referenced entity.')
 
         return referenced_entity
 
@@ -62,8 +64,8 @@ class ReferencedEntityDeclarationPersistence:
         source_index = instance.entity_path.rfind('/')
 
         if source_index == -1:
-            instance.ctx.logger.error('Source name is not present in entityDeclaration path. | %s', instance.at_corpus_path)
-            return
+            logger.error(_TAG, instance.ctx, 'Source name is not present in entityDeclaration path.', instance.at_corpus_path)
+            return None
 
         reference_entity = ReferenceEntity()
 

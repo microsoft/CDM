@@ -1,4 +1,3 @@
-import { DataTypeReferencePersistence } from '.';
 import {
     CdmCorpusContext,
     cdmObjectType,
@@ -6,6 +5,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     CdmJsonType,
     DataTypeReference,
@@ -19,22 +19,22 @@ export class ParameterPersistence {
         parameter.explanation = object.explanation;
         parameter.required = object.required ? object.required : false;
         parameter.defaultValue = utils.createConstant(ctx, object.defaultValue);
-        parameter.dataTypeRef = DataTypeReferencePersistence.fromData(ctx, object.dataType);
+        parameter.dataTypeRef = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
 
         return parameter;
     }
     public static toData(instance: CdmParameterDefinition, resOpt: resolveOptions, options: copyOptions): Parameter {
         let defVal: CdmJsonType;
         if (instance.defaultValue) {
-            if (typeof(instance.defaultValue) === 'object' && 'copyData' in instance.defaultValue
-                && typeof(instance.defaultValue.copyData) === 'function') {
+            if (typeof (instance.defaultValue) === 'object' && 'copyData' in instance.defaultValue
+                && typeof (instance.defaultValue.copyData) === 'function') {
                 defVal = instance.defaultValue.copyData(resOpt, options);
-            } else if (typeof(instance.defaultValue) === 'object' && typeof(instance.defaultValue) === 'string') {
+            } else if (typeof (instance.defaultValue) === 'object' && typeof (instance.defaultValue) === 'string') {
                 defVal = instance.defaultValue;
             }
         }
 
-        const result : Parameter = {
+        const result: Parameter = {
             name: instance.name,
             dataType: instance.dataTypeRef ? instance.dataTypeRef.copyData(resOpt, options) as (string | DataTypeReference) : undefined
         };

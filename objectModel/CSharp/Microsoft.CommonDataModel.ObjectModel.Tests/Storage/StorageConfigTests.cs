@@ -1,4 +1,4 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
+﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Threading.Tasks;
@@ -47,15 +47,15 @@
             // Create a corpus to load the config.
             var cdmCorpus = this.GetLocalCorpus(testInputPath, testOutputPath);
 
-            var config = await cdmCorpus.Storage.NamespaceAdapters["local"].ReadAsync("/config.json");
+            var config = await cdmCorpus.Storage.FetchAdapter("local").ReadAsync("/config.json");
 
             var differentCorpus = new CdmCorpusDefinition();
 
-            differentCorpus.Storage.Mount(config);
+            differentCorpus.Storage.MountFromConfig(config);
 
-            var resultConfig = (differentCorpus.Storage as StorageManager).FetchConfig();
+            var resultConfig = differentCorpus.Storage.FetchConfig();
 
-            var outputConfig = await cdmCorpus.Storage.NamespaceAdapters["target"].ReadAsync("/config.json");
+            var outputConfig = await cdmCorpus.Storage.FetchAdapter("target").ReadAsync("/config.json");
 
             Assert.AreEqual(outputConfig, resultConfig);
         }
@@ -71,11 +71,11 @@
             // Create a corpus to load the config.
             var cdmCorpus = this.GetLocalCorpus(testInputPath);
 
-            var config = await cdmCorpus.Storage.NamespaceAdapters["local"].ReadAsync("/config.json");
+            var config = await cdmCorpus.Storage.FetchAdapter("local").ReadAsync("/config.json");
 
             var differentCorpus = new CdmCorpusDefinition();
 
-            var unrecognizedAdapters = differentCorpus.Storage.Mount(config, true);
+            var unrecognizedAdapters = differentCorpus.Storage.MountFromConfig(config, true);
 
             var cdmManifest = await differentCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
 

@@ -67,7 +67,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public T Add(string name, bool simpleRef = false)
         {
             T newObj = this.Ctx.Corpus.MakeObject<T>(this.DefaultType, name, simpleRef);
-            newObj.Owner = this.Owner;
             return this.Add(newObj);
         }
 
@@ -116,12 +115,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public void RemoveAt(int index)
         {
-            if (index >= 0 && index < this.AllItems.Count)
+            if (index >= 0 && index < this.Count)
             {
-                this.AllItems[index].Owner = null;
-                PropagateInDocument(this.AllItems[index], null);
-                MakeDocumentDirty();
-                this.AllItems.RemoveAt(index);
+                this.Remove(this.AllItems[index]);
             }
         }
 
@@ -141,7 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             bool result = false;
             if (this.AllItems != null)
             {
-                int lItem = this.AllItems.Count;
+                int lItem = this.Count;
                 for (int iItem = 0; iItem < lItem; iItem++)
                 {
                     CdmObject element = this.AllItems[iItem];

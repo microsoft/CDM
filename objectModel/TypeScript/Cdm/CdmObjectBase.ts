@@ -23,8 +23,8 @@ import {
     SymbolSet,
     VisitCallback
 } from '../internal';
-import { fromData, toData } from '../Persistence';
 import { CdmJsonType } from '../Persistence/CdmFolder/types';
+import { PersistenceLayer } from '../Persistence';
 
 export abstract class CdmObjectBase implements CdmObject {
 
@@ -63,7 +63,7 @@ export abstract class CdmObjectBase implements CdmObject {
         const objectType: cdmObjectType = this.objectType;
         const persistenceType: string = 'CdmFolder';
 
-        return fromData(...args, objectType, persistenceType);
+        return PersistenceLayer.fromData(...args, objectType, persistenceType);
     }
 
     /**
@@ -169,7 +169,7 @@ export abstract class CdmObjectBase implements CdmObject {
     public copyData(resOpt: resolveOptions, options?: copyOptions): CdmJsonType {
         const persistenceType: string = 'CdmFolder';
 
-        return toData(this, resOpt, options, persistenceType);
+        return PersistenceLayer.toData(this, resOpt, options, persistenceType);
     }
 
     /**

@@ -2,9 +2,6 @@
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Collections.Generic;
 
@@ -231,7 +228,7 @@
 
             Assert.IsTrue(manifest.ExhibitsTraits[2].IsFromProperty);
 
-            var removed = manifest.ExhibitsTraits.Remove(trait);
+            manifest.ExhibitsTraits.Remove(trait);
             Assert.AreEqual("TraitName", (manifest.ExhibitsTraits[0].ExplicitReference as CdmTraitDefinition).TraitName);
             Assert.AreEqual("Name of other Trait", (manifest.ExhibitsTraits[2].ExplicitReference as CdmTraitDefinition).TraitName);
             Assert.AreEqual("TraitName", (manifest.ExhibitsTraits[3].ExplicitReference as CdmTraitDefinition).TraitName);            
@@ -262,9 +259,9 @@
             Assert.AreEqual(6, manifest.ExhibitsTraits.Count);
             manifest.ExhibitsTraits[2].IsFromProperty = true;
             index = manifest.ExhibitsTraits.IndexOf(trait.TraitName, true);
-            Assert.AreEqual(index, 2);
+            Assert.AreEqual(2, index);
             index = manifest.ExhibitsTraits.IndexOf(trait.TraitName);
-            Assert.AreEqual(index, 2);
+            Assert.AreEqual(2, index);
         }
 
         [TestMethod]
@@ -272,8 +269,8 @@
         {
             var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
 
-            var trait = new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
-            var otherTrait = new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);
+            new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
+            new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);
 
             manifest.ExhibitsTraits.Add("trait1");
             manifest.ExhibitsTraits.Add("trait2");

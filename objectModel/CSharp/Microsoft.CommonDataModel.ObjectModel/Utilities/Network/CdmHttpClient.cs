@@ -3,16 +3,16 @@
 //      All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using Microsoft.CommonDataModel.ObjectModel.Storage;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// CDM Http Client is an HTTP client which implements retry logic to execute retries 
     /// in the case of failed requests.

@@ -132,6 +132,6 @@ public class Program {
     // manifest.refreshAsync().join();
 
     // And save the manifest along with linked definition files.
-    manifest.saveAsAsync("default.manifest.cdm.json", true).join();
+    manifest.saveAsAsync("default-resolved.manifest.cdm.json", true).join();
   }
 }

@@ -184,7 +184,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (adapter == null)
             {
-                Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Adapter not found for the document '{this.InDocument.Name}'", "FileStatusCheckAsync");
+                Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Adapter not found for the document '{this.InDocument.Name}'", nameof(FileStatusCheckAsync));
                 return;
             }
 
@@ -200,54 +200,65 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
 
-            // get a list of all corpusPaths under the root
-            List<string> fileInfoList = await adapter.FetchAllFilesAsync(rootCorpus);
-
-            // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-            for (int i = 0; i < fileInfoList.Count; i++)
+            List<string> fileInfoList = null;
+            try
             {
-                fileInfoList[i] = $"{nameSpace}:{fileInfoList[i]}";
-                fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
+                // get a list of all corpusPaths under the root
+                fileInfoList = await adapter.FetchAllFilesAsync(rootCorpus);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"The folder location '{rootCorpus}' described by a partition pattern does not exist", nameof(FileStatusCheckAsync));
             }
 
-            Regex regexPattern = new Regex(this.RegularExpression);
-
-            if (this.Owner is CdmLocalEntityDeclarationDefinition)
+            if (fileInfoList != null)
             {
-                foreach (var fi in fileInfoList)
+                // remove root of the search from the beginning of all paths so anything in the root is not found by regex
+                for (int i = 0; i < fileInfoList.Count; i++)
                 {
-                    Match m = regexPattern.Match(fi);
-                    if (m.Success && m.Length > 1 && m.Value == fi)
-                    {
-                        // create a map of arguments out of capture groups
-                        Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
-                        int iParam = 0;
-                        // captures start after the string match at m.Groups[0]
-                        for (int i = 1; i < m.Groups.Count; i++)
-                        {
-                            CaptureCollection captures = m.Groups[i].Captures;
-                            if (captures.Count > 0 && iParam < this.Parameters?.Count)
-                            {
-                                // to be consistent with other languages, if a capture group captures
-                                // multiple things, only use the last thing that was captured
-                                var singleCapture = captures[captures.Count - 1];
+                    fileInfoList[i] = $"{nameSpace}:{fileInfoList[i]}";
+                    fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
+                }
 
-                                string currentParam = this.Parameters[iParam];
-                                if (!args.ContainsKey(currentParam))
-                                    args[currentParam] = new List<string>();
-                                args[currentParam].Add(singleCapture.ToString());
-                                iParam++;
-                            }
-                            else
+                Regex regexPattern = new Regex(this.RegularExpression);
+
+                if (this.Owner is CdmLocalEntityDeclarationDefinition)
+                {
+                    foreach (var fi in fileInfoList)
+                    {
+                        Match m = regexPattern.Match(fi);
+                        if (m.Success && m.Length > 1 && m.Value == fi)
+                        {
+                            // create a map of arguments out of capture groups
+                            Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
+                            int iParam = 0;
+                            // captures start after the string match at m.Groups[0]
+                            for (int i = 1; i < m.Groups.Count; i++)
                             {
-                                break;
+                                CaptureCollection captures = m.Groups[i].Captures;
+                                if (captures.Count > 0 && iParam < this.Parameters?.Count)
+                                {
+                                    // to be consistent with other languages, if a capture group captures
+                                    // multiple things, only use the last thing that was captured
+                                    var singleCapture = captures[captures.Count - 1];
+
+                                    string currentParam = this.Parameters[iParam];
+                                    if (!args.ContainsKey(currentParam))
+                                        args[currentParam] = new List<string>();
+                                    args[currentParam].Add(singleCapture.ToString());
+                                    iParam++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
+                            // put the original but cleaned up root back onto the matched doc as the location stored in the partition
+                            string locationCorpusPath = $"{rootCleaned}{fi}";
+                            string fullPath = $"{rootCorpus}{fi}";
+                            DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(fullPath);
+                            (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                         }
-                        // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                        string locationCorpusPath = $"{rootCleaned}{fi}";
-                        string fullPath = $"{rootCorpus}{fi}";
-                        DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(fullPath);
-                        (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                     }
                 }
             }

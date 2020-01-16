@@ -8,8 +8,6 @@
     [TestClass]
     public class ManifestResolveTest
     {
-        readonly string SchemaDocsRoot = "../../../../../../CDM.SchemaDocuments";
-
         /// <summary>
         /// Test if a manifest resolves correctly a referenced entity declaration 
         /// </summary>
@@ -17,7 +15,7 @@
         public async Task TestReferencedEntityDeclarationResolution()
         {
             var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.Storage.Mount("cdm", new LocalAdapter(SchemaDocsRoot));
+            cdmCorpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SchemaDocumentsPath));
             cdmCorpus.Storage.DefaultNamespace = "cdm";
 
             var manifest = new CdmManifestDefinition(cdmCorpus.Ctx, "manifest");

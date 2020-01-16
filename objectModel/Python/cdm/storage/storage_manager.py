@@ -5,6 +5,7 @@ import os
 from typing import List, Optional, Tuple, Set, TYPE_CHECKING
 
 from cdm.storage import GithubAdapter, LocalAdapter, ResourceAdapter
+from cdm.utilities import logger
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmContainerDefinition, CdmCorpusDefinition, CdmFolderDefinition
@@ -37,6 +38,8 @@ class StorageManager:
         self._system_defined_namespaces.add('local')
         self._system_defined_namespaces.add('cdm')
 
+        self._TAG = StorageManager.__name__
+
     @property
     def _ctx(self):
         return self._corpus.ctx
@@ -56,14 +59,18 @@ class StorageManager:
                     break
 
         if not result:
-            self._ctx.logger.error('No registered storage adapter understood the path "{}"'.format(adapter_path),
-                                   'adapter_path_to_corpus_path')
+            logger.error(self._TAG, self._ctx, 'No registered storage adapter understood the path "{}"'.format(adapter_path),
+                         StorageManager.adapter_path_to_corpus_path.__name__)
 
         return result
 
     def corpus_path_to_adapter_path(self, corpus_path: str) -> Optional[str]:
         """Takes a corpus path, figures out the right adapter to use and then return
         an adapter domain path"""
+        if not corpus_path:
+            logger.error(self._TAG, self._ctx, 'The corpus path is null or empty.', StorageManager.corpus_path_to_adapter_path.__name__)
+            return None
+
         result = None
 
         # Break the corpus path into namespace and ... path
@@ -73,7 +80,8 @@ class StorageManager:
         # Get the adapter registered for this namespace
         namespace_adapter = self.fetch_adapter(namespace)
         if not namespace_adapter:
-            self._ctx.logger.error('The namespace "{}" has not been registered'.format(namespace))
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.'.format(
+                namespace), StorageManager.corpus_path_to_adapter_path.__name__)
         else:
             # Ask the storage adapter to 'adapt' this path
             result = namespace_adapter.create_adapter_path(path_tuple[1])
@@ -81,19 +89,23 @@ class StorageManager:
         return result
 
     def fetch_adapter(self, namespace: str) -> 'StorageAdapterBase':
+        if not namespace:
+            logger.error(self._TAG, self._ctx, 'The namespace is null or empty.', StorageManager.fetch_adapter.__name__)
+            return None
+
         if namespace in self._namespace_adapters:
             return self._namespace_adapters[namespace]
 
-        self._ctx.logger.error('Adapter not found for the namespace \'{}\''.format(namespace))
+        logger.error(self._TAG, self._ctx, 'Adapter not found for the namespace \'{}\''.format(namespace), StorageManager.fetch_adapter.__name__)
         return None
 
-    def fetch_root_folder(self, namespace: Optional[str]) -> 'CdmFolderDefinition':
+    def fetch_root_folder(self, namespace: str) -> 'CdmFolderDefinition':
         """given the namespace of a registered storage adapter, return the root
         folder containing the sub-folders and documents"""
         if namespace and namespace in self._namespace_folders:
             return self._namespace_folders[namespace]
 
-        self._ctx.logger.error('missing adapter for namespace "{}"'.format(namespace), 'fetch_root_folder')
+        logger.error(self._TAG, self._ctx, 'missing adapter for namespace "{}"'.format(namespace), StorageManager.fetch_root_folder.__name__)
         return None
 
     def fetch_config(self) -> str:
@@ -108,7 +120,7 @@ class StorageManager:
 
             config = adapter.fetch_config()
             if not config:
-                self._ctx.logger.error('JSON config constructed by adapter is null or empty.')
+                logger.error(self._TAG, self._ctx, 'JSON config constructed by adapter is null or empty.', StorageManager.fetch_config.__name__)
                 continue
 
             json_config = json.loads(config)
@@ -134,6 +146,10 @@ class StorageManager:
     def create_absolute_corpus_path(self, object_path: str, obj: 'CdmObject' = None) -> Optional[str]:
         """Takes a corpus path (relative or absolute) and creates a valid absolute
         path with namespace"""
+        if not object_path:
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.create_absolute_corpus_path.__name__)
+            return None
+
         if self._contains_unsupported_path_format(object_path):
             # Already called status_rpt when checking for unsupported path format.
             return None
@@ -156,7 +172,7 @@ class StorageManager:
             return None
 
         if prefix and prefix[-1] != '/':
-            self._ctx.logger.warning('Expected path prefix to end in /, but it didn\'t. Appended the /', prefix)
+            logger.warning(self._TAG, self._ctx, 'Expected path prefix to end in /, but it didn\'t. Appended the /', prefix)
             prefix += '/'
 
         # check if this is a relative path
@@ -166,7 +182,8 @@ class StorageManager:
                 prefix = '/'
 
             if path_tuple[0] and path_tuple[0] != namespace_from_obj:
-                self._ctx.logger.warning('The namespace "{}" found on the path does not match the namespace found on the object'.format(path_tuple[0]))
+                logger.warning(self._TAG, self._ctx,
+                               'The namespace "{}" found on the path does not match the namespace found on the object'.format(path_tuple[0]))
                 return None
 
             path_tuple = (path_tuple[0], prefix + path_tuple[1])
@@ -192,6 +209,10 @@ class StorageManager:
 
     def mount(self, namespace: str, adapter: 'StorageAdapterBase') -> None:
         """registers a namespace and assigns creates a storage adapter for that namespace"""
+        if not namespace:
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.mount.__name__)
+            return None
+
         from cdm.objectmodel import CdmFolderDefinition
 
         if adapter:
@@ -203,10 +224,12 @@ class StorageManager:
             self._namespace_folders[namespace] = fd
             if namespace in self._system_defined_namespaces:
                 self._system_defined_namespaces.remove(namespace)
+        else:
+            logger.error(self._TAG, self._ctx, 'The adapter cannot be null.', StorageManager.mount.__name__)
 
     def mount_from_config(self, adapter_config: str, does_return_error_list: bool = False) -> List['StorageAdapter']:
         if not adapter_config:
-            self._ctx.logger.error('Adapter config cannot be null or empty.')
+            logger.error(self._TAG, self._ctx, 'Adapter config cannot be null or empty.', StorageManager.mount_from_config.__name__)
             return None
 
         adapter_config_json = json.loads(adapter_config)
@@ -226,7 +249,7 @@ class StorageManager:
             if item.get('namespace'):
                 namespace = item['namespace']
             else:
-                self._ctx.logger.error('The namespace is missing for one of the adapters in the JSON config.')
+                logger.error(self._TAG, self._ctx, 'The namespace is missing for one of the adapters in the JSON config.')
                 continue
 
             configs = None
@@ -234,11 +257,11 @@ class StorageManager:
             if item.get('config'):
                 configs = item['config']
             else:
-                self._ctx.logger.error('Missing JSON config for the namespace {}.'.format(namespace))
+                logger.error(self._TAG, self._ctx, 'Missing JSON config for the namespace {}.'.format(namespace))
                 continue
 
             if not item.get('type'):
-                self._ctx.logger.error('Missing type in the JSON config for the namespace {}.'.format(namespace))
+                logger.error(self._TAG, self._ctx, 'Missing type in the JSON config for the namespace {}.'.format(namespace))
                 continue
 
             adapter_type = self._registered_adapter_types.get(item['type'], None)
@@ -264,16 +287,21 @@ class StorageManager:
 
     def unmount(self, namespace: str) -> None:
         """unregisters a storage adapter and its root folder"""
+        if not namespace:
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.unmount.__name__)
+            return None
 
-        self._namespace_adapters.pop(namespace, None)
-        self._namespace_folders.pop(namespace, None)
+        if namespace in self._namespace_adapters:
+            self._namespace_adapters.pop(namespace, None)
+            self._namespace_folders.pop(namespace, None)
+            if namespace in self._system_defined_namespaces:
+                self._system_defined_namespaces.remove(namespace)
 
-        if namespace in self._system_defined_namespaces:
-            self._system_defined_namespaces.remove(namespace)
-
-        # The special case, use Resource adapter.
-        if (namespace == 'cdm'):
-            self.mount(namespace, ResourceAdapter())
+            # The special case, use Resource adapter.
+            if (namespace == 'cdm'):
+                self.mount(namespace, ResourceAdapter())
+        else:
+            logger.warning(self._TAG, self._ctx, 'Cannot remove the adapter from non-existing namespace.', StorageManager.mount.__name__)
 
     def _contains_unsupported_path_format(self, path: str) -> bool:
         """Checks whether the paths has an unsupported format, such as starting with ./ or containing ../ or /./
@@ -289,5 +317,9 @@ class StorageManager:
         else:
             return False
 
-        self._ctx.logger.error(status_message, path)
+        logger.error(self._TAG, self._ctx, status_message, path)
         return True
+
+    def _set_adapter(self, namespace: str, adapter: 'StorageAdapter') -> None:
+        if adapter:
+            self._namespace_adapters[namespace] = adapter

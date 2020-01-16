@@ -81,4 +81,4 @@ export {
     VisitCallback
 } from './internal';
 export { AttributeResolutionDirectiveSet } from './Utilities/AttributeResolutionDirectiveSet';
-export * from './StorageAdapter';
+export * from './Storage';

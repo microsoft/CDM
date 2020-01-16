@@ -8,7 +8,7 @@ from .cdm_collection_helper_functions import generate_manifest
 class CdmDocumentCollectionTests(unittest.TestCase):
     @async_test
     def test_document_collection_add(self):
-        manifest = generate_manifest('C:\\Nothing')
+        manifest = generate_manifest('C:\\Root\\Path')
         folder = CdmFolderDefinition(manifest.ctx, 'Folder')
         folder._corpus = manifest.ctx.corpus
         folder.folder_path = 'FolderPath/'

@@ -16,8 +16,6 @@
     [TestClass]
     public class ModelJsonTestsBase
     {
-        private const string SchemaDocsRoot = "../../../../../../CDM.SchemaDocuments";
-
         [TestInitialize]
         public void InitializeTests()
         {
@@ -45,35 +43,6 @@
         {
             var serializerSettings = GetSerializerSettings();
             return JsonConvert.DeserializeObject<T>(data, serializerSettings);
-        }
-
-        /// <summary>
-        /// Gets local corpus.
-        /// </summary>
-        /// <returns>The <see cref="CdmCorpusDef"/>. </returns>
-        protected CdmCorpusDefinition GetLocalCorpus(string testFilesRoot)
-        {
-            Assert.IsTrue(Directory.Exists(Path.GetFullPath(SchemaDocsRoot)), "SchemaDocsRoot not found!!!");
-
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.Storage.DefaultNamespace = "local";
-
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(testFilesRoot));
-
-            // Unmounts the default cdm and mounts the resource adapter. This will
-            // also implicitely test the resource adapter functionality.
-            cdmCorpus.Storage.Unmount("cdm");
-
-            var hosts = new Dictionary<string, string>();
-            hosts.Add("contoso", "http://contoso.com");
-            cdmCorpus.Storage.Mount("remote", new RemoteAdapter()
-            {
-                Hosts = hosts
-            });
-
-            return cdmCorpus;
         }
 
 

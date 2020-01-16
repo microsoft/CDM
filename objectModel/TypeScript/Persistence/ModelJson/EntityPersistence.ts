@@ -1,4 +1,4 @@
-import { processAnnotationsFromData, processAnnotationsToData, TypeAttributePersistence } from '.';
+import { ModelJson } from '..';
 import {
     CdmCorpusContext,
     CdmEntityDefinition,
@@ -23,14 +23,14 @@ export class EntityPersistence {
 
         entity.description = object.description;
 
-        await processAnnotationsFromData(ctx, object, entity.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsFromData(ctx, object, entity.exhibitsTraits);
 
         const localEntity: LocalEntity = object;
 
         if (localEntity.attributes) {
             for (const element of localEntity.attributes) {
                 const typeAttribute: CdmTypeAttributeDefinition =
-                    await TypeAttributePersistence.fromData(ctx, element, extensionTraitDefList, localExtensionTraitDefList);
+                    await ModelJson.TypeAttributePersistence.fromData(ctx, element, extensionTraitDefList, localExtensionTraitDefList);
                 if (typeAttribute !== undefined) {
                     entity.attributes.push(typeAttribute);
                 } else {
@@ -74,12 +74,13 @@ export class EntityPersistence {
             schemas: undefined,
             'cdm:imports': undefined
         };
-        await processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.attributes !== undefined) {
             result.attributes = [];
             for (const element of instance.attributes.allItems) {
-                const attribute: Attribute = await TypeAttributePersistence.toData(element as CdmTypeAttributeDefinition, resOpt, options);
+                const attribute: Attribute =
+                    await ModelJson.TypeAttributePersistence.toData(element as CdmTypeAttributeDefinition, resOpt, options);
                 if (attribute !== undefined) {
                     result.attributes.push(attribute);
                 } else {

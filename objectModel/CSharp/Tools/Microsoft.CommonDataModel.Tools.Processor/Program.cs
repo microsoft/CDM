@@ -22,7 +22,6 @@ namespace Microsoft.CommonDataModel.Tools.Processor
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             string pathToDocRoot;
             string docGroup;
             CdmManifestDefinition manifest;
@@ -55,7 +54,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             }
             else
             {
-                pathToDocRoot = "../../../../../../../../CDM.SchemaDocuments";
+                pathToDocRoot = "../../../../../../../../schemaDocuments";
                 testEnt = "local:/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account";
                 docGroup = "standards";
             }

@@ -1,11 +1,5 @@
 import { Guid } from 'guid-typescript';
-import {
-    LocalEntityDeclarationPersistence,
-    processAnnotationsFromData,
-    processAnnotationsToData,
-    ReferencedEntityDeclarationPersistence,
-    RelationshipPersistence
-} from '.';
+import { CdmFolder, ModelJson } from '..';
 import {
     CdmArgumentDefinition,
     CdmCorpusContext,
@@ -28,18 +22,38 @@ import {
 } from '../../Utilities/cdmObjectTypeGuards';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
-import { ImportPersistence } from '../CdmFolder';
 import { Import } from '../CdmFolder/types';
+import { fetchModelJsonExtension } from '../extensionFunctions';
 import * as extensionHelper from './ExtensionHelper';
 import {
     LocalEntity, Model, modelBaseProperties, ReferenceEntity, ReferenceModel, SingleKeyRelationship
 } from './types';
 
 export class ManifestPersistence {
-    public static async fromData(ctx: CdmCorpusContext, obj: Model, folder: CdmFolderDefinition): Promise<CdmManifestDefinition> {
+    // Whether this persistence class has async methods.
+    public static readonly isPersistenceAsync: boolean = true;
+
+    // The file format/extension types this persistence class supports.
+    public static readonly formats: string[] = [fetchModelJsonExtension()];
+
+    public static async fromObject(ctx: CdmCorpusContext, obj: Model, folder: CdmFolderDefinition): Promise<CdmManifestDefinition> {
         const extensionTraitDefList: CdmTraitDefinition[] = [];
 
         const manifest: CdmManifestDefinition = ctx.corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, obj.name);
+
+        // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
+        folder.documents.push(manifest);
+
+        if (obj['cdm:imports']) {
+            obj['cdm:imports'].forEach((impElement: object) => {
+                const importObj: CdmImport = CdmFolder.ImportPersistence.fromData(ctx, impElement as Import);
+                manifest.imports.push(importObj);
+            });
+        }
+
+        if (!manifest.imports.allItems.some((importPresent: CdmImport) => importPresent.corpusPath === 'cdm:/foundations.cdm.json')) {
+            manifest.imports.push('cdm:/foundations.cdm.json');
+        }
 
         manifest.explanation = obj.description;
 
@@ -121,11 +135,17 @@ export class ManifestPersistence {
             for (const element of obj.entities) {
                 let entity: CdmEntityDeclarationDefinition;
                 if (element.$type === 'LocalEntity') {
-                    entity = await LocalEntityDeclarationPersistence.fromData(ctx, folder, element as LocalEntity, extensionTraitDefList);
+                    entity = await ModelJson.LocalEntityDeclarationPersistence.fromData(
+                        ctx,
+                        folder,
+                        element as LocalEntity,
+                        extensionTraitDefList,
+                        manifest
+                    );
                 } else if (element.$type === 'ReferenceEntity') {
                     const referenceEntity: ReferenceEntity = element as ReferenceEntity;
-                    const location: string = referenceModels.get(referenceEntity.modelId);
-                    if (!location) {
+                    const entityLocation: string = referenceModels.get(referenceEntity.modelId);
+                    if (!entityLocation) {
                         Logger.error(
                             ManifestPersistence.name,
                             ctx,
@@ -134,7 +154,7 @@ export class ManifestPersistence {
 
                         return;
                     }
-                    entity = await ReferencedEntityDeclarationPersistence.fromData(ctx, referenceEntity, location);
+                    entity = await ModelJson.ReferencedEntityDeclarationPersistence.fromData(ctx, referenceEntity, entityLocation);
                 } else {
                     Logger.error(ManifestPersistence.name, ctx, 'There was an error while trying to parse entity type.');
 
@@ -154,7 +174,8 @@ export class ManifestPersistence {
 
         if (obj.relationships !== undefined && obj.relationships.length > 0) {
             for (const relationship of obj.relationships) {
-                const cdmRelationship: CdmE2ERelationship = await RelationshipPersistence.fromData(ctx, relationship, entitySchemaByName);
+                const cdmRelationship: CdmE2ERelationship =
+                    await ModelJson.RelationshipPersistence.fromData(ctx, relationship, entitySchemaByName);
 
                 if (cdmRelationship !== undefined) {
                     manifest.relationships.push(cdmRelationship);
@@ -170,14 +191,7 @@ export class ManifestPersistence {
             }
         }
 
-        if (obj['cdm:imports']) {
-            obj['cdm:imports'].forEach((impElement: object) => {
-                const importObj: CdmImport = ImportPersistence.fromData(ctx, impElement as Import);
-                manifest.imports.push(importObj);
-            });
-        }
-
-        await processAnnotationsFromData(ctx, obj, manifest.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsFromData(ctx, obj, manifest.exhibitsTraits);
 
         const localExtensionTraitDefList: CdmTraitDefinition[] = [];
         extensionHelper.processExtensionFromJson(
@@ -195,10 +209,13 @@ export class ManifestPersistence {
 
         ManifestPersistence.createExtensionDocAndAddToFolderAndImports(ctx, extensionTraitDefList, folder);
 
-        // We need to set up folder path and namespace of a manifest to be able to retrieve the object
-        folder.documents.push(manifest);
-
         return manifest;
+    }
+
+    public static async fromData(ctx: CdmCorpusContext, docName: string, jsonData: string, folder: CdmFolderDefinition): Promise<CdmManifestDefinition> {
+        const obj = JSON.parse(jsonData);
+
+        return ManifestPersistence.fromObject(ctx, obj, folder);
     }
 
     public static async toData(instance: CdmManifestDefinition, resOpt: resolveOptions, options: copyOptions): Promise<Model> {
@@ -252,7 +269,7 @@ export class ManifestPersistence {
         }
 
         // processAnnotationsToData also processes extensions.
-        await processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.entities && instance.entities.length > 0) {
             result.entities = [];
@@ -260,34 +277,49 @@ export class ManifestPersistence {
                 async (entity: CdmEntityDeclarationDefinition) => {
                     let element: LocalEntity | ReferenceEntity;
                     if (isLocalEntityDeclarationDefinition(entity)) {
-                        element = await LocalEntityDeclarationPersistence.toData(
+                        element = await ModelJson.LocalEntityDeclarationPersistence.toData(
                             entity,
                             instance,
                             resOpt,
                             options
                         );
                     } else if (isReferencedEntityDeclarationDefinition(entity)) {
-                        element = await ReferencedEntityDeclarationPersistence.toData(
+                        element = await ModelJson.ReferencedEntityDeclarationPersistence.toData(
                             entity,
                             resOpt,
                             options
                         );
 
-                        const referenceEntity: ReferenceEntity = element;
-                        const location: string = instance.ctx.corpus.storage.corpusPathToAdapterPath(
+                        let entityLocation: string = instance.ctx.corpus.storage.corpusPathToAdapterPath(
                             entity.entityPath);
 
-                        if (referenceEntity.modelId !== undefined) {
-                            if (referenceModels.get(referenceEntity.modelId) === undefined) {
-                                referenceModels.set(referenceEntity.modelId, location);
+                        if (!entityLocation) {
+                            Logger.error(ManifestPersistence.name, instance.ctx, `Invalid entity path set in entity ${entity.entityName}`);
+                            element = undefined;
+                        }
+
+                        const referenceEntity: ReferenceEntity = element as ReferenceEntity;
+                        if (referenceEntity !== undefined) {
+                            entityLocation = entityLocation.substring(0, entityLocation.lastIndexOf('/'));
+
+                            if (referenceEntity.modelId !== undefined) {
+                                const savedLocation: string = referenceModels.get(referenceEntity.modelId);
+                                if (savedLocation !== undefined && savedLocation !== entityLocation) {
+                                    Logger.error(ManifestPersistence.name, instance.ctx, 'Same ModelId pointing to different locations');
+                                    element = undefined;
+                                } else if (savedLocation === undefined) {
+                                    referenceModels.set(referenceEntity.modelId, entityLocation);
+                                    referenceEntityLocations.set(entityLocation, referenceEntity.modelId);
+                                }
+                            } else if (referenceEntity.modelId === undefined
+                                && referenceEntityLocations.get(entityLocation) !== undefined) {
+                                referenceEntity.modelId = referenceEntityLocations.get(entityLocation);
+                            } else {
+                                referenceEntity.modelId = Guid.create()
+                                    .toString();
+                                referenceModels.set(referenceEntity.modelId, entityLocation);
+                                referenceEntityLocations.set(entityLocation, referenceEntity.modelId);
                             }
-                        } else if (referenceEntityLocations.get(location) !== undefined) {
-                            referenceEntity.modelId = referenceEntityLocations.get(location);
-                        } else {
-                            referenceEntity.modelId = Guid.create()
-                                .toString();
-                            referenceModels.set(referenceEntity.modelId, location);
-                            referenceEntityLocations.set(location, referenceEntity.modelId);
                         }
                     }
 
@@ -297,7 +329,7 @@ export class ManifestPersistence {
                         Logger.error(
                             ManifestPersistence.name,
                             instance.ctx,
-                            'There was an error while trying to convert entity declaration to model json format.');
+                            `There was an error while trying to convert ${entity.entityName}'s entity declaration to model json format.`);
                     }
                 }
             );
@@ -320,7 +352,7 @@ export class ManifestPersistence {
 
             for (const cdmRelationship of instance.relationships) {
                 const relationship: SingleKeyRelationship =
-                    await RelationshipPersistence.toData(cdmRelationship, resOpt, options, instance.ctx);
+                    await ModelJson.RelationshipPersistence.toData(cdmRelationship, resOpt, options, instance.ctx);
 
                 if (relationship !== undefined) {
                     result.relationships.push(relationship);
@@ -339,7 +371,8 @@ export class ManifestPersistence {
         if (instance.imports && instance.imports.allItems.length > 0) {
             result['cdm:imports'] = [];
             instance.imports.allItems.forEach((element: CdmImport) => {
-                const importObj: Import = ImportPersistence.toData(element, resOpt, options);
+                const importObj: Import =
+                    CdmFolder.ImportPersistence.toData(element, resOpt, options);
                 if (importObj !== undefined) {
                     result['cdm:imports'].push(importObj);
                 }

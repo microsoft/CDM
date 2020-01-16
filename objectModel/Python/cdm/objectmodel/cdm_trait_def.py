@@ -129,7 +129,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             cache_tag_extra = str(self.extends_trait.id)
 
         cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
-        rts_result = ctx.cache.get(cache_tag) if cache_tag else None
+        rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
@@ -176,7 +176,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             # get the new cache tag now that we have the list of docs
             cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
-                ctx.cache[cache_tag] = rts_result
+                ctx._cache[cache_tag] = rts_result
         else:
             # cache found
             # get the SymbolSet for this cached object

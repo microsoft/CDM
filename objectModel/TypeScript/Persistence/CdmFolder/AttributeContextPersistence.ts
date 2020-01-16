@@ -1,18 +1,13 @@
 import {
-    AttributeContextReferencePersistence,
-    AttributeGroupReferencePersistence,
-    AttributeReferencePersistence,
-    EntityReferencePersistence
-} from '.';
-import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
     cdmObjectType,
-    copyOptions,
     CdmTraitReference,
+    copyOptions,
     resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     AttributeContext,
     TraitReference
@@ -26,7 +21,7 @@ export class AttributeContextPersistence {
             ctx.corpus.MakeObject<CdmAttributeContext>(cdmObjectType.attributeContextDef, object.name);
         attributeContext.type = AttributeContextPersistence.mapTypeNameToEnum(object.type);
         if (object.parent) {
-            attributeContext.parent = AttributeContextReferencePersistence.fromData(ctx, object.parent);
+            attributeContext.parent = CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.parent);
         }
         if (object.explanation) {
             attributeContext.explanation = object.explanation;
@@ -35,17 +30,17 @@ export class AttributeContextPersistence {
             switch (attributeContext.type) {
                 case cdmAttributeContextType.entity:
                 case cdmAttributeContextType.entityReferenceExtends:
-                    attributeContext.definition = EntityReferencePersistence.fromData(ctx, object.definition);
+                    attributeContext.definition = CdmFolder.EntityReferencePersistence.fromData(ctx, object.definition);
                     break;
                 case cdmAttributeContextType.attributeGroup:
-                    attributeContext.definition = AttributeGroupReferencePersistence.fromData(ctx, object.definition);
+                    attributeContext.definition = CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object.definition);
                     break;
                 case cdmAttributeContextType.addedAttributeSupporting:
                 case cdmAttributeContextType.addedAttributeIdentity:
                 case cdmAttributeContextType.addedAttributeExpansionTotal:
                 case cdmAttributeContextType.addedAttributeSelectedType:
                 case cdmAttributeContextType.attributeDefinition:
-                    attributeContext.definition = AttributeReferencePersistence.fromData(ctx, object.definition);
+                    attributeContext.definition = CdmFolder.AttributeReferencePersistence.fromData(ctx, object.definition);
                     break;
                 default:
             }
@@ -57,7 +52,7 @@ export class AttributeContextPersistence {
             for (let i: number = 0; i < l; i++) {
                 const ct: string | AttributeContext = object.contents[i];
                 if (typeof (ct) === 'string') {
-                    attributeContext.contents.push(AttributeReferencePersistence.fromData(ctx, ct));
+                    attributeContext.contents.push(CdmFolder.AttributeReferencePersistence.fromData(ctx, ct));
                 } else {
                     attributeContext.contents.push(AttributeContextPersistence.fromData(ctx, ct));
                 }

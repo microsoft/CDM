@@ -1,6 +1,5 @@
-import { AssertionError } from 'assert';
 import { CdmCorpusDefinition, CdmManifestDefinition, resolveContext } from '../../../../internal';
-import { ManifestPersistence } from '../../../../Persistence/CdmFolder';
+import { CdmFolder } from '../../../../Persistence';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.BackCompEntityDeclaration', () => {
@@ -12,7 +11,13 @@ describe('Persistence.CdmFolder.BackCompEntityDeclaration', () => {
         const content: string =
             testHelper.getInputFileContent(testsSubpath, 'TestLoadLegacyEntityDeclaration', 'entities.manifest.cdm.json');
         const cdmManifest: CdmManifestDefinition =
-            ManifestPersistence.fromData(new resolveContext(new CdmCorpusDefinition(), undefined), '', '', '', JSON.parse(content));
+            CdmFolder.ManifestPersistence.fromObject(
+                new resolveContext(new CdmCorpusDefinition(), undefined),
+                '',
+                '',
+                '',
+                JSON.parse(content)
+            );
 
         // local entity declaration
         expect(cdmManifest.entities.allItems[0].entityPath)

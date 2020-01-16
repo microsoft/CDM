@@ -1,5 +1,5 @@
-from . import persistence_layer
+from .persistence_layer import PersistenceLayer
 
 __all__ = [
-    'persistence_layer'
+    'PersistenceLayer'
 ]

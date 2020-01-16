@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import FriendlyFormatNode, ResolveOptions, time_utils, TraitToPropertyMap
+from cdm.utilities import ResolveOptions, time_utils, TraitToPropertyMap
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
@@ -40,7 +40,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
 
-        # --- Internal ---
+        # --- internal ---
 
         self._ttpm = TraitToPropertyMap(self)
 
@@ -80,11 +80,13 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        namespace = self.in_document.namespace
-        full_path = self.location if ':' in self.location else (namespace + ':' + self.location)
-        modified_time = await (cast('CdmCorpusDefinition', self.ctx.corpus))._fetch_last_modified_time_from_partition_path_async(full_path)
+        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.location, self.in_document)
+        modified_time = await self.ctx.corpus._fetch_last_modified_time_from_partition_path_async(full_path)
+
         # Update modified times.
+        self.last_file_status_check_time = datetime.now(timezone.utc)
         self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
     def get_name(self) -> str:
@@ -95,11 +97,11 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
-        if cast(CdmFileStatus, self.owner).report_most_recent_time_async and child_time:
+        if isinstance(self.owner, CdmFileStatus) and child_time:
             await cast(CdmFileStatus, self.owner).report_most_recent_time_async(child_time)
 
     def validate(self) -> bool:
-        return bool(self.location)
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

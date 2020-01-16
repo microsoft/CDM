@@ -1,4 +1,4 @@
-import { DataPartitionPersistence, DocumentPersistence } from '.';
+import { ModelJson } from '..';
 import {
     CdmCorpusContext,
     CdmDataPartitionDefinition,
@@ -24,13 +24,14 @@ export class LocalEntityDeclarationPersistence {
         ctx: CdmCorpusContext,
         documentFolder: CdmFolderDefinition,
         dataObj: LocalEntity,
-        extensionTraitDefList: CdmTraitDefinition[]
+        extensionTraitDefList: CdmTraitDefinition[],
+        manifest: CdmManifestDefinition
     ): Promise<CdmLocalEntityDeclarationDefinition> {
         const localEntityDec: CdmLocalEntityDeclarationDefinition =
             ctx.corpus.MakeObject(cdmObjectType.localEntityDeclarationDef, dataObj.name);
 
         const localExtensionTraitDefList: CdmTraitDefinition[] = [];
-        const entityDoc: CdmDocumentDefinition = await DocumentPersistence.fromData(
+        const entityDoc: CdmDocumentDefinition = await ModelJson.DocumentPersistence.fromData(
             ctx,
             dataObj,
             extensionTraitDefList,
@@ -50,7 +51,7 @@ export class LocalEntityDeclarationPersistence {
         documentFolder.documents.push(entityDoc);
 
         // Entity schema path is the path to the doc containing the entity definition.
-        localEntityDec.entityPath = ctx.corpus.storage.createRelativeCorpusPath(`${entityDoc.atCorpusPath}/${dataObj.name}`, entityDoc);
+        localEntityDec.entityPath = ctx.corpus.storage.createRelativeCorpusPath(`${entityDoc.atCorpusPath}/${dataObj.name}`, manifest);
 
         localEntityDec.explanation = dataObj.description;
 
@@ -83,7 +84,7 @@ export class LocalEntityDeclarationPersistence {
         if (dataObj.partitions) {
             for (const element of dataObj.partitions) {
                 const cdmPartition: CdmDataPartitionDefinition =
-                    await DataPartitionPersistence.fromData(
+                    await ModelJson.DataPartitionPersistence.fromData(
                         ctx,
                         element,
                         extensionTraitDefList,
@@ -123,7 +124,8 @@ export class LocalEntityDeclarationPersistence {
         const localEntity: LocalEntity = <LocalEntity>{};
 
         // Fetch the document from entity schema.
-        const entity: LocalEntity = await DocumentPersistence.toData(instance.entityPath, manifest, resOpt, options, instance.ctx);
+        const entity: LocalEntity =
+            await ModelJson.DocumentPersistence.toData(instance.entityPath, manifest, resOpt, options, instance.ctx);
 
         if (entity !== undefined) {
             const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
@@ -152,7 +154,7 @@ export class LocalEntityDeclarationPersistence {
             if (instance.dataPartitions !== undefined && instance.dataPartitions.length > 0) {
                 localEntity.partitions = [];
                 for (const partition of instance.dataPartitions) {
-                    const partiton: Partition = await DataPartitionPersistence.toData(partition, resOpt, options);
+                    const partiton: Partition = await ModelJson.DataPartitionPersistence.toData(partition, resOpt, options);
                     if (partition !== undefined) {
                         localEntity.partitions.push(partiton);
                     } else {

@@ -1,7 +1,6 @@
 import * as fs from 'fs';
-import { runInThisContext } from 'vm';
 import { CdmCorpusDefinition, CdmEntityDefinition, CdmFolderDefinition, cdmStatusLevel } from '../../../internal';
-import { GithubAdapter, LocalAdapter } from '../../../StorageAdapter';
+import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { resolveOptions } from '../../../Utilities/resolveOptions';
 import { testHelper } from '../../testHelper';
@@ -12,85 +11,94 @@ describe('Cdm.ResolutionGuidance', () => {
      * Test path between TestDataPath and TestName.
      */
     const testsSubpath: string = 'Cdm/ResolutionGuidance';
-    const schemaDocsPath: string = '../CDM.SchemaDocuments';
+    const schemaDocsPath: string = testHelper.schemaDocumentsPath;
 
     /**
-     * Resolution Guidance Test 01 - Resolve entity by name
+     * Resolution Guidance Test - Resolve entity by name
      */
-    it('Test_01_ByEntityName', async (done) => {
-        const testName: string = 'Test_01_ByEntityName';
+    it('TestByEntityName', async (done) => {
+        const testName: string = 'TestByEntityName';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 02 - Resolve entity by primarykey
+     * Resolution Guidance Test - Resolve entity by primarykey
      */
-    it('Test_02_ByPrimaryKey', async (done) => {
-        const testName: string = 'Test_02_ByPrimaryKey';
+    it('TestByPrimaryKey', async (done) => {
+        const testName: string = 'TestByPrimaryKey';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 03 - Empty ResolutionGuidance
+     * Resolution Guidance Test- Empty ResolutionGuidance
      */
-    it('Test_03_EmptyResolutionGuidance', async (done) => {
-        const testName: string = 'Test_03_EmptyResolutionGuidance';
+    it('TestEmptyResolutionGuidance', async (done) => {
+        const testName: string = 'TestEmptyResolutionGuidance';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 04 - With RenameFormat property
+     * Resolution Guidance Test - With RenameFormat property
      */
-    it('Test_04_RenameFormat', async (done) => {
-        const testName: string = 'Test_04_RenameFormat';
+    it('TestRenameFormat', async (done) => {
+        const testName: string = 'TestRenameFormat';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 05 - Empty EntityReference property
+     * Resolution Guidance Test - Empty EntityReference property
      */
-    it('Test_05_EmptyEntityReference', async (done) => {
-        const testName: string = 'Test_05_EmptyEntityReference';
+    it('TestEmptyEntityReference', async (done) => {
+        const testName: string = 'TestEmptyEntityReference';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 06 - With AllowReferences = true
+     * Resolution Guidance Test - With AllowReferences = true
      */
-    it('Test_06_AllowReferencesTrue', async (done) => {
-        const testName: string = 'Test_06_AllowReferencesTrue';
+    it('TestAllowReferencesTrue', async (done) => {
+        const testName: string = 'TestAllowReferencesTrue';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 07 - With AlwaysIncludeForeignKey = true
+     * Resolution Guidance Test - With AlwaysIncludeForeignKey = true
      */
-    it('Test_07_AlwaysIncludeForeignKeyTrue', async (done) => {
-        const testName: string = 'Test_07_AlwaysIncludeForeignKeyTrue';
+    it('TestAlwaysIncludeForeignKeyTrue', async (done) => {
+        const testName: string = 'TestAlwaysIncludeForeignKeyTrue';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 08 - With ForeignKeyAttribute property
+     * Resolution Guidance Test - With ForeignKeyAttribute property
      */
-    it('Test_08_ForeignKeyAttribute', async (done) => {
-        const testName: string = 'Test_08_ForeignKeyAttribute';
+    it('TestForeignKeyAttribute', async (done) => {
+        const testName: string = 'TestForeignKeyAttribute';
         await runTest(testName, 'Sales');
         done();
     });
 
     /**
-     * Resolution Guidance Test 09 - With Cardinality = "one"
+     * Resolution Guidance Test - With Cardinality = "one"
      */
-    it('Test_09_CardinalityOne', async (done) => {
-        const testName: string = 'Test_09_CardinalityOne';
+    it('TestCardinalityOne', async (done) => {
+        const testName: string = 'TestCardinalityOne';
+        await runTest(testName, 'Sales');
+        done();
+    });
+
+    /**
+     * Resolution Guidance Test - With SelectsSubAttribute property
+     */
+    it('TestSelectsSubAttribute', async (done) => {
+        const testName: string = 'TestSelectsSubAttribute';
         await runTest(testName, 'Sales');
         done();
     });

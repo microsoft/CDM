@@ -20,8 +20,8 @@ class ResolvedEntityReference:
     def copy(self) -> 'ResolvedEntityReference':
         result = ResolvedEntityReference()
         result.referencing.entity = self.referencing.entity
-        result.referencing.rasb = self.referencing.rasb
-        result.referenced = [ResolvedEntityReferenceSide(rers.entity, rers.rasb) for rers in self.referenced]
+        result.referencing._rasb = self.referencing._rasb
+        result.referenced = [ResolvedEntityReferenceSide(rers.entity, rers._rasb) for rers in self.referenced]
         return result
 
     def spew(self, res_opt: 'ResolveOptions', to: 'SpewCatcher', indent: str, name_sort: bool) -> None:

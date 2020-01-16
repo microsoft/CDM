@@ -1,8 +1,7 @@
 import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition } from '../../../internal';
+import { CdmFolder, ModelJson } from '../../../Persistence';
 import { DocumentPersistence as cdmDocument } from '../../../Persistence/CdmFolder/DocumentPersistence';
-import { ManifestPersistence as cdmManifestPersistence } from '../../../Persistence/CdmFolder/ManifestPersistence';
 import { DocumentContent, ManifestContent } from '../../../Persistence/CdmFolder/types';
-import { ManifestPersistence } from '../../../Persistence/ModelJson/ManifestPersistence';
 import { Model } from '../../../Persistence/ModelJson/types';
 import { testHelper } from '../../testHelper';
 
@@ -32,7 +31,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
             'model.json',
             cdmCorpus.storage.fetchRootFolder('local')
         );
-        const obtainedModel: Model = await ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedModel: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
 
         // The imports were generated during processing and are not present in the original file.
         obtainedModel['cdm:imports'] = undefined;
@@ -78,7 +77,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
                 );
             });
 
-            const serializedManifest: string = JSON.stringify(cdmManifestPersistence.toData(manifest, undefined, undefined));
+            const serializedManifest: string = JSON.stringify(CdmFolder.ManifestPersistence.toData(manifest, undefined, undefined));
             testHelper.writeActualOutputFileContent(
                 testsSubpath,
                 'ModelJsonExtensibilityManifestDocuments',
@@ -106,7 +105,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
             testHelper.getExpectedOutputFileContent(testsSubpath, 'ModelJsonExtensibilityManifestDocuments', manifest.name);
         const expectedManifestContent: object = JSON.parse(expectedOutput) as object;
 
-        const actualManifestContent: ManifestContent = cdmManifestPersistence.toData(manifest, undefined, undefined);
+        const actualManifestContent: ManifestContent = CdmFolder.ManifestPersistence.toData(manifest, undefined, undefined);
         testHelper.assertObjectContentEquality(expectedManifestContent, actualManifestContent);
     });
 });

@@ -27,7 +27,7 @@
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadFolderWithSubFolders", "subManifest.manifest.cdm.json");
 
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.SubManifests.Count, 1);
             var subManifest = cdmManifest.SubManifests[0];
             Assert.AreEqual(subManifest.GetName(), "sub folder declaration");

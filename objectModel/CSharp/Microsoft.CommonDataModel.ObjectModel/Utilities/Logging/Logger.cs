@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using Microsoft.CommonDataModel.ObjectModel.Cdm;
-using System;
-
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 {
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using System;
+
     public class Logger
     {
         private static NLog.Logger defaultLogger = null;
@@ -69,14 +69,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Debug(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
             var logMessage = FormatMessage(tag, message, path);
-            if (ctx != null && ctx.StatusEvent != null)
-            {
-                ctx.StatusEvent.Invoke(Cdm.CdmStatusLevel.Progress, logMessage);
-            }
-            else
-            {
-                DefaultLogger.Debug(logMessage);
-            }
+            Log(CdmStatusLevel.Progress, ctx, logMessage, DefaultLogger.Debug);
         }
 
         /// <summary>
@@ -89,14 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Info(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
             var logMessage = FormatMessage(tag, message, path);
-            if (ctx != null && ctx.StatusEvent != null)
-            {
-                ctx.StatusEvent.Invoke(Cdm.CdmStatusLevel.Info, logMessage);
-            }
-            else
-            {
-                DefaultLogger.Info(logMessage);
-            }
+            Log(CdmStatusLevel.Info, ctx, logMessage, DefaultLogger.Info);
         }
 
         /// <summary>
@@ -109,14 +95,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Warning(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
             var logMessage = FormatMessage(tag, message, path);
-            if (ctx != null && ctx.StatusEvent != null)
-            {
-                ctx.StatusEvent.Invoke(Cdm.CdmStatusLevel.Warning, logMessage);
-            }
-            else
-            {
-                DefaultLogger.Warn(logMessage);
-            }
+            Log(CdmStatusLevel.Warning, ctx, logMessage, DefaultLogger.Warn);
         }
 
         /// <summary>
@@ -129,14 +108,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Error(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
             var logMessage = FormatMessage(tag, message, path);
-            if (ctx != null && ctx.StatusEvent != null)
-            {
-                ctx.StatusEvent.Invoke(Cdm.CdmStatusLevel.Error, logMessage);
-            }
-            else
-            {
-                DefaultLogger.Error(logMessage);
-            }
+            Log(CdmStatusLevel.Error, ctx, logMessage, DefaultLogger.Error);
         }
 
         /// <summary>
@@ -150,6 +122,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         {
             return (path != null) ? $"{tag} | {message} | {path}" :
                 $"{tag} | {message}";
+        }
+
+        private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string message, Action<string> defaultStatusEvent)
+        {
+            if (level >= ctx.ReportAtLevel)
+            {
+                if (ctx != null && ctx.StatusEvent != null)
+                {
+                    ctx.StatusEvent.Invoke(level, message);
+                }
+                else
+                {
+                    defaultStatusEvent(message);
+                }
+            }
         }
     }
 }

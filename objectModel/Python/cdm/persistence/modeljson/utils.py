@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.persistence.cdmfolder import TraitReferencePersistence
-from cdm.utilities import JObject
+from cdm.utilities import JObject, logger
 
 from . import ArgumentPersistence, extension_helper
 from .types import CsvFormatSettings
@@ -25,6 +25,8 @@ ignored_traits = (
     'is.partition.format.CSV'
 )
 
+_TAG = 'Utils'
+
 
 def get_formatted_date_string(date: datetime):
     return date.isoformat() if date else None
@@ -36,15 +38,6 @@ def should_annotation_go_into_a_single_trait(name: str) -> bool:
 
 def convert_annotation_to_trait(name: str) -> str:
     return annotation_to_trait_map[name]
-
-
-def read_annotation_to_trait():
-    # TODO: Test loading
-    with open('cdm/configs/annotationToTrait.json') as read_file:
-        file_obj = JObject(read_file.read())
-
-    for el in (file_obj or []):
-        annotation_to_trait_map[el.annotation_name] = el.trait_value
 
 
 def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext') -> 'CdmTraitReference':
@@ -143,7 +136,7 @@ async def process_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'M
                 if isinstance(annotation, dict) and annotation.get('name'):
                     annotations.append(annotation)
                 else:
-                    ctx.logger.warning('Unsupported annotation type.')
+                    logger.warning(_TAG, ctx, 'Unsupported annotation type.')
 
         elif not trait.is_from_property:
             annotation_name = trait_to_annotation_name(trait.named_reference)

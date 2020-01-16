@@ -17,23 +17,19 @@
                 CdmObjectType.ReferencedEntityDeclarationDef,
                 (string)obj["entityName"]);
 
-            if (obj["entityPath"] != null)
-            {
-                newRef.EntityPath = $"{prefixPath}{(string)obj["entityPath"]}";
-            }
-            
-            if (newRef.EntityPath == null)
-            {
-                if (obj["entityDeclaration"] != null)
-                {
-                    newRef.EntityPath = $"{prefixPath}{(string)obj["entityDeclaration"]}";
+            var entityPath = (string)(obj["entityPath"] != null ? obj["entityPath"] :  obj["entityDeclaration"]);
 
-                    if (newRef.EntityPath == null)
-                    {
-                        Logger.Error(nameof(ReferencedEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
-                    }
-                }  
+            if (entityPath == null)
+            {
+                Logger.Error(nameof(ReferencedEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
             }
+
+            if (entityPath != null && entityPath.IndexOf(":") == -1)
+            {
+                entityPath = $"{prefixPath}{entityPath}";
+            }
+
+            newRef.EntityPath = entityPath;
 
             if (obj["lastFileStatusCheckTime"] != null)
             {

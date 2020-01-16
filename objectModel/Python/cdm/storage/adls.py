@@ -95,7 +95,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
         base = 'https://' + self.hostname + self.root
 
-        if adapter_path.startswith(base):
+        if adapter_path and adapter_path.startswith(base):
             return adapter_path[len(base):]
 
         # Signal that we did not recognize path as one for this adapter.
@@ -103,9 +103,11 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
         url = 'https://{}/{}'.format(self.hostname, self._file_system)
-        directory = urllib.parse.urljoin(self._sub_path, folder_corpus_path)
-        request = self._build_request('{}?directory={}&recursive=True&resource=filesystem'.format(url, directory), 'GET')
+        directory = urllib.parse.urljoin(self._sub_path, self._format_corpus_path(folder_corpus_path))
+        if directory.startswith('/'):
+            directory = directory[1:]
 
+        request = self._build_request('{}?directory={}&recursive=True&resource=filesystem'.format(url, directory), 'GET')
         cdm_response = await self._http_client.send_async(request, self.wait_time_callback)
 
         if cdm_response.status_code == HTTPStatus.OK:

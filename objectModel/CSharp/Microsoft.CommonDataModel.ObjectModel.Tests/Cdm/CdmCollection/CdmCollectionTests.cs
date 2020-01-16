@@ -2,10 +2,7 @@
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
 
     [TestClass]
@@ -25,18 +22,18 @@
             var collection = new CdmCollection<CdmAttributeContext>(ctx, cdmDocument, Enums.CdmObjectType.AttributeContextDef);
 
             var addedAttributeContext = collection.Add("nameOfNewAttribute");
-            Assert.AreEqual(1, collection.AllItems.Count);
-            Assert.AreEqual("nameOfNewAttribute", collection.AllItems[0].Name);
+            Assert.AreEqual(1, collection.Count);
+            Assert.AreEqual("nameOfNewAttribute", collection[0].Name);
             Assert.AreEqual(cdmDocument, collection[0].Owner);
             Assert.AreEqual(ctx, collection[0].Ctx);
 
-            Assert.AreEqual(collection.AllItems[0], addedAttributeContext);
+            Assert.AreEqual(collection[0], addedAttributeContext);
 
             var attributeContext = new CdmAttributeContext(ctx, "NameOfAttributeContext");
             var addedAttribute = collection.Add(attributeContext);
-            Assert.AreEqual(2, collection.AllItems.Count);
+            Assert.AreEqual(2, collection.Count);
             Assert.AreEqual(attributeContext, addedAttribute);
-            Assert.AreEqual(attributeContext, collection.AllItems[1]);
+            Assert.AreEqual(attributeContext, collection[1]);
             Assert.AreEqual(cdmDocument, attributeContext.Owner);
         }
 
@@ -113,7 +110,7 @@
             {
                 var entity = new CdmEntityDefinition(cdmCorpus.Ctx, $"entityName_{i}", null);
 
-                this.CreateDocumentForEntity(cdmCorpus, entity);
+                CdmCollectionHelperFunctions.CreateDocumentForEntity(cdmCorpus, entity);
 
                 var entityDeclaration = cdmCorpus.MakeObject<CdmEntityDeclarationDefinition>(Enums.CdmObjectType.LocalEntityDeclarationDef, entity.EntityName, false);
                 entityDeclaration.Owner = entity.Owner;
@@ -166,22 +163,6 @@
             manifest.IsDirty = false;
             collection.Clear();
             Assert.IsTrue(manifest.IsDirty);
-        }
-
-        /// <summary>
-        /// For an entity, it creates a document that will contain the entity.
-        /// </summary>
-        /// <param name="cdmCorpus">The corpus everything belongs to.</param>
-        /// <param name="entity">The entity we want a document for.</param>
-        /// <returns>A document containing desired entity.</returns>
-        private CdmDocumentDefinition CreateDocumentForEntity(CdmCorpusDefinition cdmCorpus, CdmEntityDefinition entity, string nameSpace = "local")
-        {
-            var cdmFolderDef = cdmCorpus.Storage.FetchRootFolder(nameSpace);
-            var entityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(Enums.CdmObjectType.DocumentDef, $"{entity.EntityName}.cdm.json", false);
-
-            cdmFolderDef.Documents.Add(entityDoc);
-            entityDoc.Definitions.Add(entity);
-            return entityDoc;
         }
     }
 }

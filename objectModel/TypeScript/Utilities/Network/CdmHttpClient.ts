@@ -1,6 +1,6 @@
 import * as http from 'http';
-import * as https from '../../StorageAdapter/request';
-import { StorageAdapterConfigCallback } from '../../StorageAdapter/StorageAdapterConfigCallback';
+import * as https from '../../Storage/request';
+import { StorageAdapterConfigCallback } from '../../Storage/StorageAdapterConfigCallback';
 import { CdmHttpRequest } from './CdmHttpRequest';
 import { CdmHttpResponse } from './CdmHttpResponse';
 import { HttpRequestCallback } from './HttpRequestCallback';

@@ -2,14 +2,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
+    CdmTraitReference,
     copyOptions,
-    resolveOptions,
-    CdmTraitReference
+    resolveOptions
 } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
-    entityDeclarationDefinitionType, EntityDeclarationDefinition, TraitReference
+    EntityDeclarationDefinition, entityDeclarationDefinitionType, TraitReference
 } from './types';
 import * as utils from './utils';
 
@@ -29,19 +29,17 @@ export class ReferencedEntityDeclarationPersistence {
             dataObj.entityName
         );
 
-        if (dataObj.entityPath) {
-            newRef.entityPath = `${prefixPath}${dataObj.entityPath}`;
+        let entityPath: string = dataObj.entityPath !== undefined ? dataObj.entityPath : dataObj.entityDeclaration;
+
+        if (entityPath === undefined) {
+            Logger.error(ReferencedEntityDeclarationPersistence.name, ctx, 'Couldn\'t find entity path or similar.', 'FromData');
         }
 
-        if (!newRef.entityPath) {
-            if (dataObj.entityDeclaration) {
-                newRef.entityPath = `${prefixPath}${dataObj.entityDeclaration}`;
-
-                if (!newRef.entityPath) {
-                    Logger.error(ReferencedEntityDeclarationPersistence.name, ctx, 'Couldn\'t find entity path or similar.', 'FromData');
-                }
-            }
+        if (entityPath !== undefined && entityPath.indexOf(':') === -1) {
+            entityPath = `${prefixPath}${entityPath}`;
         }
+
+        newRef.entityPath = entityPath;
 
         if (dataObj.lastFileStatusCheckTime) {
             newRef.lastFileStatusCheckTime = new Date(dataObj.lastFileStatusCheckTime);
@@ -69,7 +67,7 @@ export class ReferencedEntityDeclarationPersistence {
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
             explanation: instance.explanation,
             entityName: instance.entityName,
-            entityPath : instance.entityPath,
+            entityPath: instance.entityPath,
             exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
         };
     }

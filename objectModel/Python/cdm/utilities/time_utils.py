@@ -19,7 +19,7 @@ def get_formatted_date_string(date: datetime) -> Optional[str]:
     return (date.replace(tzinfo=None).isoformat() + '.000')[:23] + 'Z'
 
 
-def max_time(first: datetime, second: datetime) -> datetime:
+def max_time(first: Optional[datetime], second: Optional[datetime]) -> Optional[datetime]:
     if not first or not second:
         return first or second
     return max(first, second)

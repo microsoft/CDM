@@ -28,7 +28,7 @@
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityWithDataPartitionPattern", "entities.manifest.cdm.json");
 
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "entities", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "entities", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.Entities.Count, 1);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.LocalEntityDeclarationDef);
             var entity = cdmManifest.Entities[0];
@@ -43,6 +43,31 @@
             Assert.AreEqual(pattern.Parameters[1], "testParam2");
             Assert.AreEqual(pattern.SpecializedSchema, "test special schema");
             Assert.AreEqual(pattern.ExhibitsTraits.Count, 1);
+        }
+
+        /// <summary>
+        /// Testing that error is handled when partition pattern contains a folder that does not exist
+        /// </summary>
+        [TestMethod]
+        public async Task TestPatternWithNonExistingFolder()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestPatternWithNonExistingFolder");
+            var content = TestHelper.GetInputFileContent(testsSubpath, "TestPatternWithNonExistingFolder", "entities.manifest.cdm.json");
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(corpus, null), "entities", "local", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            int errorLogged = 0;
+            corpus.SetEventCallback(new EventCallback { Invoke = (CdmStatusLevel statusLevel, string message) =>
+            {
+                if (message.Contains("The folder location 'local:/testLocation' described by a partition pattern does not exist"))
+                {
+                    errorLogged++;
+                }
+            }
+            }, CdmStatusLevel.Warning);
+            await cdmManifest.FileStatusCheckAsync();
+            Assert.AreEqual(1, errorLogged);
+            Assert.AreEqual(cdmManifest.Entities[0].DataPartitions.Count, 0);
+            // make sure the last check time is still being set
+            Assert.IsNotNull(cdmManifest.Entities[0].DataPartitionPatterns[0].LastFileStatusCheckTime);
         }
     }
 }

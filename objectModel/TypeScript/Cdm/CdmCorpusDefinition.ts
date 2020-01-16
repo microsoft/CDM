@@ -43,7 +43,6 @@ import {
     CdmTraitReference,
     CdmTypeAttributeDefinition,
     cdmValidationStep,
-    copyOptions,
     docsResult,
     EventCallback,
     ICdmProfiler,
@@ -58,7 +57,12 @@ import {
     StorageManager,
     SymbolSet
 } from '../internal';
-import { cdmFolder, modelJson } from '../Persistence';
+import { PersistenceLayer } from '../Persistence';
+import {
+    fetchFolioExtension,
+    fetchManifestExtension,
+    fetchModelJsonExtension
+} from '../Persistence/extensionFunctions';
 import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
@@ -87,6 +91,8 @@ export class CdmCorpusDefinition {
      */
     public allDocuments: [CdmFolderDefinition, CdmDocumentDefinition][];
     public readonly storage: StorageManager;
+
+    public readonly persistence: PersistenceLayer;
 
     /**
      * Gets the object context.
@@ -160,6 +166,7 @@ export class CdmCorpusDefinition {
 
             this.ctx = new resolveContext(this);
             this.storage = new StorageManager(this);
+            this.persistence = new PersistenceLayer(this);
 
             this.docsNotLoaded = new Set<string>();
             this.docsCurrentlyLoading = new Set<string>();
@@ -176,27 +183,6 @@ export class CdmCorpusDefinition {
         this._nextID++;
 
         return this._nextID;
-    }
-
-    /**
-     * @internal
-     */
-    public static fetchFolioExtension(): string {
-        return '.folio.cdm.json';
-    }
-
-    /**
-     * @internal
-     */
-    public static fetchManifestExtension(): string {
-        return '.manifest.cdm.json';
-    }
-
-    /**
-     * @internal
-     */
-    public static fetchModelJsonExtension(): string {
-        return 'model.json';
     }
 
     /**
@@ -612,8 +598,7 @@ export class CdmCorpusDefinition {
                     newObj = new CdmAttributeGroupReference(this.ctx, nameOrRef, simmpleNameRef);
                     break;
                 case cdmObjectType.constantEntityDef:
-                    newObj = new CdmConstantEntityDefinition(this.ctx);
-                    (newObj as CdmConstantEntityDefinition).constantEntityName = nameOrRef;
+                    newObj = new CdmConstantEntityDefinition(this.ctx, nameOrRef);
                     break;
                 case cdmObjectType.dataTypeDef:
                     newObj = new CdmDataTypeDefinition(this.ctx, nameOrRef, undefined);
@@ -773,6 +758,7 @@ export class CdmCorpusDefinition {
                 // index any imports
                 for (const doc of this.docsNotIndexed) {
                     if (doc.needsIndexing) {
+                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
                         doc.clearCaches();
                         doc.getImportPriorities();
                     }
@@ -810,6 +796,7 @@ export class CdmCorpusDefinition {
                 // finish up
                 for (const doc of this.docsNotIndexed) {
                     if (doc.needsIndexing) {
+                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
                         this.finishDocumentResolve(doc);
                     }
                 }
@@ -884,6 +871,7 @@ export class CdmCorpusDefinition {
             documentPath = objectPath.slice(0, documentNameIndex);
         }
 
+        Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this._fetchObjectAsync.name);
         const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
 
         if (newObj) {
@@ -916,7 +904,7 @@ export class CdmCorpusDefinition {
                     CdmCorpusDefinition.name,
                     this.ctx,
                     `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
-                    'getObjectFromCorpusPath'
+                    this._fetchObjectAsync.name
                 );
             }
 
@@ -935,135 +923,13 @@ export class CdmCorpusDefinition {
         return this._fetchObjectAsync(objectPath, obj) as undefined as T;
     }
 
-    // a manifest or document can be saved with a new or exisitng name. This function on the corpus does all the actual work
-    // because the corpus knows about persistence types and about the storage adapters
-    // if saved with the same name, then consider this document 'clean' from changes. if saved with a back compat model or
-    // to a different name, then the source object is still 'dirty'
-    // an option will cause us to also save any linked documents.
-    public async saveDocumentAs(
-        doc: CdmDocumentDefinition,
-        options: copyOptions,
-        newName: string,
-        saveReferenced: boolean): Promise<boolean> {
-        // find out if the storage adapter is able to write.
-        let ns: string = doc.namespace;
-        if (ns === undefined) {
-            ns = this.storage.defaultNamespace;
-        }
-        const adapter: StorageAdapter = this.storage.fetchAdapter(ns);
-        if (adapter === undefined) {
-            Logger.error(
-                CdmCorpusDefinition.name,
-                this.ctx,
-                `Couldn't find a storage adapter registered for the namespace '${ns}'`,
-                'saveDocumentAs'
-            );
-
-            return false;
-        } else if (adapter.canWrite() === false) {
-            Logger.error(
-                CdmCorpusDefinition.name,
-                this.ctx,
-                `The storage adapter '${ns}' claims it is unable to write files.`,
-                'saveDocumentAs'
-            );
-
-            return false;
-        } else {
-            // what kind of document is requested?
-            const newNameInLowCase: string = newName.toLowerCase();
-            const persistenceType: string =
-                newNameInLowCase.endsWith(CdmCorpusDefinition.fetchModelJsonExtension()) ? 'ModelJson' : 'CdmFolder';
-
-            // save the object into a json blob
-            const resOpt: resolveOptions = { wrtDoc: doc, directives: new AttributeResolutionDirectiveSet() };
-            let persistedDoc: object;
-            if (newNameInLowCase.endsWith(CdmCorpusDefinition.fetchModelJsonExtension()) ||
-                newNameInLowCase.endsWith(CdmCorpusDefinition.fetchManifestExtension())
-                || newNameInLowCase.endsWith(CdmCorpusDefinition.fetchFolioExtension())) {
-                if (persistenceType === 'CdmFolder') {
-                    persistedDoc = cdmFolder.ManifestPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
-                } else {
-                    if (newNameInLowCase !== CdmCorpusDefinition.fetchModelJsonExtension()) {
-                        Logger.error(
-                            CdmCorpusDefinition.name,
-                            this.ctx,
-                            `Failed to persist '${newName}', as it's not an acceptable filename. It must be model.json`, 'saveDocumentAs'
-                        );
-
-                        return false;
-                    }
-                    persistedDoc = modelJson.ManifestPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
-                }
-            } else {
-                persistedDoc = cdmFolder.DocumentPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
-            }
-
-            if (!persistedDoc) {
-                Logger.error(CdmCorpusDefinition.name, this.ctx, `Failed to persist '${newName}'`, 'saveDocumentAs');
-
-                return false;
-            }
-
-            // turn the name into a path
-            let newPath: string = `${doc.folderPath}/${newName}`;
-            newPath = this.storage.createAbsoluteCorpusPath(newPath, doc);
-            if (newPath.startsWith(`${ns}:`)) {
-                newPath = newPath.slice(ns.length + 1);
-            }
-            try {
-                // ask the adapter to make it happen
-                const content: string = JSON.stringify(persistedDoc, undefined, 2);
-                await adapter.writeAsync(newPath, content);
-
-                // write the adapter's config.
-                if (options.isTopLevelDocument) {
-                    await this.storage.saveAdaptersConfig('/config.json', adapter);
-
-                    // the next documentwon't be top level, so reset the flag
-                    options.isTopLevelDocument = false;
-                }
-            } catch (e) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Failed to write to the file '${newName}' for reason ${e}`,
-                    'saveDocumentAs'
-                );
-
-                return false;
-            }
-
-            // if we also want to save referenced docs, then it depends on what kind of thing just got saved
-            // if a model.json there are none. If a manifest or definition doc then ask the docs to do the right things
-            // definition will save imports, manifests will save imports, schemas, sub manifests
-            if (saveReferenced && persistenceType === 'CdmFolder') {
-                if (!await doc.saveLinkedDocuments(options)) {
-                    Logger.error(
-                        CdmCorpusDefinition.name,
-                        this.ctx,
-                        `Failed to save linked documents for file '${newName}'`,
-                        'saveDocumentAs'
-                    );
-                }
-            }
-
-            return true;
-        }
-    }
-
     public setEventCallback(
         status: EventCallback,
         reportAtLevel: cdmStatusLevel = cdmStatusLevel.info
     ): void {
         const ctx: resolveContext = this.ctx as resolveContext;
+        ctx.statusEvent = status;
         ctx.reportAtLevel = reportAtLevel;
-        const eventCallback: EventCallback = (level: cdmStatusLevel, msg: string): void => {
-            if (level >= ctx.reportAtLevel) {
-                status(level, msg);
-            }
-        };
-        ctx.statusEvent = eventCallback;
     }
 
     /**
@@ -1553,18 +1419,16 @@ export class CdmCorpusDefinition {
      * @internal
      */
     public finishDocumentResolve(doc: CdmDocumentDefinition): void {
-        // let bodyCode = () =>
         doc.currentlyIndexing = false;
         doc.importsIndexed = true;
         doc.needsIndexing = false;
-        this.docsNotIndexed.delete(doc);
-
         for (const def of doc.definitions.allItems) {
             if (isEntityDefinition(def)) {
-                Logger.info(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed: ${def.atCorpusPath}`);
+                Logger.debug(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed entity: ${def.atCorpusPath}`);
             }
         }
-        // return p.measure(bodyCode);
+
+        this.docsNotIndexed.delete(doc);
     }
 
     /**
@@ -1608,7 +1472,7 @@ export class CdmCorpusDefinition {
                     CdmCorpusDefinition.name,
                     this.ctx,
                     `Adapter not found for the CDM object by ID ${(currObject as CdmContainerDefinition).ID}`,
-                    `getLastModifiedTimeFromObject`
+                    this.getLastModifiedTimeAsyncFromObject.name
                 );
 
                 return undefined;
@@ -1638,7 +1502,7 @@ export class CdmCorpusDefinition {
                     CdmCorpusDefinition.name,
                     this.ctx,
                     `Adapter not found for the corpus path '${corpusPath}'.`,
-                    'getLastModifiedTimeFromPartitionPath'
+                    this.getLastModifiedTimeFromPartitionPath.name
                 );
 
                 return undefined;
@@ -2294,9 +2158,9 @@ export class CdmCorpusDefinition {
     }
 
     private isPathManifestDocument(path: string): boolean {
-        return path.endsWith(CdmCorpusDefinition.fetchManifestExtension())
-            || path.endsWith(CdmCorpusDefinition.fetchModelJsonExtension())
-            || path.endsWith(CdmCorpusDefinition.fetchFolioExtension());
+        return path.endsWith(fetchManifestExtension())
+            || path.endsWith(fetchModelJsonExtension())
+            || path.endsWith(fetchFolioExtension());
     }
 
     private pathToSymbol(symbol: string, docFrom: CdmDocumentDefinition, docResultTo: docsResult): string {

@@ -1,4 +1,5 @@
 ﻿import abc
+from threading import Lock
 from typing import cast, Dict, Iterable, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -10,13 +11,12 @@ if TYPE_CHECKING:
 
 
 class CdmObject(abc.ABC):
-    _next_id = 0
+    _next_id_counter = 0
+    _next_id_lock = Lock()
 
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
-        CdmObject._next_id += 1
-
         # The object ID.
-        self.id = CdmObject._next_id
+        self.id = CdmObject._next_id()
 
         # The object context.
         self.ctx = ctx
@@ -104,7 +104,7 @@ class CdmObject(abc.ABC):
         kind = 'rasb'
         ctx = self.ctx
         cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
-        rasb_cache = ctx.cache.get(cache_tag) if cache_tag else None
+        rasb_cache = ctx._cache.get(cache_tag) if cache_tag else None
         under_ctx = None
 
         # store the previous symbol set, we will need to add it with
@@ -140,7 +140,7 @@ class CdmObject(abc.ABC):
                 cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
                 # save this as the cached version
                 if cache_tag:
-                    ctx.cache[cache_tag] = rasb_cache
+                    ctx._cache[cache_tag] = rasb_cache
 
                 if from_moniker and acp_in_context and cast('CdmObjectReference', self).named_reference:
                     # create a fresh context
@@ -242,6 +242,12 @@ class CdmObject(abc.ABC):
             res_opt_copy.directives = res_opt.directives.copy()
 
         return res_opt_copy
+
+    @staticmethod
+    def _next_id():
+        with CdmObject._next_id_lock:
+            CdmObject._next_id_counter += 1
+            return CdmObject._next_id_counter
 
     @staticmethod
     def _resolved_trait_to_trait_ref(res_opt: 'ResolveOptions', rt: 'ResolvedTrait') -> 'CdmTraitReference':

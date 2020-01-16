@@ -1,8 +1,4 @@
 import {
-    DataPartitionPatternPersistence,
-    DataPartitionPersistence
-} from '.';
-import {
     CdmCorpusContext,
     CdmLocalEntityDeclarationDefinition,
     cdmObjectType,
@@ -12,6 +8,7 @@ import {
 } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
+import { CdmFolder } from '..';
 import {
     DataPartition,
     DataPartitionPattern,
@@ -36,7 +33,12 @@ export class LocalEntityDeclarationPersistence {
         if (!entityPath) {
             entityPath = dataObj.entitySchema;
             if (!entityPath) {
-                Logger.error(LocalEntityDeclarationPersistence.name, ctx, 'Couldn\'t find entity path or similar.', 'FromData');
+                Logger.error(
+                    LocalEntityDeclarationPersistence.name,
+                    ctx,
+                    'Couldn\'t find entity path or similar.',
+                    this.fromData.name
+                );
             }
         }
 
@@ -62,12 +64,12 @@ export class LocalEntityDeclarationPersistence {
         }
         if (dataObj.dataPartitions) {
             for (const dataPartition of dataObj.dataPartitions) {
-                localDec.dataPartitions.push(DataPartitionPersistence.fromData(ctx, dataPartition));
+                localDec.dataPartitions.push(CdmFolder.DataPartitionPersistence.fromData(ctx, dataPartition));
             }
         }
         if (dataObj.dataPartitionPatterns) {
             for (const pattern of dataObj.dataPartitionPatterns) {
-                localDec.dataPartitionPatterns.push(DataPartitionPatternPersistence.fromData(ctx, pattern));
+                localDec.dataPartitionPatterns.push(CdmFolder.DataPartitionPatternPersistence.fromData(ctx, pattern));
             }
         }
 

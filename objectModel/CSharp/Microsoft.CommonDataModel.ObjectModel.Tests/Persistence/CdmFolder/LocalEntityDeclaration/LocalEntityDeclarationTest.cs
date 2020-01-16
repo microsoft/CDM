@@ -28,7 +28,7 @@
         public async Task TestLoadLocalEntityNoPartition()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartition", "entities.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(1, cdmManifest.Entities.Count);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.LocalEntityDeclarationDef);
             var entity = cdmManifest.Entities[0];
@@ -50,7 +50,7 @@
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionNamespaceSet", "entities.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
             Assert.AreEqual(cdmManifest.Entities.Count, 1);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.LocalEntityDeclarationDef);
             var entity = cdmManifest.Entities[0];
@@ -75,7 +75,7 @@
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet", "entitiesWithNamespace.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
             Assert.AreEqual(cdmManifest.Entities.Count, 1);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.LocalEntityDeclarationDef);
             var entity = cdmManifest.Entities[0];

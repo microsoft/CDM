@@ -2,6 +2,7 @@ from typing import Optional, Union, List, TYPE_CHECKING
 from cdm.objectmodel import CdmEntityDeclarationDefinition
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 from .cdm_collection import CdmCollection
 if TYPE_CHECKING:
@@ -24,7 +25,9 @@ class CdmEntityCollection(CdmCollection):
             return super().append(obj, simple_ref)
 
         if not obj.owner:
-            raise Exception('Expected entity to have an "Owner" document set. Cannot create entity declaration to add to manifest.')
+            logger.error(CdmEntityCollection.__name__, self.ctx,
+                         'Expected entity to have an \'Owner\' document set. Cannot create entity declaration to add to manifest.', self.append.__name__)
+            return None
 
         entity_declaration = self.ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF,
                                                          obj.entity_name, simple_ref)  # type: CdmEntityDeclarationDefinition

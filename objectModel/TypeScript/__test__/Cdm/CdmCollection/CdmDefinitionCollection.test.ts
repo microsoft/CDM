@@ -52,7 +52,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionInsert', () => {
-        const document: CdmManifestDefinition = generateManifest('c:\nothing');
+        const document: CdmManifestDefinition = generateManifest('C:\\Nothing');
 
         const ent1: CdmObjectDefinition = document.definitions.push('ent1');
         const ent2: CdmObjectDefinition = document.definitions.push('ent2');
@@ -80,7 +80,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddEntityByProvidingName', () => {
-        const document: CdmManifestDefinition = generateManifest('c:\Noting');
+        const document: CdmManifestDefinition = generateManifest('C:\\Noting');
         document.isDirty = false;
 
         const entity: CdmObjectDefinition = document.definitions.push('TheNameOfTheEntity');
@@ -97,7 +97,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddByProvidingTypeAndName', () => {
-        const document: CdmManifestDefinition = generateManifest('c:\nothing');
+        const document: CdmManifestDefinition = generateManifest('C:\\Nothing');
         document.isDirty = false;
 
         const attribute: CdmObjectDefinition = document.definitions.push(cdmObjectType.attributeContextDef, 'attrctx');
@@ -118,7 +118,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddRange', () => {
-        const document : CdmManifestDefinition = generateManifest('c:\nothing');
+        const document : CdmManifestDefinition = generateManifest('C:\\Nothing');
         document.isDirty = false;
 
         const attribute: CdmAttributeContext = new CdmAttributeContext(document.ctx, 'the attribute');

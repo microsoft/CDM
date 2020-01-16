@@ -1,6 +1,6 @@
 from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
 from cdm.enums import CdmDataFormat, CdmObjectType
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import logger, ResolveOptions, CopyOptions
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -57,7 +57,8 @@ class TypeAttributePersistence:
             try:
                 type_attribute.data_format = CdmDataFormat(data.dataFormat)
             except ValueError:
-                ctx.logger.error(data.dataFormat + ' is not a valid data format')
+                logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
+                    data.dataFormat), TypeAttributePersistence.from_data.__name__)
 
         if data.get('defaultValue'):
             type_attribute.default_value = data.defaultValue

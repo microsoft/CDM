@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     internal class ResolvedAttributeSet : RefCounted
     {
@@ -482,7 +483,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<ResolvedAttribute> list = new List<ResolvedAttribute>(this.Set);
                 if (nameSort)
                 {
-                    list.Sort((l, r) => StringUtils.CompareWithOrdinalIgnoreCase(l.ResolvedName, r.ResolvedName));
+                    list = this.Set.OrderBy(att => Regex.Replace(att.ResolvedName.ToLowerInvariant(), "[^a-zA-Z0-9.]+", "", RegexOptions.Compiled)).ToList();
                 }
 
                 for (int i = 0; i < this.Set.Count; i++)

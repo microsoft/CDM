@@ -1,16 +1,12 @@
 import {
-    AttributeResolutionGuidancePersistence,
-    EntityReferencePersistence,
-    PurposeReferencePersistence
-} from '.';
-import {
     CdmCorpusContext,
-    cdmObjectType,
-    copyOptions,
     CdmEntityAttributeDefinition,
-    resolveOptions,
-    CdmTraitReference
+    cdmObjectType,
+    CdmTraitReference,
+    copyOptions,
+    resolveOptions
 } from '../../internal';
+import { CdmFolder } from '..';
 import {
     AttributeResolutionGuidance,
     EntityAttribute,
@@ -27,11 +23,14 @@ export class EntityAttributePersistence {
         if (object.explanation) {
             entityAttribute.explanation = object.explanation;
         }
-        entityAttribute.entity = EntityReferencePersistence.fromData(ctx, object.entity);
-        entityAttribute.purpose = PurposeReferencePersistence.fromData(ctx, object.purpose);
-        utils.addArrayToCdmCollection<CdmTraitReference>(entityAttribute.appliedTraits, utils.createTraitReferenceArray(ctx, object.appliedTraits));
+        entityAttribute.entity = CdmFolder.EntityReferencePersistence.fromData(ctx, object.entity);
+        entityAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
+        utils.addArrayToCdmCollection<CdmTraitReference>(
+            entityAttribute.appliedTraits,
+            utils.createTraitReferenceArray(ctx, object.appliedTraits)
+        );
         entityAttribute.resolutionGuidance =
-            AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
+            CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
 
         return entityAttribute;
     }

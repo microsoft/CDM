@@ -1,11 +1,14 @@
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import {
     CdmCorpusDefinition,
-    CdmManifestDefinition
- } from '../../../internal';
-import { LocalAdapter } from '../../../StorageAdapter';
+    CdmDocumentDefinition,
+    CdmEntityDefinition,
+    CdmFolderDefinition,
+    CdmManifestDefinition,
+    cdmObjectType
+} from '../../../internal';
+import { LocalAdapter } from '../../../Storage';
 
-// tslint:disable-next-line: export-name
 export function generateManifest(localRootPath: string): CdmManifestDefinition {
     const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
     cdmCorpus.storage.defaultNamespace = 'local';
@@ -21,4 +24,20 @@ export function generateManifest(localRootPath: string): CdmManifestDefinition {
     manifest.namespace = 'local';
 
     return manifest;
+}
+
+export function createDocumentForEntity(
+    cdmCorpus: CdmCorpusDefinition,
+    entity: CdmEntityDefinition,
+    nameSpace?: string
+): CdmDocumentDefinition {
+    if (!nameSpace) {
+        nameSpace = 'local';
+    }
+    const cdmFolderDef: CdmFolderDefinition = cdmCorpus.storage.fetchRootFolder(nameSpace);
+    const entityDoc: CdmDocumentDefinition = cdmCorpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `${entity.entityName}.cdm.json`, false);
+    cdmFolderDef.documents.push(entityDoc);
+    entityDoc.definitions.push(entity);
+
+    return entityDoc;
 }

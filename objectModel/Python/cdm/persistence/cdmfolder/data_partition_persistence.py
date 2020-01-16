@@ -3,7 +3,7 @@ import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmDataPartitionDefinition
-from cdm.utilities import time_utils
+from cdm.utilities import logger, time_utils
 
 from . import utils
 from .types import DataPartition
@@ -45,7 +45,8 @@ class DataPartitionPersistence:
                     value = argument.get('value')
 
                 if key is None or value is None:
-                    ctx.logger.warning('invalid set of arguments provided for data partition corresponding to location: %s', data.location)
+                    logger.warning(DataPartitionPersistence.__name__, ctx,
+                                   'invalid set of arguments provided for data partition corresponding to location: {}'.format(data.location))
                     continue
 
                 if key in data_partition.arguments:
@@ -67,10 +68,10 @@ class DataPartitionPersistence:
 
         if instance.arguments:
             data_partition.arguments = []
-            for argument_list in instance.arguments:
-                for argument_value in argument_list['1']:
+            for argument_name, argument_list in instance.arguments.items():
+                for argument_value in argument_list:
                     argument = {}
-                    argument[argument_list['0']] = argument_value
+                    argument[argument_name] = argument_value
                     data_partition.arguments.append(argument)
 
         return data_partition

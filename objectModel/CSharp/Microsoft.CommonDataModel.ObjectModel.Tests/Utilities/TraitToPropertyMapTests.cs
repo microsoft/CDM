@@ -2,8 +2,10 @@
 using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
 {
     [TestClass]
     public class TraitToPropertyMapTests
@@ -37,6 +39,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var dataFormat = traitToPropertyMap.TraitsToDataFormat(false);
 
             Assert.AreEqual(CdmDataFormat.Json, dataFormat);
+        }
+
+        /// <summary>
+        /// Test update and fetch list lookup default value without attributeValue and displayOrder.
+        /// </summary>
+        [TestMethod]
+        public void TestUpdateAndFetchListLookup()
+        {
+            var corpus = new CdmCorpusDefinition();
+            var cdmAttribute = new CdmTypeAttributeDefinition(corpus.Ctx, "SomeAttribute");
+            var traitToPropertyMap = new TraitToPropertyMap(cdmAttribute);
+
+            var constantValues = new JArray(
+                new JObject(
+                    new JProperty("languageTag", "en"),
+                    new JProperty("displayText", "Fax")));
+
+            traitToPropertyMap.UpdatePropertyValue("defaultValue", constantValues);
+            List<dynamic> result = traitToPropertyMap.FetchPropertyValue("defaultValue");
+
+            Assert.AreEqual(1, result.Count);
+
+            var property = result[0] as Dictionary<string, string>;
+            Assert.AreEqual("en", property["languageTag"]);
+            Assert.AreEqual("Fax", property["displayText"]);
+            Assert.IsNull(property["attributeValue"]);
+            Assert.IsNull(property["displayOrder"]);
         }
     }
 }

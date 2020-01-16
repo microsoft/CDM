@@ -129,7 +129,7 @@
         [TestMethod]
         public void TestCdmCollectionAddPopulatesInDocumentWithVisit()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\nothing");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
 
             var entityReference = new CdmLocalEntityDeclarationDefinition(manifest.Ctx, "entityName");
 

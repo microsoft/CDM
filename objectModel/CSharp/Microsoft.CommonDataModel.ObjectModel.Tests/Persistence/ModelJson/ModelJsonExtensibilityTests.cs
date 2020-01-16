@@ -112,9 +112,7 @@
         [TestMethod]
         public async Task TestModelJsonExtensibility()
         {
-            var inputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestModelJsonExtensibility");
-
-            var cdmCorpus = this.GetLocalCorpus(inputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestModelJsonExtensibility");
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
             var obtainedModel = await ManifestPersistence.ToData(cdmManifest, null, null);
 
@@ -161,8 +159,7 @@
         [TestMethod]
         public async Task ModelJsonExtensibilityManifestDocumentsTest()
         {
-            var inputPath = TestHelper.GetInputFolderPath(testsSubpath, "ModelJsonExtensibilityManifestDocuments");
-            var cdmCorpus = this.GetLocalCorpus(inputPath);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "ModelJsonExtensibilityManifestDocuments");
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
             var folderObject = cdmCorpus.Storage.FetchRootFolder("default");
 

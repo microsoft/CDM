@@ -5,18 +5,18 @@ import {
     CdmEntityDeclarationDefinition,
     CdmFolderDefinition,
     CdmManifestDefinition,
-    cdmStatusLevel
+    CdmReferencedEntityDeclarationDefinition,
+    cdmStatusLevel,
+    CdmTraitReference
 } from '../../../internal';
-import { ManifestPersistence as CdmManifestPersistence } from '../../../Persistence/CdmFolder';
+import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
     EntityDeclarationDefinition,
     entityDeclarationDefinitionType,
     Import,
     ManifestContent
 } from '../../../Persistence/CdmFolder/types';
-import { ManifestPersistence } from '../../../Persistence/ModelJson';
 import { Model } from '../../../Persistence/ModelJson/types';
-import { LocalAdapter, RemoteAdapter } from '../../../StorageAdapter';
 import { testHelper } from '../../testHelper';
 
 /**
@@ -45,7 +45,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
             'model.json', cdmCorpus.storage.fetchRootFolder('local'));
 
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
-        const obtainedModelJson: Model = await ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
         HandleOutput('TestFromAndToData', 'model.json', obtainedModelJson);
@@ -72,7 +72,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.reset();
 
         stopwatch.start();
-        const obtainedModelJson: Model = await ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
         HandleOutput('TestLoadingCdmFolderAndSavingModelJson', 'model.json', obtainedModelJson);
@@ -101,13 +101,29 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.reset();
 
         stopwatch.start();
-        const obtainedCdmFolder: ManifestContent = CdmManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
         HandleOutput('TestLoadingModelJsonResultAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
 
         expect(stopwatch.getTime())
             .toBeLessThan(1500);
+    });
+
+    /**
+     * Test if when loading a model.json file the foundations is imported correctly.
+     */
+    it('TestManifestFoundationImport', async (done) => {
+        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestManifestFoundationImport');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        corpus.setEventCallback((statusLevel: cdmStatusLevel, message1: string) => {
+            if (statusLevel >= cdmStatusLevel.error) {
+                throw new Error(message1);
+            }
+        });
+        const cdmManifest: CdmManifestDefinition =
+            await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json', corpus.storage.fetchRootFolder('local'));
+        done();
     });
 
     /**
@@ -135,7 +151,10 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const subFolder: CdmFolderDefinition = entityFolder.childFolders.push('subfolder');
         subFolder.documents.push('EntityName.cdm.json');
 
-        const data: Model = await ManifestPersistence.toData(manifest, undefined, undefined);
+        corpus.storage.fetchRootFolder('remote').documents
+            .push(manifest);
+
+        const data: Model = await ModelJson.ManifestPersistence.toData(manifest, undefined, undefined);
 
         expect(data.entities.length)
             .toBe(1);
@@ -167,7 +186,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.reset();
 
         stopwatch.start();
-        const obtainedCdmFolder: ManifestContent = CdmManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
         HandleOutput('TestLoadingModelJsonAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
@@ -199,7 +218,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.reset();
 
         stopwatch.start();
-        const obtainedModelJson: Model = await ManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
         HandleOutput('TestLoadingCdmFolderResultAndSavingModelJson', 'model.json', obtainedModelJson);
@@ -220,7 +239,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         );
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
 
-        const obtainedCdmFolder: ManifestContent = CdmManifestPersistence.toData(cdmManifest, undefined, undefined);
+        const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
 
         // For EntityReferences, entityPath contains a GUID that will not match the snapshot.
         for (const entity of obtainedCdmFolder.entities) {
@@ -241,6 +260,50 @@ describe('Persistence.ModelJson.ModelJson', () => {
         });
 
         HandleOutput('TestExtensibilityLoadingModelJsonAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
+    });
+
+    it('TestReferenceModels', async () => {
+        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestReferenceModels');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+
+        const manifest: CdmManifestDefinition =
+            await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json', corpus.storage.fetchRootFolder('local'));
+
+        // entity with same modelId but different location
+        const referenceEntity1: CdmReferencedEntityDeclarationDefinition = 
+            new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity1');
+        referenceEntity1.entityPath = 'remote:/contoso/entity1.model.json/Entity1';
+        const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait');
+        modelIdTrait1.isFromProperty = true;
+        modelIdTrait1.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
+        manifest.entities.push(referenceEntity1);
+
+        // entity without modelId but same location
+        const referenceEntity2: CdmReferencedEntityDeclarationDefinition =
+            new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity2');
+        referenceEntity2.entityPath = 'remote:/contoso/entity.model.json/Entity2';
+        manifest.entities.push(referenceEntity2);
+
+        // entity with modelId and new location
+        const referenceEntity3: CdmReferencedEntityDeclarationDefinition =
+            new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity3');
+        referenceEntity3.entityPath = 'remote:/contoso/entity3.model.json/Entity3';
+        const modelIdTrait3: CdmTraitReference = referenceEntity3.exhibitsTraits.push('is.propertyContent.multiTrait');
+        modelIdTrait3.isFromProperty = true;
+        modelIdTrait3.arguments.push('modelId', '3b2e040a-c8c5-4508-bb42-09952eb04a50');
+        manifest.entities.push(referenceEntity3);
+
+        // entity with same modelId and same location
+        const referenceEntity4: CdmReferencedEntityDeclarationDefinition =
+            new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity4');
+        referenceEntity4.entityPath = 'remote:/contoso/entity.model.json/Entity4';
+        const modelIdTrait4: CdmTraitReference = referenceEntity4.exhibitsTraits.push('is.propertyContent.multiTrait');
+        modelIdTrait4.isFromProperty = true;
+        modelIdTrait4.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
+        manifest.entities.push(referenceEntity4);
+
+        const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(manifest, undefined, undefined);
+        HandleOutput('TestReferenceModels', 'model.json', obtainedModelJson);
     });
 
     /**

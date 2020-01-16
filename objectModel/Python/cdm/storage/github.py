@@ -38,7 +38,7 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
         return self._raw_root + corpus_path
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        if adapter_path.startswith(self._raw_root):
+        if adapter_path and adapter_path.startswith(self._raw_root):
             return adapter_path[len(self._raw_root):]
 
         # Signal that we did not recognize path as one for self adapter.

@@ -1,4 +1,4 @@
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.DataPartition
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
 {
     using Microsoft.CommonDataModel.ObjectModel.Tests.HttpClient;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;

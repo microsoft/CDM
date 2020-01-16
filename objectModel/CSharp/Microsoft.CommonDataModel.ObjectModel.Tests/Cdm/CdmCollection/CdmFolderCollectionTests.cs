@@ -11,7 +11,7 @@
         [TestMethod]
         public void TestFolderCollectionAdd()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -34,7 +34,7 @@
         [TestMethod]
         public void TestFolderCollectionInsert()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.InDocument = manifest;
             parentFolder.Namespace = "TheNamespace";
@@ -64,7 +64,7 @@
         [TestMethod]
         public void TestFolderCollectionAddWithNameParameter()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -85,7 +85,7 @@
         [TestMethod]
         public void TestFolderCollectionAddRange()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -115,7 +115,7 @@
         [TestMethod]
         public void TestFolderCollectionRemove()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("c:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";

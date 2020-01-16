@@ -119,9 +119,7 @@ public class Program {
 
       String folderPath = cdmCorpus.getStorage().corpusPathToAdapterPath("local:/" + entDef.getEntityName());
       File newFolder = new File(folderPath);
-      if (newFolder.exists() || newFolder.mkdir()) {
-        System.out.println("CdmFolderDefinition existed or created.");
-      } else {
+      if (!newFolder.exists() && !newFolder.mkdir()) {
         throw new RuntimeException("Cannot create new folder at: " + folderPath);
       }
       writeStringToFile(partPath, header);

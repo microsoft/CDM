@@ -16,8 +16,17 @@ from .types import DocumentContent
 
 
 class DocumentPersistence:
+    is_persistence_async = False
+
+    formats = ['.cdm.json']
+
     @staticmethod
-    async def from_data(ctx: CdmCorpusContext, name: str, namespace: str, path: str, data: DocumentContent) -> CdmDocumentDefinition:
+    def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmDocumentDefinition':
+        obj = DocumentContent().decode(json_data)
+        return DocumentPersistence.from_object(ctx, doc_name, folder.namespace, folder.folder_path, obj)
+
+    @staticmethod
+    def from_object(ctx: CdmCorpusContext, name: str, namespace: str, path: str, data: 'DocumentContent') -> 'CdmDocumentDefinition':
         document = ctx.corpus.make_object(CdmObjectType.DOCUMENT_DEF, name)
         document.folder_path = path
         document.namespace = namespace
@@ -59,7 +68,7 @@ class DocumentPersistence:
         return document
 
     @staticmethod
-    async def to_data(instance: CdmDocumentDefinition, res_opt: ResolveOptions, options: CopyOptions) -> DocumentContent:
+    def to_data(instance: CdmDocumentDefinition, res_opt: ResolveOptions, options: CopyOptions) -> DocumentContent:
         result = DocumentContent()
         result.schema = instance.schema
         result.jsonSchemaSemanticVersion = instance.json_schema_semantic_version

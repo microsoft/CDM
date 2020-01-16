@@ -27,7 +27,7 @@
         public async Task TestLoadReferencedEntity()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadReferencedEntity", "entities.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.Entities.Count, 1);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.ReferencedEntityDeclarationDef);
             var entity = cdmManifest.Entities[0];

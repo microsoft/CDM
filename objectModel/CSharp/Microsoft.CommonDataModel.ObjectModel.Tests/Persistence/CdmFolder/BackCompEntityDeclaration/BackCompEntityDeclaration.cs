@@ -27,7 +27,7 @@
         public async Task TestLoadLegacyEntityDeclaration()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLegacyEntityDeclaration", "entities.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromData(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
             // Local entity declaration.
             Assert.AreEqual("testPath", cdmManifest.Entities[0].EntityPath);
 
