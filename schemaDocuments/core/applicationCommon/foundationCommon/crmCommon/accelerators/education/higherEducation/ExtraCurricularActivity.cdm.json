@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "The master list of all extracurricular activities that the institution tracks."
+                                        "The master list of all extra curricular activities tracked by the institution."
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Extra Curricular Activity",
-            "description": "The master list of all extracurricular activities that the institution tracks.",
+            "description": "The master list of all extra curricular activities tracked by the institution.",
             "sourceName": "mshied_extracurricularactivities",
             "hasAttributes": [
                 {
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "extracurricularActivitiesId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_extracurricularactivitiesid",
-                                "sourceOrdering": 1,
                                 "displayName": "Extra Curricular Activity",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_extracurricularactivitiesid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Extra Curricular Activity"
+                                "description": "Status of the Extra Curricular Activity",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Extra Curricular Activity"
+                                "description": "Reason for the status of the Extra Curricular Activity",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,15 +360,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Extra Curricular Activity Name",
-                                "description": "The name of the custom entity."
+                                "description": "The name of the custom entity.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "code",
                                 "appliedTraits": [
@@ -420,15 +414,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_code",
-                                "maximumLength": 20,
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "Code",
-                                "description": "Education Level Code"
+                                "description": "Education Level Code",
+                                "isNullable": true,
+                                "sourceName": "mshied_code",
+                                "sourceOrdering": 34,
+                                "maximumLength": 20
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "dateofOrganizationFormed",
                                 "appliedTraits": [
@@ -474,14 +468,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_dateoforganizationformed",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "Date of Organization Formed",
-                                "description": "Date of Organization\\Club Formed"
+                                "description": "Date of Organization\\Club Formed",
+                                "isNullable": true,
+                                "sourceName": "mshied_dateoforganizationformed",
+                                "sourceOrdering": 35
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "description",
                                 "appliedTraits": [
@@ -527,15 +521,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_description",
-                                "maximumLength": 255,
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "Description",
-                                "description": "Description"
+                                "description": "Description",
+                                "isNullable": true,
+                                "sourceName": "mshied_description",
+                                "sourceOrdering": 36,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalIdentifier",
                                 "appliedTraits": [
@@ -581,15 +575,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalidentifier",
-                                "maximumLength": 255,
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "External Identifier",
-                                "description": "External Identifier"
+                                "description": "External Identifier",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalidentifier",
+                                "sourceOrdering": 37,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -621,18 +615,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'externalSourceSystem_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "externalSourceSystem_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -682,14 +664,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalsourcesystem",
-                                "sourceOrdering": 38,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'externalSourceSystem_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "externalSourceSystem_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "External Source System",
-                                "description": "External Source System"
+                                "description": "External Source System",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalsourcesystem",
+                                "sourceOrdering": 38
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
                                 "name": "generalEmail",
                                 "appliedTraits": [
@@ -735,15 +726,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_generalemail",
-                                "maximumLength": 100,
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "General Email",
-                                "description": "General Email of the Organization/Club"
+                                "description": "General Email of the Organization/Club",
+                                "isNullable": true,
+                                "sourceName": "mshied_generalemail",
+                                "sourceOrdering": 40,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "organizationMissionStatement",
                                 "appliedTraits": [
@@ -789,15 +780,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_organizationmissionstatement",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 41,
-                                "isNullable": true,
                                 "displayName": "Organization Mission Statement",
-                                "description": "Organization Mission Statement"
+                                "description": "Organization Mission Statement",
+                                "isNullable": true,
+                                "sourceName": "mshied_organizationmissionstatement",
+                                "sourceOrdering": 41,
+                                "maximumLength": 2000
                             },
                             {
-                                "name": "mshied_contact_extracurricularactivities_PrimaryContactId",
+                                "name": "primaryContact",
                                 "entity": {
                                     "entityReference": "Contact",
                                     "appliedTraits": [
@@ -809,84 +800,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "primaryContactId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Primary Contact"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Primary contact for club"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Primary Contact"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_primarycontactid",
-                                                        "sourceOrdering": 42,
-                                                        "isNullable": true,
-                                                        "displayName": "Primary Contact",
-                                                        "description": "Primary contact for club"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Primary contact for club"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Primary Contact",
+                                            "description": "Primary contact for club",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_primarycontactid",
+                                            "sourceOrdering": 42
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -924,18 +913,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'primaryPurpose_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'primaryPurpose'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "primaryPurpose_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -985,14 +962,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_primarypurpose",
-                                "sourceOrdering": 43,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'primaryPurpose_display' is added to the 'ExtraCurricularActivity' entity to provide the localized display text for the value of the listLookup attribute 'primaryPurpose'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "primaryPurpose_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Primary Purpose",
-                                "description": "Indicates primary focus or purpose of the organization."
+                                "description": "Indicates primary focus or purpose of the organization.",
+                                "isNullable": true,
+                                "sourceName": "mshied_primarypurpose",
+                                "sourceOrdering": 43
                             },
                             {
-                                "name": "mshied_account_extracurricularactivities_SchoolId",
+                                "name": "school",
                                 "entity": {
                                     "entityReference": "Account",
                                     "appliedTraits": [
@@ -1004,84 +990,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "schoolId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "School"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Link to School (Account)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "School"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_schoolid",
-                                                        "sourceOrdering": 45,
-                                                        "isNullable": true,
-                                                        "displayName": "School",
-                                                        "description": "Link to School (Account)"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Link to School (Account)"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "School",
+                                            "description": "Link to School (Account)",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_schoolid",
+                                            "sourceOrdering": 45
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "url",
                                 "name": "website",
                                 "appliedTraits": [
@@ -1127,12 +1111,12 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_website",
-                                "maximumLength": 255,
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "Website",
-                                "description": "General website of the Organization/Club"
+                                "description": "General website of the Organization/Club",
+                                "isNullable": true,
+                                "sourceName": "mshied_website",
+                                "sourceOrdering": 46,
+                                "maximumLength": 255
                             }
                         ]
                     }

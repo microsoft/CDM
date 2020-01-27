@@ -1,0 +1,25 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="CopyOptions.cs" company="Microsoft">
+//      All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Microsoft.CommonDataModel.ObjectModel.Utilities
+{
+    public class CopyOptions
+    {
+        public bool? StringRefs { get; set; } // turn simple named string object references into objects with a relative path. used for links in viz
+        public bool? RemoveSingleRowLocalizedTableTraits { get; set; }
+
+        /// <summary>
+        /// A value that helps us to figure out is the document that is using this object top level.
+        /// </summary>
+        internal bool IsTopLevelDocument { get; set; }
+
+        public CopyOptions()
+        {
+            this.IsTopLevelDocument = true;
+            this.StringRefs = false;
+        }
+    }
+}

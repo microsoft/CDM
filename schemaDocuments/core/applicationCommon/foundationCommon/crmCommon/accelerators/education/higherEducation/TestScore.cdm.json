@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -35,7 +35,7 @@
                                 "constantValues": [
                                     [
                                         "en",
-                                        "Test scores for a student contact."
+                                        "Test scores for a Student Contact"
                                     ]
                                 ]
                             }
@@ -44,7 +44,7 @@
                 }
             ],
             "displayName": "Test Score",
-            "description": "Test scores for a student contact.",
+            "description": "Test scores for a Student Contact",
             "sourceName": "mshied_testscore",
             "hasAttributes": [
                 {
@@ -69,7 +69,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "identifiedBy",
+                                "purpose": "identifiedBy",
                                 "dataType": "entityId",
                                 "name": "testScoreId",
                                 "appliedTraits": [
@@ -115,13 +115,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_testscoreid",
-                                "sourceOrdering": 1,
                                 "displayName": "Test Score",
-                                "description": "Unique identifier for entity instances"
+                                "description": "Unique identifier for entity instances",
+                                "sourceName": "mshied_testscoreid",
+                                "sourceOrdering": 1
                             },
                             {
-                                "relationship": "representsStateWith",
+                                "purpose": "representsStateWith",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -147,18 +147,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'stateCode_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "stateCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -208,14 +196,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status",
-                                "description": "Status of the Test Score"
+                                "description": "Status of the Test Score",
+                                "sourceName": "statecode",
+                                "sourceOrdering": 24
                             },
                             {
-                                "relationship": {
-                                    "relationshipReference": "representsCorrelatedStatusWith",
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
                                     "appliedTraits": [
                                         {
                                             "traitReference": "is.correlatedWith",
@@ -252,18 +249,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'statusCode_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "statusCode_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -313,14 +298,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Status Reason",
-                                "description": "Reason for the status of the Test Score"
+                                "description": "Reason for the status of the Test Score",
+                                "isNullable": true,
+                                "sourceName": "statuscode",
+                                "sourceOrdering": 26
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "name",
                                 "appliedTraits": [
@@ -366,15 +360,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
                                 "displayName": "Test Score Name",
-                                "description": "The name of the Test Score."
+                                "description": "The name of the Test Score.",
+                                "isNullable": true,
+                                "sourceName": "mshied_name",
+                                "sourceOrdering": 33,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTComposite",
                                 "appliedTraits": [
@@ -420,16 +414,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actcomposite",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
                                 "displayName": "ACT - Composite",
-                                "description": "ACT - Composite Score"
+                                "description": "ACT - Composite Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actcomposite",
+                                "sourceOrdering": 34,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTELA",
                                 "appliedTraits": [
@@ -475,16 +469,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actela",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 35,
-                                "isNullable": true,
                                 "displayName": "ACT - ELA",
-                                "description": "ACT - ELA Score"
+                                "description": "ACT - ELA Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actela",
+                                "sourceOrdering": 35,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTEnglish",
                                 "appliedTraits": [
@@ -530,16 +524,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actenglish",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 36,
-                                "isNullable": true,
                                 "displayName": "ACT - English",
-                                "description": "ACT - English Score"
+                                "description": "ACT - English Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actenglish",
+                                "sourceOrdering": 36,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTEquivalentScore",
                                 "appliedTraits": [
@@ -585,16 +579,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actequivalentscore",
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648",
-                                "sourceOrdering": 37,
-                                "isNullable": true,
                                 "displayName": "ACT Equivalent Score",
-                                "description": "ACT equivalent score for a given SAT Score"
+                                "description": "ACT equivalent score for a given SAT Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actequivalentscore",
+                                "sourceOrdering": 37,
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTMath",
                                 "appliedTraits": [
@@ -640,16 +634,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actmath",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 38,
-                                "isNullable": true,
                                 "displayName": "ACT - Math",
-                                "description": "ACT - Math Score"
+                                "description": "ACT - Math Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actmath",
+                                "sourceOrdering": 38,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTReading",
                                 "appliedTraits": [
@@ -695,16 +689,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actreading",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 39,
-                                "isNullable": true,
                                 "displayName": "ACT - Reading",
-                                "description": "ACT - Reading Score"
+                                "description": "ACT - Reading Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actreading",
+                                "sourceOrdering": 39,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTScience",
                                 "appliedTraits": [
@@ -750,16 +744,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actscience",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 40,
-                                "isNullable": true,
                                 "displayName": "ACT - Science",
-                                "description": "ACT - Science Score"
+                                "description": "ACT - Science Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actscience",
+                                "sourceOrdering": 40,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTSTEM",
                                 "appliedTraits": [
@@ -805,16 +799,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actstem",
-                                "maximumValue": "36",
-                                "minimumValue": "1",
-                                "sourceOrdering": 41,
-                                "isNullable": true,
                                 "displayName": "ACT - STEM",
-                                "description": "ACT - STEM Score"
+                                "description": "ACT - STEM Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actstem",
+                                "sourceOrdering": 41,
+                                "maximumValue": "36",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "ACTWriting",
                                 "appliedTraits": [
@@ -860,16 +854,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_actwriting",
-                                "maximumValue": "12",
-                                "minimumValue": "2",
-                                "sourceOrdering": 42,
-                                "isNullable": true,
                                 "displayName": "ACT - Writing",
-                                "description": "ACT - Writing Score"
+                                "description": "ACT - Writing Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_actwriting",
+                                "sourceOrdering": 42,
+                                "maximumValue": "12",
+                                "minimumValue": "2"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "alevelArt",
                                 "appliedTraits": [
@@ -915,16 +909,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_alevelart",
-                                "maximumValue": "6",
-                                "minimumValue": "1",
-                                "sourceOrdering": 43,
-                                "isNullable": true,
                                 "displayName": "A-level Art",
-                                "description": "A-level Art"
+                                "description": "A-level Art",
+                                "isNullable": true,
+                                "sourceName": "mshied_alevelart",
+                                "sourceOrdering": 43,
+                                "maximumValue": "6",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "GMATAnalyticalWriting",
                                 "appliedTraits": [
@@ -970,16 +964,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gmatanalyticalwriting",
-                                "maximumValue": "6",
-                                "minimumValue": "1",
-                                "sourceOrdering": 44,
-                                "isNullable": true,
                                 "displayName": "GMAT - Analytical Writing",
-                                "description": "GMAT - Analytical Writing Score"
+                                "description": "GMAT - Analytical Writing Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gmatanalyticalwriting",
+                                "sourceOrdering": 44,
+                                "maximumValue": "6",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GMATIntegratedReasoning",
                                 "appliedTraits": [
@@ -1025,16 +1019,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gmatintegratedreasoning",
-                                "maximumValue": "8",
-                                "minimumValue": "1",
-                                "sourceOrdering": 45,
-                                "isNullable": true,
                                 "displayName": "GMAT - Integrated Reasoning",
-                                "description": "GMAT - Integrated Reasoning Score"
+                                "description": "GMAT - Integrated Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gmatintegratedreasoning",
+                                "sourceOrdering": 45,
+                                "maximumValue": "8",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GMATQuantitativeReasoning",
                                 "appliedTraits": [
@@ -1080,16 +1074,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gmatquantitativereasoning",
-                                "maximumValue": "60",
-                                "minimumValue": "0",
-                                "sourceOrdering": 46,
-                                "isNullable": true,
                                 "displayName": "GMAT - Quantitative Reasoning",
-                                "description": "GMAT - Quantitative Reasoning Score"
+                                "description": "GMAT - Quantitative Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gmatquantitativereasoning",
+                                "sourceOrdering": 46,
+                                "maximumValue": "60",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GMATTotal",
                                 "appliedTraits": [
@@ -1135,16 +1129,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gmattotal",
-                                "maximumValue": "800",
-                                "minimumValue": "200",
-                                "sourceOrdering": 47,
-                                "isNullable": true,
                                 "displayName": "GMAT - Total",
-                                "description": "GMAT - Total Score"
+                                "description": "GMAT - Total Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gmattotal",
+                                "sourceOrdering": 47,
+                                "maximumValue": "800",
+                                "minimumValue": "200"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GMATVerbalReasoning",
                                 "appliedTraits": [
@@ -1190,16 +1184,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gmatverbalreasoning",
-                                "maximumValue": "60",
-                                "minimumValue": "0",
-                                "sourceOrdering": 48,
-                                "isNullable": true,
                                 "displayName": "GMAT - Verbal Reasoning",
-                                "description": "GMAT - Verbal Reasoning Score"
+                                "description": "GMAT - Verbal Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gmatverbalreasoning",
+                                "sourceOrdering": 48,
+                                "maximumValue": "60",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "GREAnalyticalReasoning",
                                 "appliedTraits": [
@@ -1245,16 +1239,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_greanalyticalreasoning",
-                                "maximumValue": "6",
-                                "minimumValue": "0",
-                                "sourceOrdering": 49,
-                                "isNullable": true,
                                 "displayName": "GRE - Analytical Reasoning",
-                                "description": "GRE - Analytical Reasoning Score"
+                                "description": "GRE - Analytical Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_greanalyticalreasoning",
+                                "sourceOrdering": 49,
+                                "maximumValue": "6",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GREQuantitativeReasoning",
                                 "appliedTraits": [
@@ -1300,16 +1294,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_grequantitativereasoning",
-                                "maximumValue": "170",
-                                "minimumValue": "130",
-                                "sourceOrdering": 50,
-                                "isNullable": true,
                                 "displayName": "GRE - Quantitative Reasoning",
-                                "description": "GRE - Quantitative Reasoning Score"
+                                "description": "GRE - Quantitative Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_grequantitativereasoning",
+                                "sourceOrdering": 50,
+                                "maximumValue": "170",
+                                "minimumValue": "130"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GRETotalScore",
                                 "appliedTraits": [
@@ -1355,16 +1349,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_gretotalscore",
-                                "maximumValue": "340",
-                                "minimumValue": "0",
-                                "sourceOrdering": 51,
-                                "isNullable": true,
                                 "displayName": "GRE - Total Score",
-                                "description": "GRE - Total Score"
+                                "description": "GRE - Total Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_gretotalscore",
+                                "sourceOrdering": 51,
+                                "maximumValue": "340",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "GREVerbalReasoning",
                                 "appliedTraits": [
@@ -1410,16 +1404,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_greverbalreasoning",
-                                "maximumValue": "170",
-                                "minimumValue": "130",
-                                "sourceOrdering": 52,
-                                "isNullable": true,
                                 "displayName": "GRE - Verbal Reasoning",
-                                "description": "GRE - Verbal Reasoning Score"
+                                "description": "GRE - Verbal Reasoning Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_greverbalreasoning",
+                                "sourceOrdering": 52,
+                                "maximumValue": "170",
+                                "minimumValue": "130"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1471,18 +1465,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'IELTSCEFR_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'IELTSCEFR'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "IELTSCEFR_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -1530,14 +1512,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltscefr",
-                                "sourceOrdering": 53,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'IELTSCEFR_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'IELTSCEFR'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "IELTSCEFR_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "IELTS - CEFR",
-                                "description": "IELTS - CEFR"
+                                "description": "IELTS - CEFR",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltscefr",
+                                "sourceOrdering": 53
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "IELTSListening",
                                 "appliedTraits": [
@@ -1583,16 +1574,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltslistening",
-                                "maximumValue": "9",
-                                "minimumValue": "0",
-                                "sourceOrdering": 55,
-                                "isNullable": true,
                                 "displayName": "IELTS - Listening",
-                                "description": "IELTS - Listening score"
+                                "description": "IELTS - Listening score",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltslistening",
+                                "sourceOrdering": 55,
+                                "maximumValue": "9",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "IELTSOverallBandScore",
                                 "appliedTraits": [
@@ -1638,16 +1629,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltsoverallbandscore",
-                                "maximumValue": "9",
-                                "minimumValue": "0",
-                                "sourceOrdering": 56,
-                                "isNullable": true,
                                 "displayName": "IELTS - Overall Band Score",
-                                "description": "IELTS - Overall Band Score"
+                                "description": "IELTS - Overall Band Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltsoverallbandscore",
+                                "sourceOrdering": 56,
+                                "maximumValue": "9",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "IELTSReading",
                                 "appliedTraits": [
@@ -1693,16 +1684,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltsreading",
-                                "maximumValue": "9",
-                                "minimumValue": "0",
-                                "sourceOrdering": 57,
-                                "isNullable": true,
                                 "displayName": "IELTS - Reading",
-                                "description": "IELTS - Reading Score"
+                                "description": "IELTS - Reading Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltsreading",
+                                "sourceOrdering": 57,
+                                "maximumValue": "9",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "IELTSSpeakingScore",
                                 "appliedTraits": [
@@ -1748,16 +1739,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltsspeakingscore",
-                                "maximumValue": "9",
-                                "minimumValue": "0",
-                                "sourceOrdering": 58,
-                                "isNullable": true,
                                 "displayName": "IELTS - Speaking Score",
-                                "description": "IELTS - Speaking Score"
+                                "description": "IELTS - Speaking Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltsspeakingscore",
+                                "sourceOrdering": 58,
+                                "maximumValue": "9",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "IELTSWriting",
                                 "appliedTraits": [
@@ -1803,16 +1794,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ieltswriting",
-                                "maximumValue": "9",
-                                "minimumValue": "1",
-                                "sourceOrdering": 59,
-                                "isNullable": true,
                                 "displayName": "IELTS - Writing",
-                                "description": "IELTS - Writing Score"
+                                "description": "IELTS - Writing Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_ieltswriting",
+                                "sourceOrdering": 59,
+                                "maximumValue": "9",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATEssayAnalysis",
                                 "appliedTraits": [
@@ -1858,16 +1849,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_satessayanalysis",
-                                "maximumValue": "8",
-                                "minimumValue": "2",
-                                "sourceOrdering": 60,
-                                "isNullable": true,
                                 "displayName": "SAT Essay - Analysis",
-                                "description": "SAT - SAT Essay - Analysis Score"
+                                "description": "SAT - SAT Essay - Analysis Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_satessayanalysis",
+                                "sourceOrdering": 60,
+                                "maximumValue": "8",
+                                "minimumValue": "2"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATEssayReading",
                                 "appliedTraits": [
@@ -1913,16 +1904,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_satessayreading",
-                                "maximumValue": "8",
-                                "minimumValue": "2",
-                                "sourceOrdering": 61,
-                                "isNullable": true,
                                 "displayName": "SAT Essay - Reading",
-                                "description": "SAT - SAT Essay - Reading Score"
+                                "description": "SAT - SAT Essay - Reading Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_satessayreading",
+                                "sourceOrdering": 61,
+                                "maximumValue": "8",
+                                "minimumValue": "2"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATEssayWriting",
                                 "appliedTraits": [
@@ -1968,16 +1959,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_satessaywriting",
-                                "maximumValue": "8",
-                                "minimumValue": "2",
-                                "sourceOrdering": 62,
-                                "isNullable": true,
                                 "displayName": "SAT Essay - Writing",
-                                "description": "SAT - SAT Essay - Writing Score"
+                                "description": "SAT - SAT Essay - Writing Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_satessaywriting",
+                                "sourceOrdering": 62,
+                                "maximumValue": "8",
+                                "minimumValue": "2"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATEvidenceBasedReadingandWritingSection",
                                 "appliedTraits": [
@@ -2023,16 +2014,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_satevidencebasedreadingandwritingsection",
-                                "maximumValue": "600",
-                                "minimumValue": "200",
-                                "sourceOrdering": 63,
-                                "isNullable": true,
                                 "displayName": "SAT - Evidence-Based Reading and Writing Section",
-                                "description": "SAT - Evidence-Based Reading and Writing Section Score"
+                                "description": "SAT - Evidence-Based Reading and Writing Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_satevidencebasedreadingandwritingsection",
+                                "sourceOrdering": 63,
+                                "maximumValue": "600",
+                                "minimumValue": "200"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATMathSection",
                                 "appliedTraits": [
@@ -2078,16 +2069,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_satmathsection",
-                                "maximumValue": "800",
-                                "minimumValue": "200",
-                                "sourceOrdering": 64,
-                                "isNullable": true,
                                 "displayName": "SAT - Math Section",
-                                "description": "SAT - Math Section Score"
+                                "description": "SAT - Math Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_satmathsection",
+                                "sourceOrdering": 64,
+                                "maximumValue": "800",
+                                "minimumValue": "200"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "SATTotalScore",
                                 "appliedTraits": [
@@ -2133,13 +2124,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_sattotalscore",
-                                "maximumValue": "1600",
-                                "minimumValue": "400",
-                                "sourceOrdering": 65,
-                                "isNullable": true,
                                 "displayName": "SAT - Total Score",
-                                "description": "SAT - Total Score"
+                                "description": "SAT - Total Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_sattotalscore",
+                                "sourceOrdering": 65,
+                                "maximumValue": "1600",
+                                "minimumValue": "400"
                             },
                             {
                                 "name": "mshied_contact_testscore_StudentID",
@@ -2154,84 +2145,83 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "studentID",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "studentID",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Student ID"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Lookup to the Student (Contact Id)"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Student ID"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_studentid",
-                                                        "sourceOrdering": 66,
-                                                        "isNullable": true,
-                                                        "displayName": "Student ID",
-                                                        "description": "Lookup to the Student (Contact Id)"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Lookup to the Student (Contact Id)"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Student ID",
+                                            "description": "Lookup to the Student (Contact Id)",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_studentid",
+                                            "sourceOrdering": 66
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "dateTime",
                                 "name": "testDate",
                                 "appliedTraits": [
@@ -2277,14 +2267,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_testdate",
-                                "sourceOrdering": 67,
-                                "isNullable": true,
                                 "displayName": "Test Date",
-                                "description": "Date when test was taken"
+                                "description": "Date when test was taken",
+                                "isNullable": true,
+                                "sourceName": "mshied_testdate",
+                                "sourceOrdering": 67
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "testLocation",
                                 "appliedTraits": [
@@ -2330,15 +2320,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_testlocation",
-                                "maximumLength": 400,
-                                "sourceOrdering": 68,
-                                "isNullable": true,
                                 "displayName": "Test Location",
-                                "description": "Location where the test was taken"
+                                "description": "Location where the test was taken",
+                                "isNullable": true,
+                                "sourceName": "mshied_testlocation",
+                                "sourceOrdering": 68,
+                                "maximumLength": 400
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "testScoreValue",
                                 "appliedTraits": [
@@ -2384,15 +2374,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_testscorevalue",
-                                "maximumLength": 255,
-                                "sourceOrdering": 69,
-                                "isNullable": true,
                                 "displayName": "Test Score Value",
-                                "description": "Test Score Value"
+                                "description": "Test Score Value",
+                                "isNullable": true,
+                                "sourceName": "mshied_testscorevalue",
+                                "sourceOrdering": 69,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -2430,18 +2420,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'testSource_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'testSource'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "testSource_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -2491,14 +2469,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_testsource",
-                                "sourceOrdering": 70,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'testSource_display' is added to the 'TestScore' entity to provide the localized display text for the value of the listLookup attribute 'testSource'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "testSource_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Test Source",
-                                "description": "Source of Test score"
+                                "description": "Source of Test score",
+                                "isNullable": true,
+                                "sourceName": "mshied_testsource",
+                                "sourceOrdering": 70
                             },
                             {
-                                "name": "mshied_testtype_testscore_TestTypeId",
+                                "name": "testType",
                                 "entity": {
                                     "entityReference": "TestType",
                                     "appliedTraits": [
@@ -2510,84 +2497,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "testTypeId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Test Type"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "List of test types"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Test Type"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_testtypeid",
-                                                        "sourceOrdering": 72,
-                                                        "isNullable": true,
-                                                        "displayName": "Test Type",
-                                                        "description": "List of test types"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "List of test types"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Test Type",
+                                            "description": "List of test types",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_testtypeid",
+                                            "sourceOrdering": 72
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "TOEFLListeningSection",
                                 "appliedTraits": [
@@ -2633,16 +2618,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_toefllisteningsection",
-                                "maximumValue": "50",
-                                "minimumValue": "0",
-                                "sourceOrdering": 73,
-                                "isNullable": true,
                                 "displayName": "TOEFL - Listening Section",
-                                "description": "TOEFL - Listening Section Score"
+                                "description": "TOEFL - Listening Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_toefllisteningsection",
+                                "sourceOrdering": 73,
+                                "maximumValue": "50",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "TOEFLReadingSection",
                                 "appliedTraits": [
@@ -2688,16 +2673,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_toeflreadingsection",
-                                "maximumValue": "30",
-                                "minimumValue": "0",
-                                "sourceOrdering": 74,
-                                "isNullable": true,
                                 "displayName": "TOEFL - Reading Section",
-                                "description": "TOEFL - Reading Section Score"
+                                "description": "TOEFL - Reading Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_toeflreadingsection",
+                                "sourceOrdering": 74,
+                                "maximumValue": "30",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "TOEFLSpeakingSection",
                                 "appliedTraits": [
@@ -2743,16 +2728,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_toeflspeakingsection",
-                                "maximumValue": "30",
-                                "minimumValue": "0",
-                                "sourceOrdering": 75,
-                                "isNullable": true,
                                 "displayName": "TOEFL - Speaking Section",
-                                "description": "TOEFL - Speaking Section Score"
+                                "description": "TOEFL - Speaking Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_toeflspeakingsection",
+                                "sourceOrdering": 75,
+                                "maximumValue": "30",
+                                "minimumValue": "0"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "decimal",
                                 "name": "TOEFLTotalScore",
                                 "appliedTraits": [
@@ -2798,16 +2783,16 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_toefltotalscore",
-                                "maximumValue": "120",
-                                "minimumValue": "1",
-                                "sourceOrdering": 76,
-                                "isNullable": true,
                                 "displayName": "TOEFL - Total Score",
-                                "description": "TOEFL - Total Score"
+                                "description": "TOEFL - Total Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_toefltotalscore",
+                                "sourceOrdering": 76,
+                                "maximumValue": "120",
+                                "minimumValue": "1"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "TOEFLWritingSection",
                                 "appliedTraits": [
@@ -2853,13 +2838,13 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_toeflwritingsection",
-                                "maximumValue": "50",
-                                "minimumValue": "0",
-                                "sourceOrdering": 77,
-                                "isNullable": true,
                                 "displayName": "TOEFL - Writing Section",
-                                "description": "TOEFL - Writing Section Score"
+                                "description": "TOEFL - Writing Section Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_toeflwritingsection",
+                                "sourceOrdering": 77,
+                                "maximumValue": "50",
+                                "minimumValue": "0"
                             }
                         ]
                     }

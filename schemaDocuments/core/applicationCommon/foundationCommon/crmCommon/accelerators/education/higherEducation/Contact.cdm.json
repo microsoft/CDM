@@ -1,5 +1,5 @@
 {
-    "jsonSchemaSemanticVersion": "0.7.0",
+    "jsonSchemaSemanticVersion": "0.9.0",
     "imports": [
         {
             "corpusPath": "_allImports.cdm.json"
@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookupMultiple",
                                     "appliedTraits": [
@@ -114,18 +114,6 @@
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'contactType_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'contactType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayTextMultiple",
-                                                    "name": "contactType_display",
-                                                    "isReadOnly": true
-                                                }
-                                            ]
                                         }
                                     ]
                                 },
@@ -173,14 +161,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_contacttype",
-                                "sourceOrdering": 10012,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'contactType_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'contactType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayTextMultiple",
+                                        "name": "contactType_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Contact Type",
-                                "description": "Type of contact"
+                                "description": "Type of contact",
+                                "isNullable": true,
+                                "sourceName": "mshied_contacttype",
+                                "sourceOrdering": 10012
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -212,18 +209,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'countryofBirth_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'countryofBirth'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "countryofBirth_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -273,14 +258,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_countryofbirth",
-                                "sourceOrdering": 10014,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'countryofBirth_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'countryofBirth'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "countryofBirth_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Country of Birth",
-                                "description": "Country of birth for the contact."
+                                "description": "Country of birth for the contact.",
+                                "isNullable": true,
+                                "sourceName": "mshied_countryofbirth",
+                                "sourceOrdering": 10014
                             },
                             {
-                                "name": "mshied_academicperiod_contact_CurrentAcademicPeriod",
+                                "name": "currentAcademicPeriod",
                                 "entity": {
                                     "entityReference": "AcademicPeriod",
                                     "appliedTraits": [
@@ -292,84 +286,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "currentAcademicPeriodId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current Academic Period"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current academic period enrolled, if any, for the contact."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current Academic Period"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_currentacademicperiodid",
-                                                        "sourceOrdering": 10016,
-                                                        "isNullable": true,
-                                                        "displayName": "Current Academic Period",
-                                                        "description": "Current academic period enrolled, if any, for the contact."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current academic period enrolled, if any, for the contact."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Current Academic Period",
+                                            "description": "Current academic period enrolled, if any, for the contact.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_currentacademicperiodid",
+                                            "sourceOrdering": 10016
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "name": "mshied_program_contact_CurrentProgramId",
+                                "name": "currentProgram",
                                 "entity": {
                                     "entityReference": "Program",
                                     "appliedTraits": [
@@ -381,84 +373,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "currentProgramId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current Program"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current program for the contact."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current Program"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_currentprogramid",
-                                                        "sourceOrdering": 10017,
-                                                        "isNullable": true,
-                                                        "displayName": "Current Program",
-                                                        "description": "Current program for the contact."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current program for the contact."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Current Program",
+                                            "description": "Current program for the contact.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_currentprogramid",
+                                            "sourceOrdering": 10017
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "name": "mshied_programlevel_contact_CurrentProgramLevelId",
+                                "name": "currentProgramLevel",
                                 "entity": {
                                     "entityReference": "ProgramLevel",
                                     "appliedTraits": [
@@ -470,84 +460,82 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "currentProgramLevelId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current Program Level"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Current program level associated to the program for the contact."
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current Program Level"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_currentprogramlevelid",
-                                                        "sourceOrdering": 10018,
-                                                        "isNullable": true,
-                                                        "displayName": "Current Program Level",
-                                                        "description": "Current program level associated to the program for the contact."
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Current program level associated to the program for the contact."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Current Program Level",
+                                            "description": "Current program level associated to the program for the contact.",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_currentprogramlevelid",
+                                            "sourceOrdering": 10018
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -579,18 +567,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'ethnicGroup_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'ethnicGroup'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "ethnicGroup_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -640,14 +616,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ethnicgroup",
-                                "sourceOrdering": 10019,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'ethnicGroup_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'ethnicGroup'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "ethnicGroup_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Ethnic Group",
-                                "description": "Ethnic group for the contact."
+                                "description": "Ethnic group for the contact.",
+                                "isNullable": true,
+                                "sourceName": "mshied_ethnicgroup",
+                                "sourceOrdering": 10019
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "externalIdentifier",
                                 "appliedTraits": [
@@ -693,15 +678,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalidentifier",
-                                "maximumLength": 255,
-                                "sourceOrdering": 10021,
-                                "isNullable": true,
                                 "displayName": "External Identifier",
-                                "description": "External Identifier"
+                                "description": "External Identifier",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalidentifier",
+                                "sourceOrdering": 10021,
+                                "maximumLength": 255
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -733,18 +718,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'externalSourceSystem_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "externalSourceSystem_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -794,14 +767,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_externalsourcesystem",
-                                "sourceOrdering": 10022,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'externalSourceSystem_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'externalSourceSystem'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "externalSourceSystem_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "External Source System",
-                                "description": "External Source System"
+                                "description": "External Source System",
+                                "isNullable": true,
+                                "sourceName": "mshied_externalsourcesystem",
+                                "sourceOrdering": 10022
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "FERPAPrivacy",
                                 "appliedTraits": [
@@ -847,14 +829,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_ferpaprivacy",
-                                "sourceOrdering": 10024,
-                                "isNullable": true,
                                 "displayName": "FERPA Privacy",
-                                "description": "Indicates if the Contact has elected to withhold directory information pursuant to FERPA (USA Federal Education Rights and Privacy Act)."
+                                "description": "Indicates if the Contact has elected to withhold directory information pursuant to FERPA (USA Federal Education Rights and Privacy Act).",
+                                "isNullable": true,
+                                "sourceName": "mshied_ferpaprivacy",
+                                "sourceOrdering": 10024
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "firstGeneration",
                                 "appliedTraits": [
@@ -900,14 +882,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_firstgeneration",
-                                "sourceOrdering": 10026,
-                                "isNullable": true,
                                 "displayName": "First Generation",
-                                "description": "Indicates if contact is a first generation student."
+                                "description": "Indicates if contact is a first generation student.",
+                                "isNullable": true,
+                                "sourceName": "mshied_firstgeneration",
+                                "sourceOrdering": 10026
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "HIPAAIndicator",
                                 "appliedTraits": [
@@ -953,14 +935,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_hipaaindicator",
-                                "sourceOrdering": 10028,
-                                "isNullable": true,
                                 "displayName": "HIPAA Indicator",
-                                "description": "Indicates if the Contact record includes information such as disability services requests that are protected by HIPAA (USA Health Insurance Portability and Accountability Act standards)."
+                                "description": "Indicates if the Contact record includes information such as disability services requests that are protected by HIPAA (USA Health Insurance Portability and Accountability Act standards).",
+                                "isNullable": true,
+                                "sourceName": "mshied_hipaaindicator",
+                                "sourceOrdering": 10028
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isDeceased",
                                 "appliedTraits": [
@@ -1006,14 +988,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_isdeceased",
-                                "sourceOrdering": 10030,
-                                "isNullable": true,
                                 "displayName": "Is Deceased?",
-                                "description": "If updated to YES, will deactivate Contact as deceased and change all marketing preferences to \"Do Not Allow\""
+                                "description": "If updated to YES, will deactivate Contact as deceased and change all marketing preferences to \"Do Not Allow\"",
+                                "isNullable": true,
+                                "sourceName": "mshied_isdeceased",
+                                "sourceOrdering": 10030
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1045,18 +1027,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'lastPermanentResidenceCountry_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'lastPermanentResidenceCountry'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "lastPermanentResidenceCountry_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1106,14 +1076,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_lastpermanentresidencecountry",
-                                "sourceOrdering": 10032,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'lastPermanentResidenceCountry_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'lastPermanentResidenceCountry'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "lastPermanentResidenceCountry_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Last Permanent Residence Country",
-                                "description": "Last country of permanent residence for the contact."
+                                "description": "Last country of permanent residence for the contact.",
+                                "isNullable": true,
+                                "sourceName": "mshied_lastpermanentresidencecountry",
+                                "sourceOrdering": 10032
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "legacy",
                                 "appliedTraits": [
@@ -1159,14 +1138,14 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_legacy",
-                                "sourceOrdering": 10034,
-                                "isNullable": true,
                                 "displayName": "Legacy",
-                                "description": "Identifies a Contact that is part of a legacy of contacts"
+                                "description": "Identifies a Contact that is part of a legacy of contacts",
+                                "isNullable": true,
+                                "sourceName": "mshied_legacy",
+                                "sourceOrdering": 10034
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "name",
                                 "name": "maidenName",
                                 "appliedTraits": [
@@ -1212,15 +1191,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_maidenname",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10036,
-                                "isNullable": true,
                                 "displayName": "Maiden Name",
-                                "description": "Maiden Name"
+                                "description": "Maiden Name",
+                                "isNullable": true,
+                                "sourceName": "mshied_maidenname",
+                                "sourceOrdering": 10036,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "manualRiskScore",
                                 "appliedTraits": [
@@ -1266,15 +1245,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_manualriskscore",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10037,
-                                "isNullable": true,
                                 "displayName": "Manual Risk Score",
-                                "description": "Manual Risk Score"
+                                "description": "Manual Risk Score",
+                                "isNullable": true,
+                                "sourceName": "mshied_manualriskscore",
+                                "sourceOrdering": 10037,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1318,18 +1297,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'miltaryStatus_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'miltaryStatus'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "miltaryStatus_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1379,14 +1346,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_miltarystatus",
-                                "sourceOrdering": 10038,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'miltaryStatus_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'miltaryStatus'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "miltaryStatus_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Miltary Status",
-                                "description": "Indicates the military service record for the contact."
+                                "description": "Indicates the military service record for the contact.",
+                                "isNullable": true,
+                                "sourceName": "mshied_miltarystatus",
+                                "sourceOrdering": 10038
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "string",
                                 "name": "nationalIdentifier",
                                 "appliedTraits": [
@@ -1432,15 +1408,15 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_nationalidentifier",
-                                "maximumLength": 100,
-                                "sourceOrdering": 10040,
-                                "isNullable": true,
                                 "displayName": "National Identifier",
-                                "description": "Unique Identifier or Student SSN"
+                                "description": "Unique Identifier or Student SSN",
+                                "isNullable": true,
+                                "sourceName": "mshied_nationalidentifier",
+                                "sourceOrdering": 10040,
+                                "maximumLength": 100
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1472,18 +1448,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'nationality_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'nationality'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "nationality_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1533,14 +1497,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_nationality",
-                                "sourceOrdering": 10041,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'nationality_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'nationality'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "nationality_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Nationality",
-                                "description": "Country of nationality for the contact."
+                                "description": "Country of nationality for the contact.",
+                                "isNullable": true,
+                                "sourceName": "mshied_nationality",
+                                "sourceOrdering": 10041
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -1566,18 +1539,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'race_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'race'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "race_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -1627,14 +1588,23 @@
                                         ]
                                     }
                                 ],
-                                "sourceName": "mshied_race",
-                                "sourceOrdering": 10043,
-                                "isNullable": true,
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'race_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'race'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "race_display",
+                                        "isReadOnly": true
+                                    }
+                                },
                                 "displayName": "Race",
-                                "description": "Race of the contact"
+                                "description": "Race of the contact",
+                                "isNullable": true,
+                                "sourceName": "mshied_race",
+                                "sourceOrdering": 10043
                             },
                             {
-                                "name": "mshied_studentstatus_contact_StudentStatusId",
+                                "name": "studentStatus",
                                 "entity": {
                                     "entityReference": "StudentStatus",
                                     "appliedTraits": [
@@ -1646,63 +1616,61 @@
                                         }
                                     ]
                                 },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
                                                 {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "studentStatusId",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Student Status"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Student Status"
+                                                                    ]
                                                                 ]
                                                             }
-                                                        ],
-                                                        "sourceName": "mshied_studentstatusid",
-                                                        "sourceOrdering": 10045,
-                                                        "isNullable": true,
-                                                        "displayName": "Student Status"
-                                                    }
-                                                }
-                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "displayName": "Student Status",
+                                            "isNullable": true,
+                                            "sourceName": "mshied_studentstatusid",
+                                            "sourceOrdering": 10045
                                         }
-                                    ]
+                                    },
+                                    "selectsSubAttribute": {
+                                        "selects": "all"
+                                    }
                                 }
                             }
                         ]

@@ -1,0 +1,106 @@
+{
+  "name": "OrdersProductsCustomersLinked",
+  "description": "",
+  "version": "1.0",
+  "entities": [
+    {
+      "$type": "ReferenceEntity",
+      "name": "Orders",
+      "description": "",
+      "source": "Orders",
+      "modelId": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+      "annotations": [
+        {
+          "name": "pbi:EntityTypeDisplayHint",
+          "value": "LinkedEntity"
+        }
+      ]
+    },
+    {
+      "$type": "LocalEntity",
+      "name": "Customers",
+      "description": "",
+      "pbi:refreshPolicy": {
+        "$type": "FullRefreshPolicy",
+        "location": "Customers.csv"
+      },
+      "custom:extension": [
+        {
+          "key": "value"
+        }
+      ],
+      "cdm:imports": [
+        {
+          "corpusPath": "cdm:/meanings.cdm.json",
+          "moniker": "another"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "CustomerID",
+          "dataType": "string"
+        },
+        {
+          "name": "CompanyName",
+          "dataType": "string"
+        },
+        {
+          "name": "ContactName",
+          "dataType": "string"
+        },
+        {
+          "name": "ContactTitle",
+          "dataType": "string"
+        },
+        {
+          "name": "Address",
+          "dataType": "string"
+        },
+        {
+          "name": "City",
+          "dataType": "string"
+        },
+        {
+          "name": "Region",
+          "dataType": "string"
+        },
+        {
+          "name": "PostalCode",
+          "dataType": "string"
+        },
+        {
+          "name": "Country",
+          "dataType": "string"
+        },
+        {
+          "name": "Phone",
+          "dataType": "string"
+        },
+        {
+          "name": "Fax",
+          "dataType": "string"
+        }
+      ],
+      "partitions": [
+        {
+          "location": "http://www.azure.com/1123123-12123-12312/someurl/2016.csv",
+          "fileFormatSettings": {
+            "$type": "CsvFormatSettings",
+            "columnHeaders": false,
+            "csvStyle": "CsvStyle.QuoteAlways",
+            "delimiter": ",",
+            "quoteStyle": "QuoteStyle.Csv",
+            "encoding": "UTF-8"
+          },
+          "name": "2016"
+        }
+      ]
+    }
+  ],
+  "referenceModels": [
+    {
+      "id": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+      "location": "http://contoso.com/entity.model.json"
+    }
+  ]
+}

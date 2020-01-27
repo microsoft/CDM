@@ -6,7 +6,7 @@
 
 |Name|
 |---|
-|[applicationCommon](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationCommon/overview)|
+|[applicationCommon](applicationCommon/README.md)|
 
 
 

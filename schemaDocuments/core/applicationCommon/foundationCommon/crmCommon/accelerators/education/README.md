@@ -6,7 +6,7 @@
 
 |Name|
 |---|
-|[higherEducation](https://docs.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/accelerators/education/higherEducation/overview)|
+|[higherEducation](higherEducation/README.md)|
 
 
 

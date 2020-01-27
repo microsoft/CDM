@@ -1,14 +1,14 @@
-﻿:root {
+:root {
     --back-alternate1: Gainsboro;
     --back-alternate2: WhiteSmoke;
-    --item-back-loading: DimGray;
+    --item-back-loading: SonicSilver;
     --item-back-failed: LightCoral;
     --item-back-normal: Linen;
     --item-back-base: DarkKhaki;
     --item-back-extension: Gold;
     --item-back-referenced: DarkOrange;
     --item-back-referencing: LightGreen;
-    --table-back-alternate:white;
+    --table-back-alternate: white;
     --item-border-normal: 1px;
     --item-margin-normal: 2px;
     --item-border-selected: 3px;
@@ -20,6 +20,13 @@
     --text-size-big: 16px;
     --text-size-med: 14px;
     --text-size-small: 8px;
+    --wait-item-request:dimgrey;
+    --wait-item-receive: rgb(228, 228, 228);
+    --wait-item-fail:LightCoral;
+    --wait-item-index-start:DarkKhaki;
+    --wait-item-index-finish:darkseagreen;
+    --wait-item-index-entity:Linen;
+    --wait-host-background: black;
 }
 
 
@@ -39,6 +46,23 @@
     position: absolute;
     margin: 0;
     padding: 0;
+}
+
+.manifest_select_container {
+    position: absolute;
+    left: 50%;
+    height: auto;
+    width: auto;
+    background-color: var(--back-alternate1);
+    padding: 15px;
+}
+
+.manifest_prompt_container {
+    padding-bottom: 10px;
+}
+
+.manifest_select_prompt {
+    display: inline-block;
 }
 
 .resize_bar {
@@ -166,11 +190,16 @@
 .definition_pane,
 .status_pane,
 .resolved_pane,
-.trait_pane {
+.trait_pane,
+.partitions_pane {
     display:block;
     background-color: var(--back-alternate2);
     padding: 2px;
     margin-top: 0px;    
+}
+
+.code_div {
+    margin: 0px;
 }
 
 .button {
@@ -195,6 +224,14 @@
     padding-bottom: 0px;
     cursor: pointer;
     user-select: none;
+}
+
+#search_window {
+    margin-left: auto;
+}
+
+#manifest_search{
+    float: right;
 }
 
 #directives_host_pane {
@@ -238,15 +275,46 @@
 #wait_pane {
     background-color: var(--back-alternate1);
     margin: 0px; 
-    padding-bottom: 0px; 
-    padding-left: 4px;
-    text-align: center;
     border-style: outset;
+    flex-flow: column;
     padding: 10px;
 }
 
-#message_text {
+#wait_message_text {
     font-size: larger;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    text-align: center;
+}
+#wait_display_host {
+    display:flex;
+    border-style: inset;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;    
+    background-color: var(--wait-host-background);
+}
+.wait_display_line {
+    display:flex;
+    flex-flow: row;
+    height: 100%;
+    width: 100%;    
+}
+.wait_display_item {
+    height: 100%;
+    width: 100%;    
+    margin: 0px;
+    padding: 0px;
+    outline-style: solid;
+    outline-width: 1px;
+    outline-color: var(--wait-host-background);
+    border-radius: 16px;
+}
+
+#link_text{
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
 }
 
 .status-text-error {
@@ -353,7 +421,7 @@
 {
     padding-top: 12px;
     text-align: left;
-    color:forestgreen
+    color: green
 }
 
 .trait_parameter_table_holder
@@ -451,7 +519,7 @@
     font-size: small;
     min-width: 180px;
     border-bottom: 1px solid black;
-    color: forestgreen;
+    color: green;
 }
 
 .trait_param_value_table_host

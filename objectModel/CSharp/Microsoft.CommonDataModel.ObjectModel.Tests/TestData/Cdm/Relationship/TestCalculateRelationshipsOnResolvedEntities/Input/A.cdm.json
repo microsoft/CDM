@@ -1,0 +1,50 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "B.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "purpose": "identifiedBy",
+            "dataType": "entityId",
+            "name": "AId"
+        },
+        {
+            "entityName": "A",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "toB",
+                    "entity": {
+                        "entityReference": "B",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "B/(resolvedAttributes)/BId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "AId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

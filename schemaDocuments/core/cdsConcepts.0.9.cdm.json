@@ -1,0 +1,107 @@
+{
+    "jsonSchemaSemanticVersion": "0.9.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.0.9.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "is.CDS",
+            "extendsTrait": "is",
+            "explanation": "Base trait for descriptions of CDS for Applications specific properties or ideas."
+        },
+        {
+            "traitName": "is.CDS.sourceNamed",
+            "extendsTrait": "is.CDS",
+            "hasParameters": [
+                {
+                    "name": "name",
+                    "dataType": "string",
+                    "required": false
+                }
+            ],
+            "associatedProperties": [
+                "sourceName"
+            ],
+            "explanation": "the unique name that identifies this object in CDS for Applications."
+        },
+        {
+            "traitName": "is.CDS.ordered",
+            "extendsTrait": "is.CDS",
+            "hasParameters": [
+                {
+                    "name": "ordinal",
+                    "dataType": "integer",
+                    "required": false
+                }
+            ],
+            "associatedProperties": [
+                "sourceOrdering"
+            ],
+            "explanation": "the column number for an attribute with an entity in CDS for Applications."
+        },
+        {
+            "traitName": "is.CDS.lookup",
+            "extendsTrait": "is.CDS",
+            "hasParameters": [
+                {
+                    "name": "style",
+                    "dataType": "string",
+                    "required": false
+                }
+            ],
+            "explanation": "The attribute represents a style of lookup in CDS for Applications"
+        },
+        {
+            "traitName": "is.CDS.customer",
+            "extendsTrait": "is.CDS",
+            "explanation": "contains an Account or Contact ID"
+        },
+        {
+            "explanation": "The Account and Contact entities are used together as a referenced attribute to indicate the single idea of 'customer'.",
+            "purposeName": "referencesCustomer",
+            "exhibitsTraits": [
+                "is.CDS.customer"
+            ]
+        },
+        {
+            "traitName": "is.CDS.owner",
+            "extendsTrait": "is.CDS",
+            "explanation": "contains a User or Team ID"
+        },
+        {
+            "explanation": "The SystemUser and Team entities are used together as a referenced attribute to indicate the owner of the entity instance.",
+            "purposeName": "referencesOwner",
+            "exhibitsTraits": [
+                "is.CDS.owner"
+            ]
+        },
+        {
+            "traitName": "is.CDS.partyList",
+            "extendsTrait": "is.CDS",
+            "explanation": "contains a link to ActivityParty to identify the set of party members"
+        },
+        {
+            "explanation": "An implicit lookup into the ActivityParty entity to find the set of party members with the associated kind of participationTypeMask",
+            "dataTypeName": "partylist",
+            "extendsDataType": "guid",
+            "exhibitsTraits": [
+                "is.CDS.partyList"
+            ]
+        },
+        {
+            "traitName": "is.CDS.standard",
+            "extendsTrait": "is.CDS",
+            "explanation": "identifies attributes that are part of the cdsStandard base set."
+        },
+        {
+            "explanation": "A version number for records stored in CDS",
+            "dataTypeName": "cdsVersionNumber",
+            "extendsDataType": "bigInteger",
+            "exhibitsTraits": [
+                "means.measurement.version"
+            ]
+        }
+    ]
+}

@@ -32,7 +32,7 @@
                         ],
                         "members": [
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookupMultiple",
                                     "appliedTraits": [
@@ -76,18 +76,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'poolType_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'poolType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayTextMultiple",
-                                                    "name": "poolType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -141,10 +129,20 @@
                                 "sourceOrdering": 10058,
                                 "isNullable": true,
                                 "displayName": "Pool Type",
-                                "description": "Select whether the pool is an account, contact, user, equipment or a facility of resources."
+                                "description": "Select whether the pool is an account, contact, user, equipment or a facility of resources.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'poolType_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'poolType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayTextMultiple",
+                                        "name": "poolType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "deriveCapacity",
                                 "appliedTraits": [
@@ -180,7 +178,7 @@
                                 "displayName": "Derive Capacity From Group Members"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "displayOnScheduleAssistant",
                                 "appliedTraits": [
@@ -233,7 +231,7 @@
                                 "description": "Specify if this resource should be enabled for availablity search."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "displayOnScheduleBoard",
                                 "appliedTraits": [
@@ -286,7 +284,7 @@
                                 "description": "Specify if this resource should be displayed on the schedule board."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -318,18 +316,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'endLocation_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'endLocation'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "endLocation_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -383,10 +369,20 @@
                                 "sourceOrdering": 10066,
                                 "isNullable": true,
                                 "displayName": "End Location",
-                                "description": "Shows the default ending location type when booking daily schedules for this resource."
+                                "description": "Shows the default ending location type when booking daily schedules for this resource.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'endLocation_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'endLocation'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "endLocation_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -406,18 +402,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'genericType_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'genericType'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "genericType_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -454,10 +438,90 @@
                                 "sourceName": "msdyn_generictype",
                                 "sourceOrdering": 10068,
                                 "isNullable": true,
-                                "displayName": "Generic Type (Deprecated)"
+                                "displayName": "Generic Type (Deprecated)",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'genericType_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'genericType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "genericType_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
                                 "name": "msdyn_msdyn_organizationalunit_bookableresource_organizationalunit",
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "organizationalUnit",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Organizational Unit"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Organizational Unit that resource belong to"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "sourceName": "msdyn_organizationalunit",
+                                            "sourceOrdering": 10070,
+                                            "isNullable": true,
+                                            "displayName": "Organizational Unit",
+                                            "description": "Organizational Unit that resource belong to"
+                                        }
+                                    },
+                                    "renameFormat": "{m}"
+                                },
                                 "entity": {
                                     "entityReference": "OrganizationalUnit",
                                     "appliedTraits": [
@@ -468,85 +532,10 @@
                                             ]
                                         }
                                     ]
-                                },
-                                "relationship": {
-                                    "relationshipReference": "hasFlexibleRelationshipWithEntity",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.referenceEntityVia",
-                                            "arguments": [
-                                                {
-                                                    "name": "foreignKeyAttribute",
-                                                    "value": {
-                                                        "relationship": "hasA",
-                                                        "dataType": "entityId",
-                                                        "name": "organizationalUnit",
-                                                        "appliedTraits": [
-                                                            {
-                                                                "traitReference": "is.CDS.lookup",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "style",
-                                                                        "value": "single"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.requiredAtLevel",
-                                                                "arguments": [
-                                                                    {
-                                                                        "name": "level",
-                                                                        "value": "none"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.displayedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Organizational Unit"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                "traitReference": "is.localized.describedAs",
-                                                                "arguments": [
-                                                                    {
-                                                                        "entityReference": {
-                                                                            "entityShape": "localizedTable",
-                                                                            "constantValues": [
-                                                                                [
-                                                                                    "en",
-                                                                                    "Organizational Unit that resource belong to"
-                                                                                ]
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "sourceName": "msdyn_organizationalunit",
-                                                        "sourceOrdering": 10070,
-                                                        "isNullable": true,
-                                                        "displayName": "Organizational Unit",
-                                                        "description": "Organizational Unit that resource belong to"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
                                 }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "email",
                                 "name": "primaryEMail",
                                 "appliedTraits": [
@@ -583,7 +572,7 @@
                                 "displayName": "Primary Email"
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": {
                                     "dataTypeReference": "listLookup",
                                     "appliedTraits": [
@@ -615,18 +604,6 @@
                                                             ]
                                                         ]
                                                     }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "traitReference": "does.addSupportingAttribute",
-                                            "arguments": [
-                                                {
-                                                    "explanation": "This attribute 'startLocation_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'startLocation'",
-                                                    "relationship": "hasA",
-                                                    "dataType": "localizedDisplayText",
-                                                    "name": "startLocation_display",
-                                                    "isReadOnly": true
                                                 }
                                             ]
                                         }
@@ -680,10 +657,20 @@
                                 "sourceOrdering": 10072,
                                 "isNullable": true,
                                 "displayName": "Start Location",
-                                "description": "Shows the default starting location type when booking daily schedules for this resource."
+                                "description": "Shows the default starting location type when booking daily schedules for this resource.",
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'startLocation_display' is added to the 'BookableResource' entity to provide the localized display text for the value of the listLookup attribute 'startLocation'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "startLocation_display",
+                                        "isReadOnly": true
+                                    },
+                                    "renameFormat": "{m}"
+                                }
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "integer",
                                 "name": "targetUtilization",
                                 "appliedTraits": [
@@ -738,7 +725,7 @@
                                 "description": "Shows the target utilization for the resource."
                             },
                             {
-                                "relationship": "hasA",
+                                "purpose": "hasA",
                                 "dataType": "boolean",
                                 "name": "isDefault",
                                 "appliedTraits": [
@@ -795,5 +782,6 @@
                 }
             ]
         }
-    ]
+    ],
+    "jsonSchemaSemanticVersion": "0.9.0"
 }
