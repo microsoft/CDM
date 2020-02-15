@@ -5,6 +5,7 @@
 | col 3 is | right-aligned |    $1 | 
 
 <pre>
-<div><a href="/url"> <img src="serious.bmp"/></a><a href="/url"> <img src="serious.bmp"/></a></div><div><a href="/url"> <img src="serious.bmp"/></a></div>
+<div><a href="/url"> <img src="serious.bmp"/></a><a href="/url"> <img src="serious.bmp"/></a></div>
+<div><a href="/url"> <img src="serious.bmp" align="middle"/></a></div>
 <div><a href="/url"> <img src="serious.bmp"/></a></div><div><a href="/url"> <img src="serious.bmp"/></a></div>
 </pre>
