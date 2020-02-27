@@ -1,4 +1,7 @@
-﻿import abc
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+import abc
 from threading import Lock
 from typing import cast, Dict, Iterable, Optional, TYPE_CHECKING
 
@@ -96,8 +99,8 @@ class CdmObject(abc.ABC):
         from .cdm_attribute_context import CdmAttributeContext
         from .cdm_corpus_def import CdmCorpusDefinition
 
-        was_previously_resolving = self.ctx.corpus.is_currently_resolving
-        self.ctx.corpus.is_currently_resolving = True
+        was_previously_resolving = self.ctx.corpus._is_currently_resolving
+        self.ctx.corpus._is_currently_resolving = True
         if not res_opt:
             res_opt = ResolveOptions(self)
 
@@ -109,8 +112,8 @@ class CdmObject(abc.ABC):
 
         # store the previous symbol set, we will need to add it with
         # children found from the constructResolvedTraits call
-        curr_sym_ref_set = res_opt.symbol_ref_set or SymbolSet()
-        res_opt.symbol_ref_set = SymbolSet()
+        curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
+        res_opt._symbol_ref_set = SymbolSet()
 
         # get the moniker that was found and needs to be appended to all
         # refs in the children attribute context nodes
@@ -120,7 +123,7 @@ class CdmObject(abc.ABC):
         if not rasb_cache:
             if self._resolving_attributes:
                 # re-entered self attribute through some kind of self or looping reference.
-                self.ctx.corpus.is_currently_resolving = was_previously_resolving
+                self.ctx.corpus._is_currently_resolving = was_previously_resolving
                 return ResolvedAttributeSet()
             self._resolving_attributes = True
 
@@ -129,30 +132,33 @@ class CdmObject(abc.ABC):
                 under_ctx = CdmAttributeContext._create_child_under(res_opt, acp_in_context)
 
             rasb_cache = self._construct_resolved_attributes(res_opt, under_ctx)
-            self._resolving_attributes = False
 
-            # register set of possible docs
-            odef = self.fetch_object_definition(res_opt)
-            if odef is not None:
-                ctx.corpus._register_definition_reference_symbols(odef, kind, res_opt.symbol_ref_set)
+            if rasb_cache:
 
-                # get the new cache tag now that we have the list of symbols
-                cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
-                # save this as the cached version
-                if cache_tag:
-                    ctx._cache[cache_tag] = rasb_cache
+                self._resolving_attributes = False
 
-                if from_moniker and acp_in_context and cast('CdmObjectReference', self).named_reference:
-                    # create a fresh context
-                    old_context = acp_in_context.under.contents[-1]
-                    acp_in_context.under.contents.pop()
-                    under_ctx = CdmAttributeContext._create_child_under(res_opt, acp_in_context)
+                # register set of possible docs
+                odef = self.fetch_object_definition(res_opt)
+                if odef is not None:
+                    ctx.corpus._register_definition_reference_symbols(odef, kind, res_opt._symbol_ref_set)
 
-                    old_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
+                    # get the new cache tag now that we have the list of symbols
+                    cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
+                    # save this as the cached version
+                    if cache_tag:
+                        ctx._cache[cache_tag] = rasb_cache
+
+                    if from_moniker and acp_in_context and cast('CdmObjectReference', self).named_reference:
+                        # create a fresh context
+                        old_context = acp_in_context._under.contents[-1]
+                        acp_in_context._under.contents.pop(len(acp_in_context._under.contents) - 1)
+                        under_ctx = CdmAttributeContext._create_child_under(res_opt, acp_in_context)
+
+                        old_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
         else:
             # get the SymbolSet for this cached object and pass that back
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-            res_opt.symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
+            res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
 
             # cache found. if we are building a context, then fix what we got instead of making a new one
             if acp_in_context:
@@ -162,18 +168,18 @@ class CdmObject(abc.ABC):
                 rasb_cache.ras.attribute_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
 
         # merge child reference symbols set with current
-        curr_sym_ref_set.merge(res_opt.symbol_ref_set)
-        res_opt.symbol_ref_set = curr_sym_ref_set
+        curr_sym_ref_set._merge(res_opt._symbol_ref_set)
+        res_opt._symbol_ref_set = curr_sym_ref_set
 
-        self.ctx.corpus.is_currently_resolving = was_previously_resolving
-        return rasb_cache.ras
+        self.ctx.corpus._is_currently_resolving = was_previously_resolving
+        return rasb_cache.ras if rasb_cache else rasb_cache
 
     def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
         from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
         from cdm.utilities import SymbolSet
 
-        was_previously_resolving = self.ctx.corpus.is_currently_resolving
-        self.ctx.corpus.is_currently_resolving = True
+        was_previously_resolving = self.ctx.corpus._is_currently_resolving
+        self.ctx.corpus._is_currently_resolving = True
         if not res_opt:
             res_opt = ResolveOptions(self)
 
@@ -188,10 +194,10 @@ class CdmObject(abc.ABC):
 
         # store the previous document set, we will need to add it with
         # children found from the constructResolvedTraits call
-        curr_doc_ref_set = res_opt.symbol_ref_set
+        curr_doc_ref_set = res_opt._symbol_ref_set
         if curr_doc_ref_set is None:
             curr_doc_ref_set = SymbolSet()
-        res_opt.symbol_ref_set = SymbolSet()
+        res_opt._symbol_ref_set = SymbolSet()
 
         if rtsb_all is None:
             rtsb_all = ResolvedTraitSetBuilder()
@@ -204,7 +210,7 @@ class CdmObject(abc.ABC):
             obj_def = self.fetch_object_definition(res_opt)
             if obj_def:
                 # register set of possible docs
-                ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt.symbol_ref_set)
+                ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
 
                 if rtsb_all.resolved_trait_set is None:
                     # nothing came back, but others will assume there is a set in this builder
@@ -220,13 +226,13 @@ class CdmObject(abc.ABC):
             from .cdm_corpus_def import CdmCorpusDefinition
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
             temp_doc_ref_set = ctx.corpus._definition_reference_symbols.get(key)
-            res_opt.symbol_ref_set = temp_doc_ref_set
+            res_opt._symbol_ref_set = temp_doc_ref_set
 
         # merge child document set with current
-        curr_doc_ref_set.merge(res_opt.symbol_ref_set)
-        res_opt.symbol_ref_set = curr_doc_ref_set
+        curr_doc_ref_set._merge(res_opt._symbol_ref_set)
+        res_opt._symbol_ref_set = curr_doc_ref_set
 
-        self.ctx.corpus.is_currently_resolving = was_previously_resolving
+        self.ctx.corpus._is_currently_resolving = was_previously_resolving
         return rtsb_all.resolved_trait_set
 
     @staticmethod
@@ -237,6 +243,8 @@ class CdmObject(abc.ABC):
         res_opt_copy._relationship_depth = res_opt._relationship_depth
         res_opt_copy._localize_references_for = res_opt._localize_references_for
         res_opt_copy._indexing_doc = res_opt._indexing_doc
+        res_opt_copy.shallow_validation = res_opt.shallow_validation
+        res_opt_copy._resolved_attribute_limit = res_opt._resolved_attribute_limit
 
         if res_opt.directives:
             res_opt_copy.directives = res_opt.directives.copy()

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.resolutionguidance;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
@@ -8,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.EntityByReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.Expansion;
 import com.microsoft.commondatamodel.objectmodel.cdm.SelectsSubAttribute;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.GithubAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
@@ -31,6 +35,8 @@ public class ResolutionGuidanceTest {
    * The path of the SchemaDocs project.
    */
   private static final String SCHEMA_DOCS_PATH = "../../../schemaDocuments";
+
+  private static final String CDM_EXTENSION = CdmConstants.CDM_EXTENSION;
 
   /**
    * The test's data path.
@@ -85,7 +91,7 @@ public class ResolutionGuidanceTest {
 
         entityFileName = "default";
         resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>()));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -104,7 +110,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Collections.singletonList("referenceOnly"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -123,7 +129,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Collections.singletonList("normalized"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -142,7 +148,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Collections.singletonList("structured"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -161,7 +167,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -180,7 +186,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -199,7 +205,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Arrays.asList("referenceOnly", "structured"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -218,7 +224,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Arrays.asList("normalized", "structured"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,
@@ -237,7 +243,7 @@ public class ResolutionGuidanceTest {
         resOpt.setDirectives(
             new AttributeResolutionDirectiveSet(
                 new HashSet<>(Arrays.asList("referenceOnly", "normalized", "structured"))));
-        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + ".cdm.json";
+        outputEntityFileName = sourceEntityName + "_Resolved_" + entityFileName + CDM_EXTENSION;
         resolvedEntityDef =
             srcEntityDef.createResolvedEntityAsync(
                 outputEntityFileName,

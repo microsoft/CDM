@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import * as util from 'util';
 import {
@@ -42,11 +45,11 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(cdmManifest.schema)
             .toBe('CdmManifestDefinition.cdm.json');
         expect(cdmManifest.jsonSchemaSemanticVersion)
-            .toBe('0.9.0');
+            .toBe('1.0.0');
         expect(cdmManifest.lastFileModifiedTime.toUTCString())
             .toBe('Mon, 15 Sep 2008 23:53:23 GMT');
         expect(cdmManifest.explanation)
-            .toBe('test cdm folder for cdm version 0.9+');
+            .toBe('test cdm folder for cdm version 1.0+');
         expect(cdmManifest.imports.length)
             .toBe(1);
         expect(cdmManifest.imports.allItems[0].corpusPath)
@@ -124,11 +127,11 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(manifestObject.$schema)
             .toBe('CdmManifestDefinition.cdm.json');
         expect(manifestObject.jsonSchemaSemanticVersion)
-            .toBe('0.9.0');
+            .toBe('1.0.0');
         expect(manifestObject.manifestName)
             .toBe('cdmTest');
         expect(manifestObject.explanation)
-            .toBe('test cdm folder for cdm version 0.9+');
+            .toBe('test cdm folder for cdm version 1.0+');
         expect(manifestObject.imports.length)
             .toBe(1);
         expect(manifestObject.imports[0].corpusPath)
@@ -170,6 +173,11 @@ describe('Persistence.CdmFolder.Manifest', () => {
         // waits 100 milliseconds
         // tslint:disable-next-line: no-string-based-set-timeout
         await new Promise((resolve: TimerHandler): number => setTimeout(resolve, 100));
+
+        expect(!!cdmManifest._fileSystemModifiedTime)
+            .toBe(true);
+        expect(cdmManifest._fileSystemModifiedTime < timeBeforeLoad)
+            .toBe(true);
 
         await cdmManifest.fileStatusCheckAsync();
 

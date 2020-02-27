@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
 import json
@@ -91,7 +89,7 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
         self._sources = {}
         self._sources_by_id = {}
 
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime.datetime]:
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime.datetime]:
         return datetime.datetime.now()
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:

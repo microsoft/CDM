@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
  * to be called externally at all. Please refrain from using it.
  */
+@Deprecated
 public class TraitToPropertyMap {
   private static final Logger LOGGER = LoggerFactory.getLogger(TraitToPropertyMap.class);
 
@@ -65,6 +69,11 @@ public class TraitToPropertyMap {
             CdmPropertyName.MAXIMUM_LENGTH));
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public TraitToPropertyMap(final CdmObject host) {
     this.host = host;
   }
@@ -73,10 +82,20 @@ public class TraitToPropertyMap {
     return (null == node) ? null : node.asText();
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public Object fetchPropertyValue(final CdmPropertyName propertyName) {
     return this.fetchPropertyValue(propertyName, false);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public Object fetchPropertyValue(
       final CdmPropertyName propertyName,
       final boolean onlyFromProperty) {
@@ -101,6 +120,12 @@ public class TraitToPropertyMap {
             this.fetchTraitReferenceName(CdmTraitName.SOURCE_ORDERING),
             "ordinal");
       case IS_PRIMARY_KEY:
+        if (this.host instanceof CdmTypeAttributeDefinition) {
+          CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition) this.host;
+          if (!onlyFromProperty && typeAttribute.getPurpose() != null && typeAttribute.getPurpose().getNamedReference().equals("identifiedBy")) {
+            return true;
+          }
+        }
         return this.fetchTraitReferenceName(CdmTraitName.IS_IDENTIFIED_BY, onlyFromProperty) != null;
       case IS_NULLABLE:
         return this.fetchTraitReferenceName(CdmTraitName.IS_NULLABLE, onlyFromProperty) != null;
@@ -141,15 +166,30 @@ public class TraitToPropertyMap {
     return null;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CdmTraitReference fetchTraitReferenceName(final Object traitName) {
     return this.fetchTraitReferenceName(traitName, false);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   private CdmTraitReference fetchTraitReferenceName(final Object traitName, final boolean onlyFromProperty) {
     final int traitIndex = this.getTraits().indexOf(traitName.toString(), onlyFromProperty);
     return (traitIndex == -1) ? null : this.getTraits().get(traitIndex);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public void updatePropertyValue(final CdmPropertyName propertyName, final Object newValue) {
     final Enum traitName = this.mapTraitName(propertyName);
     final List<CdmPropertyName> listOfProps = this.TRAIT_TO_LIST_OF_PROPERTIES_MAP.get(traitName);
@@ -178,6 +218,9 @@ public class TraitToPropertyMap {
           this.updateTraitArgument(CdmTraitName.SOURCE_ORDERING, "ordinal",
               newValue.toString()); // TODO-BQ: Check if should use toString or (String)
           break;
+        case IS_PRIMARY_KEY:
+          this.updateTraitArgument(CdmTraitName.IS_IDENTIFIED_BY, "", newValue);
+          break;
         case IS_READ_ONLY:
           this.setBooleanTrait(CdmTraitName.IS_READ_ONLY, (boolean) newValue);
           break;
@@ -194,12 +237,7 @@ public class TraitToPropertyMap {
           this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MINIMUM_VALUE.toString(), newValue);
           break;
         case MAXIMUM_LENGTH:
-          if (newValue == null || (newValue instanceof Integer) && (Integer) newValue == -1) {
-            this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), null);
-          } else {
-            this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue.toString());
-          }
-
+          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue);
           break;
         case DATA_FORMAT:
           this.dataFormatToTraits(newValue.toString());
@@ -368,22 +406,24 @@ public class TraitToPropertyMap {
               if ("localizedTable".equals(esName) || lookup || corr) {
                 final List<Object> result = new ArrayList<>();
                 final List<List<String>> rawValues = cEnt.getConstantValues();
-                for (final List<String> rawValue : rawValues) {
-                  final Map<String, String> row = new LinkedHashMap<>();
-                  if (rawValue.size() == 2
-                      || (lookup && rawValue.size() == 4)
-                      || (corr && rawValue.size() == 5)) {
-                    row.put("languageTag", rawValue.get(0));
-                    row.put("displayText", rawValue.get(1));
-                    if (lookup || corr) {
-                      row.put("attributeValue", rawValue.get(2));
-                      row.put("displayOrder", rawValue.get(3));
-                      if (corr) {
-                        row.put("correlatedValue", rawValue.get(4));
-                      }
-                    }
-                  }
-                  result.add(row);
+                if (rawValues != null) {
+                 for (final List<String> rawValue : rawValues) {
+                   final Map<String, String> row = new LinkedHashMap<>();
+                   if (rawValue.size() == 2
+                       || (lookup && rawValue.size() == 4)
+                       || (corr && rawValue.size() == 5)) {
+                     row.put("languageTag", rawValue.get(0));
+                     row.put("displayText", rawValue.get(1));
+                     if (lookup || corr) {
+                       row.put("attributeValue", rawValue.get(2));
+                       row.put("displayOrder", rawValue.get(3));
+                       if (corr) {
+                         row.put("correlatedValue", rawValue.get(4));
+                       }
+                     }
+                   }
+                   result.add(row);
+                 }
                 }
                 return result;
               } else {
@@ -734,7 +774,7 @@ public class TraitToPropertyMap {
     }
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final Object traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final Object traitRef, final String argName) {
     if (traitRef instanceof ResolvedTrait) {
       return fetchTraitReferenceArgumentValue((ResolvedTrait) traitRef, argName);
     }
@@ -744,12 +784,12 @@ public class TraitToPropertyMap {
     return null;
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final ResolvedTrait traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final ResolvedTrait traitRef, final String argName) {
     return traitRef == null ? null
         : traitRef.getParameterValues().fetchParameterValue(argName).getValue();
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final CdmTraitReference traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final CdmTraitReference traitRef, final String argName) {
     return traitRef == null ? null : traitRef.getArguments().fetchValue(argName);
   }
 }

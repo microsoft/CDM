@@ -1,8 +1,6 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmFolderDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -100,7 +98,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -134,7 +132,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
             return null;
         }
@@ -147,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="adapter">The storage adapter where the document can be found.</param>
         /// <param name="forceReload">If true, reload the object from file and replace the current object with it.</param>
         /// <returns>The <see cref="CdmDocumentDefinition"/>.</returns>
-        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false)
+        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false, ResolveOptions resOpt = null)
         {
             string docName;
             string remainingPath;
@@ -181,7 +179,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // go get the doc
-            doc = await this.Corpus.Persistence.LoadDocumentFromPathAsync(this, docName, doc);
+            doc = await this.Corpus.Persistence.LoadDocumentFromPathAsync(this, docName, doc, resOpt);
 
             return doc;
         }
@@ -198,7 +196,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return default(T);
@@ -209,7 +207,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return null;

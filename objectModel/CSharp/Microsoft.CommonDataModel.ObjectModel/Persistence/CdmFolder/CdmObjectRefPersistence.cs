@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -28,13 +31,13 @@
                     copy = replace;
             }
             if (instance.AppliedTraits.Count > 0)
-                copy.AppliedTraits = Utils.ListCopyData(resOpt, instance.AppliedTraits, options);
+                copy.AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits, options);
             return copy;
         }
 
         private static dynamic CopyRefData(CdmObjectReference instance, ResolveOptions resOpt, dynamic copy, dynamic refTo, CopyOptions options)
         {
-            switch(instance.ObjectType)
+            switch (instance.ObjectType)
             {
                 case CdmObjectType.AttributeGroupRef:
                     return new AttributeGroupReferenceDefinition { AttributeGroupReference = JToken.FromObject(refTo, JsonSerializationUtil.JsonSerializer) };
@@ -47,7 +50,7 @@
                 case CdmObjectType.PurposeRef:
                     return new PurposeReferenceDefinition { PurposeReference = refTo };
                 case CdmObjectType.TraitRef:
-                    copy = new TraitReferenceDefintion();
+                    copy = new TraitReferenceDefinition();
                     copy.TraitReference = refTo;
                     copy.Arguments = Utils.ListCopyData<dynamic>(resOpt, ((CdmTraitReference)instance).Arguments, options)?.ConvertAll<JToken>(a => JToken.FromObject(a, JsonSerializationUtil.JsonSerializer));
                     return copy;

@@ -1,4 +1,7 @@
-﻿using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types.Serializer;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types.Serializer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

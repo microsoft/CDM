@@ -1,15 +1,23 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Attribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 
 public class TypeAttributePersistence {
@@ -47,7 +55,14 @@ public class TypeAttributePersistence {
     final Attribute attribute = new Attribute();
     attribute.setName(instance.getName());
     attribute.setDataType(dataTypeToData(instance.fetchDataFormat()));
-    attribute.setDescription(instance.fetchDescription());
+    attribute.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
+    attribute.setTraits(Utils.listCopyData(
+            instance.getAppliedTraits().getAllItems()
+                    .stream()
+                    .filter(trait -> !trait.isFromProperty())
+                    .collect(Collectors.toList()),
+            resOpt,
+            options));
 
     return Utils.processAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits()).thenCompose(v -> {
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
@@ -61,58 +76,58 @@ public class TypeAttributePersistence {
     });
   }
 
-  private static String dataTypeFromData(final String dataType) {
+  private static CdmDataFormat dataTypeFromData(final String dataType) {
     switch (dataType.toLowerCase()) {
       case "string":
-        return "String";
+        return CdmDataFormat.String;
       case "int64":
-        return "Int64";
+        return CdmDataFormat.Int64;
       case "double":
-        return "Double";
+        return CdmDataFormat.Double;
       case "datetime":
-        return "DateTime";
+        return CdmDataFormat.DateTime;
       case "datetimeoffset":
-        return "DateTimeOffset";
+        return CdmDataFormat.DateTimeOffset;
       case "decimal":
-        return "Decimal";
+        return CdmDataFormat.Decimal;
       case "boolean":
-        return "Boolean";
+        return CdmDataFormat.Boolean;
       case "guid":
-        return "Guid";
+        return CdmDataFormat.Guid;
       case "json":
-        return "json";
+        return CdmDataFormat.Json;
       default:
         return null;
     }
   }
 
-  private static String dataTypeToData(final String dataType) {
-    switch (dataType.toLowerCase()) {
-      case "int16":
-      case "int32":
-      case "int64":
+  private static String dataTypeToData(final CdmDataFormat dataType) {
+    switch (dataType) {
+      case Int16:
+      case Int32:
+      case Int64:
         return "int64";
-      case "float":
-      case "double":
+      case Float:
+      case Double:
         return "double";
-      case "char":
-      case "string":
+      case Char:
+      case String:
         return "string";
-      case "guid":
+      case Guid:
         return "guid";
-      case "binary":
+      case Binary:
         return "boolean";
-      case "time":
-      case "date":
-      case "datetime":
+      case Time:
+      case Date:
+      case DateTime:
         return "dateTime";
-      case "datetimeoffset":
+      case DateTimeOffset:
         return "dateTimeOffset";
-      case "boolean":
+      case Boolean:
         return "boolean";
-      case "decimal":
+      case Decimal:
         return "decimal";
-      case "json":
+      case Json:
         return "json";
       default:
         return "unclassified";

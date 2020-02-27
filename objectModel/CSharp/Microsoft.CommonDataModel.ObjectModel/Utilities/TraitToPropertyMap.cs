@@ -1,13 +1,13 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="TraitToPropertyMap.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
-
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleToAttribute("Microsoft.CommonDataModel.ObjectModel.Tests")]
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests")]
+#endif
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -98,6 +98,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     case "sourceOrdering":
                         this.UpdateTraitArgument("is.CDS.ordered", "ordinal", newValue.ToString());
                         break;
+                    case "isPrimaryKey":
+                        this.UpdateTraitArgument("is.identifiedBy", "", newValue);
+                        break;
                     case "isReadOnly":
                         this.MapBooleanTrait("is.readOnly", newValue);
                         break;
@@ -143,6 +146,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 case "sourceOrdering":
                     return Convert.ToInt32(FetchTraitReferenceArgumentValue(this.FetchTraitReference("is.CDS.ordered"), "ordinal"));
                 case "isPrimaryKey":
+                    if (this.Host is CdmTypeAttributeDefinition)
+                    {
+                        CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition) this.Host;
+                        if (!onlyFromProperty && typeAttribute.Purpose != null && typeAttribute.Purpose.NamedReference == "identifiedBy")
+                        {
+                            return true;
+                        }
+                    }
                     return this.FetchTraitReference("is.identifiedBy", onlyFromProperty) != null;
                 case "isNullable":
                     return this.FetchTraitReference("is.nullable", onlyFromProperty) != null;
@@ -422,7 +433,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             var trait = FetchTraitReference(traitName, true);
             if (trait == null)
             {
-                trait = this.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, traitName, false);                
+                trait = this.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, traitName, false);
                 if (this.Host is CdmObjectReference)
                     (this.Host as CdmObjectReference).AppliedTraits.Add(trait);
                 else if (this.Host is CdmAttribute)
@@ -608,23 +619,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                             {
                                 List<dynamic> result = new List<dynamic>();
                                 List<List<string>> rawValues = cEnt.ConstantValues;
-                                for (int i = 0; i < rawValues.Count; i++)
+                                if (rawValues != null)
                                 {
-                                    Dictionary<string, string> row = new Dictionary<string, string>();
-                                    List<string> rawRow = rawValues[i];
-                                    if (rawRow.Count == 2 || (lookup && rawRow.Count == 4) || (corr && rawRow.Count == 5))
+                                    for (int i = 0; i < rawValues.Count; i++)
                                     {
-                                        row["languageTag"] = rawRow[0];
-                                        row["displayText"] = rawRow[1];
-                                        if (lookup || corr)
+                                        Dictionary<string, string> row = new Dictionary<string, string>();
+                                        List<string> rawRow = rawValues[i];
+                                        if (rawRow.Count == 2 || (lookup && rawRow.Count == 4) || (corr && rawRow.Count == 5))
                                         {
-                                            row["attributeValue"] = rawRow[2];
-                                            row["displayOrder"] = rawRow[3];
-                                            if (corr)
-                                                row["correlatedValue"] = rawRow[4];
+                                            row["languageTag"] = rawRow[0];
+                                            row["displayText"] = rawRow[1];
+                                            if (lookup || corr)
+                                            {
+                                                row["attributeValue"] = rawRow[2];
+                                                row["displayOrder"] = rawRow[3];
+                                                if (corr)
+                                                    row["correlatedValue"] = rawRow[4];
+                                            }
                                         }
+                                        result.Add(row);
                                     }
-                                    result.Add(row);
                                 }
                                 return result;
                             }

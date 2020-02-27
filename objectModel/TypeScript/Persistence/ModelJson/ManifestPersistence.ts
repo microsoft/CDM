@@ -1,7 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { Guid } from 'guid-typescript';
 import { CdmFolder, ModelJson } from '..';
 import {
     CdmArgumentDefinition,
+    CdmConstants,
     CdmCorpusContext,
     CdmDocumentDefinition,
     CdmE2ERelationship,
@@ -23,7 +27,6 @@ import {
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import { Import } from '../CdmFolder/types';
-import { fetchModelJsonExtension } from '../extensionFunctions';
 import * as extensionHelper from './ExtensionHelper';
 import {
     LocalEntity, Model, modelBaseProperties, ReferenceEntity, ReferenceModel, SingleKeyRelationship
@@ -34,7 +37,7 @@ export class ManifestPersistence {
     public static readonly isPersistenceAsync: boolean = true;
 
     // The file format/extension types this persistence class supports.
-    public static readonly formats: string[] = [fetchModelJsonExtension()];
+    public static readonly formats: string[] = [CdmConstants.modelJsonExtension];
 
     public static async fromObject(ctx: CdmCorpusContext, obj: Model, folder: CdmFolderDefinition): Promise<CdmManifestDefinition> {
         const extensionTraitDefList: CdmTraitDefinition[] = [];

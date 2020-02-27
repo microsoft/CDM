@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import asyncio
 import urllib
 import urllib.parse
@@ -25,7 +28,7 @@ class CdmHttpClient:
         self.headers = {}  # type : Dict[str, str]
         self._api_endpoint = api_endpoint  # type : str
 
-    async def send_async(self, cdm_request: 'CdmHttpRequest', callback=None) -> 'CdmHttpResponse':
+    async def _send_async(self, cdm_request: 'CdmHttpRequest', callback=None) -> 'CdmHttpResponse':
         """
         Sends a CDM request with the retry logic.
         :param cdm_request: The CDM Http request.
@@ -65,6 +68,9 @@ class CdmHttpClient:
             data = cdm_request.content
             cdm_request.headers['Content-Type'] = cdm_request.content_type
 
+        # urllib.request.Request() expects 'data' to be in bytes, so we convert to bytes here.
+        if data is not None:
+            data = data.encode("utf-8")
         request = urllib.request.Request(full_url, method=cdm_request.method, data=data)
 
         for key in cdm_request.headers:

@@ -1,4 +1,7 @@
-﻿from typing import cast, List, Optional, Union, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import cast, List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.resolvedmodel import ResolvedAttributeSet
@@ -84,7 +87,7 @@ class CdmAttributeContext(CdmObjectDefinition):
                                      att_ctx_set: List['CdmAttributeContext'] = None, moniker: Optional[str] = None) -> 'CdmAttributeContext':
         ra = ras.attctx_to_rattr.get(self)
         if ra:
-            ras.cache_attribute_context(new_node, ra)
+            ras._cache_attribute_context(new_node, ra)
 
         # Add context to set.
         if att_ctx_set is not None:
@@ -130,8 +133,8 @@ class CdmAttributeContext(CdmObjectDefinition):
         if not acp:
             return None
 
-        if acp.type == CdmAttributeContextType.PASS_THROUGH:
-            return acp.under
+        if acp._type == CdmAttributeContextType.PASS_THROUGH:
+            return acp._under
 
         # This flag makes sure we hold on to any resolved object refs when things get copied.
         res_opt_copy = CdmObject._copy_resolve_options(res_opt)
@@ -142,19 +145,19 @@ class CdmAttributeContext(CdmObjectDefinition):
 
         # Get a simple reference to definition object to avoid getting the traits that might be part of this ref
         # included in the link to the definition.
-        if acp.regarding:
-            definition = acp.regarding.create_simple_reference(res_opt_copy)
-            definition.in_document = acp.under.in_document  # ref is in same doc as context
+        if acp._regarding:
+            definition = acp._regarding.create_simple_reference(res_opt_copy)
+            definition.in_document = acp._under.in_document  # ref is in same doc as context
             # Now get the traits applied at this reference (applied only, not the ones that are part of the definition
             # of the object) and make them the traits for this context.
-            if acp.include_traits:
-                rts_applied = acp.regarding._fetch_resolved_traits(res_opt_copy)
+            if acp._include_traits:
+                rts_applied = acp._regarding._fetch_resolved_traits(res_opt_copy)
 
-        under_child = acp.under.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, acp.name)  # type: CdmAttributeContext
+        under_child = acp._under.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, acp._name)  # type: CdmAttributeContext
         # Need context to make this a 'live' object.
-        under_child.ctx = acp.under.ctx
-        under_child.in_document = acp.under.in_document
-        under_child.type = acp.type
+        under_child.ctx = acp._under.ctx
+        under_child.in_document = acp._under.in_document
+        under_child.type = acp._type
         under_child.definition = definition
         # Add traits if there are any.
         if rts_applied and rts_applied.rt_set:
@@ -163,7 +166,7 @@ class CdmAttributeContext(CdmObjectDefinition):
                 under_child.exhibits_traits.append(trait_ref, isinstance(trait_ref, str))
 
         # Add to parent.
-        under_child._update_parent(res_opt_copy, acp.under)
+        under_child._update_parent(res_opt_copy, acp._under)
 
         return under_child
 
@@ -189,7 +192,7 @@ class CdmAttributeContext(CdmObjectDefinition):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.name

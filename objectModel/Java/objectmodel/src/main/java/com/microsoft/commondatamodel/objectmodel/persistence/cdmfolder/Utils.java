@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -99,6 +102,13 @@ public class Utils {
    * Converts a JSON object to an CdmAttribute object.
    */
   public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj) {
+    return createAttribute(ctx, obj, null);
+  }
+
+  /**
+   * Converts a JSON object to an CdmAttribute object.
+   */
+  public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj, final String entityName) {
     if (obj == null) {
       return null;
     }
@@ -110,11 +120,11 @@ public class Utils {
     if (obj instanceof JsonNode) { // TODO-BQ: This part is different from C#
       final JsonNode jsonObject = (JsonNode) obj;
       if (jsonObject.get("attributeGroupReference") != null) {
-        return AttributeGroupReferencePersistence.fromData(ctx, (JsonNode) obj);
+        return AttributeGroupReferencePersistence.fromData(ctx, (JsonNode) obj, entityName);
       } else if (jsonObject.get("entity") != null) {
         return EntityAttributePersistence.fromData(ctx, (JsonNode) obj);
       } else if (jsonObject.get("name") != null) {
-        return TypeAttributePersistence.fromData(ctx, (JsonNode) obj);
+        return TypeAttributePersistence.fromData(ctx, (JsonNode) obj, entityName);
       }
     }
     return null;
@@ -162,6 +172,15 @@ public class Utils {
    */
   public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
                                                                 final JsonNode obj) {
+    return createAttributeList(ctx, obj, null);
+  }
+
+  /**
+   * Converts a JSON object to a CdmCollection of attributes.
+   */
+  public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
+                                                                final JsonNode obj,
+                                                                final String entityName) {
     if (obj == null) {
       return null;
     }
@@ -169,7 +188,7 @@ public class Utils {
     final ArrayList<CdmAttributeItem> result = new ArrayList<>();
 
 //  TODO-BQ: Further testing and validation required.
-    obj.forEach((JsonNode node) -> result.add(createAttribute(ctx, node)));
+    obj.forEach((JsonNode node) -> result.add(createAttribute(ctx, node, entityName)));
 
     return result;
   }

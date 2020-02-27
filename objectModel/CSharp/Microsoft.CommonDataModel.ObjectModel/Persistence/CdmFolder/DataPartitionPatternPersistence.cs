@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -65,7 +68,7 @@
                 RegularExpression = instance.RegularExpression.ToString(),
                 Parameters = instance.Parameters,
                 SpecializedSchema = instance.SpecializedSchema,
-                ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
             };
 
             return result;

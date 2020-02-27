@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -85,14 +86,16 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
-    // Intended to return false.
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
   @Override
   public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
-    // Intended to return false.
     return false;
   }
 
@@ -148,7 +151,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmReferencedEntityDeclarationDefinition copy;

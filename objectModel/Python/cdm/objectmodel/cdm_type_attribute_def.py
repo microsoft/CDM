@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Any, cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
@@ -22,8 +25,8 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         self.data_type = None  # type: Optional[CdmDataTypeReference]
 
         # Internal
-
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
+        self._attribute_count = 1
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -31,103 +34,103 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
     @property
     def is_read_only(self) -> bool:
-        return cast(bool, self._trait_to_property_map.fetch_property_value('isReadOnly'))
+        return cast(bool, self._trait_to_property_map._fetch_property_value('isReadOnly'))
 
     @is_read_only.setter
     def is_read_only(self, val: bool) -> None:
-        self._trait_to_property_map.update_property_value('isReadOnly', val)
+        self._trait_to_property_map._update_property_value('isReadOnly', val)
 
     @property
     def is_nullable(self) -> bool:
-        return cast(bool, self._trait_to_property_map.fetch_property_value('isNullable'))
+        return cast(bool, self._trait_to_property_map._fetch_property_value('isNullable'))
 
     @is_nullable.setter
     def is_nullable(self, val: bool) -> None:
-        self._trait_to_property_map.update_property_value('isNullable', val)
+        self._trait_to_property_map._update_property_value('isNullable', val)
 
     @property
     def source_name(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('sourceName'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('sourceName'))
 
     @source_name.setter
     def source_name(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('sourceName', val)
+        self._trait_to_property_map._update_property_value('sourceName', val)
 
     @property
     def description(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('description'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('description'))
 
     @description.setter
     def description(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('description', val)
+        self._trait_to_property_map._update_property_value('description', val)
 
     @property
     def display_name(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('displayName'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('displayName'))
 
     @display_name.setter
     def display_name(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('displayName', val)
+        self._trait_to_property_map._update_property_value('displayName', val)
 
     @property
     def source_ordering(self) -> int:
-        return cast(int, self._trait_to_property_map.fetch_property_value('sourceOrdering'))
+        return cast(int, self._trait_to_property_map._fetch_property_value('sourceOrdering'))
 
     @source_ordering.setter
     def source_ordering(self, val: int) -> None:
-        self._trait_to_property_map.update_property_value('sourceOrdering', val)
+        self._trait_to_property_map._update_property_value('sourceOrdering', val)
 
     @property
     def value_constrained_to_list(self) -> bool:
-        return cast(bool, self._trait_to_property_map.fetch_property_value('valueConstrainedToList'))
+        return cast(bool, self._trait_to_property_map._fetch_property_value('valueConstrainedToList'))
 
     @value_constrained_to_list.setter
     def value_constrained_to_list(self, val: bool) -> None:
-        self._trait_to_property_map.update_property_value('valueConstrainedToList', val)
+        self._trait_to_property_map._update_property_value('valueConstrainedToList', val)
 
     @property
     def is_primary_key(self) -> bool:
-        return cast(bool, self._trait_to_property_map.fetch_property_value('isPrimaryKey'))
+        return cast(bool, self._trait_to_property_map._fetch_property_value('isPrimaryKey'))
 
     @property
     def maximum_length(self) -> int:
-        return cast(int, self._trait_to_property_map.fetch_property_value('maximumLength'))
+        return cast(int, self._trait_to_property_map._fetch_property_value('maximumLength'))
 
     @maximum_length.setter
     def maximum_length(self, val: int) -> None:
-        self._trait_to_property_map.update_property_value('maximumLength', val)
+        self._trait_to_property_map._update_property_value('maximumLength', val)
 
     @property
     def maximum_value(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('maximumValue'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('maximumValue'))
 
     @maximum_value.setter
     def maximum_value(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('maximumValue', val)
+        self._trait_to_property_map._update_property_value('maximumValue', val)
 
     @property
     def minimum_value(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('minimumValue'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('minimumValue'))
 
     @minimum_value.setter
     def minimum_value(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('minimumValue', val)
+        self._trait_to_property_map._update_property_value('minimumValue', val)
 
     @property
     def data_format(self) -> CdmDataFormat:
-        return cast(CdmDataFormat, self._trait_to_property_map.fetch_property_value('dataFormat'))
+        return cast(CdmDataFormat, self._trait_to_property_map._fetch_property_value('dataFormat'))
 
     @data_format.setter
     def data_format(self, val: CdmDataFormat) -> None:
-        self._trait_to_property_map.update_property_value('dataFormat', val)
+        self._trait_to_property_map._update_property_value('dataFormat', val)
 
     @property
     def default_value(self) -> str:
-        return cast(str, self._trait_to_property_map.fetch_property_value('defaultValue'))
+        return cast(str, self._trait_to_property_map._fetch_property_value('defaultValue'))
 
     @default_value.setter
     def default_value(self, val: str) -> None:
-        self._trait_to_property_map.update_property_value('defaultValue', val)
+        self._trait_to_property_map._update_property_value('defaultValue', val)
 
     @property
     def _trait_to_property_map(self) -> 'TraitToPropertyMap':
@@ -171,7 +174,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         rasb.apply_traits(arc)
         rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
         # this may have added symbols to the dependencies, so merge them
-        res_opt.symbol_ref_set.merge(arc.res_opt.symbol_ref_set)
+        res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
 
         return rasb
 
@@ -217,9 +220,9 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
         return copy
 
-    def fetch_property(self, property_name: str) -> Any:
+    def _fetch_property(self, property_name: str) -> Any:
         """returns the value direclty assigned to a property (ignore value from traits)."""
-        return self._trait_to_property_map.fetch_property_value(property_name, True)
+        return self._trait_to_property_map._fetch_property_value(property_name, True)
 
     def fetch_resolved_entity_references(self, res_opt: 'ResolveOptions') -> 'ResolvedEntityReferenceSet':
         return
@@ -232,7 +235,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.name

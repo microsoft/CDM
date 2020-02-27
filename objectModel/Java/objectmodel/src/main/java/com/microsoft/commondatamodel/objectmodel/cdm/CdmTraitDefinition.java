@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -28,7 +29,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   private Boolean elevated;
   private Boolean ugly;
   private List<String> associatedProperties;
-  ParameterCollection allParameters;
+  private ParameterCollection allParameters;
   private boolean hasSetFlags;
   private CdmCollection<CdmParameterDefinition> parameters;
 
@@ -49,8 +50,16 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     return getTraitName();
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     // this may happen 0, 1 or 2 times. so make it fast
@@ -158,7 +167,11 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (baseDef.equalsIgnoreCase(this.traitName)) {
       return true;
     }
@@ -314,7 +327,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmTraitDefinition copy;
@@ -329,7 +342,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
     copy.setExtendsTrait(
             (CdmTraitReference) (this.extendsTrait == null ? null : this.extendsTrait.copy(resOpt)));
-    copy.setAllParameters(null);
+    copy.allParameters = null;
     copy.setUgly(this.ugly);
     copy.setAssociatedProperties(this.associatedProperties);
     this.copyDef(resOpt, copy);
@@ -347,24 +360,6 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   @Override
   ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
-  }
-
-  /**
-   * Gets allParameters.
-   *
-   * @return Value of allParameters.
-   */
-  public ParameterCollection getAllParameters() {
-    return allParameters;
-  }
-
-  /**
-   * Sets new allParameters.
-   *
-   * @param allParameters New value of allParameters.
-   */
-  public void setAllParameters(final ParameterCollection allParameters) {
-    this.allParameters = allParameters;
   }
 
   @Override

@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     CdmDataTypeDefinition,
@@ -6,7 +10,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     DataType,
     DataTypeReference,
@@ -35,7 +39,7 @@ export class DataTypePersistence {
             extendsDataType: instance.extendsDataType
                 ? instance.extendsDataType.copyData(resOpt, options) as (string | DataTypeReference)
                 : undefined,
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

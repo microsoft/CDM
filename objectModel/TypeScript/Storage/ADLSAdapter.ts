@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as adal from 'adal-node';
 import * as crypto from 'crypto';
 import { URL } from 'url';
-import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
+import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
@@ -14,24 +17,29 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     public get root(): string {
         return this._root;
     }
+
     public set root(val: string) {
         this._root = val;
         this.extractFilesystemAndSubPath(this._root);
     }
 
-    public hostname: string;
-    public tenant: string;
+    public get hostname(): string {
+        return this._hostname;
+    }
+
+    public set hostname(val: string) {
+        this._hostname = val;
+        this.formattedHostname = this.formatHostname(this._hostname);
+    }
+
     public clientId: string;
+    public tenant: string;
+    public locationHint: string;
     public secret: string;
     public sharedKey: string;
-    public locationHint: string;
-    private readonly resource: string = 'https://storage.azure.com';
-    private tokenResponse: adal.TokenResponse;
-    private context: adal.AuthenticationContext;
-    private _root: string;
-    private fileSystem: string = '';
-    private subPath: string = '';
 
+    // The map from corpus path to adapter path.
+    private readonly adapterPaths: Map<string, string>; 
     // The authorization header key, used during shared key auth.
     private readonly httpAuthorization: string = 'Authorization';
     // The MS date header key, used during shared key auth.
@@ -39,22 +47,44 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     //  The MS version key, used during shared key auth.
     private readonly httpXmsVersion: string = 'x-ms-version';
 
+    private readonly resource: string = 'https://storage.azure.com';
+
+    private readonly tokenProvider: TokenProvider;
+
+    private _hostname: string;
+    private _root: string;
+    private context: adal.AuthenticationContext;
+    private fileSystem: string = '';
+    private formattedHostname: string = '';
+    private subPath: string = '';
+    private tokenResponse: adal.TokenResponse;
+
     // The ADLS constructor for clientId/secret authentication.
-    constructor(hostname?: string, root?: string, tenantOrSharedKey?: string, clientId?: string, secret?: string) {
+    constructor(
+        hostname?: string,
+        root?: string,
+        tenantOrSharedKeyorTokenProvider?: string | TokenProvider,
+        clientId?: string,
+        secret?: string) {
         super();
-        if (hostname && root && tenantOrSharedKey) {
+        if (hostname && root && tenantOrSharedKeyorTokenProvider) {
             this.root = root;
             this.hostname = hostname;
-            if (clientId && secret) {
-                this.tenant = tenantOrSharedKey;
-                this.clientId = clientId;
-                this.secret = secret;
-                this.context = new adal.AuthenticationContext(`https://login.windows.net${this.tenant}`);
+            if (typeof tenantOrSharedKeyorTokenProvider === 'string') {
+                if (tenantOrSharedKeyorTokenProvider && !clientId && !secret) {
+                    this.sharedKey = tenantOrSharedKeyorTokenProvider;
+                } else if (tenantOrSharedKeyorTokenProvider && clientId && secret) {
+                    this.tenant = tenantOrSharedKeyorTokenProvider;
+                    this.clientId = clientId;
+                    this.secret = secret;
+                    this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+                }
             } else {
-                this.sharedKey = tenantOrSharedKey;
+                this.tokenProvider = tenantOrSharedKeyorTokenProvider;
             }
         }
 
+        this.adapterPaths = new Map();
         this.httpClient = new CdmHttpClient();
     }
 
@@ -98,22 +128,46 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public createAdapterPath(corpusPath: string): string {
-        return `https://${this.hostname}${this.root}${this.formatCorpusPath(corpusPath)}`;
+        const formattedCorpusPath: string = this.formatCorpusPath(corpusPath);
+
+        if (this.adapterPaths.has(formattedCorpusPath)) {
+            return this.adapterPaths.get(formattedCorpusPath);
+        } else {
+            return `https://${this.hostname}${this.root}${formattedCorpusPath}`;
+        }
     }
 
     public createCorpusPath(adapterPath: string): string {
-        const prefix: string = `https://${this.hostname}${this.root}`;
-        if (adapterPath && adapterPath.startsWith(prefix)) {
-            return adapterPath.slice(prefix.length);
+        if (adapterPath) {
+            const startIndex: number = "https://".length;
+            const endIndex: number = adapterPath.indexOf("/", startIndex + 1);
+
+            if (endIndex < startIndex) {
+                throw new Error(`Unexpected adapter path: ${adapterPath}`);
+            }
+
+            const hostname: string = this.formatHostname(adapterPath.substring(startIndex, endIndex));
+
+            if (hostname === this.formattedHostname
+                && adapterPath.substring(endIndex)
+                .startsWith(this.root)) {
+                const corpusPath: string = adapterPath.substring(endIndex + this.root.length);
+                if (!this.adapterPaths.has(corpusPath))
+                {
+                    this.adapterPaths.set(corpusPath, adapterPath);
+                }
+
+                return corpusPath;
+            }
         }
 
         return undefined;
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        const url: string = this.createAdapterPath(corpusPath);
+        const adapterPath: string = this.createAdapterPath(corpusPath);
 
-        const request: CdmHttpRequest = await this.buildRequest(url, 'HEAD');
+        const request: CdmHttpRequest = await this.buildRequest(adapterPath, 'HEAD');
 
         try {
             const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
@@ -242,13 +296,21 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         // Check whether we support shared key or clientId/secret auth
         if (this.sharedKey) {
             request = this.setUpCdmRequest(url, this.applySharedKey(this.sharedKey, url, method, content, contentType), method);
-        } else {
+        } else if (this.tenant && this.clientId && this.secret) {
             const token: adal.TokenResponse = await this.generateBearerToken();
             request = this.setUpCdmRequest(
                 url,
                 new Map<string, string>([['authorization', `${token.tokenType} ${token.accessToken}`]]),
                 method
             );
+        } else if (this.tokenProvider) {
+            request = this.setUpCdmRequest(
+                url,
+                new Map<string, string>([['authorization', `${this.tokenProvider.getToken()}`]]),
+                method
+            );
+        } else {
+            throw new Error('Adls adapter is not configured with any auth method');
         }
 
         if (content) {
@@ -365,8 +427,22 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         return corpusPath;
     }
 
+    private formatHostname(hostname: string): string {
+        hostname = hostname.replace('.blob.', '.dfs.');
+
+        const port: string = ':443';
+
+        if (hostname.includes(port))
+        {
+            hostname = hostname.substr(0, hostname.length - port.length);
+        }
+
+        return hostname;
+    }
+
     private async generateBearerToken(): Promise<adal.TokenResponse> {
         return new Promise<adal.TokenResponse>((resolve, reject) => {
+            // In-memory token caching is handled by adal by default.
             this.context.acquireTokenWithClientCredentials(
                 this.resource,
                 this.clientId,

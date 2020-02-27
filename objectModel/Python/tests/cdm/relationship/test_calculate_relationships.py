@@ -1,8 +1,11 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import unittest
 import os
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
+from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
 
@@ -26,19 +29,11 @@ class RelationshipTest(unittest.TestCase):
         await corpus.calculate_entity_graph_async(root_manifest)
         await root_manifest.populate_manifest_relationships_async()
 
-        self.assertEqual(len(root_manifest.relationships), 5)
-        self.assertEqual(len(sub_manifest.relationships), 7)
-
         expected_all_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedAllManifestRels.json')
         expected_all_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedAllSubManifestRels.json')
 
-        for expected_rel in expected_all_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_rel, x), root_manifest.relationships))
-            self.assertEqual(len(found), 1)
-
-        for expected_rel in expected_all_sub_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_rel, x), sub_manifest.relationships))
-            self.assertEqual(len(found), 1)
+        self.verify_relationships(root_manifest, expected_all_manifest_rels)
+        self.verify_relationships(sub_manifest, expected_all_sub_manifest_rels)
 
     @async_test
     async def test_calculate_relationships_and_populate_manifest_with_exclusive_flag(self):
@@ -52,19 +47,11 @@ class RelationshipTest(unittest.TestCase):
         # make sure only relationships where to and from entities are in the manifest are found with the 'exclusive' option is passed in
         await root_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
 
-        self.assertEqual(len(root_manifest.relationships), 3)
-        self.assertEqual(len(sub_manifest.relationships), 3)
-
         expected_exclusive_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedExclusiveManifestRels.json')
         expected_exclusive_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedExclusiveSubManifestRels.json')
 
-        for expected_rel in expected_exclusive_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_rel, x), root_manifest.relationships))
-            self.assertEqual(len(found), 1)
-
-        for expected_rel in expected_exclusive_sub_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_rel, x), sub_manifest.relationships))
-            self.assertEqual(len(found), 1)
+        self.verify_relationships(root_manifest, expected_exclusive_manifest_rels)
+        self.verify_relationships(sub_manifest, expected_exclusive_sub_manifest_rels)
 
     @async_test
     async def test_calculate_relationships_and_populate_manifest_with_none_flag(self):
@@ -84,6 +71,8 @@ class RelationshipTest(unittest.TestCase):
     @async_test
     async def test_calculate_relationships_on_resolved_entities(self):
         test_name = 'test_calculate_relationships_on_resolved_entities'
+        expected_resolved_exc_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedExcManifestRels.json')
+        expected_resolved_exc_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedExcSubManifestRels.json')
         expected_resolved_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedManifestRels.json')
         expected_resolved_sub_manifest_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedResolvedSubManifestRels.json')
 
@@ -96,17 +85,14 @@ class RelationshipTest(unittest.TestCase):
         sub_manifest = await corpus.fetch_object_async(sub_manifest_path)
 
         # using createResolvedManifest will only populate exclusive relationships
-        self.assertEqual(len(resolved_manifest.relationships), len(expected_resolved_manifest_rels))
-        self.assertEqual(len(sub_manifest.relationships), len(expected_resolved_sub_manifest_rels))
+        self.verify_relationships(resolved_manifest, expected_resolved_exc_manifest_rels)
+        self.verify_relationships(sub_manifest, expected_resolved_exc_sub_manifest_rels)
 
-        # check that each relationship has been created correctly
-        for expected_rel in expected_resolved_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_rel, x), resolved_manifest.relationships))
-            self.assertEqual(len(found), 1)
-
-        for expected_sub_rel in expected_resolved_sub_manifest_rels:
-            found = list(filter(lambda x: match_relationship(expected_sub_rel, x), sub_manifest.relationships))
-            self.assertEqual(len(found), 1)
+        # check that each relationship has been created correctly with the all flag
+        await resolved_manifest.populate_manifest_relationships_async()
+        await sub_manifest.populate_manifest_relationships_async()
+        self.verify_relationships(resolved_manifest, expected_resolved_manifest_rels)
+        self.verify_relationships(sub_manifest, expected_resolved_sub_manifest_rels)
 
         # it is not enough to check if the relationships are correct.
         # We need to check if the incoming and outgoing relationships are
@@ -125,9 +111,11 @@ class RelationshipTest(unittest.TestCase):
         b_ent = await corpus.fetch_object_async(resolved_manifest.entities[1].entity_path, resolved_manifest)
         b_in_rels = corpus.fetch_incoming_relationships(b_ent)
         b_out_rels = corpus.fetch_outgoing_relationships(b_ent)
-        self.assertEqual(len(b_in_rels), 1)
+        self.assertEqual(len(b_in_rels), 2)
         self.assertEqual(b_in_rels[0].from_entity, 'local:/A-resolved.cdm.json/A')
         self.assertEqual(b_in_rels[0].to_entity, 'local:/B-resolved.cdm.json/B')
+        self.assertEqual(b_in_rels[1].from_entity, 'local:/sub/C-resolved.cdm.json/C')
+        self.assertEqual(b_in_rels[1].to_entity, 'local:/B-resolved.cdm.json/B')
         self.assertEqual(len(b_out_rels), 0)
 
         # C
@@ -137,8 +125,7 @@ class RelationshipTest(unittest.TestCase):
         self.assertEqual(len(c_in_rels), 0)
         self.assertEqual(len(c_out_rels), 2)
         self.assertEqual(c_out_rels[0].from_entity, 'local:/sub/C-resolved.cdm.json/C')
-        # TODO: this should point to the resolved entity, currently an open bug
-        self.assertEqual(c_out_rels[0].to_entity, 'local:/B.cdm.json/B')
+        self.assertEqual(c_out_rels[0].to_entity, 'local:/B-resolved.cdm.json/B')
         self.assertEqual(c_out_rels[1].from_entity, 'local:/sub/C-resolved.cdm.json/C')
         self.assertEqual(c_out_rels[1].to_entity, 'local:/sub/D-resolved.cdm.json/D')
 
@@ -150,6 +137,47 @@ class RelationshipTest(unittest.TestCase):
         self.assertEqual(d_in_rels[0].from_entity, 'local:/sub/C-resolved.cdm.json/C')
         self.assertEqual(d_in_rels[0].to_entity, 'local:/sub/D-resolved.cdm.json/D')
         self.assertEqual(len(d_out_rels), 0)
+
+        # E
+        e_ent = await corpus.fetch_object_async(resolved_manifest.entities[2].entity_path, resolved_manifest)
+        e_in_rels = corpus.fetch_incoming_relationships(e_ent)
+        e_out_rels = corpus.fetch_outgoing_relationships(e_ent)
+        self.assertEqual(len(e_in_rels), 1)
+        self.assertEqual(e_in_rels[0].from_entity, 'local:/sub/F-resolved.cdm.json/F')
+        self.assertEqual(e_in_rels[0].to_entity, 'local:/E-resolved.cdm.json/E')
+        self.assertEqual(len(e_out_rels), 0)
+
+        # F
+        f_ent = await corpus.fetch_object_async(sub_manifest.entities[2].entity_path, sub_manifest)
+        f_in_rels = corpus.fetch_incoming_relationships(f_ent)
+        f_out_rels = corpus.fetch_outgoing_relationships(f_ent)
+        self.assertEqual(len(f_in_rels), 0)
+        self.assertEqual(len(f_out_rels), 1)
+        self.assertEqual(f_out_rels[0].from_entity, 'local:/sub/F-resolved.cdm.json/F')
+        self.assertEqual(f_out_rels[0].to_entity, 'local:/E-resolved.cdm.json/E')
+
+    @async_test
+    async def test_calculate_relationships_for_selects_one_attribute(self):
+        test_name = 'test_calculate_relationships_for_selects_one_attribute'
+        expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus.storage.mount('cdm', LocalAdapter(TestHelper.get_schema_docs_root()))
+
+        manifest = await corpus.fetch_object_async('local:/selectsOne.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        await manifest.populate_manifest_relationships_async()
+
+        # check that each relationship has been created correctly
+        self.verify_relationships(manifest, expected_rels)
+
+    def verify_relationships(self, manifest: 'CdmManifestDefinition', expected_relationships):
+        self.assertEqual(len(manifest.relationships), len(expected_relationships))
+
+        for expected_rel in expected_relationships:
+            found = list(filter(lambda x: match_relationship(expected_rel, x), manifest.relationships))
+            self.assertEqual(len(found), 1)
 
     @staticmethod
     async def load_and_resolve_manifest(corpus: 'CdmCorpusDefinition', manifest: 'CdmManifestDefinition', rename_suffix: str) -> 'CdmManifestDefinition':

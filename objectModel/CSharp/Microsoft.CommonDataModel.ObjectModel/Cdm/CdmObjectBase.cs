@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectBase.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -76,8 +73,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
 
         /// <inheritdoc />
-        public virtual string AtCorpusPath { 
-            get {
+        public virtual string AtCorpusPath
+        {
+            get
+            {
                 if (this.InDocument == null)
                 {
                     return $"NULL:/NULL/{this.DeclaredPath}";
@@ -103,14 +102,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         private bool resolvingTraits = false;
 
-        [Obsolete()]
         internal virtual ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
             bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
             this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             const string kind = "rtsb";
@@ -176,7 +174,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return rtsbAll.ResolvedTraitSet;
         }
 
-        private bool resolvingAttributes = false;
+        protected bool resolvingAttributes = false;
 
         [Obsolete()]
         internal ResolvedAttributeSet FetchResolvedAttributes(ResolveOptions resOpt = null, AttributeContextParameters acpInContext = null)
@@ -185,7 +183,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             const string kind = "rasb";
@@ -225,39 +223,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
 
                 rasbCache = this.ConstructResolvedAttributes(resOpt, underCtx);
-                this.resolvingAttributes = false;
 
-                // register set of possible docs
-                CdmObjectDefinition oDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
-                if (oDef != null)
+                if (rasbCache != null)
                 {
-                    ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
+                    this.resolvingAttributes = false;
 
-                    // get the new cache tag now that we have the list of docs
-                    cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
-
-                    // save this as the cached version
-                    if (!string.IsNullOrWhiteSpace(cacheTag))
-                        ctx.Cache[cacheTag] = rasbCache;
-
-                    if (!string.IsNullOrWhiteSpace(fromMoniker) && acpInContext != null &&
-                        (this is CdmObjectReferenceBase) && (this as CdmObjectReferenceBase).NamedReference != null)
+                    // register set of possible docs
+                    CdmObjectDefinition oDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+                    if (oDef != null)
                     {
-                        // create a fresh context
-                        CdmAttributeContext oldContext = acpInContext.under.Contents[acpInContext.under.Contents.Count - 1] as CdmAttributeContext;
-                        acpInContext.under.Contents.RemoveAt(acpInContext.under.Contents.Count - 1);
-                        underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
+                        ctx.Corpus.RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
 
-                        CdmAttributeContext newContext = oldContext.CopyAttributeContextTree(resOpt, underCtx, rasbCache.ResolvedAttributeSet, null, fromMoniker);
-                        // since THIS should be a refererence to a thing found in a moniker document, it already has a moniker in the reference
-                        // this function just added that same moniker to everything in the sub-tree but now this one symbol has too many
-                        // remove one
-                        string monikerPathAdded = $"{fromMoniker}/";
-                        if (newContext.Definition != null && newContext.Definition.NamedReference != null &&
-                            newContext.Definition.NamedReference.StartsWith(monikerPathAdded))
+                        // get the new cache tag now that we have the list of docs
+                        cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
+
+                        // save this as the cached version
+                        if (!string.IsNullOrWhiteSpace(cacheTag))
+                            ctx.Cache[cacheTag] = rasbCache;
+
+                        if (!string.IsNullOrWhiteSpace(fromMoniker) && acpInContext != null &&
+                            (this is CdmObjectReferenceBase) && (this as CdmObjectReferenceBase).NamedReference != null)
                         {
-                            // slice it off the front
-                            newContext.Definition.NamedReference = newContext.Definition.NamedReference.Substring(monikerPathAdded.Length);
+                            // create a fresh context
+                            CdmAttributeContext oldContext = acpInContext.under.Contents[acpInContext.under.Contents.Count - 1] as CdmAttributeContext;
+                            acpInContext.under.Contents.RemoveAt(acpInContext.under.Contents.Count - 1);
+                            underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
+
+                            CdmAttributeContext newContext = oldContext.CopyAttributeContextTree(resOpt, underCtx, rasbCache.ResolvedAttributeSet, null, fromMoniker);
+                            // since THIS should be a refererence to a thing found in a moniker document, it already has a moniker in the reference
+                            // this function just added that same moniker to everything in the sub-tree but now this one symbol has too many
+                            // remove one
+                            string monikerPathAdded = $"{fromMoniker}/";
+                            if (newContext.Definition != null && newContext.Definition.NamedReference != null &&
+                                newContext.Definition.NamedReference.StartsWith(monikerPathAdded))
+                            {
+                                // slice it off the front
+                                newContext.Definition.NamedReference = newContext.Definition.NamedReference.Substring(monikerPathAdded.Length);
+                            }
                         }
                     }
                 }
@@ -304,7 +306,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(instance);
+                resOpt = new ResolveOptions(instance, instance.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (options == null)
@@ -406,6 +408,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOptCopy.Directives = resOpt.Directives.Copy();
             resOptCopy.LocalizeReferencesFor = resOpt.LocalizeReferencesFor;
             resOptCopy.IndexingDoc = resOpt.IndexingDoc;
+            resOptCopy.ShallowValidation = resOpt.ShallowValidation;
+            resOptCopy.ResolvedAttributeLimit = resOpt.ResolvedAttributeLimit;
             return resOptCopy;
         }
 

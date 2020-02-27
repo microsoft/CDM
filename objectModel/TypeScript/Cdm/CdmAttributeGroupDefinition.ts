@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     CdmAttributeContext,
@@ -6,6 +9,7 @@ import {
     CdmAttributeItem,
     CdmCollection,
     CdmCorpusContext,
+    CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
     ResolvedAttributeSetBuilder,
@@ -13,8 +17,7 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback,
-    CdmObject
+    VisitCallback
 } from '../internal';
 
 export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {

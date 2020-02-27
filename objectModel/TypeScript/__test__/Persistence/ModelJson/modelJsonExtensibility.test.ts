@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import { DocumentPersistence as cdmDocument } from '../../../Persistence/CdmFolder/DocumentPersistence';
@@ -13,7 +16,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
      */
     const testsSubpath: string = 'Persistence/ModelJson/ModelJsonExtensibility';
 
-    const doesWriteTestDebuggingFiles: boolean = true; //testHelper.doesWriteTestDebuggingFiles;
+    const doesWriteTestDebuggingFiles: boolean = false;
 
     /**
      * Reads a Model.Json, converting to CdmManifestDef and then converting back to Model.Json format.

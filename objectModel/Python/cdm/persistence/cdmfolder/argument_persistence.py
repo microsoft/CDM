@@ -1,4 +1,7 @@
-﻿from typing import Union, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
@@ -40,7 +43,7 @@ class ArgumentPersistence:
 
         if instance.value is not None:
             if isinstance(instance.value, CdmObject):
-                value = PersistenceLayer.to_data(instance.value, res_opt, 'CdmFolder', options)
+                value = PersistenceLayer.to_data(instance.value, res_opt, options, PersistenceLayer.CDM_FOLDER)
             else:
                 value = instance.value
 

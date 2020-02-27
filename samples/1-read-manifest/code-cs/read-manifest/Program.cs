@@ -1,4 +1,7 @@
-﻿namespace read_manifest
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace read_manifest
 {
     using System;
     using System.Collections.Generic;
@@ -64,6 +67,12 @@
             Console.WriteLine($"\nLoading manifest {manifestPath} ...");
 
             CdmManifestDefinition manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(manifestPath);
+
+            if (manifest == null)
+            {
+                Console.WriteLine($"Unable to load manifest {manifestPath}. Please inspect error log for additional details.");
+                return;
+            }
 
             // ------------------------------------------------------------------------------------------------------------
             // List all the entities found in the manifest and allow the user to choose which entity to explore.

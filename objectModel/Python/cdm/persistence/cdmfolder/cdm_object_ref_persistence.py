@@ -1,9 +1,12 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmObjectReference
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
 from .types import AttributeGroupReference, CdmJsonType, \
@@ -28,7 +31,7 @@ class CdmObjectRefPersistence:
                 copy = replace
 
         elif instance.explicit_reference:
-            er_copy = PersistenceLayer.to_data(instance.explicit_reference, res_opt, 'CdmFolder', options)
+            er_copy = PersistenceLayer.to_data(instance.explicit_reference, res_opt, options, PersistenceLayer.CDM_FOLDER)
             replace = CdmObjectRefPersistence._copy_ref_data(instance, res_opt, copy, er_copy, options)
 
             if replace:
@@ -36,7 +39,7 @@ class CdmObjectRefPersistence:
 
         if instance.applied_traits:
             # We don't know if the object we are copying has applied traits or not and hence use any
-            copy.appliedTraits = utils.array_copy_data(res_opt, instance.applied_traits, options)
+            copy.appliedTraits = copy_data_utils._array_copy_data(res_opt, instance.applied_traits, options)
 
         return copy
 
@@ -64,7 +67,7 @@ class CdmObjectRefPersistence:
         elif instance.object_type == CdmObjectType.TRAIT_REF:
             copy = TraitReference()
             copy.traitReference = ref_to
-            copy.arguments = utils.array_copy_data(res_opt, instance.arguments, options)
+            copy.arguments = copy_data_utils._array_copy_data(res_opt, instance.arguments, options)
             return copy
         else:
             return None

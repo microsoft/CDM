@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -26,9 +29,9 @@ public abstract class CdmObjectBase implements CdmObject {
   private CdmObjectType objectType;
   private CdmObject owner;
   private boolean resolvingTraits = false;
-  private boolean resolvingAttributes = false;
   private String declaredPath;
   private Map<String, ResolvedTraitSetBuilder> traitCache;
+  protected boolean resolvingAttributes = false;
 
   public CdmObjectBase() {
   }
@@ -70,9 +73,18 @@ public abstract class CdmObjectBase implements CdmObject {
   @Deprecated
   public static <T extends CdmObject> Object copyData(
           final T instance,
-          final ResolveOptions resOpt,
-          final CopyOptions options,
+          ResolveOptions resOpt,
+          CopyOptions options,
           final Class<T> classInterface) {
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(instance, instance.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
+    if (options == null) {
+      options = new CopyOptions();
+    }
+
     final String persistenceTypeName = "CdmFolder";
     return PersistenceLayer.toData(instance, resOpt, options, persistenceTypeName, classInterface);
   }
@@ -133,6 +145,8 @@ public abstract class CdmObjectBase implements CdmObject {
 
     resOptCopy.setLocalizeReferencesFor(resOpt.getLocalizeReferencesFor());
     resOptCopy.setIndexingDoc(resOpt.getIndexingDoc());
+    resOptCopy.setShallowValidation((resOpt.getShallowValidation()));
+    resOptCopy.setResolvedAttributeLimit(resOpt.getResolvedAttributeLimit());
 
     return resOptCopy;
   }
@@ -273,9 +287,13 @@ public abstract class CdmObjectBase implements CdmObject {
    */
   @Override
   @Deprecated
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
     boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
     this.getCtx().getCorpus().isCurrentlyResolving = true;
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
 
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
@@ -360,10 +378,14 @@ public abstract class CdmObjectBase implements CdmObject {
    */
   @Override
   @Deprecated
-  public ResolvedAttributeSet fetchResolvedAttributes(final ResolveOptions resOpt,
+  public ResolvedAttributeSet fetchResolvedAttributes(ResolveOptions resOpt,
                                                       final AttributeContextParameters acpInContext) {
     boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
     this.getCtx().getCorpus().isCurrentlyResolving = true;
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
 
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
@@ -402,61 +424,64 @@ public abstract class CdmObjectBase implements CdmObject {
       }
 
       rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
-      this.resolvingAttributes = false;
 
-      // register set of possible docs
-      final CdmObjectDefinition oDef = this.fetchObjectDefinition(resOpt);
-      if (oDef != null) {
-        ctx.getCorpus()
-                .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
+      if (rasbCache != null) {
+        this.resolvingAttributes = false;
 
-        // get the new cache tag now that we have the list of docs
-        cacheTag = ctx.getCorpus()
-                .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
+        // register set of possible docs
+        final CdmObjectDefinition oDef = this.fetchObjectDefinition(resOpt);
+        if (oDef != null) {
+          ctx.getCorpus()
+                  .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
 
-        // save this as the cached version
-        if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
-          ctx.getCache().put(cacheTag, rasbCache);
-        }
+          // get the new cache tag now that we have the list of docs
+          cacheTag = ctx.getCorpus()
+                  .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 
-        if (!StringUtils.isNullOrTrimEmpty(fromMoniker)
-            && acpInContext != null
-            && this instanceof CdmObjectReference
-            && ((CdmObjectReference) this).getNamedReference() != null) {
-          // create a fresh context
-          final CdmAttributeContext oldContext = (CdmAttributeContext) acpInContext.getUnder()
-              .getContents()
-              .get(acpInContext.getUnder().getContents().size() - 1);
-          acpInContext.getUnder()
-              .getContents()
-              .removeAt(acpInContext.getUnder().getContents().size() - 1);
-          underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
+          // save this as the cached version
+          if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
+            ctx.getCache().put(cacheTag, rasbCache);
+          }
 
-          CdmAttributeContext newContext =
-              oldContext.copyAttributeContextTree(
-                  resOpt,
-                  underCtx,
-                  ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
-                  null,
-                  fromMoniker);
+          if (!StringUtils.isNullOrTrimEmpty(fromMoniker)
+                  && acpInContext != null
+                  && this instanceof CdmObjectReference
+                  && ((CdmObjectReference) this).getNamedReference() != null) {
+            // create a fresh context
+            final CdmAttributeContext oldContext = (CdmAttributeContext) acpInContext.getUnder()
+                    .getContents()
+                    .get(acpInContext.getUnder().getContents().size() - 1);
+            acpInContext.getUnder()
+                    .getContents()
+                    .removeAt(acpInContext.getUnder().getContents().size() - 1);
+            underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
 
-          // Since THIS should be a reference to a thing found in a moniker document,
-          // it already has a moniker in the reference.
-          // This function just added that same moniker to everything in the sub-tree
-          // but now this one symbol has too many.
-          // Remove one.
-          String monikerPathAdded = fromMoniker + "/";
-          if (newContext.getDefinition() != null
-              && newContext.getDefinition().getNamedReference() != null
-              && newContext.getDefinition().getNamedReference().startsWith(monikerPathAdded)) {
-            // Slice it off the front.
-            newContext
-                .getDefinition()
-                .setNamedReference(
-                    newContext
-                        .getDefinition()
-                        .getNamedReference()
-                        .substring(monikerPathAdded.length()));
+            CdmAttributeContext newContext =
+                    oldContext.copyAttributeContextTree(
+                            resOpt,
+                            underCtx,
+                            ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
+                            null,
+                            fromMoniker);
+
+            // Since THIS should be a reference to a thing found in a moniker document,
+            // it already has a moniker in the reference.
+            // This function just added that same moniker to everything in the sub-tree
+            // but now this one symbol has too many.
+            // Remove one.
+            String monikerPathAdded = fromMoniker + "/";
+            if (newContext.getDefinition() != null
+                    && newContext.getDefinition().getNamedReference() != null
+                    && newContext.getDefinition().getNamedReference().startsWith(monikerPathAdded)) {
+              // Slice it off the front.
+              newContext
+                      .getDefinition()
+                      .setNamedReference(
+                              newContext
+                                      .getDefinition()
+                                      .getNamedReference()
+                                      .substring(monikerPathAdded.length()));
+            }
           }
         }
       }

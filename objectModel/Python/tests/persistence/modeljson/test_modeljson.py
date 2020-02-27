@@ -1,4 +1,7 @@
-﻿import unittest
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+import unittest
 import json
 import os
 
@@ -14,8 +17,8 @@ class ModelJsonTest(unittest.TestCase):
     tests_subpath = os.path.join('Persistence', 'ModelJson', 'ModelJson')
 
     @async_test
-    async def test_from_and_to_data(self):
-        test_name = 'test_from_and_to_data'
+    async def test_model_json_from_and_to_data(self):
+        test_name = 'test_model_json_from_and_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async('model.json', cdm_corpus.storage.fetch_root_folder('local'))
 
@@ -25,8 +28,8 @@ class ModelJsonTest(unittest.TestCase):
         self.assertEqual('', error_msg, error_msg)
 
     @async_test
-    async def test_loading_cdm_folder_and_saving_model_json(self):
-        test_name = 'test_loading_cdm_folder_and_saving_model_json'
+    async def test_loading_cdm_folder_and_model_json_to_data(self):
+        test_name = 'test_loading_cdm_folder_and_model_json_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async('default.manifest.cdm.json', cdm_corpus.storage.fetch_root_folder('local'))
 
@@ -37,32 +40,35 @@ class ModelJsonTest(unittest.TestCase):
         self.assertEqual('', error_msg, error_msg)
 
     @async_test
-    async def test_loading_model_json_result_and_saving_cdm_folder(self):
-        test_name = 'test_loading_model_json_result_and_saving_cdm_folder'
+    async def test_loading_model_json_result_and_cdm_folder_to_data(self):
+        test_name = 'test_loading_model_json_result_and_cdm_folder_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async('model.json', cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder.json')
+        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder.cdm.json')
         actual_data = json.loads((CdmManifestPersistence.to_data(manifest, None, None)).encode())
         error_msg = TestHelper.compare_same_object(expected_data, actual_data)
 
         self.assertEqual('', error_msg, error_msg)
 
     @async_test
-    async def test_loading_model_json_and_saving_cdm_folder(self):
-        test_name = 'test_loading_model_json_and_saving_cdm_folder'
+    async def test_loading_model_json_and_cdm_folder_to_data(self):
+        test_name = 'test_loading_model_json_and_cdm_folder_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async('model.json', cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder.json')
+        cdm_corpus.storage.fetch_root_folder('output').documents.append(manifest)
+        await manifest.save_as_async('cdm.json', save_referenced=True)
+
+        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder.cdm.json')
         actual_data = json.loads((CdmManifestPersistence.to_data(manifest, None, None)).encode())
         error_msg = TestHelper.compare_same_object(expected_data, actual_data)
 
         self.assertEqual('', error_msg, error_msg)
 
     @async_test
-    async def test_loading_cdm_folder_result_and_saving_model_json(self):
-        test_name = 'test_loading_cdm_folder_result_and_saving_model_json'
+    async def test_loading_cdm_folder_result_and_model_json_to_data(self):
+        test_name = 'test_loading_cdm_folder_result_and_model_json_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
         manifest = await cdm_corpus.fetch_object_async('result.model.manifest.cdm.json', cdm_corpus.storage.fetch_root_folder('local'))

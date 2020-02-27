@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import base64
 from collections import OrderedDict
@@ -34,7 +32,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         super().__init__()
 
         # --- internal ---
+        self._adapter_paths = {} # type: Dict[str, str]
         self._file_system = None  # type: Optional[str]
+        self._formatted_hostname = None # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
         self._http_xms_date = 'x-ms-date'
@@ -54,7 +54,17 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.location_hint = None  # type: Optional[str]
 
             # --- internal ---
-            self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else Non
+            self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
+            self._token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
+
+    @property
+    def hostname(self) -> str:
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self, value: str):
+        self._hostname = value
+        self._formatted_hostname = self._format_hostname(self._hostname)
 
     @property
     def root(self) -> str:
@@ -74,11 +84,12 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def clear_cache(self) -> None:
         pass
 
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime]:
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
+        adapter_path = self.create_adapter_path(corpus_path)
         request = self._build_request(adapter_path, 'HEAD')
 
         try:
-            cdm_response = await self._http_client.send_async(request, self.wait_time_callback)
+            cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
             if cdm_response.status_code == HTTPStatus.OK:
                 return dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
         except Exception:
@@ -90,13 +101,29 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if corpus_path.startswith('//'):
             corpus_path = corpus_path[1:]
 
-        return 'https://' + self.hostname + self.root + self._format_corpus_path(corpus_path)
+        formatted_corpus_path = self._format_corpus_path(corpus_path)
+        if formatted_corpus_path in self._adapter_paths:
+            return self._adapter_paths[formatted_corpus_path]
+        else:
+            return 'https://' + self.hostname + self.root + formatted_corpus_path
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        base = 'https://' + self.hostname + self.root
+        if adapter_path:
+            start_index = len('https://')
+            end_index = adapter_path.find('/', start_index + 1)
 
-        if adapter_path and adapter_path.startswith(base):
-            return adapter_path[len(base):]
+            if end_index < start_index:
+                raise Exception('Unexpected adapter path:', adapter_path)
+
+            hostname = self._format_hostname(adapter_path[start_index:end_index])
+
+            if hostname == self._formatted_hostname and adapter_path[end_index:].startswith(self._root):
+                corpus_path = adapter_path[end_index + len(self._root):]
+
+                if corpus_path not in self._adapter_paths:
+                    self._adapter_paths[corpus_path] = adapter_path
+
+                return corpus_path
 
         # Signal that we did not recognize path as one for this adapter.
         return None
@@ -108,7 +135,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             directory = directory[1:]
 
         request = self._build_request('{}?directory={}&recursive=True&resource=filesystem'.format(url, directory), 'GET')
-        cdm_response = await self._http_client.send_async(request, self.wait_time_callback)
+        cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
 
         if cdm_response.status_code == HTTPStatus.OK:
             results = []
@@ -191,16 +218,16 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         request = self._build_request(url + '?resource=file', 'PUT')
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback)
 
         request = self._build_request(url + '?action=append&position=0', 'PATCH', data)
         request.content_type = 'application/json'
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback)
 
         request = self._build_request(url + '?action=flush&position=' + str(len(data)), 'PATCH')
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback)
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None, content_type: Optional[str] = None):
         headers = OrderedDict()
@@ -261,10 +288,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def _build_request(self, url: str, method: str = 'GET', content: Optional[str] = None, content_type: Optional[str] = None):
         if self.shared_key is not None:
             request = self._set_up_cdm_request(url, self._apply_shared_key(self.shared_key, url, method, content, content_type), method)
-        else:
+        elif self.tenant is not None and self.client_id is not None and self.secret is not None:
             token = self._generate_bearer_token()
             headers = {'Authorization': token['tokenType'] + ' ' + token['accessToken']}
             request = self._set_up_cdm_request(url, headers, method)
+        elif self._token_provider is not None:
+            headers = {'Authorization': self._token_provider.get_token()}
+            request = self._set_up_cdm_request(url, headers, method)
+        else:
+            raise Exception('Adls adapter is not configured with any auth method')
 
         if content is not None:
             request.content = content
@@ -300,7 +332,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             corpus_path = '/' + corpus_path
         return corpus_path
 
+    def _format_hostname(self, hostname: str) -> str:
+        hostname = hostname.replace('.blob.', '.dfs.')
+        port = ':443'
+        if port in hostname:
+            hostname = hostname[0:-len(port)]
+        return hostname
+
     def _generate_bearer_token(self):
+        # In-memory token cache is handled by adal by default.
         return self._auth_context.acquire_token_with_client_credentials(self._resource, self.client_id, self.secret)
 
     def _try_from_base64_string(self, content: str) -> bool:

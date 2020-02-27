@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -8,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.RelationshipInfo;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReference;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
@@ -22,6 +24,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +41,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -81,7 +89,14 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(final ResolveOptions resOpt) {
+  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      Set<String> directives = new LinkedHashSet<> ();
+      directives.add("normalized");
+      directives.add("referenceOnly");
+      resOpt = new ResolveOptions(this, new AttributeResolutionDirectiveSet(directives));
+    }
+
     final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
     final CdmAttributeResolutionGuidance resGuide = this
         .getResolutionGuidance();
@@ -149,7 +164,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmEntityAttributeDefinition copy;
@@ -180,6 +195,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   private RelationshipInfo getRelationshipInfo(final ResolveOptions resOpt,
                                                final AttributeResolutionContext arc) {
     final ResolvedTraitSet rts = null;
+    boolean noMaxDepth = false;
     boolean hasRef = false;
     boolean isByRef = false;
     boolean isArray = false;
@@ -196,6 +212,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
       final AttributeResolutionDirectiveSet resDirectives = arc.getResOpt().getDirectives();
       if (resDirectives != null) {
+        noMaxDepth = resDirectives.has("noMaxDepth");
         // based on directives
         if (hasRef) {
           isByRef = resDirectives.has("referenceOnly");
@@ -222,6 +239,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           if (hasRef
               && arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth() != null) {
             maxDepth = arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth();
+          }
+          if (noMaxDepth) {
+            maxDepth = 32; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
           }
 
           if (nextDepth > maxDepth) {
@@ -446,6 +466,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         raSub.setResolvedTraits(raSub.fetchResolvedTraits().merge(rt, true));
       }
       rasb = new ResolvedAttributeSetBuilder();
+      rasb.getResolvedAttributeSet().setAttributeContext(raSub.getAttCtx()); // this got set to null with the new builder
       rasb.ownOne(raSub);
     }
 
@@ -502,9 +523,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           if (CdmObject.class.isAssignableFrom(otherRef.getClass())) {
             otherAttribute = ((CdmObject) otherRef).fetchObjectDefinition(otherOpts);
             if (otherAttribute != null) {
+              final ResolvedAttributeSet resolvedAttributeSet = sideOther.getEntity().fetchResolvedAttributes(otherOpts);
+              if (resolvedAttributeSet != null) {
               sideOther.getResolvedAttributeSetBuilder().ownOne(
-                  sideOther.getEntity().fetchResolvedAttributes(otherOpts)
-                      .get(otherAttribute.getName()).copy());
+                resolvedAttributeSet.get(otherAttribute.getName()).copy());
+              }
             }
           }
         }

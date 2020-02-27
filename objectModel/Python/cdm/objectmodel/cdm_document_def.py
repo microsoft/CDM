@@ -1,4 +1,7 @@
-﻿from datetime import datetime
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from datetime import datetime
 from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -42,7 +45,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self.schema = None  # type: Optional[str]
 
         # the document json schema semantic version.
-        self.json_schema_semantic_version = '0.9.0'  # type: str
+        self.json_schema_semantic_version = '1.0.0'  # type: str
 
         # the document folder.
         self.folder = None  # type: Optional[CdmFolderDefinition]
@@ -126,10 +129,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # make the corpus internal machinery pay attention to this document for this call
         corpus = self.folder._corpus
 
-        await corpus._resolve_imports_async(self)
+        await corpus._resolve_imports_async(self, res_opt)
 
         # maintain actual current doc
-        corpus._docs_not_indexed.add(self)
+        corpus._document_library._mark_document_for_indexing(self)
 
         return corpus._index_documents(res_opt, self)
 
@@ -145,14 +148,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def get_name(self) -> str:
         return self.name
 
-    def fetch_object_from_document_path(self, object_path: str) -> 'CdmObject':
+    def _fetch_object_from_document_path(self, object_path: str) -> 'CdmObject':
         if object_path in self.internal_declarations:
             return self.internal_declarations[object_path]
 
     def _localize_corpus_paths(self, new_folder: 'CdmFolderDefinition') -> bool:
         all_went_well = True
-        was_blocking = self.ctx.corpus.block_declared_path_changes
-        self.ctx.corpus.block_declared_path_changes = True
+        was_blocking = self.ctx.corpus._block_declared_path_changes
+        self.ctx.corpus._block_declared_path_changes = True
 
         logger.info(self._TAG, self.ctx, 'Localizing corpus paths in document \'{}\''.format(self.name), self._localize_corpus_paths.__name__)
 
@@ -242,7 +245,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # find anything in the document that is a corpus path
         self.visit('', pre_callback, None)
 
-        self.ctx.corpus.block_declared_path_changes = was_blocking
+        self.ctx.corpus._block_declared_path_changes = was_blocking
 
         return all_went_well
 

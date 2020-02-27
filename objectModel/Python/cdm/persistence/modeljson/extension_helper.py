@@ -1,4 +1,7 @@
-﻿from collections import OrderedDict
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from collections import OrderedDict
 from typing import List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType

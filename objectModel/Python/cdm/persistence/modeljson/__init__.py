@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from .argument_persistence import ArgumentPersistence
 from .data_partition_persistence import DataPartitionPersistence
 from .document_persistence import DocumentPersistence

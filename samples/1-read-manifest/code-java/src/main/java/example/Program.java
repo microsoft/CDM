@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package example;
 
 import com.google.common.base.Strings;
@@ -88,6 +91,11 @@ public class Program {
     System.out.println("\nLoading manifest " + manifestPath + " ...");
 
     CdmManifestDefinition manifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(manifestPath).join();
+
+    if (manifest == null) {
+      System.err.println("Unable to load manifest " + manifestPath + ". Please inspect error log for additional details.");
+      return;
+    }
 
     while (true) {
       int index = 1;
@@ -242,7 +250,7 @@ public class Program {
         // Attribute's name.
         printProperty("Name", typeAttributeDefinition.getName());
         // Attribute's data format.
-        printProperty("DataFormat", typeAttributeDefinition.fetchDataFormat());
+        printProperty("DataFormat", typeAttributeDefinition.fetchDataFormat().name());
         // And all the traits of this attribute.
         System.out.println("  AppliedTraits:");
         typeAttributeDefinition.getAppliedTraits().forEach(Program::printTrait);

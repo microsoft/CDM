@@ -1,10 +1,15 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
 /**
  * String utilities.
+ * 
+ * @deprecated This class is extremely likely to be removed in the public interface, and not meant
+ * to be called externally at all. Please refrain from using it.
  */
+@Deprecated
 public class StringUtils {
 
   /**
@@ -16,7 +21,7 @@ public class StringUtils {
    * @return sliced string
    */
   public static String slice(final String str, final int startIdx, final int endIdx) {
-    return str.substring(startIdx, endIdx - startIdx);
+    return str.substring(startIdx, endIdx);
   }
 
   /**

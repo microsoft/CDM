@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import os
 import unittest
 
@@ -6,7 +9,7 @@ from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition
 from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
-from tests.test_storage_adapter import TestStorageAdapter
+from tests.mock_storage_adapter import MockStorageAdapter
 
 
 class PersistenceLayerTest(unittest.TestCase):
@@ -50,7 +53,7 @@ class PersistenceLayerTest(unittest.TestCase):
         corpus.storage.fetch_root_folder('local').documents.append(manifest)
 
         all_docs = {}  # type: Dict[str, str]
-        test_adapter = TestStorageAdapter(all_docs)
+        test_adapter = MockStorageAdapter(all_docs)
         corpus.storage._set_adapter('local', test_adapter)
 
         new_manifest_from_model_json_name = 'my.model.json'

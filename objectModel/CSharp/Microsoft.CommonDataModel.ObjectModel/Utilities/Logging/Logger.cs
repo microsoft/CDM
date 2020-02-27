@@ -1,8 +1,5 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Logger.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 {
@@ -34,7 +31,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 
                         var layout = "${callsite:className=false} ${longdate} ${threadid} ${level:uppercase=true} ${message}";
 
-                        var logfile = new NLog.Targets.FileTarget("logfile") {
+                        var logfile = new NLog.Targets.FileTarget("logfile")
+                        {
                             Layout = layout,
                             FileName = "cdm_log_${date:format=yyyyMMdd}.txt"
                         };
@@ -68,8 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
         public static void Debug(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
-            var logMessage = FormatMessage(tag, message, path);
-            Log(CdmStatusLevel.Progress, ctx, logMessage, DefaultLogger.Debug);
+            Log(CdmStatusLevel.Progress, ctx, tag, message, path, DefaultLogger.Debug);
         }
 
         /// <summary>
@@ -81,8 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
         public static void Info(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
-            var logMessage = FormatMessage(tag, message, path);
-            Log(CdmStatusLevel.Info, ctx, logMessage, DefaultLogger.Info);
+            Log(CdmStatusLevel.Info, ctx, tag, message, path, DefaultLogger.Info);
         }
 
         /// <summary>
@@ -94,8 +90,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
         public static void Warning(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
-            var logMessage = FormatMessage(tag, message, path);
-            Log(CdmStatusLevel.Warning, ctx, logMessage, DefaultLogger.Warn);
+            Log(CdmStatusLevel.Warning, ctx, tag, message, path, DefaultLogger.Warn);
         }
 
         /// <summary>
@@ -107,8 +102,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
         public static void Error(string tag, CdmCorpusContext ctx, string message, string path = null)
         {
-            var logMessage = FormatMessage(tag, message, path);
-            Log(CdmStatusLevel.Error, ctx, logMessage, DefaultLogger.Error);
+            Log(CdmStatusLevel.Error, ctx, tag, message, path, DefaultLogger.Error);
         }
 
         /// <summary>
@@ -124,17 +118,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
                 $"{tag} | {message}";
         }
 
-        private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string message, Action<string> defaultStatusEvent)
+        private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string tag, string message, string path, Action<string> defaultStatusEvent)
         {
             if (level >= ctx.ReportAtLevel)
             {
+                string formattedMessage = FormatMessage(tag, message, path);
                 if (ctx != null && ctx.StatusEvent != null)
                 {
-                    ctx.StatusEvent.Invoke(level, message);
+                    ctx.StatusEvent.Invoke(level, formattedMessage);
                 }
                 else
                 {
-                    defaultStatusEvent(message);
+                    defaultStatusEvent(formattedMessage);
                 }
             }
         }

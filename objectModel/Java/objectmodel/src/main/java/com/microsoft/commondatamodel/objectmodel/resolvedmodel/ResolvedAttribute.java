@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
@@ -17,7 +20,6 @@ import java.io.IOException;
 @Deprecated
 public class ResolvedAttribute {
 
-  private Object target;
   private String previousResolvedName;
   private ResolvedTraitSet resolvedTraits;
   private int insertOrder;
@@ -27,10 +29,14 @@ public class ResolvedAttribute {
 
   private TraitToPropertyMap t2pm;
   private String _resolvedName;
+  private Object _target;
+  // we need this instead of checking the size of the set because there may be attributes
+  // nested in an attribute group and we need each of those attributes counted here as well
+  private int resolvedAttributeCount;
 
   public ResolvedAttribute(final ResolveOptions resOpt, final Object target, final String defaultName,
                            final CdmAttributeContext attCtx) {
-    this.target = target;
+    this.setTarget(target);
     this.resolvedTraits = new ResolvedTraitSet(resOpt);
     this._resolvedName = defaultName;
     this.previousResolvedName = defaultName;
@@ -40,11 +46,16 @@ public class ResolvedAttribute {
   public ResolvedAttribute copy() {
     final ResolveOptions resOpt = resolvedTraits.getResOpt(); // use the options from the traits
 
-    final ResolvedAttribute copy = new ResolvedAttribute(resOpt, target, _resolvedName, attCtx);
+    final ResolvedAttribute copy = new ResolvedAttribute(resOpt, _target, _resolvedName, attCtx);
     copy.updateResolvedName(getResolvedName());
     copy.setResolvedTraits(fetchResolvedTraits().shallowCopy());
     copy.insertOrder = insertOrder;
     copy.arc = arc;
+
+    if (copy.getTarget() instanceof ResolvedAttributeSet) {
+        // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+        copy.setTarget( ((ResolvedAttributeSet)copy.getTarget()).copy() );
+    }
 
     if (applierState != null) {
       copy.setApplierState(applierState.copy());
@@ -62,8 +73,8 @@ public class ResolvedAttribute {
   void completeContext(final ResolveOptions resOpt) {
     if (attCtx != null && attCtx.getName() == null) {
       attCtx.setName(_resolvedName);
-      if (target instanceof CdmAttribute) {
-        attCtx.setDefinition(((CdmAttribute) target).createSimpleReference(resOpt));
+      if (_target instanceof CdmAttribute) {
+        attCtx.setDefinition(((CdmAttribute) _target).createSimpleReference(resOpt));
       }
       if (attCtx.getParent().fetchObjectDefinition(resOpt).getAtCorpusPath().endsWith("/") || _resolvedName.startsWith("/")) {
         attCtx.setAtCorpusPath(
@@ -133,17 +144,23 @@ public class ResolvedAttribute {
 
   TraitToPropertyMap getTraitToPropertyMap() {
     if (t2pm == null) {
-      t2pm = new TraitToPropertyMap((CdmObject) target);
+      t2pm = new TraitToPropertyMap((CdmObject) _target);
     }
     return t2pm;
   }
 
   public Object getTarget() {
-    return target;
+    return _target;
   }
 
   public void setTarget(final Object target) {
-    this.target = target;
+    if (target != null) {
+      if (target instanceof CdmAttribute) {
+        this.resolvedAttributeCount = ((CdmAttribute) target).getAttributeCount();
+      } else if (target instanceof ResolvedAttributeSet)
+      this.resolvedAttributeCount = ((ResolvedAttributeSet) target).getResolvedAttributeCount();
+    }
+    this._target = target;
   }
 
   public String getPreviousResolvedName() {
@@ -225,4 +242,18 @@ public class ResolvedAttribute {
   public void setApplierState(final ApplierState applierState) {
     this.applierState = applierState;
   }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public int getResolvedAttributeCount() { return this.resolvedAttributeCount; }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setResolvedAttributeCount(final int resolvedAttributeCount) { this.resolvedAttributeCount = resolvedAttributeCount; }
 }

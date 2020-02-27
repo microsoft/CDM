@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmHttpClient } from '../../Utilities/Network/CdmHttpClient';
 import { CdmHttpRequest } from '../../Utilities/Network/CdmHttpRequest';
 import { CdmHttpResponse } from '../../Utilities/Network/CdmHttpResponse';

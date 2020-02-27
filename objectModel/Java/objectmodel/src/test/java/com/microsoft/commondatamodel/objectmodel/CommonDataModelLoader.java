@@ -1,9 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
@@ -35,7 +39,7 @@ public class CommonDataModelLoader {
       return CompletableFuture.completedFuture(null);
     }
 
-    final String endMatch = (!Strings.isNullOrEmpty(version)) ? "." + version + ".cdm.json" : ".cdm.json";
+    final String endMatch = (!Strings.isNullOrEmpty(version)) ? "." + version + CdmConstants.CDM_EXTENSION : CdmConstants.CDM_EXTENSION;
 
     if (!Files.exists(Paths.get(path))) {
       throw new IllegalStateException("No directory found at " + path + ".");
@@ -91,9 +95,10 @@ public class CommonDataModelLoader {
    return CompletableFuture.supplyAsync(() -> {
      System.out.println("resolving imports");
 
-     for (int i = 0; i < cdmCorpus.getAllDocuments().size(); i++) {
-       final ResolveOptions resOpt = new ResolveOptions(cdmCorpus.getAllDocuments().get(i).getRight());
-       cdmCorpus.getAllDocuments().get(i).getRight().indexIfNeededAsync(resOpt).join();
+     List<CdmDocumentDefinition> allDocuments = cdmCorpus.getDocumentLibrary().listAllDocuments();
+     for (int i = 0; i < allDocuments.size(); i++) {
+       final ResolveOptions resOpt = new ResolveOptions(allDocuments.get(i));
+       allDocuments.get(i).indexIfNeededAsync(resOpt).join();
      }
 
      return true;

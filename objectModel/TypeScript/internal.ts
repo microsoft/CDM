@@ -1,6 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 // this file defines what order the classes get loaded.
 // add your classes after the classes you're using are loaded.
 
+export * from './Persistence/CdmConstants';
 export * from './Utilities/identifierRef';
 export * from './Enums/cdmObjectType';
 export * from './Enums/cdmDataFormat';

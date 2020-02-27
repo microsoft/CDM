@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmDocumentDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -69,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.InDocument = this;
             this.ObjectType = CdmObjectType.DocumentDef;
             this.Name = name;
-            this.JsonSchemaSemanticVersion = "0.9.0";
+            this.JsonSchemaSemanticVersion = "1.0.0";
             this.NeedsIndexing = true;
             this.IsDirty = true;
             this.ImportsIndexed = false;
@@ -242,7 +239,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmDocumentDefinition copy;
@@ -297,7 +294,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return default(T);
@@ -353,7 +350,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 options = new CopyOptions();
             }
 
-            ResolveOptions resOpt = new ResolveOptions(this);
+            ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             if (await this.IndexIfNeeded(resOpt) == false)
             {
                 Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
@@ -378,7 +375,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             this.NeedsIndexing = true;
@@ -392,10 +389,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // make the corpus internal machinery pay attention to this document for this call
                 CdmCorpusDefinition corpus = (this.Folder as CdmFolderDefinition).Corpus;
 
-                await corpus.ResolveImportsAsync(this);
+                await corpus.ResolveImportsAsync(this, resOpt);
 
                 // maintain actual current doc
-                corpus.docsNotIndexed.TryAdd(this, 1);
+                corpus.documentLibrary.MarkDocumentForIndexing(this);
 
                 return corpus.IndexDocuments(resOpt, this);
             }

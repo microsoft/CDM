@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ResolvedAttributeSet.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
@@ -19,7 +16,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         private IDictionary<string, HashSet<ResolvedAttribute>> BaseTrait2Attributes;
         internal IDictionary<ResolvedAttribute, HashSet<CdmAttributeContext>> Ra2attCtxSet;
         internal IDictionary<CdmAttributeContext, ResolvedAttribute> AttCtx2ra;
-        internal List<ResolvedAttribute> Set { get; set; }
+        private List<ResolvedAttribute> _set { get; set; }
+        internal List<ResolvedAttribute> Set
+        {
+            get
+            {
+                return _set;
+            }
+            set
+            {
+                this.ResolvedAttributeCount = value.Sum(att => att.ResolvedAttributeCount);
+                this._set = value;
+            }
+        }
+        // we need this instead of checking the size of the set because there may be attributes
+        // nested in an attribute group and we need each of those attributes counted here as well
+        internal int ResolvedAttributeCount { get; set; }
         public CdmAttributeContext AttributeContext;
         public int InsertOrder { get; set; }
 
@@ -30,6 +42,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.Ra2attCtxSet = new Dictionary<ResolvedAttribute, HashSet<CdmAttributeContext>>();
             this.AttCtx2ra = new Dictionary<CdmAttributeContext, ResolvedAttribute>();
             this.Set = new List<ResolvedAttribute>();
+            this.ResolvedAttributeCount = 0;
         }
 
         public CdmAttributeContext CreateAttributeContext(ResolveOptions resOpt, AttributeContextParameters acp)
@@ -44,11 +57,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
         internal void CacheAttributeContext(CdmAttributeContext attCtx, ResolvedAttribute ra)
         {
-            this.AttCtx2ra.Add(attCtx, ra);
-            // set collection will take care of adding context to set
-            if (!this.Ra2attCtxSet.ContainsKey(ra))
-                this.Ra2attCtxSet.Add(ra, new HashSet<CdmAttributeContext>());
-            this.Ra2attCtxSet[ra].Add(attCtx);
+            if (attCtx != null && ra != null)
+            {
+                this.AttCtx2ra.Add(attCtx, ra);
+                // set collection will take care of adding context to set
+                if (!this.Ra2attCtxSet.ContainsKey(ra))
+                    this.Ra2attCtxSet.Add(ra, new HashSet<CdmAttributeContext>());
+                this.Ra2attCtxSet[ra].Add(attCtx);
+            }
+        }
+
+        internal void RemoveCachedAttributeContext(CdmAttributeContext attCtx)
+        {
+            if (attCtx != null)
+            {
+                this.AttCtx2ra.TryGetValue(attCtx, out ResolvedAttribute oldRa);
+                if (oldRa != null && this.Ra2attCtxSet.ContainsKey(oldRa))
+                {
+                    this.AttCtx2ra.Remove(attCtx);
+                    this.Ra2attCtxSet[oldRa].Remove(attCtx);
+                    if (this.Ra2attCtxSet[oldRa].Count == 0)
+                        this.Ra2attCtxSet.Remove(oldRa);
+                }
+            }
         }
 
         internal ResolvedAttributeSet Merge(ResolvedAttribute toMerge, CdmAttributeContext attCtx = null)
@@ -56,6 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolvedAttributeSet rasResult = this;
             if (toMerge != null)
             {
+                // if there is already a resolve attribute present, remove it before adding the new attribute
                 if (rasResult.ResolvedName2resolvedAttribute.ContainsKey(toMerge.ResolvedName))
                 {
                     ResolvedAttribute existing = rasResult.ResolvedName2resolvedAttribute[toMerge.ResolvedName];
@@ -64,8 +96,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         rasResult = rasResult.Copy(); // copy on write
                         existing = rasResult.ResolvedName2resolvedAttribute[toMerge.ResolvedName];
                     }
+                    else
+                    {
+                        rasResult = this;
+                    }
+
+                    if (existing.Target is CdmAttribute)
+                        rasResult.ResolvedAttributeCount -= existing.Target.AttributeCount;
+                    else if (existing.Target is ResolvedAttributeSet)
+                        rasResult.ResolvedAttributeCount -= existing.Target.ResolvedAttributeCount;
+
+                    if (toMerge.Target is CdmAttribute)
+                        rasResult.ResolvedAttributeCount += toMerge.Target.AttributeCount;
+                    else if (toMerge.Target is ResolvedAttributeSet)
+                        rasResult.ResolvedAttributeCount += toMerge.Target.ResolvedAttributeCount;
+
                     existing.Target = toMerge.Target; // replace with newest version
                     existing.Arc = toMerge.Arc;
+
+                    // remove old context mappings with mappings to new attribute
+                    rasResult.RemoveCachedAttributeContext(existing.AttCtx);
 
                     ResolvedTraitSet rtsMerge = existing.ResolvedTraits.MergeSet(toMerge.ResolvedTraits); // newest one may replace
                     if (rtsMerge != existing.ResolvedTraits)
@@ -87,6 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         rasResult.CacheAttributeContext(attCtx, toMerge);
                     //toMerge.InsertOrder = rasResult.Set.Count;
                     rasResult.Set.Add(toMerge);
+                    rasResult.ResolvedAttributeCount += toMerge.ResolvedAttributeCount;
                 }
                 this.BaseTrait2Attributes = null;
             }
@@ -102,7 +153,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.Set = newSet;
             foreach (ResolvedAttribute ra in newSet)
             {
-                ResolvedName2resolvedAttribute.Add(ra.ResolvedName, ra);
+                if (!ResolvedName2resolvedAttribute.ContainsKey(ra.ResolvedName))
+                    ResolvedName2resolvedAttribute.Add(ra.ResolvedName, ra);
             }
         }
 
@@ -117,7 +169,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 if (attCtxSet != null)
                 {
                     // map the new resolved attribute to the old context set
-                    ra2attCtxSet.Add(newRa, attCtxSet);
+                    if (ra2attCtxSet.ContainsKey(newRa))
+                    {
+                        var currentSet = ra2attCtxSet[newRa];
+                        currentSet.UnionWith(attCtxSet);
+                    }
+                    else
+                    {
+                        ra2attCtxSet.Add(newRa, attCtxSet);
+                    }
                     // map the old contexts to the new resolved attribute
                     if (attCtxSet.Count > 0)
                     {
@@ -133,17 +193,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolvedAttributeSet rasResult = this;
             if (toMerge != null)
             {
-                int l = toMerge.Set.Count;
-                for (int i = 0; i < l; i++)
+                foreach (ResolvedAttribute ra in toMerge.Set)
                 {
                     // don't pass in the context here
-                    ResolvedAttributeSet rasMerged = rasResult.Merge(toMerge.Set[i]);
+                    ResolvedAttributeSet rasMerged = rasResult.Merge(ra);
                     if (rasMerged != rasResult)
                     {
                         rasResult = rasMerged;
                     }
+                    // get the attribute from the merged set, attributes that were already present were merged, not replaced
+                    rasResult.ResolvedName2resolvedAttribute.TryGetValue(ra.ResolvedName, out ResolvedAttribute currentRa);
                     // copy context here
-                    toMerge.CopyAttCtxMappingsInto(rasResult.Ra2attCtxSet, rasResult.AttCtx2ra, toMerge.Set[i]);
+                    toMerge.CopyAttCtxMappingsInto(rasResult.Ra2attCtxSet, rasResult.AttCtx2ra, ra, currentRa);
                 }
             }
             return rasResult;

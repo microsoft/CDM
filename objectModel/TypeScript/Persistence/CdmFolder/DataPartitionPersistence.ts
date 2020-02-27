@@ -1,17 +1,19 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmDataPartitionDefinition,
     cdmObjectType,
-    cdmStatusLevel,
     CdmTraitReference,
     copyOptions,
     resolveOptions
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
     DataPartition,
-    KeyValPair,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -85,7 +87,7 @@ export class DataPartitionPersistence {
             location: instance.location,
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
             arguments: [],
             specializedSchema: instance.specializedSchema
         };

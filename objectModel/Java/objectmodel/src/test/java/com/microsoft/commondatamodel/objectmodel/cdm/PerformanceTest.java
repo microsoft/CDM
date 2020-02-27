@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.CommonDataModelLoader;
@@ -23,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 public class PerformanceTest {
@@ -41,6 +45,7 @@ public class PerformanceTest {
    * Test the time taken to resolve the corpus
    */
   @Test(retryAnalyzer = RetryTest.class)
+  @Ignore
   public void resolveCorpus() {
     Assert.assertTrue(
         (Files.isDirectory(

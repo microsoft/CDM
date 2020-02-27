@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     cdmAttributeContextType,
@@ -55,6 +58,9 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public static createChildUnder(resOpt: resolveOptions, acp: AttributeContextParameters): CdmAttributeContext {
         // let bodyCode = () =>
         {
@@ -269,11 +275,18 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @internal
+     */
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
         // let bodyCode = () =>
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public constructResolvedAttributes(resOpt: resolveOptions, under?: CdmAttributeContext): ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
@@ -281,6 +294,10 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @internal
+     */
     public setParent(resOpt: resolveOptions, parent: CdmAttributeContext): void {
         // let bodyCode = () =>
         {

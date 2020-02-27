@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmDataTypeDefinition,
@@ -20,6 +23,7 @@ export class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmD
         }
         // return p.measure(bodyCode);
     }
+
     public getObjectType(): cdmObjectType {
         // let bodyCode = () =>
         {
@@ -27,6 +31,7 @@ export class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmD
         }
         // return p.measure(bodyCode);
     }
+
     /**
      * @internal
      */
@@ -42,6 +47,9 @@ export class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmD
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public visitRef(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {

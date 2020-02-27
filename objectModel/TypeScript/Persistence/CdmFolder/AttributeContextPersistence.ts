@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmAttributeContext,
     cdmAttributeContextType,
@@ -7,7 +11,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeContext,
     TraitReference
@@ -69,11 +73,11 @@ export class AttributeContextPersistence {
             parent: instance.parent ? instance.parent.copyData(resOpt, options) as string : undefined,
             definition: instance.definition ? instance.definition.copyData(resOpt, options) as string : undefined,
             // i know the trait collection names look wrong. but I wanted to use the def baseclass
-            appliedTraits: utils.arrayCopyData<string | TraitReference>(
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(
                 resOpt,
                 instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty),
                 options),
-            contents: utils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
+            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
         };
     }
     public static mapTypeNameToEnum(typeName: string): cdmAttributeContextType {
