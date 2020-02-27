@@ -1,6 +1,6 @@
 # Common Data Model Schema
 
-The Common Data Model is a declarative specification, and definition of standard entities that represent commonly used concepts and activities across business and productivity applications, and is being extended to observational and analytical data as well. Common Data Model provides a well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as activities and service level agreements. Anyone can build on and extend Common Data Model definitions to capture additional business-specific ideas.
+Common Data Model is a declarative specification, and definition of standard entities that represent commonly used concepts and activities across business and productivity applications, and is being extended to observational and analytical data as well. Common Data Model provides a well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as activities and service level agreements. Anyone can build on and extend Common Data Model definitions to capture additional business-specific ideas.
 
 <pre>
 <img src="docs/blank.png"/>  <a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/dynamicsCRM.manifest.cdm.json&simpleChrome=true"> <img src="docs/dyn-static.PNG"/> </a>
@@ -10,9 +10,9 @@ The Common Data Model is a declarative specification, and definition of standard
 
 # Introduction
 
-The Common Data Model standard defines a common language for business entities covering, over time, the full range of business processes across sales, services, marketing, operations, finance, talent, and commerce and for the Customer, People, and Product entities at the core of a company's business processes. The goal of Common Data Model is to enable data and application interoperability spanning multiple channels, service implementations, and vendors. The Common Data Model provides self-describing data (structurally and semantically), enabling applications to easily read and understand the data.
+Common Data Model standard defines a common language for business entities covering, over time, the full range of business processes across sales, services, marketing, operations, finance, talent, and commerce and for the Customer, People, and Product entities at the core of a company's business processes. The goal of Common Data Model is to enable data and application interoperability spanning multiple channels, service implementations, and vendors. Common Data Model provides self-describing data (structurally and semantically), enabling applications to easily read and understand the data.
 
-The Common Data Model is undergoing a specification effort driven by Microsoft. The documents published are a preview, and will be iterated on.
+Common Data Model is undergoing a specification effort driven by Microsoft. The documents published are a preview, and will be iterated on.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
@@ -20,9 +20,9 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ### Open Data Initiative
 
-As announced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
+As announced at Microsoft Ignite, Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
 
-Teh Common Data Model is already supported in Common Data Service, Dynamics 365, Power Apps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
+Common Data Model is already supported in Common Data Service, Dynamics 365, Power Apps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
 
 [Get the latest updates about the Open Data Initiative](https://info.microsoft.com/Open-Data-Initiative.html)
 
@@ -35,7 +35,7 @@ There are two ways to consume the information in this repository:
 
 # Versioning
 
-Maintaining forward and backward compatibility is a key goal of the CDM. Therefore, the CDM uses only additive versioning, which means any revision of the CDM following a "1.0" release will not:
+Maintaining forward and backward compatibility is a key goal of Common Data Model. Therefore, Common Data Model uses only additive versioning, which means any revision of the CDM following a "1.0" release will not:
 
 * Introduce new mandatory attributes on previously published entities, or change an optional attribute to be mandatory
 * Rename previously published attributes or entities
